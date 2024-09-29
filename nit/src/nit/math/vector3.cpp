@@ -1,0 +1,120 @@
+﻿#include "vector3.h"
+
+namespace Nit
+{
+    bool operator==(const Vector3& a, const Vector3& b)
+    {
+        return (Abs(a.x - b.x) <= F32_EPSILON) && (Abs(a.y - b.y) <= F32_EPSILON) && (Abs(a.z - b.z) <= F32_EPSILON);
+    }
+
+    bool operator!=(const Vector3& a, const Vector3& b)
+    {
+        return !(a == b);
+    }
+
+    Vector3 operator+(const Vector3& a, const Vector3& b)
+    {
+        return { a.x + b.x, a.y + b.y, a.z + b.z };
+    }
+
+    Vector3 operator-(const Vector3& a, const Vector3& b)
+    {
+        return { a.x - b.x, a.y - b.y, a.z - b.z };
+    }
+
+    Vector3 operator*(const Vector3& vector, f32 num)
+    {
+        return { vector.x * num, vector.y * num, vector.z * num };
+    }
+
+    Vector3 operator/(const Vector3& vector, f32 num)
+    {
+        return { vector.x / num, vector.y / num, vector.z / num };
+    }
+
+    Vector3& operator+=(Vector3& left, const Vector3& right)
+    {
+        left.x += right.x;
+        left.y += right.y;
+        left.z += right.z;
+        return left;
+    }
+
+    Vector3& operator-=(Vector3& left, const Vector3& right)
+    {
+        left.x -= right.x;
+        left.y -= right.y;
+        left.z -= right.z;
+        return left;
+    }
+
+    Vector3& operator*=(Vector3& left, f32 num)
+    {
+        left.x *= num;
+        left.y *= num;
+        left.z *= num;
+        return left;
+    }
+
+    Vector3& operator/=(Vector3& left, f32 num)
+    {
+        left.x /= num;
+        left.y /= num;
+        left.z /= num;
+        return left;
+    }
+    
+    Vector3 LookRotation(const Vector3& rotation, const Vector3& dir)
+    {
+        Matrix4 rotation_mat;
+        rotation_mat = Rotate(rotation_mat, rotation);
+        Vector4 v4_dir = { dir.x, dir.y, dir.z, 1.f };
+        Vector4 look_rot = rotation_mat *  v4_dir; 
+        return { look_rot.x, look_rot.y, look_rot.z };
+    }
+
+    template <>
+    f32 Magnitude<Vector3>(const Vector3& val)
+    {
+        return std::sqrt(std::powf(val.x, 2) + std::powf(val.y, 2) + std::powf(val.z, 2));
+    }
+    template <>
+    Vector3 Normalize<Vector3>(const Vector3& val)
+    {
+        f32 mag = Magnitude(val);
+        return { val.x / mag, val.y / mag, val.z / mag };
+    }
+    
+
+    template <>
+    Vector3 Multiply<Vector3>(const Vector3& a, const Vector3& b)
+    {
+        Vector3 r;
+        r.x = a.x * b.x;
+        r.y = a.y * b.y;
+        r.z = a.z * b.z;
+        return r;
+    }
+
+    template <>
+    Vector3 Divide<Vector3>(const Vector3& a, const Vector3& b)
+    {
+        Vector3 r;
+        r.x = a.x / b.x;
+        r.y = a.y / b.y;
+        r.z = a.z / b.z;
+        return r;
+    }
+
+    template <>
+    f32 Dot<Vector3>(const Vector3& a, const Vector3& b)
+    {
+        return a.x * b.x + a.y * b.y + a.z * b.z;
+    }
+
+    template <>
+    f32 Distance<Vector3>(const Vector3& a, const Vector3& b)
+    {
+        return std::sqrtf(std::powf(a.x - b.x, 2) + std::powf(a.y - b.y, 2) + std::powf(a.z - b.z, 2));
+    }
+}

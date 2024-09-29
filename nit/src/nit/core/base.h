@@ -1,0 +1,158 @@
+#pragma once
+
+#ifdef _WIN32
+    #ifdef _WIN64
+        #define NIT_PLATFORM_WINDOWS
+    #else
+        #error "x86 Builds are not supported!"
+    #endif
+#elif defined(__APPLE__) || defined(__MACH__)
+    #define NIT_PLATFORM_APPLE
+    #error "Apple is not supported!"
+#elif defined(__ANDROID__)
+    #define NIT_PLATFORM_ANDROID
+    #error "Android is not supported!"
+#elif defined(__linux__)
+    #define NIT_PLATFORM_LINUX
+#else
+    #error "Unknown platform!"
+#endif
+
+
+//#TODO_asuarez build a real log system
+#include <cstdio>
+#define NIT_PRINT(...) \
+printf(__VA_ARGS__)
+
+#define NIT_PRINTLN(...) \
+NIT_PRINT(__VA_ARGS__); NIT_PRINT("\n")
+
+#if defined NIT_DEBUG || NIT_RELEASE
+
+#define NIT_LOG_TRACE(...) \
+NIT_PRINT("\x1B[96m"); NIT_PRINTLN(__VA_ARGS__); NIT_PRINT("\033[0m")
+
+#define NIT_LOG_WARN(...) \
+NIT_PRINT("\x1B[93m"); NIT_PRINTLN(__VA_ARGS__); NIT_PRINT("\033[0m")
+
+#define NIT_LOG_ERR(...) \
+NIT_PRINT("\x1B[91m"); NIT_PRINTLN(__VA_ARGS__); NIT_PRINT("\033[0m")
+#else
+
+#define NIT_LOG(...)
+#define NIT_LOG_TRACE(...) 
+#define NIT_LOG_WARN(...)
+#define NIT_LOG_ERR(...)
+
+#endif
+
+#ifdef NIT_DEBUG
+#if defined(NIT_PLATFORM_WINDOWS)
+    #define NIT_DEBUGBREAK() __debugbreak()
+#elif defined(NIT_PLATFORM_LINUX)
+    #include <signal.h>
+    #define NIT_DEBUGBREAK() raise(SIGTRAP)
+#else
+    #error "Platform doesn't support debugbreak yet!"
+#endif
+#define NIT_ENABLE_CHECKS
+#else
+#define NIT_DEBUGBREAK()
+#endif
+
+#ifdef NIT_ENABLE_CHECKS
+#define NIT_CHECK_MSG(_CONDITION, ...) \
+if (!(_CONDITION)) { NIT_LOG_ERR(__VA_ARGS__); NIT_DEBUGBREAK(); }
+
+#define NIT_CHECK(_CONDITION) \
+if (!(_CONDITION)) {  NIT_DEBUGBREAK(); }
+#else
+#define NIT_CHECK_MSG(_CONDITION, ...)
+#define NIT_CHECK(_CONDITION)
+#endif
+
+namespace Nit
+{
+    using i16 = short;
+    using i32 = int;
+    using i64 = long long;
+
+    using u8  = unsigned char;
+    using u16 = unsigned short;
+    using u32 = unsigned int;
+    using u64 = unsigned long long;
+
+    using f32 = float;
+    using f64 = double;
+
+    inline constexpr u32 U32_MAX = std::numeric_limits<u32>::max();
+    inline constexpr f32 F32_EPSILON = std::numeric_limits<f32>::epsilon();
+    
+    using TVoidFunc = void(*)();
+
+    template<typename T>
+    using TFunction = std::function<T>;
+    
+    template<typename T, size_t N>
+    using TFixedArray = std::array<T, N>;
+
+    template<typename T>
+    using TArray = std::vector<T>;
+
+    template<typename T>
+    using TUnorderedSet = std::unordered_set<T>;
+
+    template<typename K, typename V>
+    using TOrderedMap = std::map<K, V>;
+
+    template<typename K, typename V>
+    using TMap = std::unordered_map<K, V>;
+
+    template<typename T>
+    using TQueue = std::queue<T>;
+
+    template<typename T>
+    using TSet = std::set<T>;
+    
+    template<typename K, typename V>
+    using TPair = std::pair<K, V>;
+
+    template<std::size_t N>
+    using TBitset = std::bitset<N>;
+
+    using TString = std::string;
+
+    using TStringStream = std::stringstream;
+
+    using TIStringStream = std::istringstream;
+
+    using TOutputFile = std::ofstream;
+
+    using TInputFile = std::ifstream;
+
+    template<typename T>
+    using TUniquePtr = std::unique_ptr<T>;
+
+    template<typename T, typename ... Args>
+    constexpr TUniquePtr<T> CreateUniquePtr(Args&& ... args)
+    {
+        return std::make_unique<T>(std::forward<Args>(args)...);
+    }
+
+    template<typename T>
+    using TSharedPtr = std::shared_ptr<T>;
+
+    template<typename T, typename ... Args>
+    constexpr TSharedPtr<T> CreateSharedPtr(Args&& ... args)
+    {
+        return std::make_shared<T>(std::forward<Args>(args)...);
+    }
+
+    template<typename T>
+    using TWeakPtr = std::weak_ptr<T>;
+
+    template <class OutIt, class Diff, class T>
+    OutIt FillRaw(OutIt destination, const Diff count, const T& value) { return std::fill_n(destination, count, value); }
+}
+
+#define NIT_GRAPHICS_API_OPENGL
