@@ -155,3 +155,4 @@ namespace Nit
         u32                         char_count         = 0;
         u32                         char_index_count   = 0;
     };
+}
