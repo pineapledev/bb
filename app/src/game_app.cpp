@@ -40,9 +40,22 @@ void GameStart()
     AddComponent<Transform>(cat_entity).position = V3_RIGHT * 2.f;
     
     TEntity quad = CreateEntity();
-    AddComponent<Sprite>(quad);
+    AddComponent<Sprite>(quad).tint = V4_COLOR_LIGHT_RED;
     AddComponent<Transform>(quad);
 
+    TEntity circle = CreateEntity();
+    AddComponent<Circle>(circle).tint = V4_COLOR_LIGHT_GREEN;
+    AddComponent<Transform>(circle).position = V3_DOWN;
+
+    TEntity line = CreateEntity();
+    AddComponent<Line2D>(line).tint = V4_COLOR_CYAN;
+    AddComponent<Transform>(line).position = V3_LEFT;
+
+    TEntity text = CreateEntity();
+    AddComponent<Text>(text).text = "UWU";
+    GetComponent<Text>(text).tint = V4_COLOR_MAGENTA;
+    AddComponent<Transform>(text).position = V3_RIGHT * 2.f;
+    
     GetCameraTransform().position = V3_FRONT * 3.f;
 }
 
