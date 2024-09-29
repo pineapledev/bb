@@ -6,7 +6,7 @@ namespace Nit
     struct Font;
     
     using V4Verts2D = FixedArray<Vector4, 4>;
-    using TV3Verts2D = FixedArray<Vector3, 4>;
+    using V3Verts2D = FixedArray<Vector3, 4>;
     using V2Verts2D = FixedArray<Vector2, 4>;
     
     inline constexpr V4Verts2D DEFAULT_VERTEX_POSITIONS_2D = {
