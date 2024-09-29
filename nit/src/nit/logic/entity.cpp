@@ -71,7 +71,7 @@ namespace Nit
         return entity < MAX_ENTITIES && reg.signatures[entity].test(0);
     }
 
-    void EntitySignatureChanged(EntityRegistry& reg, Entity entity, TEntitySignature new_entity_signature)
+    void EntitySignatureChanged(EntityRegistry& reg, Entity entity, EntitySignature new_entity_signature)
     {
         for (auto& [signature, group] : reg.entity_groups)
         {
@@ -85,10 +85,10 @@ namespace Nit
         }
     }
 
-    TEntitySignature CreateEntityGroup(EntityRegistry& reg, const Array<const char*>& types)
+    EntitySignature CreateEntityGroup(EntityRegistry& reg, const Array<const char*>& types)
     {
         NIT_CHECK_MSG(!reg.entity_count, "Create the group before any entity gets created!");
-        TEntitySignature group_signature = BuildEntitySignature(reg, types);
+        EntitySignature group_signature = BuildEntitySignature(reg, types);
 
         if (reg.entity_groups.count(group_signature) != 0)
         {
@@ -100,9 +100,9 @@ namespace Nit
         return group_signature;
     }
 
-    TEntitySignature BuildEntitySignature(EntityRegistry& reg, const Array<const char*>& types)
+    EntitySignature BuildEntitySignature(EntityRegistry& reg, const Array<const char*>& types)
     {
-        TEntitySignature group_signature;
+        EntitySignature group_signature;
         group_signature.set(0, true);
         for (const char* type_name : types)
         {
@@ -114,7 +114,7 @@ namespace Nit
         return group_signature;
     }
 
-    EntityGroup& GetEntityGroup(EntityRegistry& reg, TEntitySignature signature)
+    EntityGroup& GetEntityGroup(EntityRegistry& reg, EntitySignature signature)
     {
         return reg.entity_groups[signature];
     }

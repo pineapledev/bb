@@ -11,7 +11,7 @@ namespace Nit
     using ComponentType = u8;
 
     // First bit of the signature would be used to know if the entity is valid or not
-    using TEntitySignature = Bitset<MAX_COMPONENTS_PER_ENTITY + 1>;
+    using EntitySignature = Bitset<MAX_COMPONENTS_PER_ENTITY + 1>;
 
     struct ComponentArray
     {
@@ -70,16 +70,16 @@ namespace Nit
 
     struct EntityGroup
     {
-        TEntitySignature signature;
+        EntitySignature signature;
         Set<Entity> entities;
     };
 
     struct EntityRegistry
     {
         Queue<Entity> available_entities;
-        TEntitySignature  signatures[MAX_ENTITIES];
+        EntitySignature  signatures[MAX_ENTITIES];
         u32 entity_count = 0;
-        Map<TEntitySignature, EntityGroup> entity_groups;
+        Map<EntitySignature, EntityGroup> entity_groups;
         ComponentData component_data[MAX_COMPONENTS_TYPES];
         ComponentType next_component_type = 1;
     };
@@ -131,7 +131,7 @@ namespace Nit
         return *data->array;
     }
 
-    void EntitySignatureChanged(EntityRegistry& reg, Entity entity, TEntitySignature new_entity_signature);
+    void EntitySignatureChanged(EntityRegistry& reg, Entity entity, EntitySignature new_entity_signature);
     
     template<typename T>
     T& AddComponent(EntityRegistry& reg, Entity entity)
@@ -139,7 +139,7 @@ namespace Nit
         NIT_CHECK_MSG(IsEntityValid(reg, entity), "Invalid entity!");
         NIT_CHECK_MSG(reg.signatures[entity].size() <= MAX_COMPONENTS_PER_ENTITY + 1, "Components per entity out of range!");
         T& data = InsertComponentData(GetComponentArray<T>(reg), entity, T());
-        TEntitySignature& signature = reg.signatures[entity]; 
+        EntitySignature& signature = reg.signatures[entity]; 
         signature.set(GetComponentType<T>(reg), true);
         EntitySignatureChanged(reg, entity, signature);
         return data;
@@ -151,7 +151,7 @@ namespace Nit
         NIT_CHECK_MSG(IsEntityValid(reg, entity), "Invalid entity!");
         NIT_CHECK_MSG(entity < MAX_ENTITIES, "Entity out of range!");
         RemoveComponentData<T>(GetComponentArray<T>(reg), entity, T());
-        TEntitySignature& signature = reg.signatures[entity]; 
+        EntitySignature& signature = reg.signatures[entity]; 
         signature.set(GetComponentType<T>(), false);
         EntitySignatureChanged(reg, entity, signature);
     }
@@ -170,25 +170,25 @@ namespace Nit
         return reg.signatures[entity].test(GetComponentType<T>());
     }
 
-    TEntitySignature BuildEntitySignature(EntityRegistry& reg, const Array<const char*>& types);
+    EntitySignature BuildEntitySignature(EntityRegistry& reg, const Array<const char*>& types);
 
     template <typename... T>
-    TEntitySignature BuildEntitySignature(EntityRegistry& reg)
+    EntitySignature BuildEntitySignature(EntityRegistry& reg)
     {
         Array<const char*> type_names = { (typeid(T).name())... };
         return BuildEntitySignature(reg, type_names);
     }
     
-    TEntitySignature CreateEntityGroup(EntityRegistry& reg, const Array<const char*>& types);
+    EntitySignature CreateEntityGroup(EntityRegistry& reg, const Array<const char*>& types);
 
     template <typename... T>
-    TEntitySignature CreateEntityGroup(EntityRegistry& reg)
+    EntitySignature CreateEntityGroup(EntityRegistry& reg)
     {
         Array<const char*> type_names = { (typeid(T).name())... };
         return CreateEntityGroup(reg, type_names);
     }
 
-    EntityGroup& GetEntityGroup(EntityRegistry& reg, TEntitySignature signature);
+    EntityGroup& GetEntityGroup(EntityRegistry& reg, EntitySignature signature);
 
     template <typename... T>
     EntityGroup& GetEntityGroup(EntityRegistry& reg)

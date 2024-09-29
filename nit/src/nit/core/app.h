@@ -51,12 +51,12 @@ namespace Nit
     bool IsEntityValid(Entity entity);
 
     template<typename... T>
-    TEntitySignature CreateEntityGroup()
+    EntitySignature CreateEntityGroup()
     {
         return CreateEntityGroup<T...>(app->entity_registry);
     }
 
-    EntityGroup& GetEntityGroup(TEntitySignature signature);
+    EntityGroup& GetEntityGroup(EntitySignature signature);
 
     template<typename... T>
     EntityGroup& GetEntityGroup()

@@ -149,7 +149,7 @@ namespace Nit
         return IsEntityValid(app->entity_registry, entity);
     }
 
-    EntityGroup& GetEntityGroup(TEntitySignature signature)
+    EntityGroup& GetEntityGroup(EntitySignature signature)
     {
         NIT_CHECK_APP_CREATED
         return GetEntityGroup(app->entity_registry, signature);
