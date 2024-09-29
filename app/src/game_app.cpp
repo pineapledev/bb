@@ -54,6 +54,8 @@ void GameStart()
     TEntity text = CreateEntity();
     AddComponent<Text>(text).text = "UWU";
     GetComponent<Text>(text).tint = V4_COLOR_MAGENTA;
+    GetComponent<Text>(text).font = game_data.font;
+    
     AddComponent<Transform>(text).position = V3_RIGHT * 2.f;
     
     GetCameraTransform().position = V3_FRONT * 3.f;
