@@ -10,13 +10,13 @@
 
 namespace Nit
 {
-    Mesh::Mesh(const TArray<MeshVertex>& vertices, const TArray<u32>& indices, const TArray<MeshTexture>& textures)
+    Mesh::Mesh(const Array<MeshVertex>& vertices, const Array<u32>& indices, const Array<MeshTexture>& textures)
     {
         UploadToGPU(vertices, indices, textures);
     }
 
-    void Mesh::UploadToGPU(const TArray<MeshVertex>& in_vertices, const TArray<u32>& in_indices,
-                           const TArray<MeshTexture>& in_textures)
+    void Mesh::UploadToGPU(const Array<MeshVertex>& in_vertices, const Array<u32>& in_indices,
+                           const Array<MeshTexture>& in_textures)
     {
         vertices = in_vertices;
         indices = in_indices;
@@ -36,7 +36,7 @@ namespace Nit
         vao->SetIndexBuffer(ibo);
     }
 
-    void Mesh::Draw(const TSharedPtr<Material>& material)
+    void Mesh::Draw(const SharedPtr<Material>& material)
     {
         u32 diffuse_nr = 1;
         u32 specular_nr = 1;
@@ -44,8 +44,8 @@ namespace Nit
         for (i32 i = 0; i < textures.size(); i++)
         {
             glActiveTexture(GL_TEXTURE0 + i);
-            TString number;
-            TString name = textures[i].type;
+            String number;
+            String name = textures[i].type;
 
             if (name == "texture_diffuse")
             {
@@ -56,7 +56,7 @@ namespace Nit
                 number = std::to_string(specular_nr++);
             }
 
-            const TString constant_name = TString("material.").append(name).append(number);
+            const String constant_name = String("material.").append(name).append(number);
             material->SetConstantInt(constant_name, i);
             glBindTexture(GL_TEXTURE_2D, textures[i].id);
         }

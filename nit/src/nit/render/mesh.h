@@ -9,7 +9,7 @@ namespace Nit
     
     struct MeshTexture
     {
-        TString type;
+        String type;
         u32 id;
     };
 
@@ -24,17 +24,17 @@ namespace Nit
     struct Mesh
     {
         Mesh() = default;
-        Mesh(const TArray<MeshVertex>& vertices, const TArray<u32>& indices, const TArray<MeshTexture>& textures);
+        Mesh(const Array<MeshVertex>& vertices, const Array<u32>& indices, const Array<MeshTexture>& textures);
 
-        void UploadToGPU(const TArray<MeshVertex>& in_vertices, const TArray<u32>& in_indices, const TArray<MeshTexture>& in_textures);
-        void Draw(const TSharedPtr<Material>& material);
+        void UploadToGPU(const Array<MeshVertex>& in_vertices, const Array<u32>& in_indices, const Array<MeshTexture>& in_textures);
+        void Draw(const SharedPtr<Material>& material);
 
-        TArray<MeshVertex> vertices;
-        TArray<u32> indices;
-        TArray<MeshTexture> textures;
+        Array<MeshVertex> vertices;
+        Array<u32> indices;
+        Array<MeshTexture> textures;
 
-        TSharedPtr<VertexArray> vao;
-        TSharedPtr<VertexBuffer> vbo;
-        TSharedPtr<IndexBuffer> ibo;
+        SharedPtr<VertexArray> vao;
+        SharedPtr<VertexBuffer> vbo;
+        SharedPtr<IndexBuffer> ibo;
     };    
 }

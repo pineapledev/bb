@@ -34,21 +34,21 @@ namespace Nit
     };
     
     void SetAppInstance(App* app_instance);
-    void RunApp(TVoidFunc run_callback = nullptr);
+    void RunApp(VoidFunc run_callback = nullptr);
     void PlayApp();
     void PauseApp();
     void StopApp();
     
     // System shortcuts
     void InitSystemStack();
-    void CreateSystem(const TString& name, u32 priority = 0, ExecutionContext context = ExecutionContext::Runtime, bool start_disabled = false);
-    void SetSystemCallback(TVoidFunc callback, Stage stage, bool try_invoke = false);
+    void CreateSystem(const String& name, u32 priority = 0, ExecutionContext context = ExecutionContext::Runtime, bool start_disabled = false);
+    void SetSystemCallback(VoidFunc callback, Stage stage, bool try_invoke = false);
     void InvokeSystemCallbacks(Stage stage, bool force_enabled = false);
     
     // Entity shortcuts
-    TEntity CreateEntity();
-    void DestroyEntity(TEntity entity);
-    bool IsEntityValid(TEntity entity);
+    Entity CreateEntity();
+    void DestroyEntity(Entity entity);
+    bool IsEntityValid(Entity entity);
 
     template<typename... T>
     TEntitySignature CreateEntityGroup()
@@ -72,28 +72,28 @@ namespace Nit
     }
     
     template<typename T>
-    T& AddComponent(TEntity entity)
+    T& AddComponent(Entity entity)
     {
         NIT_CHECK_APP_CREATED
         return AddComponent<T>(app->entity_registry, entity);
     }
 
     template<typename T>
-    void RemoveComponent(TEntity entity)
+    void RemoveComponent(Entity entity)
     {
         NIT_CHECK_APP_CREATED
         RemoveComponent<T>(app->entity_registry, entity);
     }
 
     template<typename T>
-    T& GetComponent(TEntity entity)
+    T& GetComponent(Entity entity)
     {
         NIT_CHECK_APP_CREATED
         return GetComponent<T>(app->entity_registry, entity);
     }
 
     template<typename T>
-    bool HasComponent(TEntity entity)
+    bool HasComponent(Entity entity)
     {
         NIT_CHECK_APP_CREATED
         return HasComponent<T>(app->entity_registry, entity);

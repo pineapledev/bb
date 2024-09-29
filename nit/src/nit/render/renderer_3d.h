@@ -9,7 +9,7 @@ namespace Nit
     struct Cube
     {
         Transform transform;
-        TSharedPtr<Material> material;
+        SharedPtr<Material> material;
     };
 
     enum LightType : u8
@@ -43,7 +43,7 @@ namespace Nit
     void CreateRenderer3D();
     void BeginScene3D(Camera& camera, const Transform& camera_transform = {{0.f, 0.f, 3.f}});
     void BeginScene3D(const Matrix4& pv_matrix = Matrix4());
-    void DrawCube(const Transform& transform, const TSharedPtr<Material>& material = nullptr);
+    void DrawCube(const Transform& transform, const SharedPtr<Material>& material = nullptr);
     void DrawLightSource(const LightSource& source = {});
     void EndScene3D();
     void DestroyRenderer3D();

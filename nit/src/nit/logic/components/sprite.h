@@ -5,7 +5,7 @@ namespace Nit
 {
     struct Sprite
     {
-        TSharedPtr<Texture2D> texture          = nullptr;
+        SharedPtr<Texture2D> texture          = nullptr;
         Vector4               tint             = V4_ONE;
         Vector2               size             = V2_ONE;
         bool                  flip_x           = false;

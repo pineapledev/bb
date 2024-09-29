@@ -13,9 +13,9 @@
 
 namespace Nit
 {
-    TV4Verts2D vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
-    TV2Verts2D vertex_uvs       = DEFAULT_VERTEX_U_VS_2D;
-    TV4Verts2D vertex_colors    = DEFAULT_VERTEX_COLORS_2D;
+    V4Verts2D vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
+    V2Verts2D vertex_uvs       = DEFAULT_VERTEX_U_VS_2D;
+    V4Verts2D vertex_colors    = DEFAULT_VERTEX_COLORS_2D;
     
     void Start();
     void Draw();
@@ -50,11 +50,11 @@ namespace Nit
             return;
         }
 
-        TEntity main_camera = *camera_group.entities.begin();
+        Entity main_camera = *camera_group.entities.begin();
         
         BeginScene2D(CalculateProjectionViewMatrix(GetComponent<Camera>(main_camera), GetComponent<Transform>(main_camera)));
         {
-            for (TEntity entity : GetEntityGroup<Sprite, Transform>().entities)
+            for (Entity entity : GetEntityGroup<Sprite, Transform>().entities)
             {
                 auto& transform = GetComponent<Transform>(entity);
                 auto& sprite = GetComponent<Sprite>(entity);
@@ -84,7 +84,7 @@ namespace Nit
                 DrawQuad(sprite.texture, vertex_positions, vertex_uvs, vertex_colors);
             }
 
-            for (TEntity entity : GetEntityGroup<Circle, Transform>().entities)
+            for (Entity entity : GetEntityGroup<Circle, Transform>().entities)
             {
                 auto& transform = GetComponent<Transform>(entity);
                 auto& circle = GetComponent<Circle>(entity);
@@ -95,7 +95,7 @@ namespace Nit
                 DrawCircle(vertex_positions, vertex_colors, circle.thickness, circle.fade);
             }
 
-            for (TEntity entity : GetEntityGroup<Line2D, Transform>().entities)
+            for (Entity entity : GetEntityGroup<Line2D, Transform>().entities)
             {
                 auto& transform = GetComponent<Transform>(entity);
                 auto& line = GetComponent<Line2D>(entity);
@@ -106,7 +106,7 @@ namespace Nit
                 DrawLine2D(vertex_positions, vertex_colors);
             }
 
-            for (TEntity entity : GetEntityGroup<Text, Transform>().entities)
+            for (Entity entity : GetEntityGroup<Text, Transform>().entities)
             {
                 auto& transform = GetComponent<Transform>(entity);
                 auto& text = GetComponent<Text>(entity);

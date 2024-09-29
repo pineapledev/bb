@@ -14,7 +14,7 @@ namespace Nit
     
     struct WindowCfg
     {
-        TString     title           = "Window :3";
+        String     title           = "Window :3";
         i32         width           = 1280;
         i32         height          = 720;
         bool        v_sync          = true;
@@ -29,16 +29,16 @@ namespace Nit
     void                CloseWindow();
     void                UpdateWindow();
         
-    void                SetWindowTitle(const TString& new_title);
+    void                SetWindowTitle(const String& new_title);
     void                SetVSync(bool enabled);
     void                SetCursorMode(const CursorMode mode);
 
     bool                WindowShouldClose();
     void                RetrieveWindowSize(i32* width, i32* height);
-    TPair<f32, f32>     GetWindowSize();
+    Pair<f32, f32>     GetWindowSize();
     float               GetWindowAspect();
     void                GetCursorPosition(f64* x, f64* y);
-    TPair<f32, f32>     GetCursorPosition();
+    Pair<f32, f32>     GetCursorPosition();
     i32                 GetMouseButton(i32 button);
     i32                 GetKey(i32 key);
     const char*         GetJoystickName(i32 jid);
@@ -49,7 +49,7 @@ namespace Nit
     struct Window
     {
         GLFWwindow* handler     = nullptr;
-        TString     title;
+        String     title;
         bool        v_sync      = false;
         CursorMode  cursor_mode = CursorMode::Normal;
     };

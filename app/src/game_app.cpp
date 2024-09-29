@@ -4,8 +4,8 @@ using namespace Nit;
 
 struct GameData
 {
-    TSharedPtr<Texture2D> texture;
-    TSharedPtr<Font>      font;
+    SharedPtr<Texture2D> texture;
+    SharedPtr<Font>      font;
 };
 
 Transform& GetCameraTransform()
@@ -19,7 +19,7 @@ Transform& GetCameraTransform()
         return def;
     }
 
-    TEntity main_camera = *camera_group.entities.begin();
+    Entity main_camera = *camera_group.entities.begin();
     auto& camera_transform = GetComponent<Transform>(main_camera);
     return camera_transform;
 }
@@ -31,27 +31,27 @@ void GameStart()
     game_data.texture = CreateSharedPtr<Texture2D>("assets/bola.jpg"); 
     game_data.font    = CreateSharedPtr<Font>("assets/AlbertSans-VariableFont_wght.ttf");
     
-    TEntity camera_entity = CreateEntity();
+    Entity camera_entity = CreateEntity();
     AddComponent<Camera>(camera_entity);
     AddComponent<Transform>(camera_entity);
     
-    TEntity cat_entity = CreateEntity();
+    Entity cat_entity = CreateEntity();
     AddComponent<Sprite>(cat_entity).texture = game_data.texture;
     AddComponent<Transform>(cat_entity).position = V3_RIGHT * 2.f;
     
-    TEntity quad = CreateEntity();
+    Entity quad = CreateEntity();
     AddComponent<Sprite>(quad).tint = V4_COLOR_LIGHT_RED;
     AddComponent<Transform>(quad);
 
-    TEntity circle = CreateEntity();
+    Entity circle = CreateEntity();
     AddComponent<Circle>(circle).tint = V4_COLOR_LIGHT_GREEN;
     AddComponent<Transform>(circle).position = V3_DOWN;
 
-    TEntity line = CreateEntity();
+    Entity line = CreateEntity();
     AddComponent<Line2D>(line).tint = V4_COLOR_CYAN;
     AddComponent<Transform>(line).position = V3_LEFT;
 
-    TEntity text = CreateEntity();
+    Entity text = CreateEntity();
     AddComponent<Text>(text).text = "UWU";
     GetComponent<Text>(text).tint = V4_COLOR_MAGENTA;
     GetComponent<Text>(text).font = game_data.font;

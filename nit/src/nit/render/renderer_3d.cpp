@@ -8,8 +8,8 @@ namespace Nit
 {
     struct GPUCube
     {
-        TSharedPtr<VertexArray> vao = nullptr;
-        TSharedPtr<VertexBuffer> vbo = nullptr;
+        SharedPtr<VertexArray> vao = nullptr;
+        SharedPtr<VertexBuffer> vbo = nullptr;
     };
     
     void CreateGPUCube(GPUCube& cube)
@@ -18,7 +18,7 @@ namespace Nit
 
         static constexpr u32 NUM_OF_VERTICES = 216;
 
-        static TFixedArray<f32, NUM_OF_VERTICES> vertices = {
+        static FixedArray<f32, NUM_OF_VERTICES> vertices = {
             -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
             0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
             0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
@@ -77,7 +77,7 @@ namespace Nit
     {
         Matrix4 projection_view;
         Transform camera_transform;
-        TSharedPtr<Material> default_cube_material = nullptr;
+        SharedPtr<Material> default_cube_material = nullptr;
         LightSource default_ambient_light;
         Cube* cubes = nullptr;
         u32 cube_count = 0;
@@ -94,10 +94,10 @@ namespace Nit
         NIT_CHECK_MSG(!context_3d, "Renderer already created!");
         context_3d = new Renderer3DContext();
 
-        TSharedPtr<Shader> lit_shader = CreateSharedPtr<Shader>();
+        SharedPtr<Shader> lit_shader = CreateSharedPtr<Shader>();
         lit_shader->Compile(lit_vertex_shader_source, lit_fragment_shader_source);
 
-        TSharedPtr<MaterialData> mat_data = CreateSharedPtr<MaterialData>();
+        SharedPtr<MaterialData> mat_data = CreateSharedPtr<MaterialData>();
         mat_data->ambient_strength = 0.5f;
         mat_data->diffuse_strength = 0.5f;
         mat_data->specular_strength = 0.5f;
@@ -122,7 +122,7 @@ namespace Nit
         SetDepthTestEnabled(true);
     }
 
-    void DrawCube(const Transform& transform, const TSharedPtr<Material>& material /*= nullptr*/)
+    void DrawCube(const Transform& transform, const SharedPtr<Material>& material /*= nullptr*/)
     {
         context_3d->cube_count++;
         NIT_CHECK_MSG(context_3d->cube_count < max_cubes, "Cube limit reached!");

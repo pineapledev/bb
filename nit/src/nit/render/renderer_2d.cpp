@@ -12,7 +12,7 @@
 
 namespace Nit
 {
-    i32  AssignTextureSlot(const TSharedPtr<Texture2D>& texture);
+    i32  AssignTextureSlot(const SharedPtr<Texture2D>& texture);
     void TryUseDefaultMaterial(Shape shape);
     void SetCurrentShape(Shape shape_to_draw);
 
@@ -265,7 +265,7 @@ namespace Nit
         StartBatch();
     }
 
-    void PushMaterial2D(const TSharedPtr<Material>& material)
+    void PushMaterial2D(const SharedPtr<Material>& material)
     {
         NIT_CHECK_RENDERER_2D_CREATED
         NIT_CHECK(material);
@@ -278,7 +278,7 @@ namespace Nit
         renderer_2d->custom_material = nullptr;
     }
 
-    i32 AssignTextureSlot(const TSharedPtr<Texture2D>& texture)
+    i32 AssignTextureSlot(const SharedPtr<Texture2D>& texture)
     {
         NIT_CHECK_RENDERER_2D_CREATED
         i32 texture_slot = 0;
@@ -354,10 +354,10 @@ namespace Nit
     }
 
     void DrawQuad(
-          const TSharedPtr<Texture2D>& texture_2d
-        , const TV4Verts2D&            vertex_positions
-        , const TV2Verts2D&            vertex_uvs      
-        , const TV4Verts2D&            vertex_colors
+          const SharedPtr<Texture2D>& texture_2d
+        , const V4Verts2D&            vertex_positions
+        , const V2Verts2D&            vertex_uvs      
+        , const V4Verts2D&            vertex_colors
     )
     {
         NIT_CHECK_RENDERER_2D_CREATED
@@ -387,10 +387,10 @@ namespace Nit
     }
 
     void DrawCircle(
-          const TV4Verts2D& vertex_positions
-        , const TV4Verts2D& vertex_colors          
-        , f32               thickness              
-        , f32               fade                   
+          const V4Verts2D& vertex_positions
+        , const V4Verts2D& vertex_colors          
+        , f32              thickness              
+        , f32              fade                   
     )
     {
         NIT_CHECK_RENDERER_2D_CREATED
@@ -419,8 +419,8 @@ namespace Nit
     }
 
     void DrawLine2D(
-          const TV4Verts2D& vertex_positions
-        , const TV4Verts2D& vertex_colors
+          const V4Verts2D& vertex_positions
+        , const V4Verts2D& vertex_colors
     )
     {
         NIT_CHECK_RENDERER_2D_CREATED
@@ -446,10 +446,10 @@ namespace Nit
     }
 
     void DrawChar(
-          const TSharedPtr<Font>& font
-        , const TV4Verts2D& vertex_positions
-        , const TV2Verts2D& vertex_uvs
-        , const TV4Verts2D& vertex_colors
+          const SharedPtr<Font>& font
+        , const V4Verts2D& vertex_positions
+        , const V2Verts2D& vertex_uvs
+        , const V4Verts2D& vertex_colors
     )
     {
         NIT_CHECK_RENDERER_2D_CREATED
@@ -480,8 +480,8 @@ namespace Nit
     }
 
     void DrawText(
-          const TSharedPtr<Font>& font
-        , const TString&          text
+          const SharedPtr<Font>& font
+        , const String&          text
         , const Matrix4&          transform
         , const Vector4&          tint
         , f32                     spacing
@@ -497,9 +497,9 @@ namespace Nit
         
         for (const char c : text)
         {
-            static TV4Verts2D vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
-            static TV2Verts2D vertex_uvs       = DEFAULT_VERTEX_U_VS_2D;
-            static TV4Verts2D vertex_colors    = DEFAULT_VERTEX_COLORS_2D;
+            static V4Verts2D vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
+            static V2Verts2D vertex_uvs       = DEFAULT_VERTEX_U_VS_2D;
+            static V4Verts2D vertex_colors    = DEFAULT_VERTEX_COLORS_2D;
             
             FillCharVertexData(
                  transform

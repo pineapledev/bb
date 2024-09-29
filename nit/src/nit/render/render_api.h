@@ -29,7 +29,7 @@ namespace Nit
     void  ClearScreen();
     void  SetBlendingEnabled(bool enabled);
     void  SetBlendingMode(BlendingMode blending_mode);
-    void  DrawElements(const TSharedPtr<VertexArray>& vao, u32 element_count);
-    void  DrawArrays(const TSharedPtr<VertexArray>& vao, u32 element_count);
+    void  DrawElements(const SharedPtr<VertexArray>& vao, u32 element_count);
+    void  DrawArrays(const SharedPtr<VertexArray>& vao, u32 element_count);
     void  SetDepthTestEnabled(bool enabled);
 }

@@ -114,7 +114,7 @@ namespace Nit
 #endif
     }
 
-    void VertexArray::AddVertexBuffer(const TSharedPtr<VertexBuffer>& vertex_buffer)
+    void VertexArray::AddVertexBuffer(const SharedPtr<VertexBuffer>& vertex_buffer)
     {
 #ifdef NIT_GRAPHICS_API_OPENGL
         NIT_CHECK_MSG(!vertex_buffer->layout.elements.empty(), "Vertex buffer has no layout!");
@@ -140,7 +140,7 @@ namespace Nit
 #endif
     }
 
-    void VertexArray::SetIndexBuffer(const TSharedPtr<IndexBuffer>& in_index_buffer)
+    void VertexArray::SetIndexBuffer(const SharedPtr<IndexBuffer>& in_index_buffer)
     {
 #ifdef NIT_GRAPHICS_API_OPENGL
         glBindVertexArray(id);

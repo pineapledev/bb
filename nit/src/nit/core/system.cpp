@@ -2,7 +2,7 @@
 
 namespace Nit
 {
-    TPair<bool, u32> FindSystemByName(System* systems, u32 count, const TString& name)
+    Pair<bool, u32> FindSystemByName(System* systems, u32 count, const String& name)
     {
         NIT_CHECK(systems);
         NIT_CHECK_MSG(!name.empty(), "System name invalid!");
@@ -18,7 +18,7 @@ namespace Nit
         return {false, 0};
     }
     
-    void CreateSystem(System* systems, u32& next, const TString& name, u32 priority, ExecutionContext context, bool start_disabled)
+    void CreateSystem(System* systems, u32& next, const String& name, u32 priority, ExecutionContext context, bool start_disabled)
     {
 #ifdef NIT_ENABLE_CHECKS
         NIT_CHECK(systems);
@@ -33,7 +33,7 @@ namespace Nit
         ++next;
     }
 
-    void SetSystemCallback(System& system, TVoidFunc callback, Stage stage, bool try_invoke)
+    void SetSystemCallback(System& system, VoidFunc callback, Stage stage, bool try_invoke)
     {
         system.callbacks[(u32) stage] = callback;
         

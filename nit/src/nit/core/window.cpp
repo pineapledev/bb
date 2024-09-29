@@ -86,7 +86,7 @@ namespace Nit
         glfwSwapBuffers(window->handler);
     }
 
-    void SetWindowTitle(const TString& new_title)
+    void SetWindowTitle(const String& new_title)
     {
         NIT_CHECK_WINDOW_INITIALIZED
         window->title = new_title;

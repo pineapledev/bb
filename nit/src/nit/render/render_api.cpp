@@ -184,7 +184,7 @@ namespace Nit
         }
     }
 
-    void DrawElements(const TSharedPtr<VertexArray>& vao, u32 element_count)
+    void DrawElements(const SharedPtr<VertexArray>& vao, u32 element_count)
     {
         vao->Bind();
 #ifdef NIT_GRAPHICS_API_OPENGL
@@ -193,7 +193,7 @@ namespace Nit
         vao->Unbind();
     }
 
-    void DrawArrays(const TSharedPtr<VertexArray>& vao, u32 element_count)
+    void DrawArrays(const SharedPtr<VertexArray>& vao, u32 element_count)
     {
         vao->Bind();
 #ifdef NIT_GRAPHICS_API_OPENGL

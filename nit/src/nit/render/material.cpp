@@ -4,8 +4,8 @@
 
 namespace Nit
 {
-    Material::Material(const TSharedPtr<Shader>& shader, const TSharedPtr<MaterialData>& mat_data,
-                       const TSharedPtr<Texture2D>& texture)
+    Material::Material(const SharedPtr<Shader>& shader, const SharedPtr<MaterialData>& mat_data,
+                       const SharedPtr<Texture2D>& texture)
         : shader(shader)
           , texture(texture)
           , material_data(mat_data)
@@ -21,26 +21,26 @@ namespace Nit
             material_data = CreateSharedPtr<MaterialData>();
         }
 
-        TArray<TUniquePtr<Constant>> shader_constants;
+        Array<UniquePtr<Constant>> shader_constants;
         shader->GetConstantCollection(shader_constants);
         const size_t num_of_constants = shader_constants.size();
         used_constants.reserve(num_of_constants);
 
         for (size_t i = 0; i < num_of_constants; ++i)
         {
-            const TString constant_name = shader_constants[i]->name;
+            const String constant_name = shader_constants[i]->name;
             constants[constant_name] = std::move(shader_constants[i]);
         }
     }
 
-    f32 Material::GetConstantFloat(const TString& name)
+    f32 Material::GetConstantFloat(const String& name)
     {
         const Constant* constant = GetConstant(name);
         if (!constant) { return 0; }
         return *constant->float_data;
     }
 
-    Vector3 Material::GetConstantVec3(const TString& name)
+    Vector3 Material::GetConstantVec3(const String& name)
     {
         const Constant* constant = GetConstant(name);
         if (!constant) { return V3_ZERO; }
@@ -48,7 +48,7 @@ namespace Nit
         return {float_data[0], float_data[1], float_data[2]};
     }
 
-    void Material::SetConstantFloat(const TString& name, f32 value)
+    void Material::SetConstantFloat(const String& name, f32 value)
     {
         Constant* constant = GetConstant(name);
         if (!constant) { return; }
@@ -56,7 +56,7 @@ namespace Nit
         used_constants[name] = constant;
     }
 
-    void Material::SetConstantVec2(const TString& name, const Vector2& value)
+    void Material::SetConstantVec2(const String& name, const Vector2& value)
     {
         Constant* constant = GetConstant(name);
         if (!constant) { return; }
@@ -66,7 +66,7 @@ namespace Nit
         used_constants[name] = constant;
     }
 
-    void Material::SetConstantVec3(const TString& name, const Vector3& value)
+    void Material::SetConstantVec3(const String& name, const Vector3& value)
     {
         Constant* constant = GetConstant(name);
         if (!constant) { return; }
@@ -77,7 +77,7 @@ namespace Nit
         used_constants[name] = constant;
     }
 
-    void Material::SetConstantVec4(const TString& name, const Vector4& value)
+    void Material::SetConstantVec4(const String& name, const Vector4& value)
     {
         Constant* constant = GetConstant(name);
         if (!constant) { return; }
@@ -89,7 +89,7 @@ namespace Nit
         used_constants[name] = constant;
     }
 
-    void Material::SetConstantMat4(const TString& name, const Matrix4& value)
+    void Material::SetConstantMat4(const String& name, const Matrix4& value)
     {
         Constant* constant = GetConstant(name);
         if (!constant) { return; }
@@ -104,7 +104,7 @@ namespace Nit
         used_constants[name] = constant;
     }
 
-    void Material::SetConstantInt(const TString& name, i32 value)
+    void Material::SetConstantInt(const String& name, i32 value)
     {
         Constant* constant = GetConstant(name);
         if (!constant) { return; }
@@ -112,7 +112,7 @@ namespace Nit
         used_constants[name] = constant;
     }
 
-    void Material::SetConstantSampler2D(const TString& name, const i32* value, i32 size)
+    void Material::SetConstantSampler2D(const String& name, const i32* value, i32 size)
     {
         Constant* constant = GetConstant(name);
         if (!constant) { return; }
@@ -180,7 +180,7 @@ namespace Nit
         used_constants.clear();
     }
 
-    Constant* Material::GetConstant(const TString& name)
+    Constant* Material::GetConstant(const String& name)
     {
         if (constants.contains(name))
         {

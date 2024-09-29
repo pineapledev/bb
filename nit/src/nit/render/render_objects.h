@@ -6,14 +6,14 @@ namespace Nit
     struct BufferElement
     {
         ShaderDataType type = ShaderDataType::None;
-        TString name;
+        String name;
         bool normalized = false;
         u32 size = 0;
         u32 offset = 0;
 
         BufferElement() = default;
         
-        BufferElement(const ShaderDataType type, const TString& name, const bool normalized = false)
+        BufferElement(const ShaderDataType type, const String& name, const bool normalized = false)
             : type(type)
               , name(name)
               , normalized(normalized)
@@ -41,13 +41,13 @@ namespace Nit
             }
         }
 
-        TArray<BufferElement>::iterator begin() { return elements.begin(); }
-        TArray<BufferElement>::iterator end() { return elements.end(); }
-        TArray<BufferElement>::const_iterator begin() const { return elements.begin(); }
-        TArray<BufferElement>::const_iterator end() const { return elements.end(); }
+        Array<BufferElement>::iterator begin() { return elements.begin(); }
+        Array<BufferElement>::iterator end() { return elements.end(); }
+        Array<BufferElement>::const_iterator begin() const { return elements.begin(); }
+        Array<BufferElement>::const_iterator end() const { return elements.end(); }
         
         u32 stride = 0;
-        TArray<BufferElement> elements;
+        Array<BufferElement> elements;
     };
 
     struct VertexBuffer
@@ -84,11 +84,11 @@ namespace Nit
         void Bind() const;
         void Unbind() const;
 
-        void AddVertexBuffer(const TSharedPtr<VertexBuffer>& vertex_buffer);
-        void SetIndexBuffer(const TSharedPtr<IndexBuffer>& in_index_buffer);
+        void AddVertexBuffer(const SharedPtr<VertexBuffer>& vertex_buffer);
+        void SetIndexBuffer(const SharedPtr<IndexBuffer>& in_index_buffer);
 
         u32 id;
-        TArray<TSharedPtr<VertexBuffer>> vertex_buffers;
-        TSharedPtr<IndexBuffer> index_buffer;
+        Array<SharedPtr<VertexBuffer>> vertex_buffers;
+        SharedPtr<IndexBuffer> index_buffer;
     };
 }

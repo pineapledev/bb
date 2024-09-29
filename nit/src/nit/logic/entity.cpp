@@ -35,17 +35,17 @@ namespace Nit
         }
     }
 
-    TEntity CreateEntity(EntityRegistry& reg)
+    Entity CreateEntity(EntityRegistry& reg)
     {
         NIT_CHECK_MSG(reg.entity_count < MAX_ENTITIES, "Entity limit reached!");
-        TEntity entity = reg.available_entities.front();
+        Entity entity = reg.available_entities.front();
         reg.available_entities.pop();
         ++reg.entity_count;
         reg.signatures[entity].set(0, true);
         return entity;
     }
 
-    void DestroyEntity(EntityRegistry& reg, TEntity entity)
+    void DestroyEntity(EntityRegistry& reg, Entity entity)
     {
         NIT_CHECK_MSG(IsEntityValid(reg, entity), "Entity is not valid!");
         reg.signatures[entity].reset();
@@ -66,12 +66,12 @@ namespace Nit
         }
     }
 
-    bool IsEntityValid(const EntityRegistry& reg, TEntity entity)
+    bool IsEntityValid(const EntityRegistry& reg, Entity entity)
     {
         return entity < MAX_ENTITIES && reg.signatures[entity].test(0);
     }
 
-    void EntitySignatureChanged(EntityRegistry& reg, TEntity entity, TEntitySignature new_entity_signature)
+    void EntitySignatureChanged(EntityRegistry& reg, Entity entity, TEntitySignature new_entity_signature)
     {
         for (auto& [signature, group] : reg.entity_groups)
         {
@@ -85,7 +85,7 @@ namespace Nit
         }
     }
 
-    TEntitySignature CreateEntityGroup(EntityRegistry& reg, const TArray<const char*>& types)
+    TEntitySignature CreateEntityGroup(EntityRegistry& reg, const Array<const char*>& types)
     {
         NIT_CHECK_MSG(!reg.entity_count, "Create the group before any entity gets created!");
         TEntitySignature group_signature = BuildEntitySignature(reg, types);
@@ -100,7 +100,7 @@ namespace Nit
         return group_signature;
     }
 
-    TEntitySignature BuildEntitySignature(EntityRegistry& reg, const TArray<const char*>& types)
+    TEntitySignature BuildEntitySignature(EntityRegistry& reg, const Array<const char*>& types)
     {
         TEntitySignature group_signature;
         group_signature.set(0, true);

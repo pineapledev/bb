@@ -88,68 +88,68 @@ namespace Nit
     inline constexpr u32 U32_MAX = std::numeric_limits<u32>::max();
     inline constexpr f32 F32_EPSILON = std::numeric_limits<f32>::epsilon();
     
-    using TVoidFunc = void(*)();
+    using VoidFunc = void(*)();
 
     template<typename T>
-    using TFunction = std::function<T>;
+    using Function = std::function<T>;
     
     template<typename T, size_t N>
-    using TFixedArray = std::array<T, N>;
+    using FixedArray = std::array<T, N>;
 
     template<typename T>
-    using TArray = std::vector<T>;
+    using Array = std::vector<T>;
 
     template<typename T>
-    using TUnorderedSet = std::unordered_set<T>;
+    using UnorderedSet = std::unordered_set<T>;
 
     template<typename K, typename V>
-    using TOrderedMap = std::map<K, V>;
+    using OrderedMap = std::map<K, V>;
 
     template<typename K, typename V>
-    using TMap = std::unordered_map<K, V>;
+    using Map = std::unordered_map<K, V>;
 
     template<typename T>
-    using TQueue = std::queue<T>;
+    using Queue = std::queue<T>;
 
     template<typename T>
-    using TSet = std::set<T>;
+    using Set = std::set<T>;
     
     template<typename K, typename V>
-    using TPair = std::pair<K, V>;
+    using Pair = std::pair<K, V>;
 
     template<std::size_t N>
-    using TBitset = std::bitset<N>;
+    using Bitset = std::bitset<N>;
 
-    using TString = std::string;
+    using String = std::string;
 
-    using TStringStream = std::stringstream;
+    using StringStream = std::stringstream;
 
-    using TIStringStream = std::istringstream;
+    using IStringStream = std::istringstream;
 
-    using TOutputFile = std::ofstream;
+    using OutputFile = std::ofstream;
 
-    using TInputFile = std::ifstream;
+    using InputFile = std::ifstream;
 
     template<typename T>
-    using TUniquePtr = std::unique_ptr<T>;
+    using UniquePtr = std::unique_ptr<T>;
 
     template<typename T, typename ... Args>
-    constexpr TUniquePtr<T> CreateUniquePtr(Args&& ... args)
+    constexpr UniquePtr<T> CreateUniquePtr(Args&& ... args)
     {
         return std::make_unique<T>(std::forward<Args>(args)...);
     }
 
     template<typename T>
-    using TSharedPtr = std::shared_ptr<T>;
+    using SharedPtr = std::shared_ptr<T>;
 
     template<typename T, typename ... Args>
-    constexpr TSharedPtr<T> CreateSharedPtr(Args&& ... args)
+    constexpr SharedPtr<T> CreateSharedPtr(Args&& ... args)
     {
         return std::make_shared<T>(std::forward<Args>(args)...);
     }
 
     template<typename T>
-    using TWeakPtr = std::weak_ptr<T>;
+    using WeakPtr = std::weak_ptr<T>;
 
     template <class OutIt, class Diff, class T>
     OutIt FillRaw(OutIt destination, const Diff count, const T& value) { return std::fill_n(destination, count, value); }

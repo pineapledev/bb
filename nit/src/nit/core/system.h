@@ -24,11 +24,11 @@ namespace Nit
 
     struct System
     {
-        TString          name;
+        String          name;
         u32              priority          = 0;
         ExecutionContext context           = ExecutionContext::Runtime;
         bool             enabled           = false;
-        TVoidFunc        callbacks[(u8) Stage::Count];
+        VoidFunc        callbacks[(u8) Stage::Count];
     };
     
     struct SystemStack
@@ -37,9 +37,9 @@ namespace Nit
         System  systems[MAX_SYSTEMS];
     };
     
-    TPair<bool, u32> FindSystemByName(const TString& name);
-    void CreateSystem(System* systems, u32& next, const TString& name, u32 priority = 0, ExecutionContext context = ExecutionContext::Runtime, bool start_disabled = false);
-    void SetSystemCallback(System& system, TVoidFunc callback, Stage stage, bool try_invoke = false);
+    Pair<bool, u32> FindSystemByName(const String& name);
+    void CreateSystem(System* systems, u32& next, const String& name, u32 priority = 0, ExecutionContext context = ExecutionContext::Runtime, bool start_disabled = false);
+    void SetSystemCallback(System& system, VoidFunc callback, Stage stage, bool try_invoke = false);
     void TryInvokeSystem(const System& system, Stage stage, bool force_enabled = false);
     void InvokeSystemCallbacks(System* systems, u32 count, bool pause_mode, Stage stage, bool force_enabled = false);
 }

@@ -6,7 +6,7 @@
 
 namespace Nit
 {
-    Constant::Constant(const TString& name, ShaderDataType type, i32 size)
+    Constant::Constant(const String& name, ShaderDataType type, i32 size)
         : data(CreateFromShaderDataType(type))
           , name(name)
           , type(type)
@@ -102,7 +102,7 @@ namespace Nit
             glGetShaderiv(vertex_shader, GL_INFO_LOG_LENGTH, &max_length);
 
             // The maxLength includes the NULL character
-            TArray<GLchar> info_log(max_length);
+            Array<GLchar> info_log(max_length);
             glGetShaderInfoLog(vertex_shader, max_length, &max_length, info_log.data());
 
             NIT_LOG_ERR("Error compiling the vertex shader: %s", info_log.data());
@@ -131,7 +131,7 @@ namespace Nit
             glGetShaderiv(fragment_shader, GL_INFO_LOG_LENGTH, &max_length);
 
             // The maxLength includes the NULL character
-            TArray<GLchar> info_log(max_length);
+            Array<GLchar> info_log(max_length);
             glGetShaderInfoLog(fragment_shader, max_length, &max_length, info_log.data());
             NIT_LOG_ERR("Error compiling the fragment shader: %s", info_log.data());
 
@@ -164,7 +164,7 @@ namespace Nit
             glGetProgramiv(id, GL_INFO_LOG_LENGTH, &max_length);
 
             // The maxLength includes the NULL character
-            TArray<GLchar> info_log(max_length);
+            Array<GLchar> info_log(max_length);
             glGetProgramInfoLog(id, max_length, &max_length, info_log.data());
             NIT_LOG_ERR("Error linking the shaders: %s", info_log.data());
 
@@ -185,7 +185,7 @@ namespace Nit
 #endif
     }
 
-    void Shader::GetConstantCollection(TArray<TUniquePtr<Constant>>& constants) const
+    void Shader::GetConstantCollection(Array<UniquePtr<Constant>>& constants) const
     {
 #ifdef NIT_GRAPHICS_API_OPENGL
         i32 uniform_count;

@@ -5,7 +5,7 @@ namespace Nit
 {
     struct Constant
     {
-        Constant(const TString& name, ShaderDataType type, i32 size);
+        Constant(const String& name, ShaderDataType type, i32 size);
         Constant(Constant&& other) noexcept;
         Constant& operator=(Constant&& other) noexcept;
 
@@ -18,7 +18,7 @@ namespace Nit
             void* data      = nullptr;
         };
 
-        TString name;
+        String name;
         ShaderDataType type;
         i32 size;
     };
@@ -30,7 +30,7 @@ namespace Nit
 
         void Compile(const char* vertex_source, const char* fragment_source);
 
-        void GetConstantCollection(TArray<TUniquePtr<Constant>>& constants) const;
+        void GetConstantCollection(Array<UniquePtr<Constant>>& constants) const;
 
         void SetConstantFloat(const char* name, f32 value) const;
         void SetConstantVec2(const char* name, const f32* value) const;

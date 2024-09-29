@@ -8,7 +8,7 @@ namespace Nit
         app = app_instance;
     }
     
-    void RunApp(TVoidFunc run_callback)
+    void RunApp(VoidFunc run_callback)
     {
         NIT_CHECK_APP_CREATED
         NIT_LOG_TRACE("Creating application...");
@@ -108,14 +108,14 @@ namespace Nit
         app->system_stack = SystemStack();
     }
 
-    void CreateSystem(const TString& name, u32 priority, ExecutionContext context, bool start_disabled)
+    void CreateSystem(const String& name, u32 priority, ExecutionContext context, bool start_disabled)
     {
         NIT_CHECK_APP_CREATED
         SystemStack& stack = app->system_stack;
         CreateSystem(stack.systems, stack.next_system, name, priority, context, start_disabled);
     }
     
-    void SetSystemCallback(TVoidFunc callback, Stage stage, bool try_invoke)
+    void SetSystemCallback(VoidFunc callback, Stage stage, bool try_invoke)
     {
         NIT_CHECK_APP_CREATED
         SystemStack& stack = app->system_stack;
@@ -131,19 +131,19 @@ namespace Nit
 
     // Entity shortcuts
     
-    TEntity CreateEntity()
+    Entity CreateEntity()
     {
         NIT_CHECK_APP_CREATED
         return CreateEntity(app->entity_registry);
     }
 
-    void DestroyEntity(TEntity entity)
+    void DestroyEntity(Entity entity)
     {
         NIT_CHECK_APP_CREATED
         DestroyEntity(app->entity_registry, entity);
     }
 
-    bool IsEntityValid(TEntity entity)
+    bool IsEntityValid(Entity entity)
     {
         NIT_CHECK_APP_CREATED
         return IsEntityValid(app->entity_registry, entity);

@@ -7,23 +7,23 @@ namespace Nit
     inline constexpr u32 MAX_COMPONENTS_TYPES = 100;
     inline constexpr u32 INVALID_INDEX = U32_MAX;
     
-    using TEntity        = u32;
-    using TComponentType = u8;
+    using Entity        = u32;
+    using ComponentType = u8;
 
     // First bit of the signature would be used to know if the entity is valid or not
-    using TEntitySignature = TBitset<MAX_COMPONENTS_PER_ENTITY + 1>;
+    using TEntitySignature = Bitset<MAX_COMPONENTS_PER_ENTITY + 1>;
 
     struct ComponentArray
     {
         void*   components = nullptr;
         u32     entity_to_index[MAX_ENTITIES];
-        TEntity index_to_entity[MAX_ENTITIES];
+        Entity index_to_entity[MAX_ENTITIES];
         u32     living_count = 0;
-        TFunction<void(ComponentArray&, TEntity)> remove_component_func;
+        Function<void(ComponentArray&, Entity)> remove_component_func;
     };
     
     template<typename T>
-    T& InsertComponentData(ComponentArray& array, TEntity entity, const T& component)
+    T& InsertComponentData(ComponentArray& array, Entity entity, const T& component)
     {
         u32 living_count = array.living_count;
         NIT_CHECK_MSG(living_count < MAX_ENTITIES, "Component array out of bounds");
@@ -40,7 +40,7 @@ namespace Nit
     }
 
     template<typename T>
-    void RemoveComponentData(ComponentArray& array, TEntity entity)
+    void RemoveComponentData(ComponentArray& array, Entity entity)
     {
         NIT_CHECK_MSG(array.entity_to_index[entity] != INVALID_INDEX, "Removing non-existent component");
         u32 remove_index = array.entity_to_index[entity];
@@ -54,7 +54,7 @@ namespace Nit
     }
 
     template<typename T>
-    T& GetComponentData(ComponentArray& array, TEntity entity)
+    T& GetComponentData(ComponentArray& array, Entity entity)
     {
         NIT_CHECK_MSG(array.entity_to_index[entity] != INVALID_INDEX, "Retrieving non-existent component");
         T* components = static_cast<T*>(array.components);
@@ -64,24 +64,24 @@ namespace Nit
     struct ComponentData
     {
         const char*     name  = "";
-        TComponentType  type  = 0;
+        ComponentType  type  = 0;
         ComponentArray* array;
     };
 
     struct EntityGroup
     {
         TEntitySignature signature;
-        TSet<TEntity> entities;
+        Set<Entity> entities;
     };
 
     struct EntityRegistry
     {
-        TQueue<TEntity> available_entities;
+        Queue<Entity> available_entities;
         TEntitySignature  signatures[MAX_ENTITIES];
         u32 entity_count = 0;
-        TMap<TEntitySignature, EntityGroup> entity_groups;
+        Map<TEntitySignature, EntityGroup> entity_groups;
         ComponentData component_data[MAX_COMPONENTS_TYPES];
-        TComponentType next_component_type = 1;
+        ComponentType next_component_type = 1;
     };
     
     ComponentData* FindComponentDataByName(EntityRegistry& reg, const char* name);
@@ -103,7 +103,7 @@ namespace Nit
     }
 
     template<typename T>
-    TComponentType GetComponentType(EntityRegistry& reg)
+    ComponentType GetComponentType(EntityRegistry& reg)
     {
         ComponentData* data = GetComponentData<T>(reg);
         NIT_CHECK_MSG(data, "Component type is not registered!");
@@ -112,9 +112,9 @@ namespace Nit
     
     void InitEntityRegistry(EntityRegistry& reg);
     void FinishEntityRegistry(EntityRegistry& reg);
-    TEntity CreateEntity(EntityRegistry& reg);
-    void DestroyEntity(EntityRegistry& reg, TEntity entity);
-    bool IsEntityValid(const EntityRegistry& reg, TEntity entity);
+    Entity CreateEntity(EntityRegistry& reg);
+    void DestroyEntity(EntityRegistry& reg, Entity entity);
+    bool IsEntityValid(const EntityRegistry& reg, Entity entity);
 
     template<typename T>
     ComponentData* GetComponentData(EntityRegistry& reg)
@@ -131,10 +131,10 @@ namespace Nit
         return *data->array;
     }
 
-    void EntitySignatureChanged(EntityRegistry& reg, TEntity entity, TEntitySignature new_entity_signature);
+    void EntitySignatureChanged(EntityRegistry& reg, Entity entity, TEntitySignature new_entity_signature);
     
     template<typename T>
-    T& AddComponent(EntityRegistry& reg, TEntity entity)
+    T& AddComponent(EntityRegistry& reg, Entity entity)
     {
         NIT_CHECK_MSG(IsEntityValid(reg, entity), "Invalid entity!");
         NIT_CHECK_MSG(reg.signatures[entity].size() <= MAX_COMPONENTS_PER_ENTITY + 1, "Components per entity out of range!");
@@ -146,7 +146,7 @@ namespace Nit
     }
 
     template<typename T>
-    void RemoveComponent(EntityRegistry& reg, TEntity entity)
+    void RemoveComponent(EntityRegistry& reg, Entity entity)
     {
         NIT_CHECK_MSG(IsEntityValid(reg, entity), "Invalid entity!");
         NIT_CHECK_MSG(entity < MAX_ENTITIES, "Entity out of range!");
@@ -157,34 +157,34 @@ namespace Nit
     }
 
     template<typename T>
-    T& GetComponent(EntityRegistry& reg, TEntity entity)
+    T& GetComponent(EntityRegistry& reg, Entity entity)
     {
         NIT_CHECK_MSG(IsEntityValid(reg, entity), "Invalid entity!");
         return GetComponentData<T>(GetComponentArray<T>(reg), entity);
     }
 
     template<typename T>
-    bool HasComponent(EntityRegistry& reg, TEntity entity)
+    bool HasComponent(EntityRegistry& reg, Entity entity)
     {
         NIT_CHECK_MSG(IsEntityValid(reg, entity), "Invalid entity!");
         return reg.signatures[entity].test(GetComponentType<T>());
     }
 
-    TEntitySignature BuildEntitySignature(EntityRegistry& reg, const TArray<const char*>& types);
+    TEntitySignature BuildEntitySignature(EntityRegistry& reg, const Array<const char*>& types);
 
     template <typename... T>
     TEntitySignature BuildEntitySignature(EntityRegistry& reg)
     {
-        TArray<const char*> type_names = { (typeid(T).name())... };
+        Array<const char*> type_names = { (typeid(T).name())... };
         return BuildEntitySignature(reg, type_names);
     }
     
-    TEntitySignature CreateEntityGroup(EntityRegistry& reg, const TArray<const char*>& types);
+    TEntitySignature CreateEntityGroup(EntityRegistry& reg, const Array<const char*>& types);
 
     template <typename... T>
     TEntitySignature CreateEntityGroup(EntityRegistry& reg)
     {
-        TArray<const char*> type_names = { (typeid(T).name())... };
+        Array<const char*> type_names = { (typeid(T).name())... };
         return CreateEntityGroup(reg, type_names);
     }
 
@@ -193,7 +193,7 @@ namespace Nit
     template <typename... T>
     EntityGroup& GetEntityGroup(EntityRegistry& reg)
     {
-        TArray<const char*> type_names = { (typeid(T).name())... };
+        Array<const char*> type_names = { (typeid(T).name())... };
         return GetEntityGroup(reg, BuildEntitySignature(reg, type_names));
     }
 }
