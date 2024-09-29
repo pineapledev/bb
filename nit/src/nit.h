@@ -11,6 +11,9 @@
 
 #include "nit/logic/entity.h"
 #include "nit/logic/systems.h"
-#include "nit/logic/components/Transform.h"
-#include "nit/logic/components/Camera.h"
-#include "nit/logic/components/Sprite.h"
+#include "nit/logic/components/transform.h"
+#include "nit/logic/components/camera.h"
+#include "nit/logic/components/sprite.h"
+#include "nit/logic/components/circle.h"
+#include "nit/logic/components/line_2d.h"
+#include "nit/logic/components/text.h"

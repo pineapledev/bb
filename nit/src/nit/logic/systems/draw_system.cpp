@@ -1,14 +1,22 @@
-﻿#include "nit/render/renderer_2d.h"
+﻿#include "logic/components/line_2d.h"
+#include "logic/components/text.h"
+#include "nit/render/renderer_2d.h"
+#include "nit/render/primitives_2d.h"
 #include "nit/render/render_api.h"
 #include "nit/core/system.h"
 #include "nit/core/app.h"
 #include "nit/logic/entity.h"
-#include "nit/logic/components/Transform.h"
-#include "nit/logic/components/Camera.h"
-#include "nit/logic/components/Sprite.h"
+#include "nit/logic/components/transform.h"
+#include "nit/logic/components/camera.h"
+#include "nit/logic/components/sprite.h"
+#include "nit/logic/components/circle.h"
 
 namespace Nit
 {
+    TV4Verts2D vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
+    TV2Verts2D vertex_uvs       = DEFAULT_VERTEX_U_VS_2D;
+    TV4Verts2D vertex_colors    = DEFAULT_VERTEX_COLORS_2D;
+    
     void Start();
     void Draw();
     
@@ -20,9 +28,15 @@ namespace Nit
         RegisterComponentType<Transform>();
         RegisterComponentType<Camera>();
         RegisterComponentType<Sprite>();
+        RegisterComponentType<Circle>();
+        RegisterComponentType<Line2D>();
+        RegisterComponentType<Text>();
         
         CreateEntityGroup<Sprite, Transform>();
         CreateEntityGroup<Camera, Transform>();
+        CreateEntityGroup<Circle, Transform>();
+        CreateEntityGroup<Line2D, Transform>();
+        CreateEntityGroup<Text, Transform>();
     }
 
     void Draw()
@@ -48,26 +62,63 @@ namespace Nit
                 if (sprite.texture)
                 {
                     FillQuadVertexPositions(
-                          sprite.vertex_data.vertex_positions
+                          vertex_positions
                         , sprite.texture, sprite.tiling_factor
                         , sprite.keep_aspect);
                 
                     FillQuadVertexUVs(
-                          sprite.vertex_data.vertex_uvs
+                          vertex_uvs
                         , sprite.flip_x
                         , sprite.flip_y
                         , sprite.tiling_factor);
                     
-                    TransformVertexPositions(sprite.vertex_data.vertex_positions, ToMatrix4(transform));
+                    TransformVertexPositions(vertex_positions, ToMatrix4(transform));
                 }
                 else
                 {
-                    sprite.vertex_data.vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
-                    TransformVertexPositions(sprite.vertex_data.vertex_positions, ToMatrix4(transform));
+                    vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
+                    TransformVertexPositions(vertex_positions, ToMatrix4(transform));
                 }
                 
-                FillVertexColors(sprite.vertex_data.vertex_colors, sprite.tint);
-                DrawQuad(sprite.vertex_data, sprite.texture);
+                FillVertexColors(vertex_colors, sprite.tint);
+                DrawQuad(sprite.texture, vertex_positions, vertex_uvs, vertex_colors);
+            }
+
+            for (TEntity entity : GetEntityGroup<Circle, Transform>().entities)
+            {
+                auto& transform = GetComponent<Transform>(entity);
+                auto& circle = GetComponent<Circle>(entity);
+
+                FillCircleVertexPositions(vertex_positions, circle.radius);
+                TransformVertexPositions(vertex_positions, ToMatrix4(transform));
+                FillVertexColors(vertex_colors, circle.tint);
+                DrawCircle(vertex_positions, vertex_colors, circle.thickness, circle.fade);
+            }
+
+            for (TEntity entity : GetEntityGroup<Line2D, Transform>().entities)
+            {
+                auto& transform = GetComponent<Transform>(entity);
+                auto& line = GetComponent<Line2D>(entity);
+                
+                FillLine2DVertexPositions(vertex_positions, line.start, line.end, line.thickness);
+                TransformVertexPositions(vertex_positions, ToMatrix4(transform));
+                FillVertexColors(vertex_colors, line.tint);
+                DrawLine2D(vertex_positions, vertex_colors);
+            }
+
+            for (TEntity entity : GetEntityGroup<Text, Transform>().entities)
+            {
+                auto& transform = GetComponent<Transform>(entity);
+                auto& text = GetComponent<Text>(entity);
+                
+                DrawText(
+                      text.font
+                    , text.text
+                    , ToMatrix4(transform)
+                    , text.tint
+                    , text.spacing
+                    , text.size
+                );
             }
         }
         EndScene2D();

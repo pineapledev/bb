@@ -353,7 +353,12 @@ namespace Nit
         TryUseDefaultMaterial(renderer_2d->current_shape);
     }
 
-    void DrawQuad(const QuadVertexData& quad, const TSharedPtr<Texture2D>& texture_2d)
+    void DrawQuad(
+          const TSharedPtr<Texture2D>& texture_2d
+        , const TV4Verts2D&            vertex_positions
+        , const TV2Verts2D&            vertex_uvs      
+        , const TV4Verts2D&            vertex_colors
+    )
     {
         NIT_CHECK_RENDERER_2D_CREATED
         if (renderer_2d->quad_count >= MAX_PRIMITIVES)
@@ -369,9 +374,9 @@ namespace Nit
         {
             QuadVertex& vertex = *renderer_2d->last_quad_vertex;
 
-            vertex.position = quad.vertex_positions[i];
-            vertex.uv = quad.vertex_uvs[i];
-            vertex.tint = quad.vertex_colors[i];
+            vertex.position = vertex_positions[i];
+            vertex.uv = vertex_uvs[i];
+            vertex.tint = vertex_colors[i];
             vertex.texture = texture_slot;
 
             renderer_2d->last_quad_vertex++;
@@ -381,18 +386,12 @@ namespace Nit
         renderer_2d->quad_count++;
     }
 
-    void DrawQuad(const Quad& quad, const TSharedPtr<Texture2D>& texture_2d)
-    {
-        NIT_CHECK_RENDERER_2D_CREATED
-        QuadVertexData vd;
-        FillQuadVertexPositions(vd.vertex_positions, texture_2d, quad.tiling_factor, quad.keep_aspect);
-        FillQuadVertexUVs(vd.vertex_uvs, quad.flip_x, quad.flip_y, quad.tiling_factor);
-        FillVertexColors(vd.vertex_colors, quad.tint);
-        TransformVertexPositions(vd.vertex_positions, quad.transform);
-        DrawQuad(vd, texture_2d);
-    }
-
-    void DrawCircle(const CircleVertexData& circle)
+    void DrawCircle(
+          const TV4Verts2D& vertex_positions
+        , const TV4Verts2D& vertex_colors          
+        , f32               thickness              
+        , f32               fade                   
+    )
     {
         NIT_CHECK_RENDERER_2D_CREATED
         if (renderer_2d->circle_count >= MAX_PRIMITIVES)
@@ -406,12 +405,12 @@ namespace Nit
         {
             CircleVertex& vertex = *renderer_2d->last_circle_vertex;
 
-            vertex.local_position = circle.local_vertex_positions[i];
-            vertex.position = circle.vertex_positions[i];
-            vertex.tint = circle.vertex_colors[i];
-            vertex.thickness = circle.thickness;
-            vertex.fade = circle.fade;
-
+            vertex.local_position = DEFAULT_VERTEX_POSITIONS_2D[i];
+            vertex.position       = vertex_positions[i];
+            vertex.tint           = vertex_colors[i];
+            vertex.thickness      = thickness;
+            vertex.fade           = fade;
+            
             renderer_2d->last_circle_vertex++;
         }
 
@@ -419,19 +418,10 @@ namespace Nit
         renderer_2d->circle_count++;
     }
 
-    void DrawCircle(const Circle& circle)
-    {
-        NIT_CHECK_RENDERER_2D_CREATED
-        CircleVertexData vd;
-        vd.thickness = circle.thickness;
-        vd.fade = circle.fade;
-        FillCircleVertexPositions(vd.vertex_positions, circle.radius);
-        FillVertexColors(vd.vertex_colors, circle.tint);
-        TransformVertexPositions(vd.vertex_positions, circle.transform);
-        DrawCircle(vd);
-    }
-
-    void DrawLine2D(const Line2DVertexData& line)
+    void DrawLine2D(
+          const TV4Verts2D& vertex_positions
+        , const TV4Verts2D& vertex_colors
+    )
     {
         NIT_CHECK_RENDERER_2D_CREATED
         if (renderer_2d->line_count >= MAX_PRIMITIVES)
@@ -445,8 +435,8 @@ namespace Nit
         {
             LineVertex& vertex = *renderer_2d->last_line_vertex;
 
-            vertex.position = line.vertex_positions[i];
-            vertex.tint = line.vertex_colors[i];
+            vertex.position = vertex_positions[i];
+            vertex.tint     = vertex_colors[i];
 
             renderer_2d->last_line_vertex++;
         }
@@ -455,17 +445,12 @@ namespace Nit
         renderer_2d->line_count++;
     }
 
-    void DrawLine2D(const Line2D& line)
-    {
-        NIT_CHECK_RENDERER_2D_CREATED
-        Line2DVertexData vd;
-        FillLine2DVertexPositions(vd.vertex_positions, line.start, line.end, line.thickness);
-        FillVertexColors(vd.vertex_colors, line.tint);
-        TransformVertexPositions(vd.vertex_positions, line.transform);
-        DrawLine2D(vd);
-    }
-
-    void DrawChar(const CharVertexData& character)
+    void DrawChar(
+          const TSharedPtr<Font>& font
+        , const TV4Verts2D& vertex_positions
+        , const TV2Verts2D& vertex_uvs
+        , const TV4Verts2D& vertex_colors
+    )
     {
         NIT_CHECK_RENDERER_2D_CREATED
         if (renderer_2d->char_count >= MAX_PRIMITIVES)
@@ -475,17 +460,18 @@ namespace Nit
 
         SetCurrentShape(Shape::Char);
 
-        const i32 texture_slot = AssignTextureSlot(character.font->atlas);
+        const i32 texture_slot = AssignTextureSlot(font->atlas);
 
         for (u8 i = 0; i < VERTICES_PER_PRIMITIVE; ++i)
         {
             CharVertex& vertex = *renderer_2d->last_char_vertex;
 
-            vertex.position = character.vertex_positions[i];
-            vertex.uv = character.vertex_uvs[i];
-            vertex.tint = character.vertex_colors[i];
+            vertex.position= vertex_positions[i];
+            vertex.uv      = vertex_uvs[i];
+            vertex.uv      = vertex_uvs[i];
+            vertex.tint    = vertex_colors[i];
             vertex.texture = texture_slot;
-
+            
             renderer_2d->last_char_vertex++;
         }
 
@@ -493,34 +479,41 @@ namespace Nit
         renderer_2d->char_count++;
     }
 
-    void DrawChar(const Char& character, Vector2& offset)
+    void DrawText(
+          const TSharedPtr<Font>& font
+        , const TString&          text
+        , const Matrix4&          transform
+        , const Vector4&          tint
+        , f32                     spacing
+        , f32                     size
+    )
     {
-        NIT_CHECK_RENDERER_2D_CREATED
-        CharVertexData vd;
-        vd.font = character.font;
-        FillCharVertexData(character.transform, vd.vertex_positions, vd.vertex_uvs, character.font, character.size,
-                           offset, character.spacing, character.c);
-        FillVertexColors(vd.vertex_colors, character.tint);
-        DrawChar(vd);
-    }
-
-    void DrawText(const Text& text)
-    {
-        NIT_CHECK_RENDERER_2D_CREATED
-        Vector2 offset = V2_ZERO;
-
-        for (const char c : text.text)
+        if (!font)
         {
-            Char character;
-
-            character.transform = text.transform;
-            character.font = text.font;
-            character.c = c;
-            character.spacing = text.spacing;
-            character.tint = text.tint;
-            character.size = text.size;
-
-            DrawChar(character, offset);
+            return;
+        }
+        
+        Vector2 offset;
+        
+        for (const char c : text)
+        {
+            static TV4Verts2D vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
+            static TV2Verts2D vertex_uvs       = DEFAULT_VERTEX_U_VS_2D;
+            static TV4Verts2D vertex_colors    = DEFAULT_VERTEX_COLORS_2D;
+            
+            FillCharVertexData(
+                 transform
+                , vertex_positions
+                , vertex_uvs
+                , font
+                , size
+                ,offset
+                , spacing
+                , c
+            );
+            
+            FillVertexColors(vertex_colors, tint);
+            DrawChar(font, vertex_positions, vertex_uvs, vertex_colors);
         }
     }
 

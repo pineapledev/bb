@@ -30,45 +30,59 @@ namespace Nit
         Vector4{1.f, 1.f, 1.f, 1.f} // top-left
     };
 
-    struct QuadVertexData
+    struct TextPrimitive
     {
-        TV4Verts2D vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
-        TV2Verts2D vertex_uvs       = DEFAULT_VERTEX_U_VS_2D;
-        TV4Verts2D vertex_colors    = DEFAULT_VERTEX_COLORS_2D;
+        Matrix4 transform;
+        TString text;
+        Vector4 tint       = V4_ONE;
+        f32     spacing    = 1.f;
+        f32     size       = 1.f;
     };
 
-    struct CircleVertexData
-    {
-        f32 thickness = .05f;
-        f32 fade = .01f;
-        TV4Verts2D local_vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
-        TV4Verts2D vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
-        TV4Verts2D vertex_colors = DEFAULT_VERTEX_COLORS_2D;
-    };
+    void FillVertexColors(
+          TV4Verts2D&    vertex_colors
+        , const Vector4& color
+    );
+    
+    void TransformVertexPositions(
+          TV4Verts2D&    vertex_positions
+        , const Matrix4& transform
+    );
 
-    struct Line2DVertexData
-    {
-        TV4Verts2D vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
-        TV4Verts2D vertex_colors = DEFAULT_VERTEX_COLORS_2D;
-    };
+    void FillQuadVertexPositions(
+          TV4Verts2D&                  vertex_positions
+        , const TSharedPtr<Texture2D>& texture
+        , const Vector2&               size
+        , bool                         keep_aspect
+    );
+    
+    void FillQuadVertexUVs(
+          TV2Verts2D&    vertex_uvs
+        , bool           flip_x
+        , bool           flip_y
+        , const Vector2& tiling_factor
+    );
 
-    struct CharVertexData
-    {
-        TSharedPtr<Font> font = nullptr;
-        TV4Verts2D vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
-        TV2Verts2D vertex_uvs = DEFAULT_VERTEX_U_VS_2D;
-        TV4Verts2D vertex_colors = DEFAULT_VERTEX_COLORS_2D;
-    };
-
-    void FillVertexColors(TV4Verts2D& vertex_colors, const Vector4& color);
-    void TransformVertexPositions(TV4Verts2D& vertex_positions, const Matrix4& transform);
-
-    void FillQuadVertexPositions(TV4Verts2D& vertex_positions, const TSharedPtr<Texture2D>& texture, const Vector2& size,
-                                 bool keep_aspect);
-    void FillQuadVertexUVs(TV2Verts2D& vertex_uvs, bool flip_x, bool flip_y, const Vector2& tiling_factor);
-
-    void FillCircleVertexPositions(TV4Verts2D& vertex_positions, f32 radius);
-    void FillLine2DVertexPositions(TV4Verts2D& vertex_positions, const Vector2& start, const Vector2& end, f32 thickness);
-    void FillCharVertexData(const Matrix4& transform, TV4Verts2D& vertex_positions, TV2Verts2D& vertex_uvs,
-                            const TSharedPtr<Font>& font, f32 size, Vector2& offset, f32 spacing, char c);
+    void FillCircleVertexPositions(
+          TV4Verts2D& vertex_positions
+        , f32         radius
+    );
+    
+    void FillLine2DVertexPositions(
+          TV4Verts2D&    vertex_positions
+        , const Vector2& start
+        , const Vector2& end
+        , f32            thickness
+    );
+    
+    void FillCharVertexData(
+          const Matrix4&          transform
+        , TV4Verts2D&             vertex_positions
+        , TV2Verts2D&             vertex_uvs
+        , const TSharedPtr<Font>& font
+        , f32                     size
+        , Vector2&                offset
+        , f32                     spacing
+        , char                    c
+    );
 }

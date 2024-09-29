@@ -1,6 +1,6 @@
 #pragma once
-#include "logic/components/Transform.h"
-#include "logic/components/Camera.h"
+#include "logic/components/transform.h"
+#include "logic/components/camera.h"
 
 namespace Nit
 {

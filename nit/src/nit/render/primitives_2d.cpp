@@ -22,8 +22,7 @@ namespace Nit
         vertex_positions[3] = transform * vertex_positions[3];
     }
 
-    void FillQuadVertexPositions(TV4Verts2D& vertex_positions, const TSharedPtr<Texture2D>& texture, const Vector2& size,
-                                 bool keep_aspect)
+    void FillQuadVertexPositions(TV4Verts2D& vertex_positions, const TSharedPtr<Texture2D>& texture, const Vector2& size, bool keep_aspect)
     {
         if (keep_aspect && texture)
         {
@@ -36,9 +35,9 @@ namespace Nit
                 pos = Normalize(texture_size) / 2.f;
 
             vertex_positions[0] = {-pos.x * size.x, -pos.y * size.y, 0.f, 1.f};
-            vertex_positions[1] = {pos.x * size.x, -pos.y * size.y, 0.f, 1.f};
-            vertex_positions[2] = {pos.x * size.x, pos.y * size.y, 0.f, 1.f};
-            vertex_positions[3] = {-pos.x * size.x, pos.y * size.y, 0.f, 1.f};
+            vertex_positions[1] = { pos.x * size.x, -pos.y * size.y, 0.f, 1.f};
+            vertex_positions[2] = { pos.x * size.x,  pos.y * size.y, 0.f, 1.f};
+            vertex_positions[3] = {-pos.x * size.x,  pos.y * size.y, 0.f, 1.f};
         }
     }
 
@@ -89,8 +88,7 @@ namespace Nit
         vertex_positions[3] = scale_mat * DEFAULT_VERTEX_POSITIONS_2D[3];
     }
 
-    void FillLine2DVertexPositions(TV4Verts2D& vertex_positions, const Vector2& start, const Vector2& end,
-                                   f32 thickness)
+    void FillLine2DVertexPositions(TV4Verts2D& vertex_positions, const Vector2& start, const Vector2& end, f32 thickness)
     {
         const Vector3 v3_start  = { start.x, start.y };
         const Vector3 v3_end    = { end.x, end.y };
@@ -108,8 +106,7 @@ namespace Nit
         vertex_positions[3] = {v_pos_3.x, v_pos_3.y, v_pos_3.z, 1 };
     }
 
-    void FillCharVertexData(const Matrix4& transform, TV4Verts2D& vertex_positions, TV2Verts2D& vertex_uvs,
-                            const TSharedPtr<Font>& font, f32 size, Vector2& offset, f32 spacing, char c)
+    void FillCharVertexData(const Matrix4& transform, TV4Verts2D& vertex_positions, TV2Verts2D& vertex_uvs, const TSharedPtr<Font>& font, f32 size, Vector2& offset, f32 spacing, char c)
     {
         CharData d;
         font->GetChar(c, d);
@@ -117,15 +114,16 @@ namespace Nit
         static constexpr f32 SCALE = 0.002f;
 
         Matrix4 transform_offset = Translate(transform, { offset.x, offset.y });
-        transform_offset *= Scale(Matrix4(), { SCALE * size, -SCALE * size, SCALE });
+        transform_offset *= Scale({}, { SCALE * size, -SCALE * size, SCALE });
 
         vertex_positions[0] = {d.x0, d.y1, 0.f, 1.f};
-        vertex_uvs[0] = {d.s0, d.t1};
         vertex_positions[1] = {d.x1, d.y1, 0.f, 1.f};
-        vertex_uvs[1] = {d.s1, d.t1};
         vertex_positions[2] = {d.x1, d.y0, 0.f, 1.f};
-        vertex_uvs[2] = {d.s1, d.t0};
         vertex_positions[3] = {d.x0, d.y0, 0.f, 1.f};
+
+        vertex_uvs[0] = {d.s0, d.t1};
+        vertex_uvs[1] = {d.s1, d.t1};
+        vertex_uvs[2] = {d.s1, d.t0};
         vertex_uvs[3] = {d.s0, d.t0};
 
         TransformVertexPositions(vertex_positions, transform_offset);
