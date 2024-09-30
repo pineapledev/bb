@@ -102,15 +102,22 @@ struct Dummy
 
 int main(int argc, char** argv)
 {
-    Pool pool;
+    FastPool pool;
     InitPool<Dummy>(&pool, 300);
 
-    ID id;
-    InsertPoolElement(&pool, id, Dummy{ "Fer" });
+    ID a;
+    InsertPoolElement(&pool, a, Dummy{ "a" });
 
-    Dummy& data = GetPoolElement<Dummy>(&pool, id);
+    ID b;
+    InsertPoolElement(&pool, b, Dummy{ "b" });
+    
+    ID c;
+    InsertPoolElement(&pool, c, Dummy{ "c" });
+
+    RemovePoolElement(&pool, a);
+    
+    Dummy& data = GetPoolElement<Dummy>(&pool, b);
     NIT_LOG_TRACE("Data is %s", data.name.c_str());
-    //console output: Data is Fer
     
     // App app_instance;
     // app_instance.im_gui_enabled = true;
