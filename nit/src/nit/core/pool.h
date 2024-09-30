@@ -73,7 +73,9 @@ namespace Nit
     }
     
     void RemovePoolElement(Pool* pool, ID element_id);
-    
+
+    bool IsPoolElementValid(const Pool* pool, ID element_id);
+
     void* GetPoolElementRawPtr(Pool* pool, ID element_id);
 
     template<typename T>

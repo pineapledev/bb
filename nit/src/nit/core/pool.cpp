@@ -47,7 +47,14 @@ namespace Nit
         pool->index_to_element_id[deleted_element_index] = last_element_id;
         pool->element_id_to_index[last_element_id] = deleted_element_index;
     }
-    
+
+    bool IsPoolElementValid(const Pool* pool, ID element_id)
+    {
+        NIT_CHECK_MSG(pool, "Invalid pool!");
+        NIT_CHECK_MSG(element_id != 0, "Invalid pool id!");
+        return pool->element_id_to_index.count(element_id) != 0;
+    }
+
     void* GetPoolElementRawPtr(Pool* pool, ID element_id)
     {
         // Sanity checks
