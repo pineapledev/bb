@@ -7,7 +7,7 @@ namespace Nit
         using SetDataFunc = void  (*) (void*, u32, void*);
         using GetDataFunc = void* (*) (void*, u32);
 
-        const char*    type_name           = "";
+        const char*    type_name           = "Invalid";
         void*          elements            = nullptr;
         SetDataFunc    set_data            = nullptr;
         GetDataFunc    get_data            = nullptr;
@@ -18,9 +18,8 @@ namespace Nit
     };
 
     template<typename T>
-    Pool* CreatePool(u32 max_element_count = 30)
+    void InitPool(Pool* pool, u32 max_element_count = 30)
     {
-        Pool* pool = new Pool();
         pool->type_name = typeid(T).name();
         pool->elements = new T[max_element_count];
         
@@ -41,15 +40,20 @@ namespace Nit
         };
 
         pool->max = max_element_count;
-        return pool;
     }
     
     template<typename T>
-    void DestroyPool(Pool* pool)
+    void FinishPool(Pool* pool)
     {
-        NIT_CHECK_MSG(pool, "Invalid array!");
-        delete[] static_cast<T*>(pool->elements);
-        delete pool;
+        NIT_CHECK_MSG(pool, "Invalid pool!");
+        pool->type_name = "Invalid";
+        T* casted_elements = static_cast<T*>(pool->elements);
+        delete[] casted_elements;
+        pool->elements = nullptr;
+        pool->index_to_element_id.clear();
+        pool->element_id_to_index.clear();
+        pool->count = 0;
+        pool->max = 0;
     }
     
     ID InsertPoolElementRawWithID(Pool* pool, void* data, ID element_id);
