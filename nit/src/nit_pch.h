@@ -22,6 +22,7 @@
 #include <imgui.h>
 
 #include "nit/core/base.h"
+#include "nit/core/pool.h"
 
 #ifdef NIT_PLATFORM_LINUX
 #include <linux/string.h>

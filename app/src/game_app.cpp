@@ -102,26 +102,9 @@ struct Dummy
 
 int main(int argc, char** argv)
 {
-    FastPool pool;
-    InitPool<Dummy>(&pool, 300);
-
-    ID a;
-    InsertPoolElement(&pool, a, Dummy{ "a" });
-
-    ID b;
-    InsertPoolElement(&pool, b, Dummy{ "b" });
-    
-    ID c;
-    InsertPoolElement(&pool, c, Dummy{ "c" });
-
-    RemovePoolElement(&pool, a);
-    
-    Dummy& data = GetPoolElement<Dummy>(&pool, b);
-    NIT_LOG_TRACE("Data is %s", data.name.c_str());
-    
-    // App app_instance;
-    // app_instance.im_gui_enabled = true;
-    // //app_instance.im_gui_renderer.show_demo_window = true;
-    // SetAppInstance(&app_instance);
-    // RunApp(OnRun);
+    App app_instance;
+    app_instance.im_gui_enabled = true;
+    //app_instance.im_gui_renderer.show_demo_window = true;
+    SetAppInstance(&app_instance);
+    RunApp(OnRun);
 }

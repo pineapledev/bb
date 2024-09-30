@@ -28,10 +28,7 @@ namespace Nit
         for (u32 i = 0; i < reg.next_component_type; ++i)
         {
             ComponentData& data = reg.component_data[i];
-            free(data.array->components);
-            data.array->components = nullptr;
-            delete[] data.array;
-            data.array = nullptr;
+            FinishPool(&data.pool);
         }
     }
 
@@ -54,7 +51,7 @@ namespace Nit
         for (u32 i = 0; i < reg.next_component_type; ++i)
         {
             ComponentData& data = reg.component_data[i];
-            data.array->remove_component_func(*data.array, entity);
+            RemovePoolElement(&data.pool, entity);
         }
         
         --reg.entity_count;

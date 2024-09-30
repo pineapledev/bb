@@ -2,6 +2,18 @@
 
 namespace Nit
 {
+    void FinishPool(Pool* pool)
+    {
+        NIT_CHECK_MSG(pool, "Invalid pool!");
+        pool->type_name = "Invalid";
+        free(pool->elements);
+        pool->elements = nullptr;
+        pool->index_to_element_id.clear();
+        pool->element_id_to_index.clear();
+        pool->count = 0;
+        pool->max = 0;
+    }
+
     void InsertPoolElementRawWithID(Pool* pool, ID element_id, void* data)
     {
         NIT_CHECK_MSG(pool, "Invalid pool!");
@@ -66,7 +78,21 @@ namespace Nit
         return pool->get_data(pool->elements, element_index);
     }
 
-    void InsertPoolElementRawWithID(FastPool* pool, ID element_id, void* data)
+    void FinishPool(FastPool* pool)
+    {
+        NIT_CHECK_MSG(pool, "Invalid pool!");
+        pool->type_name = "Invalid";
+        free(pool->elements);
+        pool->elements = nullptr;
+        delete[] pool->index_to_element_id;
+        pool->index_to_element_id = nullptr;
+        delete[] pool->element_id_to_index;
+        pool->element_id_to_index = nullptr;
+        pool->count = 0;
+        pool->max = 0;
+    }
+
+    void InsertPoolElementRawWithID(FastPool* pool, u32 element_id, void* data)
     {
         NIT_CHECK_MSG(pool, "Invalid pool!");
 
@@ -83,7 +109,7 @@ namespace Nit
         pool->set_data(pool->elements, next_element, data);
     }
 
-    void RemovePoolElement(FastPool* pool, ID element_id)
+    void RemovePoolElement(FastPool* pool, u32 element_id)
     {
         if (pool->self_id_management)
         {
@@ -107,18 +133,18 @@ namespace Nit
         NIT_CHECK_MSG(pool->set_data, "Set data function not found!");
         pool->set_data(pool->elements, deleted_element_index, last_element_data);
         
-        // Updated the index associated with the last element id
-        ID last_element_id = pool->index_to_element_id[last_element_index];
+        // Updated the index associated with the last element u32
+        u32 last_element_id = pool->index_to_element_id[last_element_index];
         pool->index_to_element_id[deleted_element_index] = last_element_id;
     }
 
-    bool IsPoolElementValid(const FastPool* pool, ID element_id)
+    bool IsPoolElementValid(const FastPool* pool, u32 element_id)
     {
         NIT_CHECK_MSG(pool, "Invalid pool!");
         return pool->element_id_to_index[element_id] != FastPool::INVALID_INDEX;
     }
 
-    void* GetPoolElementRawPtr(const FastPool* pool, ID element_id)
+    void* GetPoolElementRawPtr(const FastPool* pool, u32 element_id)
     {
         NIT_CHECK_MSG(pool, "Invalid pool!");
         NIT_CHECK_MSG(IsPoolElementValid(pool, element_id), "Trying to get non-existent element!");
