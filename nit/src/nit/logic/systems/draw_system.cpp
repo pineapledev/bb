@@ -59,6 +59,11 @@ namespace Nit
                 auto& transform = GetComponent<Transform>(entity);
                 auto& sprite = GetComponent<Sprite>(entity);
 
+                if (!sprite.visible || sprite.tint.w <= F32_EPSILON)
+                {
+                    continue;
+                }
+                
                 if (sprite.texture)
                 {
                     FillQuadVertexPositions(
@@ -89,6 +94,11 @@ namespace Nit
                 auto& transform = GetComponent<Transform>(entity);
                 auto& circle = GetComponent<Circle>(entity);
 
+                if (!circle.visible || circle.tint.w <= F32_EPSILON)
+                {
+                    continue;
+                }
+                
                 FillCircleVertexPositions(vertex_positions, circle.radius);
                 TransformVertexPositions(vertex_positions, ToMatrix4(transform));
                 FillVertexColors(vertex_colors, circle.tint);
@@ -99,6 +109,11 @@ namespace Nit
             {
                 auto& transform = GetComponent<Transform>(entity);
                 auto& line = GetComponent<Line2D>(entity);
+
+                if (!line.visible || line.tint.w <= F32_EPSILON )
+                {
+                    continue;
+                }
                 
                 FillLine2DVertexPositions(vertex_positions, line.start, line.end, line.thickness);
                 TransformVertexPositions(vertex_positions, ToMatrix4(transform));
@@ -110,6 +125,11 @@ namespace Nit
             {
                 auto& transform = GetComponent<Transform>(entity);
                 auto& text = GetComponent<Text>(entity);
+
+                if (!text.visible || text.text.empty())
+                {
+                    continue;
+                }
                 
                 DrawText(
                       text.font

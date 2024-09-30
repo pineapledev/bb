@@ -8,6 +8,7 @@
 #include "nit/core/app.h"
 #include "nit/core/window.h"
 #include "nit/core/system.h"
+#include "nit/core/pool.h"
 
 #include "nit/logic/entity.h"
 #include "nit/logic/systems.h"

@@ -153,6 +153,16 @@ namespace Nit
 
     template <class OutIt, class Diff, class T>
     OutIt FillRaw(OutIt destination, const Diff count, const T& value) { return std::fill_n(destination, count, value); }
+
+    using ID = u64;
+    
+    inline ID GenerateID()
+    {
+        static std::random_device random_device;
+        static std::mt19937_64 random_engine(random_device());
+        static std::uniform_int_distribution<u64> distribution(random_device());
+        return distribution(random_engine);
+    }
 }
 
 #define NIT_GRAPHICS_API_OPENGL

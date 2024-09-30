@@ -24,6 +24,9 @@ Transform& GetCameraTransform()
     return camera_transform;
 }
 
+Entity circle;
+Entity cat_entity;
+
 void GameStart()
 {
     auto& game_data = AddComponent<GameData>(CreateEntity());
@@ -35,7 +38,7 @@ void GameStart()
     AddComponent<Camera>(camera_entity);
     AddComponent<Transform>(camera_entity);
     
-    Entity cat_entity = CreateEntity();
+    cat_entity = CreateEntity();
     AddComponent<Sprite>(cat_entity).texture = game_data.texture;
     AddComponent<Transform>(cat_entity).position = V3_RIGHT * 2.f;
     
@@ -43,7 +46,7 @@ void GameStart()
     AddComponent<Sprite>(quad).tint = V4_COLOR_LIGHT_RED;
     AddComponent<Transform>(quad);
 
-    Entity circle = CreateEntity();
+    circle = CreateEntity();
     AddComponent<Circle>(circle).tint = V4_COLOR_LIGHT_GREEN;
     AddComponent<Transform>(circle).position = V3_DOWN;
 
@@ -71,8 +74,9 @@ void DrawImGUI()
 {
     ImGui::Begin("Camera");
     auto& camera_transform = GetCameraTransform();
-    ImGui::DragFloat3("Position", &camera_transform.position.x);
+    ImGui::DragFloat3("Position", &camera_transform.position.x, .1f);
     ImGui::DragFloat3("Rotation", &camera_transform.rotation.x);
+    ImGui::DragFloat("Cat Alpha", &GetComponent<Sprite>(cat_entity).tint.w, 0.001f);
     ImGui::Checkbox("Use dock space", &app->im_gui_renderer.use_dockspace);
     ImGui::End();
 }
