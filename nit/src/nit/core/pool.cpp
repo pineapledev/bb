@@ -7,7 +7,7 @@ namespace Nit
         NIT_CHECK_MSG(pool, "Invalid pool!");
 
         u32 next_element = pool->count; 
-        NIT_CHECK_MSG(next_element > pool->max, "Max pool capacity reached!");
+        NIT_CHECK_MSG(next_element < pool->max, "Max pool capacity reached!");
 
         // "Create" the new element
         pool->element_id_to_index[element_id] = next_element;
@@ -26,7 +26,7 @@ namespace Nit
         NIT_CHECK_MSG(pool, "Invalid pool!");
         
         // Retrieve the relevant indices
-        NIT_CHECK_MSG(element_id == 0, "Invalid pool id!");
+        NIT_CHECK_MSG(element_id != 0, "Invalid pool id!");
         NIT_CHECK_MSG(pool->element_id_to_index.count(element_id) != 0, "Trying to delete non-existent element!");
         u32 deleted_element_index = pool->element_id_to_index[element_id];
         u32 last_element_index = pool->count - 1;
@@ -43,6 +43,8 @@ namespace Nit
         
         // Updated the index associated with the last element id
         ID last_element_id = pool->index_to_element_id[last_element_index];
+        pool->index_to_element_id.erase(last_element_index);
+        pool->index_to_element_id[deleted_element_index] = last_element_id;
         pool->element_id_to_index[last_element_id] = deleted_element_index;
     }
     
@@ -50,7 +52,7 @@ namespace Nit
     {
         // Sanity checks
         NIT_CHECK_MSG(pool, "Invalid pool!");
-        NIT_CHECK_MSG(element_id == 0, "Invalid pool id!");
+        NIT_CHECK_MSG(element_id != 0, "Invalid pool id!");
         NIT_CHECK_MSG(pool->element_id_to_index.count(element_id) != 0, "Trying to get non-existent element!");
 
         // Retrieve the element data
