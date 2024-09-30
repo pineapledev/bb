@@ -52,7 +52,36 @@ namespace Nit
         delete pool;
     }
     
-    ID    InsertPoolElement(Pool* pool, void* data, ID element_id);
-    void  RemovePoolElement(Pool* pool, ID element_id);
-    void* GetPoolElement(Pool* pool, ID element_id);
+    ID InsertPoolElementRawWithID(Pool* pool, void* data, ID element_id);
+
+    template<typename T>
+    ID InsertPoolElementWithID(Pool* pool, const T& data, ID element_id)
+    {
+        NIT_CHECK_MSG(pool->type_name == typeid(T).name(), "Type mismatch!");
+        T data_copy = data;
+        return InsertPoolElementRawWithID(pool, &data_copy, element_id);
+    }
+
+    template<typename T>
+    ID InsertPoolElement(Pool* pool, const T& data)
+    {
+        return InsertPoolElementWithID(pool, data, GenerateID());
+    }
+    
+    void RemovePoolElement(Pool* pool, ID element_id);
+    
+    void* GetPoolElementRawPtr(Pool* pool, ID element_id);
+
+    template<typename T>
+    T* GetPoolElementPtr(Pool* pool, ID element_id)
+    {
+        NIT_CHECK_MSG(pool->type_name == typeid(T).name(), "Type mismatch!");
+        return static_cast<T*>(GetPoolElementRawPtr(pool, element_id));
+    }
+
+    template<typename T>
+    T& GetPoolElement(Pool* pool, ID element_id)
+    {
+        return *GetPoolElementPtr<T>(pool, element_id);
+    }
 }

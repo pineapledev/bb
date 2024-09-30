@@ -2,7 +2,7 @@
 
 namespace Nit
 {
-    ID InsertPoolElement(Pool* pool, void* data, ID element_id)
+    ID InsertPoolElementRawWithID(Pool* pool, void* data, ID element_id)
     {
         NIT_CHECK_MSG(pool, "Invalid pool!");
 
@@ -48,7 +48,7 @@ namespace Nit
         pool->element_id_to_index[last_element_id] = deleted_element_index;
     }
     
-    void* GetPoolElement(Pool* pool, ID element_id)
+    void* GetPoolElementRawPtr(Pool* pool, ID element_id)
     {
         // Sanity checks
         NIT_CHECK_MSG(pool, "Invalid pool!");
