@@ -95,11 +95,6 @@ void OnRun()
     SetSystemCallback(DrawImGUI,   Stage::DrawImGUI);
 }
 
-struct Dummy
-{
-    String name = "Alex";
-};
-
 int main(int argc, char** argv)
 {
     App app_instance;
