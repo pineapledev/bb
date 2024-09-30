@@ -95,11 +95,26 @@ void OnRun()
     SetSystemCallback(DrawImGUI,   Stage::DrawImGUI);
 }
 
+struct Dummy
+{
+    String name = "Alex";
+};
+
 int main(int argc, char** argv)
 {
-    App app_instance;
-    app_instance.im_gui_enabled = true;
-    //app_instance.im_gui_renderer.show_demo_window = true;
-    SetAppInstance(&app_instance);
-    RunApp(OnRun);
+    Pool pool;
+    InitPool<Dummy>(&pool, 300);
+
+    ID id;
+    InsertPoolElement(&pool, id, Dummy{ "Fer" });
+
+    Dummy& data = GetPoolElement<Dummy>(&pool, id);
+    NIT_LOG_TRACE("Data is %s", data.name.c_str());
+    //console output: Data is Fer
+    
+    // App app_instance;
+    // app_instance.im_gui_enabled = true;
+    // //app_instance.im_gui_renderer.show_demo_window = true;
+    // SetAppInstance(&app_instance);
+    // RunApp(OnRun);
 }

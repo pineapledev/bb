@@ -56,20 +56,20 @@ namespace Nit
         pool->max = 0;
     }
     
-    ID InsertPoolElementRawWithID(Pool* pool, void* data, ID element_id);
+    void InsertPoolElementRawWithID(Pool* pool, ID element_id, void* data);
 
     template<typename T>
-    ID InsertPoolElementWithID(Pool* pool, const T& data, ID element_id)
+    void InsertPoolElementWithID(Pool* pool, ID element_id, T data)
     {
         NIT_CHECK_MSG(pool->type_name == typeid(T).name(), "Type mismatch!");
-        T data_copy = data;
-        return InsertPoolElementRawWithID(pool, &data_copy, element_id);
+        InsertPoolElementRawWithID(pool, element_id, &data);
     }
 
     template<typename T>
-    ID InsertPoolElement(Pool* pool, const T& data)
+    void InsertPoolElement(Pool* pool, ID& out_id, const T& data)
     {
-        return InsertPoolElementWithID(pool, data, GenerateID());
+        out_id = GenerateID();
+        InsertPoolElementWithID(pool, out_id, data);
     }
     
     void RemovePoolElement(Pool* pool, ID element_id);

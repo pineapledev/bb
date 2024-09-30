@@ -2,7 +2,7 @@
 
 namespace Nit
 {
-    ID InsertPoolElementRawWithID(Pool* pool, void* data, ID element_id)
+    void InsertPoolElementRawWithID(Pool* pool, ID element_id, void* data)
     {
         NIT_CHECK_MSG(pool, "Invalid pool!");
 
@@ -17,8 +17,6 @@ namespace Nit
         // Insert the data in the next element slot (count)
         NIT_CHECK_MSG(pool->set_data, "Set data function not found!");
         pool->set_data(pool->elements, next_element, data);
-        
-        return element_id;
     }
     
     void RemovePoolElement(Pool* pool, ID element_id)
