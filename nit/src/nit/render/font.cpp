@@ -55,16 +55,16 @@ namespace Nit
 
         const unsigned char* font_buffer = reinterpret_cast<unsigned char*>(buffer);
 
-        static constexpr f32 pixel_height = 64.f;
-        static constexpr u32 height = 1024;
-        static constexpr u32 width = 1024;
-        static constexpr u32 char_count = 256;
+        static constexpr f32 PIXEL_HEIGHT = 64.f;
+        static constexpr u32 HEIGHT = 1024;
+        static constexpr u32 WIDTH = 1024;
+        static constexpr u32 CHAR_COUNT = 256;
 
-        constexpr i32 pixels_alpha_lenght = height * width;
+        constexpr i32 pixels_alpha_lenght = HEIGHT * WIDTH;
         const auto pixels_alpha = new unsigned char[pixels_alpha_lenght];
-        auto* baked_char = new stbtt_bakedchar[char_count];
+        auto* baked_char = new stbtt_bakedchar[CHAR_COUNT];
 
-        stbtt_BakeFontBitmap(font_buffer, 0, pixel_height, pixels_alpha, width, height, 0, char_count, baked_char);
+        stbtt_BakeFontBitmap(font_buffer, 0, PIXEL_HEIGHT, pixels_alpha, WIDTH, HEIGHT, 0, CHAR_COUNT, baked_char);
         baked_char_data = reinterpret_cast<void*>(baked_char);
 
         constexpr i32 pixels_rgb_lenght = pixels_alpha_lenght * 4;
@@ -87,7 +87,7 @@ namespace Nit
         }
 
         atlas = CreateSharedPtr<Texture2D>();
-        atlas->UploadToGPU(pixels_rgb, width, height, 4);
+        atlas->UploadToGPU(pixels_rgb, WIDTH, HEIGHT, 4);
 
         delete[] pixels_rgb;
         delete[] pixels_alpha;
