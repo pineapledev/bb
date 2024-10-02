@@ -22,34 +22,34 @@ namespace Nit
     {
         for (AssetData& asset_data : GetAssetRegistryInstance()->asset_data)
         {
-            if (!asset_data.load_func)
+            if (!asset_data.fn_load)
             {
                 continue;
             }
             
-            NIT_CHECK_MSG(asset_data.invoke_func, "Invoke func not registered!")
+            NIT_CHECK_MSG(asset_data.fn_invoke_load, "Invoke func not registered!")
             for (u32 i = 0; i < asset_data.pool.count; ++i)
             {
                 void* element = asset_data.pool.get_data(asset_data.pool.elements, i);
-                asset_data.invoke_func(asset_data.load_func, element);
+                asset_data.fn_invoke_load(asset_data.fn_load, element);
             }
         }
     }
 
-    void UnloadAssets()
+    void FreeAssets()
     {
         for (AssetData& asset_data : GetAssetRegistryInstance()->asset_data)
         {
-            if (!asset_data.unload_func)
+            if (!asset_data.fn_free)
             {
                 continue;
             }
             
-            NIT_CHECK_MSG(asset_data.invoke_func, "Invoke func not registered!")
+            NIT_CHECK_MSG(asset_data.fn_invoke_free, "Invoke func not registered!")
             for (u32 i = 0; i < asset_data.pool.count; ++i)
             {
                 void* element = asset_data.pool.get_data(asset_data.pool.elements, i);
-                asset_data.invoke_func(asset_data.unload_func, element);
+                asset_data.fn_invoke_free(asset_data.fn_free, element);
             }
         }
     }

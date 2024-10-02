@@ -2,12 +2,23 @@
 
 namespace Nit
 {
+    template<typename T>
+    using FnLoadAsset = void (*) (T*);
+
+    template<typename T>
+    using FnFreeAsset = FnLoadAsset<T>;
+    
     struct AssetData
     {
-        void* load_func   = nullptr;
-        void* unload_func = nullptr;
-        void (*invoke_func)(void*, void*) = nullptr;
-        Pool pool;
+        using FnInvokeLoad = void (*) (void*, void*);
+        using FnInvokeFree = FnInvokeLoad;
+        
+        VoidFunc     fn_create      = nullptr;
+        void*        fn_load        = nullptr;
+        void*        fn_free        = nullptr;
+        FnInvokeLoad fn_invoke_load = nullptr;
+        FnInvokeFree fn_invoke_free = nullptr;
+        Pool         pool;
     };
     
     struct AssetRegistry
@@ -18,32 +29,40 @@ namespace Nit
     void SetAssetRegistryInstance(AssetRegistry* asset_registry_instance);
 
     AssetRegistry* GetAssetRegistryInstance();
-
+    
     template<typename T>
-    using AssetDataFunc = void (*) (T*); 
+    Pair<ID, T&> CreateAsset(const T& data = {});
     
     template<typename T>
     void RegisterAssetType(
-          u32              max_elements  = DEFAULT_POOL_ELEMENT_COUNT
-        , AssetDataFunc<T> load_func     = nullptr
-        , AssetDataFunc<T> unload_func   = nullptr
+          u32            max_elements  = DEFAULT_POOL_ELEMENT_COUNT
+        , FnLoadAsset<T> fn_load       = nullptr
+        , FnFreeAsset<T> fn_free       = nullptr
         )
     {
         AssetData& asset_data = GetAssetRegistryInstance()->asset_data.emplace_back(); 
         InitPool<T>(&asset_data.pool, max_elements);
-        asset_data.load_func   = load_func;
-        asset_data.unload_func = unload_func;
         
-        asset_data.invoke_func = [](void* func, void* data) {
-            AssetDataFunc<T> casted_func = static_cast<AssetDataFunc<T>>(func);
-            T* casted_data = static_cast<T*>(data);
-            casted_func(casted_data);
+        asset_data.fn_load = fn_load;
+        asset_data.fn_free = fn_free;
+        
+        asset_data.fn_create = [] {
+            T empty_data;
+            CreateAsset(empty_data);
         };
+        
+        asset_data.fn_invoke_load = [](void* fn, void* data) {
+            FnLoadAsset<T> casted_fn = static_cast<FnLoadAsset<T>>(fn);
+            T* casted_data = static_cast<T*>(data);
+            casted_fn(casted_data);
+        };
+        
+        asset_data.fn_invoke_free = asset_data.fn_invoke_load;
     }
 
     void LoadAssets();
     
-    void UnloadAssets();
+    void FreeAssets();
     
     Pool* GetAssetPoolPtr(const char* asset_type);
 
@@ -57,7 +76,7 @@ namespace Nit
     }
 
     template<typename T>
-    Pair<ID, T&> CreateAsset(const T& data = {})
+    Pair<ID, T&> CreateAsset(const T& data)
     {
         Pool& pool = GetAssetPool<T>(); 
         ID id; InsertPoolElement(&pool, id, data);

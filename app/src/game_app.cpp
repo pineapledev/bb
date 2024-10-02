@@ -95,35 +95,34 @@ void OnRun()
     SetSystemCallback(DrawImGUI,   Stage::DrawImGUI);
 }
 
-struct Dummy
-{
-    String name = "Alex";
-};
-
-void LoadDummy(Dummy* dummy)
-{
-    dummy->name = "Alex loaded";
-}
-
-void UnloadDummy(Dummy* dummy)
-{
-    dummy->name = "Alex unloaded";
-}
+// struct Dummy
+// {
+//     String name = "Alex";
+// };
+//
+// void LoadDummy(Dummy* dummy)
+// {
+//     dummy->name = "Alex loaded";
+// }
+//
+// void UnloadDummy(Dummy* dummy)
+// {
+//     dummy->name = "Alex unloaded";
+// }
 
 int main(int argc, char** argv)
 {
-    AssetRegistry registry;
-    SetAssetRegistryInstance(&registry);
-    RegisterAssetType(100, LoadDummy, UnloadDummy);
-    auto [id, data] = CreateAsset<Dummy>();
-    NIT_LOG_TRACE("%s", data.name.c_str()); // Alex
-    LoadAssets();
-    NIT_LOG_TRACE("%s", data.name.c_str()); // Alex loaded
+    // AssetRegistry registry;
+    // SetAssetRegistryInstance(&registry);
+    // RegisterAssetType(100, LoadDummy, UnloadDummy);
+    // auto [id, data] = CreateAsset<Dummy>();
+    // NIT_LOG_TRACE("%s", data.name.c_str()); // Alex
+    // LoadAssets();
+    // NIT_LOG_TRACE("%s", data.name.c_str()); // Alex loaded
     
-    
-    // App app_instance;
-    // app_instance.im_gui_enabled = true;
-    // //app_instance.im_gui_renderer.show_demo_window = true;
-    // SetAppInstance(&app_instance);
-    // RunApp(OnRun);
+    App app_instance;
+    app_instance.im_gui_enabled = true;
+    //app_instance.im_gui_renderer.show_demo_window = true;
+    SetAppInstance(&app_instance);
+    RunApp(OnRun);
 }
