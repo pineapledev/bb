@@ -112,7 +112,8 @@ project "app"
     {
         "nit/src",
         "app/src",
-        "3rd/imgui/src"
+        "3rd/imgui/src",
+        "3rd/yaml/include"
     }
     
     links

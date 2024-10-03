@@ -163,6 +163,20 @@ namespace Nit
         static std::uniform_int_distribution<u64> distribution(random_device());
         return distribution(random_engine);
     }
+
+    inline bool Replace(String& str, const String& from, const String& to)
+    {
+        u64 start_pos = str.find(from);
+        
+        if(start_pos == String::npos)
+        {
+            return false;
+        }
+
+        str.replace(start_pos, from.length(), to);
+        
+        return true;
+    }
 }
 
 #define NIT_GRAPHICS_API_OPENGL

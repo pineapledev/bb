@@ -12,6 +12,9 @@ namespace Nit
     {
         NIT_CHECK_APP_CREATED
         NIT_LOG_TRACE("Creating application...");
+
+        SetTypeRegistryInstance(&app->type_registry);
+        InitTypeRegistry();
         
         SetWindowInstance(&app->window);
         InitWindow();

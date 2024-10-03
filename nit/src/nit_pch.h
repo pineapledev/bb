@@ -20,8 +20,10 @@
 #include <queue>
 #include <set>
 #include <imgui.h>
+#include <yaml-cpp/yaml.h>
 
 #include "nit/core/base.h"
+#include "nit/core/type.h"
 #include "nit/core/pool.h"
 
 #ifdef NIT_PLATFORM_LINUX

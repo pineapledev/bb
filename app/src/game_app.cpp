@@ -95,27 +95,32 @@ void OnRun()
     SetSystemCallback(DrawImGUI,   Stage::DrawImGUI);
 }
 
-// struct Dummy
-// {
-//     String name = "Alex";
-// };
-//
-// void LoadDummy(Dummy* dummy)
-// {
-//     dummy->name = "Alex loaded";
-// }
-//
-// void UnloadDummy(Dummy* dummy)
-// {
-//     dummy->name = "Alex unloaded";
-// }
+struct Dummy
+{
+    String name = "Alex";
+};
+
+void LoadDummy(Dummy* dummy)
+{
+    dummy->name = "Alex loaded";
+}
+
+void FreeDummy(Dummy* dummy)
+{
+    dummy->name = "Alex unloaded";
+}
+
+void SerializeDummy(const Dummy* dummy, YAML::Emitter& emitter)
+{
+    emitter << YAML::Key << "name" << YAML::Value << dummy->name;
+}
 
 int main(int argc, char** argv)
 {
     // AssetRegistry registry;
     // SetAssetRegistryInstance(&registry);
-    // RegisterAssetType(100, LoadDummy, UnloadDummy);
-    // auto [id, data] = CreateAsset<Dummy>();
+    // RegisterAssetType("dummy", SerializeDummy, LoadDummy, FreeDummy);
+    // auto [id, data] = CreateAsset<Dummy>("TheDummyAsset");
     // NIT_LOG_TRACE("%s", data.name.c_str()); // Alex
     // LoadAssets();
     // NIT_LOG_TRACE("%s", data.name.c_str()); // Alex loaded

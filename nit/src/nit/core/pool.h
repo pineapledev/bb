@@ -7,13 +7,8 @@ namespace Nit
     // Slower access to elements, less memory usage, serialization ready.
     struct Pool
     {
-        using SetDataFunc = void  (*) (void*, u32, void*);
-        using GetDataFunc = void* (*) (void*, u32);
-
-        const char*    type_name           = "Invalid";
+        Type*          type                = nullptr;
         void*          elements            = nullptr;
-        SetDataFunc    set_data            = nullptr;
-        GetDataFunc    get_data            = nullptr;
         Map<ID,  u32>  element_id_to_index = {};
         Map<u32, ID>   index_to_element_id = {};
         u32            count               = 0;
@@ -23,26 +18,12 @@ namespace Nit
     template<typename T>
     void InitPool(Pool* pool, u32 max_element_count = DEFAULT_POOL_ELEMENT_COUNT)
     {
-        pool->type_name = typeid(T).name();
-        //pool->elements = malloc(sizeof(T) * max_element_count);
+        if (!IsTypeRegistered<T>())
+        {
+            RegisterType<T>();
+        }
+        
         pool->elements  = new T[max_element_count];
-        
-        pool->set_data = [](void* elements, u32 index, void* data) {
-            NIT_CHECK_MSG(elements, "Invalid element array!");
-            NIT_CHECK_MSG(data, "Invalid data!");
-            T* casted_data     = static_cast<T*>(data);
-            T* casted_elements = static_cast<T*>(elements);
-            casted_elements[index] = *casted_data;
-        };
-        
-        pool->get_data = [](void* elements, u32 index) -> void* {
-            NIT_CHECK_MSG(elements, "Invalid element array!");
-            T* casted_elements = static_cast<T*>(elements);
-            T* data = &casted_elements[index];
-            NIT_CHECK_MSG(data, "Invalid data!");
-            return data;
-        };
-
         pool->max = max_element_count;
     }
     
@@ -53,7 +34,7 @@ namespace Nit
     template<typename T>
     void InsertPoolElementWithID(Pool* pool, ID element_id, T data)
     {
-        NIT_CHECK_MSG(pool->type_name == typeid(T).name(), "Type mismatch!");
+        NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");
         InsertPoolElementRawWithID(pool, element_id, &data);
     }
 
@@ -73,7 +54,7 @@ namespace Nit
     template<typename T>
     T* GetPoolElementPtr(const Pool* pool, ID element_id)
     {
-        NIT_CHECK_MSG(pool->type_name == typeid(T).name(), "Type mismatch!");
+        NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");
         return static_cast<T*>(GetPoolElementRawPtr(pool, element_id));
     }
 
@@ -87,14 +68,9 @@ namespace Nit
     struct FastPool
     {
         static constexpr u32 INVALID_INDEX = U32_MAX;
-        
-        using SetDataFunc = void  (*) (void*, u32, void*);
-        using GetDataFunc = void* (*) (void*, u32);
 
-        const char*    type_name           = "Invalid";
+        Type*          type                = nullptr;
         void*          elements            = nullptr;
-        SetDataFunc    set_data            = nullptr;
-        GetDataFunc    get_data            = nullptr;
         u32*           element_id_to_index = nullptr;
         u32*           index_to_element_id = nullptr;
         u32            count               = 0;
@@ -106,8 +82,12 @@ namespace Nit
     template<typename T>
     void InitPool(FastPool* pool, u32 max_element_count = DEFAULT_POOL_ELEMENT_COUNT, bool self_id_management = true)
     {
-        pool->type_name = typeid(T).name();
-        //pool->elements  = malloc(sizeof(T) * max_element_count);
+        if (!IsTypeRegistered<T>())
+        {
+            RegisterType<T>();
+        }
+
+        pool->type = GetType<T>();
         pool->elements  = new T[max_element_count];
         
         pool->element_id_to_index = new u32[max_element_count];
@@ -115,22 +95,6 @@ namespace Nit
         
         FillRaw(pool->element_id_to_index, max_element_count, FastPool::INVALID_INDEX);
         FillRaw(pool->index_to_element_id, max_element_count, 0);
-        
-        pool->set_data = [](void* elements, u32 index, void* data) {
-            NIT_CHECK_MSG(elements, "Invalid element array!");
-            NIT_CHECK_MSG(data, "Invalid data!");
-            T* casted_data     = static_cast<T*>(data);
-            T* casted_elements = static_cast<T*>(elements);
-            casted_elements[index] = *casted_data;
-        };
-        
-        pool->get_data = [](void* elements, u32 index) -> void* {
-            NIT_CHECK_MSG(elements, "Invalid element array!");
-            T* casted_elements = static_cast<T*>(elements);
-            T* data = &casted_elements[index];
-            NIT_CHECK_MSG(data, "Invalid data!");
-            return data;
-        };
 
         pool->max = max_element_count;
         
@@ -152,7 +116,7 @@ namespace Nit
     template<typename T>
     void InsertPoolElementWithID(FastPool* pool, u32 element_id, T data)
     {
-        NIT_CHECK_MSG(pool->type_name == typeid(T).name(), "Type mismatch!");
+        NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");
         InsertPoolElementRawWithID(pool, element_id, &data);
     }
 
@@ -168,13 +132,13 @@ namespace Nit
     void RemovePoolElement(FastPool* pool, u32 element_id);
 
     bool IsPoolElementValid(const FastPool* pool, u32 element_id);
-
+    
     void* GetPoolElementRawPtr(const FastPool* pool, u32 element_id);
 
     template<typename T>
     T* GetPoolElementPtr(const FastPool* pool, u32 element_id)
     {
-        NIT_CHECK_MSG(pool->type_name == typeid(T).name(), "Type mismatch!");
+        NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");
         return static_cast<T*>(GetPoolElementRawPtr(pool, element_id));
     }
 

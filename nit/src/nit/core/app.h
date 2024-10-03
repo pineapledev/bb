@@ -17,6 +17,7 @@ namespace Nit
         bool paused         = false;
         bool im_gui_enabled = false;
         
+        TypeRegistry   type_registry;
         SystemStack    system_stack;
         EntityRegistry entity_registry;
         ImGuiRenderer  im_gui_renderer;

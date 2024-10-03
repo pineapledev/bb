@@ -5,7 +5,7 @@ namespace Nit
     void FinishPool(Pool* pool)
     {
         NIT_CHECK_MSG(pool, "Invalid pool!");
-        pool->type_name = "Invalid";
+        pool->type = nullptr;
         free(pool->elements);
         pool->elements = nullptr;
         pool->index_to_element_id.clear();
@@ -13,11 +13,11 @@ namespace Nit
         pool->count = 0;
         pool->max = 0;
     }
-
+    
     void InsertPoolElementRawWithID(Pool* pool, ID element_id, void* data)
     {
         NIT_CHECK_MSG(pool, "Invalid pool!");
-
+        
         u32 next_element = pool->count; 
         NIT_CHECK_MSG(next_element < pool->max, "Max pool capacity reached!");
 
@@ -27,8 +27,7 @@ namespace Nit
         ++pool->count;
         
         // Insert the data in the next element slot (count)
-        NIT_CHECK_MSG(pool->set_data, "Set data function not found!");
-        pool->set_data(pool->elements, next_element, data);
+        SetRawData(pool->type, pool->elements, next_element, data);
     }
     
     void RemovePoolElement(Pool* pool, ID element_id)
@@ -46,10 +45,8 @@ namespace Nit
         --pool->count;
 
         // Put the last element data in the deleted element slot
-        NIT_CHECK_MSG(pool->get_data, "Get data function not found!");
-        void* last_element_data = pool->get_data(pool->elements, last_element_index);
-        NIT_CHECK_MSG(pool->set_data, "Set data function not found!");
-        pool->set_data(pool->elements, deleted_element_index, last_element_data);
+        void* last_element_data = GetRawData(pool->type, pool->elements, last_element_index);
+        SetRawData(pool->type, pool->elements, deleted_element_index, last_element_data);
         
         // Updated the index associated with the last element id
         ID last_element_id = pool->index_to_element_id[last_element_index];
@@ -74,14 +71,13 @@ namespace Nit
 
         // Retrieve the element data
         u32 element_index = pool->element_id_to_index.at(element_id);
-        NIT_CHECK_MSG(pool->get_data, "Get data function not found!");
-        return pool->get_data(pool->elements, element_index);
+        return GetRawData(pool->type, pool->elements, element_index);
     }
 
     void FinishPool(FastPool* pool)
     {
         NIT_CHECK_MSG(pool, "Invalid pool!");
-        pool->type_name = "Invalid";
+        pool->type = nullptr;
         free(pool->elements);
         pool->elements = nullptr;
         delete[] pool->index_to_element_id;
@@ -105,8 +101,7 @@ namespace Nit
         ++pool->count;
         
         // Insert the data in the next element slot (count)
-        NIT_CHECK_MSG(pool->set_data, "Set data function not found!");
-        pool->set_data(pool->elements, next_element, data);
+        SetRawData(pool->type, pool->elements, next_element, data);
     }
 
     void RemovePoolElement(FastPool* pool, u32 element_id)
@@ -128,10 +123,8 @@ namespace Nit
         --pool->count;
 
         // Put the last element data in the deleted element slot
-        NIT_CHECK_MSG(pool->get_data, "Get data function not found!");
-        void* last_element_data = pool->get_data(pool->elements, last_element_index);
-        NIT_CHECK_MSG(pool->set_data, "Set data function not found!");
-        pool->set_data(pool->elements, deleted_element_index, last_element_data);
+        void* last_element_data = GetRawData(pool->type, pool->elements, last_element_index);
+        SetRawData(pool->type, pool->elements, deleted_element_index, last_element_data);
         
         // Updated the index associated with the last element u32
         u32 last_element_id = pool->index_to_element_id[last_element_index];
@@ -151,7 +144,6 @@ namespace Nit
 
         // Retrieve the element data
         u32 element_index = pool->element_id_to_index[element_id];
-        NIT_CHECK_MSG(pool->get_data, "Get data function not found!");
-        return pool->get_data(pool->elements, element_index);
+        return GetRawData(pool->type, pool->elements, element_index);
     }
 }
