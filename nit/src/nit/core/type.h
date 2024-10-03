@@ -4,17 +4,20 @@ namespace Nit
 {
     constexpr u32 DEFAULT_MAX_TYPES = 300;
 
-    //TODO: Add load / free callbacks
     struct Type
     {
         using FnSetData           = void  (*) (void*, u32, void*);
         using FnGetData           = void* (*) (void*, u32);
+        using FnInvokeLoadFree    = void  (*) (void*, void*);
         using FnInvokeSerialize   = void  (*) (void*, void*, YAML::Emitter& emitter);
         using FnInvokeDeserialize = void  (*) (void*, void*, const YAML::Node& node);
         
         String              name                  = "Invalid";
         FnSetData           fn_set_data           = nullptr;
         FnGetData           fn_get_data           = nullptr;
+        void*               fn_load               = nullptr;
+        void*               fn_free               = nullptr;
+        FnInvokeLoadFree    fn_invoke_load_free   = nullptr;
         void*               fn_serialize          = nullptr;
         void*               fn_deserialize        = nullptr;
         FnInvokeSerialize   fn_invoke_serialize   = nullptr;
@@ -22,12 +25,52 @@ namespace Nit
     };
 
     template<typename T>
+    using FnLoad = void (*) (T*);
+
+    template<typename T>
+    void SetInvokeLoadFreeFunction(Type* type)
+    {
+        NIT_CHECK(type);
+        
+        type->fn_invoke_load_free = [] (void* fn, void* data) {
+            FnLoad<T> casted_fn = static_cast<FnLoad<T>>(fn);
+            T* casted_data = static_cast<T*>(data);
+            casted_fn(casted_data);
+        };
+    }
+    
+    template<typename T>
+    void SetLoadFunction(Type* type, FnLoad<T> fn_load)
+    {
+        NIT_CHECK(type && fn_load);
+        type->fn_load = fn_load;
+        if (!type->fn_invoke_load_free)
+        {
+            SetInvokeLoadFreeFunction<T>(type);
+        }
+    }
+
+    template<typename T>
+    using FnFree = FnLoad<T>;
+    
+    template<typename T>
+    void SetFreeFunction(Type* type, FnFree<T> fn_free)
+    {
+        NIT_CHECK(type && fn_free);
+        type->fn_free = fn_free;
+        if (!type->fn_invoke_load_free)
+        {
+            SetInvokeLoadFreeFunction<T>(type);
+        }
+    }
+    
+    template<typename T>
     using FnSerialize   = void  (*) (const T*, YAML::Emitter& emitter);
 
     template<typename T>
     void SetTypeSerializeFunction(Type* type, FnSerialize<T> fn_serialize)
     {
-        NIT_CHECK(fn_serialize);
+        NIT_CHECK(type && fn_serialize);
         
         type->fn_serialize = fn_serialize;
             
@@ -44,7 +87,7 @@ namespace Nit
     template<typename T>
     void SetTypeDeserializeFunction(Type* type, FnDeserialize<T> fn_deserialize)
     {
-        NIT_CHECK(fn_deserialize);
+        NIT_CHECK(type && fn_deserialize);
 
         type->fn_deserialize = fn_deserialize;
             
@@ -58,6 +101,8 @@ namespace Nit
     template<typename T>
     struct TypeArgs
     {
+        FnLoad<T>        fn_load        = nullptr;
+        FnFree<T>        fn_free        = nullptr;
         FnSerialize<T>   fn_serialize   = nullptr;
         FnDeserialize<T> fn_deserialize = nullptr;
     };
@@ -65,8 +110,8 @@ namespace Nit
     template<typename T>
     void GetTypeName(String& str)
     {
-        static const String STRUCT_TEXT = "struct"; 
-        static const String CLASS_TEXT  = "class"; 
+        static const String STRUCT_TEXT = "struct "; 
+        static const String CLASS_TEXT  = "class "; 
         str = typeid(T).name();
         Replace(str, STRUCT_TEXT, "");
         Replace(str, CLASS_TEXT , "");
@@ -89,19 +134,31 @@ namespace Nit
             return data;
         };
         
-        if (FnSerialize<T> fn_serialize = args.fn_serialize)
+        if (auto fn_serialize = args.fn_serialize)
         {
             SetTypeSerializeFunction(&type, fn_serialize);
         }
 
-        if (FnDeserialize<T> fn_deserialize = args.fn_deserialize)
+        if (auto fn_deserialize = args.fn_deserialize)
         {
             SetTypeDeserializeFunction(&type, fn_deserialize);
+        }
+
+        if (auto fn_load = args.fn_load)
+        {
+            SetLoadFunction(&type, fn_load);
+        }
+
+        if (auto fn_free = args.fn_free)
+        {
+            SetFreeFunction(&type, fn_free);
         }
     }
 
     void  SetRawData(const Type* type, void* array, u32 index, void* data);
     void* GetRawData(const Type* type, void* array, u32 index);
+    void  LoadRawData(const Type* type, void* data);
+    void  FreeRawData(const Type* type, void* data);
     void  SerializeRawData(const Type* type, void* data, YAML::Emitter& emitter);
     void  DeserializeRawData(const Type* type, void* data, const YAML::Node& node);
     

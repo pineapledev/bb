@@ -18,26 +18,54 @@ namespace Nit
     
     void SetRawData(const Type* type, void* array, u32 index, void* data)
     {
-        NIT_CHECK(type && array && data);
+        NIT_CHECK(type && type->fn_set_data && array && data);
         type->fn_set_data(array, index, data);
     }
 
     void* GetRawData(const Type* type, void* array, u32 index)
     {
-        NIT_CHECK(type && array);
+        NIT_CHECK(type && type->fn_get_data && array);
         return type->fn_get_data(array, index);
+    }
+
+    void LoadRawData(const Type* type, void* data)
+    {
+        NIT_CHECK(type);
+        if (type->fn_load)
+        {
+            NIT_CHECK(type->fn_invoke_load_free && data);
+            type->fn_invoke_load_free(type->fn_load, data);    
+        }
+    }
+
+    void FreeRawData(const Type* type, void* data)
+    {
+        NIT_CHECK(type);
+        if (type->fn_free)
+        {
+            NIT_CHECK(type->fn_invoke_load_free && data);
+            type->fn_invoke_load_free(type->fn_free, data);    
+        }
     }
 
     void SerializeRawData(const Type* type, void* data, YAML::Emitter& emitter)
     {
-        NIT_CHECK(type && type->fn_serialize && data);
-        type->fn_invoke_serialize(type->fn_serialize, data, emitter);
+        NIT_CHECK(type);
+        if (type->fn_serialize)
+        {
+            NIT_CHECK(type->fn_invoke_serialize && data);
+            type->fn_invoke_serialize(type->fn_serialize, data, emitter);
+        }
     }
 
     void DeserializeRawData(const Type* type, void* data, const YAML::Node& node)
     {
-        NIT_CHECK(type && type->fn_deserialize && data);
-        type->fn_invoke_deserialize(type->fn_deserialize, data, node);
+        NIT_CHECK(type);
+        if (type->fn_deserialize)
+        {
+            NIT_CHECK(type->fn_invoke_deserialize && data);
+            type->fn_invoke_deserialize(type->fn_deserialize, data, node);
+        }
     }
 
     void InitTypeRegistry(u32 max_types)
