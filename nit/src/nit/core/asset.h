@@ -85,13 +85,16 @@ namespace Nit
     }
 
     void FindAssetsByName(const String& name, Array<ID>& asset_ids);
-
+    ID FindAssetByName(const String& name);
+    
     template<typename T>
     T& GetAssetData(ID id)
     {
         Pool& pool = GetAssetPool<T>();
         return GetPoolElement<T>(&pool, id);
     }
+
+    bool IsAssetValid(ID id);
     
     template<typename T>
     ID CreateAsset(const String& name, const String& path = "", const T& data = {})

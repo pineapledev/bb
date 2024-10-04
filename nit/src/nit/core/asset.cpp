@@ -180,6 +180,23 @@ namespace Nit
         }
     }
 
+    ID FindAssetByName(const String& name)
+    {
+        for (const auto& [id, info] : asset_registry->id_to_info)
+        {
+            if (info.name == name)
+            {
+                return id;
+            }
+        }
+        return 0;
+    }
+
+    bool IsAssetValid(ID id)
+    {
+        return id != 0 && asset_registry->id_to_info.count(id) != 0;
+    }
+
     void DestroyAsset(ID id)
     {
         NIT_CHECK_ASSET_REGISTRY_CREATED

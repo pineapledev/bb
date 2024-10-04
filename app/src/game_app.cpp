@@ -79,11 +79,12 @@ SharedPtr<Font>      font;
 
 void GameStart()
 {
-    Array<ID> assets;
-    FindAssetsByName("alex", assets);
-    Dummy& alex = GetAssetData<Dummy>(assets[0]);
-    LoadAsset(assets[0]);
-    FreeAsset(assets[0]);
+    if (ID id = FindAssetByName("alex"))
+    {
+        GetAssetData<Dummy>(id);
+        LoadAsset(id);
+        FreeAsset(id);
+    }
     
     texture = CreateSharedPtr<Texture2D>("assets/bola.jpg"); 
     font    = CreateSharedPtr<Font>("assets/AlbertSans-VariableFont_wght.ttf");
