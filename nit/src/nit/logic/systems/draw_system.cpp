@@ -24,19 +24,12 @@ namespace Nit
     {
         CreateSystem("Draw");
         SetSystemCallback(Draw,  Stage::Draw);
-
-        RegisterComponentType<Transform>();
-        RegisterComponentType<Camera>();
-        RegisterComponentType<Sprite>();
-        RegisterComponentType<Circle>();
-        RegisterComponentType<Line2D>();
-        RegisterComponentType<Text>();
         
         CreateEntityGroup<Sprite, Transform>();
         CreateEntityGroup<Camera, Transform>();
         CreateEntityGroup<Circle, Transform>();
         CreateEntityGroup<Line2D, Transform>();
-        CreateEntityGroup<Text, Transform>();
+        CreateEntityGroup<Text,   Transform>();
     }
 
     void Draw()

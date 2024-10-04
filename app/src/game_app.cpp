@@ -2,11 +2,59 @@
 
 using namespace Nit;
 
-struct GameData
+void OnApplicationRun();
+void GameStart();
+void GameUpdate();
+void DrawImGUI();
+
+int main(int argc, char** argv)
 {
-    SharedPtr<Texture2D> texture;
-    SharedPtr<Font>      font;
+    App app_instance;
+    app_instance.im_gui_enabled = true;
+    //app_instance.im_gui_renderer.show_demo_window = true;
+    SetAppInstance(&app_instance);
+    RunApp(OnApplicationRun);
+}
+
+// -----------------------------------------------------------------
+
+struct Dummy
+{
+    String name;
 };
+
+void LoadDummy(Dummy* dummy)
+{
+    dummy->name.append(" loaded");
+}
+
+void FreeDummy(Dummy* dummy)
+{
+    dummy->name.append(" unloaded");
+}
+
+void SerializeDummy(const Dummy* dummy, YAML::Emitter& emitter)
+{
+    emitter << YAML::Key << "name" << YAML::Value << dummy->name;
+}
+
+void DeserializeDummy(Dummy* dummy, const YAML::Node& node)
+{
+    dummy->name = node["name"].as<String>();
+}
+
+void OnApplicationRun()
+{
+    RegisterAssetType<Dummy>({ LoadDummy, FreeDummy, SerializeDummy, DeserializeDummy });
+    
+    CreateDrawSystem();
+    
+    //Create game system
+    CreateSystem("Game", 1);
+    SetSystemCallback(GameStart,   Stage::Start);
+    SetSystemCallback(GameUpdate,  Stage::Update);
+    SetSystemCallback(DrawImGUI,   Stage::DrawImGUI);
+}
 
 Transform& GetCameraTransform()
 {
@@ -24,22 +72,28 @@ Transform& GetCameraTransform()
     return camera_transform;
 }
 
-Entity circle;
-Entity cat_entity;
+Entity               circle;
+Entity               cat_entity;
+SharedPtr<Texture2D> texture;
+SharedPtr<Font>      font;
 
 void GameStart()
 {
-    auto& game_data = AddComponent<GameData>(CreateEntity());
+    Array<ID> assets;
+    FindAssetsByName("alex", assets);
+    Dummy& alex = GetAssetData<Dummy>(assets[0]);
+    LoadAsset(assets[0]);
+    FreeAsset(assets[0]);
     
-    game_data.texture = CreateSharedPtr<Texture2D>("assets/bola.jpg"); 
-    game_data.font    = CreateSharedPtr<Font>("assets/AlbertSans-VariableFont_wght.ttf");
+    texture = CreateSharedPtr<Texture2D>("assets/bola.jpg"); 
+    font    = CreateSharedPtr<Font>("assets/AlbertSans-VariableFont_wght.ttf");
     
     Entity camera_entity = CreateEntity();
     AddComponent<Camera>(camera_entity);
     AddComponent<Transform>(camera_entity);
     
     cat_entity = CreateEntity();
-    AddComponent<Sprite>(cat_entity).texture = game_data.texture;
+    AddComponent<Sprite>(cat_entity).texture = texture;
     AddComponent<Transform>(cat_entity).position = V3_RIGHT * 2.f;
     
     Entity quad = CreateEntity();
@@ -57,7 +111,7 @@ void GameStart()
     Entity text = CreateEntity();
     AddComponent<Text>(text).text = "UWU";
     GetComponent<Text>(text).tint = V4_COLOR_MAGENTA;
-    GetComponent<Text>(text).font = game_data.font;
+    GetComponent<Text>(text).font = font;
     
     AddComponent<Transform>(text).position = V3_RIGHT * 2.f;
     
@@ -79,47 +133,4 @@ void DrawImGUI()
     ImGui::DragFloat("Cat Alpha", &GetComponent<Sprite>(cat_entity).tint.w, 0.001f);
     ImGui::Checkbox("Use dock space", &app->im_gui_renderer.use_dockspace);
     ImGui::End();
-}
-
-void OnRun()
-{
-    CreateDrawSystem();
-
-    RegisterComponentType<GameData>();
-    CreateEntityGroup<GameData>();
-    
-    //Create game system
-    CreateSystem("Game", 1);
-    SetSystemCallback(GameStart,   Stage::Start);
-    SetSystemCallback(GameUpdate,  Stage::Update);
-    SetSystemCallback(DrawImGUI,   Stage::DrawImGUI);
-}
-
-struct Dummy
-{
-    String name = "Alex";
-};
-
-void LoadDummy(Dummy* dummy)
-{
-    dummy->name = "Alex loaded";
-}
-
-void FreeDummy(Dummy* dummy)
-{
-    dummy->name = "Alex unloaded";
-}
-
-void SerializeDummy(const Dummy* dummy, YAML::Emitter& emitter)
-{
-    emitter << YAML::Key << "name" << YAML::Value << dummy->name;
-}
-
-int main(int argc, char** argv)
-{
-    App app_instance;
-    app_instance.im_gui_enabled = true;
-    //app_instance.im_gui_renderer.show_demo_window = true;
-    SetAppInstance(&app_instance);
-    RunApp(OnRun);
 }

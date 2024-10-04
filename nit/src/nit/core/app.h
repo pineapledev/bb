@@ -18,6 +18,7 @@ namespace Nit
         bool im_gui_enabled = false;
         
         TypeRegistry   type_registry;
+        AssetRegistry  asset_registry;
         SystemStack    system_stack;
         EntityRegistry entity_registry;
         ImGuiRenderer  im_gui_renderer;
@@ -45,58 +46,4 @@ namespace Nit
     void CreateSystem(const String& name, u32 priority = 0, ExecutionContext context = ExecutionContext::Runtime, bool start_disabled = false);
     void SetSystemCallback(VoidFunc callback, Stage stage, bool try_invoke = false);
     void InvokeSystemCallbacks(Stage stage, bool force_enabled = false);
-    
-    // Entity shortcuts
-    Entity CreateEntity();
-    void DestroyEntity(Entity entity);
-    bool IsEntityValid(Entity entity);
-
-    template<typename... T>
-    EntitySignature CreateEntityGroup()
-    {
-        return CreateEntityGroup<T...>(app->entity_registry);
-    }
-
-    EntityGroup& GetEntityGroup(EntitySignature signature);
-
-    template<typename... T>
-    EntityGroup& GetEntityGroup()
-    {
-        return GetEntityGroup<T...>(app->entity_registry);
-    }
-    
-    template<typename T>
-    void RegisterComponentType()
-    {
-        NIT_CHECK_APP_CREATED
-        return RegisterComponentType<T>(app->entity_registry);
-    }
-    
-    template<typename T>
-    T& AddComponent(Entity entity)
-    {
-        NIT_CHECK_APP_CREATED
-        return AddComponent<T>(app->entity_registry, entity);
-    }
-
-    template<typename T>
-    void RemoveComponent(Entity entity)
-    {
-        NIT_CHECK_APP_CREATED
-        RemoveComponent<T>(app->entity_registry, entity);
-    }
-
-    template<typename T>
-    T& GetComponent(Entity entity)
-    {
-        NIT_CHECK_APP_CREATED
-        return GetComponent<T>(app->entity_registry, entity);
-    }
-
-    template<typename T>
-    bool HasComponent(Entity entity)
-    {
-        NIT_CHECK_APP_CREATED
-        return HasComponent<T>(app->entity_registry, entity);
-    }
 }

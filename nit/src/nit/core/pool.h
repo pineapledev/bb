@@ -22,7 +22,8 @@ namespace Nit
         {
             RegisterType<T>();
         }
-        
+
+        pool->type = GetType<T>();
         pool->elements  = new T[max_element_count];
         pool->max = max_element_count;
     }

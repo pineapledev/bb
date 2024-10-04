@@ -1,5 +1,12 @@
 #include "app.h"
 
+#include "logic/components/camera.h"
+#include "logic/components/line_2d.h"
+#include "logic/components/sprite.h"
+#include "logic/components/circle.h"
+#include "logic/components/text.h"
+#include "logic/components/transform.h"
+
 namespace Nit
 {
     void SetAppInstance(App* app_instance)
@@ -13,11 +20,32 @@ namespace Nit
         NIT_CHECK_APP_CREATED
         NIT_LOG_TRACE("Creating application...");
 
-        SetTypeRegistryInstance(&app->type_registry);
-        InitTypeRegistry();
-        
         SetWindowInstance(&app->window);
         InitWindow();
+        
+        InitSystemStack();
+
+        SetTypeRegistryInstance(&app->type_registry);
+        InitTypeRegistry();
+
+        SetEntityRegistryInstance(&app->entity_registry);
+        InitEntityRegistry();
+        
+        RegisterComponentType<Transform>();
+        RegisterComponentType<Camera>();
+        RegisterComponentType<Sprite>();
+        RegisterComponentType<Circle>();
+        RegisterComponentType<Line2D>();
+        RegisterComponentType<Text>();
+        
+        SetAssetRegistryInstance(&app->asset_registry);
+        
+        if (run_callback)
+        {
+            run_callback();
+        }
+        
+        InitAssetRegistry();
         
         SetRenderer2DInstance(&app->renderer_2d);
         InitRenderer2D();
@@ -25,10 +53,6 @@ namespace Nit
         SetImGuiRendererInstance(&app->im_gui_renderer);
         InitImGui(app->window.handler);
         
-        InitEntityRegistry(app->entity_registry);
-
-        InitSystemStack();
-
         // Init time
         app->seconds          = 0;
         app->frame_count      = 0;
@@ -36,11 +60,6 @@ namespace Nit
         app->last_time = GetTime();
         
         NIT_LOG_TRACE("Application created!");
-        
-        if (run_callback)
-        {
-            run_callback();
-        }
         
         InvokeSystemCallbacks(Stage::Start, true);
         
@@ -130,31 +149,5 @@ namespace Nit
         NIT_CHECK_APP_CREATED
         SystemStack& stack = app->system_stack;
         InvokeSystemCallbacks(stack.systems, stack.next_system, app->paused || app->stopped, stage, force_enabled);
-    }
-
-    // Entity shortcuts
-    
-    Entity CreateEntity()
-    {
-        NIT_CHECK_APP_CREATED
-        return CreateEntity(app->entity_registry);
-    }
-
-    void DestroyEntity(Entity entity)
-    {
-        NIT_CHECK_APP_CREATED
-        DestroyEntity(app->entity_registry, entity);
-    }
-
-    bool IsEntityValid(Entity entity)
-    {
-        NIT_CHECK_APP_CREATED
-        return IsEntityValid(app->entity_registry, entity);
-    }
-
-    EntityGroup& GetEntityGroup(EntitySignature signature)
-    {
-        NIT_CHECK_APP_CREATED
-        return GetEntityGroup(app->entity_registry, signature);
     }
 }

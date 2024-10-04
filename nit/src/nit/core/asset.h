@@ -20,12 +20,12 @@ namespace Nit
         u32              max_elements   = DEFAULT_POOL_ELEMENT_COUNT;
     };
 
+    //TODO: Finds assets with name (returns id)
     struct AssetRegistry
     {
         Map<String, Pool>  pools;
-        Map<String, ID>    name_to_id;
         Map<ID, AssetInfo> id_to_info;
-        String             extension = "nit";
+        String             extension = ".nit";
     };
     
     void SetAssetRegistryInstance(AssetRegistry* asset_registry_instance);
@@ -35,7 +35,9 @@ namespace Nit
     void RegisterAssetType(const AssetTypeArgs<T>& args)
     {
         AssetRegistry* asset_registry = GetAssetRegistryInstance();
-        Pool& pool = asset_registry->pools.insert(GetTypeName<T>());
+        String type_name;
+        GetTypeName<T>(type_name);
+        Pool& pool = asset_registry->pools[type_name];
 
         if (!IsTypeRegistered<T>())
         {
@@ -68,7 +70,7 @@ namespace Nit
     ID DeserializeAssetFromString(const String& asset_str);
     ID DeserializeAssetFromFile(const String& file_path);
     void SerializeAssetToString(ID id, String& result);
-    void SerializeAssetToFile(ID id, const String& file_path);
+    void SerializeAssetToFile(ID id);
     
     void InitAssetRegistry();
     
@@ -77,8 +79,12 @@ namespace Nit
     template<typename T>
     Pool& GetAssetPool()
     {
-        return GetAssetPool(GetTypeName<T>());
+        String type_name;
+        GetTypeName<T>(type_name);
+        return GetAssetPool(type_name);
     }
+
+    void FindAssetsByName(const String& name, Array<ID>& asset_ids);
 
     template<typename T>
     T& GetAssetData(ID id)

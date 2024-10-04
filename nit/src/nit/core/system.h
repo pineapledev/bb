@@ -13,7 +13,8 @@ namespace Nit
     
     enum class Stage : u8
     {
-        Start
+        Run
+      , Start
       , Update
       , FixedUpdate
       , Draw
@@ -24,11 +25,11 @@ namespace Nit
 
     struct System
     {
-        String          name;
+        String           name;
         u32              priority          = 0;
         ExecutionContext context           = ExecutionContext::Runtime;
         bool             enabled           = false;
-        VoidFunc        callbacks[(u8) Stage::Count];
+        VoidFunc         callbacks[(u8) Stage::Count];
     };
     
     struct SystemStack

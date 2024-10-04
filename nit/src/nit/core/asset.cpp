@@ -27,15 +27,17 @@ namespace Nit
     void BuildAssetPath(const String& name, String& path)
     {
         //TODO: sanity checks?
-        path.append("\\").append(name).append(".").append(asset_registry->extension);
+        if (!path.empty())
+        {
+            path.append("\\");    
+        }
+        path.append(name).append(asset_registry->extension);
     }
 
     void PushAssetInfo(ID id, const String& name, const String& path, const String& type_name)
     {
         NIT_CHECK_ASSET_REGISTRY_CREATED
-        NIT_CHECK_MSG(asset_registry->name_to_id.count(name) == 0, "Name already taken!");
         NIT_CHECK_MSG(asset_registry->id_to_info.count(id) == 0, "Id already taken!");
-        asset_registry->name_to_id[name] = id;
         String final_path = path;
         BuildAssetPath(name, final_path);
         AssetInfo info = { type_name, id, name, final_path};
@@ -46,9 +48,6 @@ namespace Nit
     {
         NIT_CHECK_ASSET_REGISTRY_CREATED
         NIT_CHECK_MSG(asset_registry->id_to_info.count(id) != 0, "Id not registered!");
-        String& name = asset_registry->id_to_info[id].name;
-        NIT_CHECK_MSG(asset_registry->name_to_id.count(name) != 0, "Name not registered!");
-        asset_registry->name_to_id.erase(name);
         asset_registry->id_to_info.erase(id);
     }
 
@@ -117,8 +116,7 @@ namespace Nit
         emitter << YAML::Key << "name"      << YAML::Value << info.name;
         emitter << YAML::Key << "path"      << YAML::Value << info.path;
         emitter << YAML::EndMap;
-            
-        emitter << YAML::BeginMap;
+
         emitter << YAML::Key << info.type_name << YAML::Value << YAML::BeginMap;
         SerializeRawData(pool.type, GetPoolElementRawPtr(&pool, id), emitter);
         emitter << YAML::EndMap;
@@ -138,6 +136,7 @@ namespace Nit
             String asset_string;
             SerializeAssetToString(id, asset_string);
             file << asset_string;
+            file.flush();
             file.close();
             return;
         }
@@ -152,7 +151,7 @@ namespace Nit
         {
             const Path& dir_path = dir_entry.path();
             
-            if (dir_entry.is_directory() || dir_path.extension() != asset_registry->extension)
+            if (dir_entry.is_directory() || dir_path.extension().string() != asset_registry->extension)
             {
                 continue;
             }
@@ -167,6 +166,18 @@ namespace Nit
         NIT_CHECK_MSG(asset_registry->pools.count(type_name), "Asset type not registered!");
         Pool& pool = asset_registry->pools[type_name];
         return pool;
+    }
+
+    void FindAssetsByName(const String& name, Array<ID>& asset_ids)
+    {
+        NIT_CHECK_ASSET_REGISTRY_CREATED
+        for (const auto& [id, info] : asset_registry->id_to_info)
+        {
+            if (info.name == name)
+            {
+                asset_ids.push_back(id);
+            }
+        }
     }
 
     void DestroyAsset(ID id)

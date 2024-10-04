@@ -2,11 +2,27 @@
 
 namespace Nit
 {
-    ComponentData* FindComponentDataByName(EntityRegistry& reg, const char* name)
+#define NIT_CHECK_ENTITY_REGISTRY_CREATED NIT_CHECK(entity_registry)
+    
+    EntityRegistry* entity_registry = nullptr;
+    
+    void SetEntityRegistryInstance(EntityRegistry* entity_registry_instance)
     {
-        for (u32 i = 0; i < reg.next_component_type; ++i)
+        NIT_CHECK(entity_registry_instance);
+        entity_registry = entity_registry_instance;
+    }
+
+    EntityRegistry* GetEntityRegistryInstance()
+    {
+        NIT_CHECK_ENTITY_REGISTRY_CREATED
+        return entity_registry;
+    }
+    
+    ComponentData* FindComponentDataByName(const char* name)
+    {
+        for (u32 i = 0; i < GetEntityRegistryInstance()->next_component_type; ++i)
         {
-            ComponentData& data = reg.component_data[i];
+            ComponentData& data = GetEntityRegistryInstance()->component_data[i];
             if (data.name == name)
             {
                 return &data;
@@ -15,62 +31,62 @@ namespace Nit
         return nullptr;
     }
 
-    void InitEntityRegistry(EntityRegistry& reg)
+    void InitEntityRegistry()
     {
         for (u32 i = 0; i < MAX_ENTITIES; ++i)
         {
-            reg.available_entities.push(i);
+            GetEntityRegistryInstance()->available_entities.push(i);
         }
     }
 
-    void FinishEntityRegistry(EntityRegistry& reg)
+    void FinishEntityRegistry()
     {
-        for (u32 i = 0; i < reg.next_component_type; ++i)
+        for (u32 i = 0; i < GetEntityRegistryInstance()->next_component_type; ++i)
         {
-            ComponentData& data = reg.component_data[i];
+            ComponentData& data = GetEntityRegistryInstance()->component_data[i];
             FinishPool(&data.pool);
         }
     }
 
-    Entity CreateEntity(EntityRegistry& reg)
+    Entity CreateEntity()
     {
-        NIT_CHECK_MSG(reg.entity_count < MAX_ENTITIES, "Entity limit reached!");
-        Entity entity = reg.available_entities.front();
-        reg.available_entities.pop();
-        ++reg.entity_count;
-        reg.signatures[entity].set(0, true);
+        NIT_CHECK_MSG(GetEntityRegistryInstance()->entity_count < MAX_ENTITIES, "Entity limit reached!");
+        Entity entity = GetEntityRegistryInstance()->available_entities.front();
+        GetEntityRegistryInstance()->available_entities.pop();
+        ++GetEntityRegistryInstance()->entity_count;
+        GetEntityRegistryInstance()->signatures[entity].set(0, true);
         return entity;
     }
 
-    void DestroyEntity(EntityRegistry& reg, Entity entity)
+    void DestroyEntity(Entity entity)
     {
-        NIT_CHECK_MSG(IsEntityValid(reg, entity), "Entity is not valid!");
-        reg.signatures[entity].reset();
-        reg.available_entities.push(entity);
+        NIT_CHECK_MSG(IsEntityValid(entity), "Entity is not valid!");
+        GetEntityRegistryInstance()->signatures[entity].reset();
+        GetEntityRegistryInstance()->available_entities.push(entity);
 
-        for (u32 i = 0; i < reg.next_component_type; ++i)
+        for (u32 i = 0; i < GetEntityRegistryInstance()->next_component_type; ++i)
         {
-            ComponentData& data = reg.component_data[i];
+            ComponentData& data = GetEntityRegistryInstance()->component_data[i];
             RemovePoolElement(&data.pool, entity);
         }
         
-        --reg.entity_count;
-        reg.signatures[entity].set(0, false);
+        --GetEntityRegistryInstance()->entity_count;
+        GetEntityRegistryInstance()->signatures[entity].set(0, false);
 
-        for (auto& [signature, group] : reg.entity_groups)
+        for (auto& [signature, group] : GetEntityRegistryInstance()->entity_groups)
         {
             group.entities.erase(entity);
         }
     }
 
-    bool IsEntityValid(const EntityRegistry& reg, Entity entity)
+    bool IsEntityValid(const Entity entity)
     {
-        return entity < MAX_ENTITIES && reg.signatures[entity].test(0);
+        return entity < MAX_ENTITIES && GetEntityRegistryInstance()->signatures[entity].test(0);
     }
 
-    void EntitySignatureChanged(EntityRegistry& reg, Entity entity, EntitySignature new_entity_signature)
+    void EntitySignatureChanged(Entity entity, EntitySignature new_entity_signature)
     {
-        for (auto& [signature, group] : reg.entity_groups)
+        for (auto& [signature, group] : GetEntityRegistryInstance()->entity_groups)
         {
             if ((signature | new_entity_signature) == new_entity_signature)
             {
@@ -82,28 +98,28 @@ namespace Nit
         }
     }
 
-    EntitySignature CreateEntityGroup(EntityRegistry& reg, const Array<const char*>& types)
+    EntitySignature CreateEntityGroup(const Array<const char*>& types)
     {
-        NIT_CHECK_MSG(!reg.entity_count, "Create the group before any entity gets created!");
-        EntitySignature group_signature = BuildEntitySignature(reg, types);
+        NIT_CHECK_MSG(!GetEntityRegistryInstance()->entity_count, "Create the group before any entity gets created!");
+        EntitySignature group_signature = BuildEntitySignature(types);
 
-        if (reg.entity_groups.count(group_signature) != 0)
+        if (GetEntityRegistryInstance()->entity_groups.count(group_signature) != 0)
         {
             return group_signature;
         }
         
-        EntityGroup* group = &reg.entity_groups[group_signature];
+        EntityGroup* group = &GetEntityRegistryInstance()->entity_groups[group_signature];
         group->signature = group_signature;
         return group_signature;
     }
 
-    EntitySignature BuildEntitySignature(EntityRegistry& reg, const Array<const char*>& types)
+    EntitySignature BuildEntitySignature(const Array<const char*>& types)
     {
         EntitySignature group_signature;
         group_signature.set(0, true);
         for (const char* type_name : types)
         {
-            if (ComponentData* data = FindComponentDataByName(reg, type_name))
+            if (ComponentData* data = FindComponentDataByName(type_name))
             {
                 group_signature.set(data->type, true);
             }
@@ -111,8 +127,8 @@ namespace Nit
         return group_signature;
     }
 
-    EntityGroup& GetEntityGroup(EntityRegistry& reg, EntitySignature signature)
+    EntityGroup& GetEntityGroup(EntitySignature signature)
     {
-        return reg.entity_groups[signature];
+        return GetEntityRegistryInstance()->entity_groups[signature];
     }
 }
