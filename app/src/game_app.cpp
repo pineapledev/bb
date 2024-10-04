@@ -117,14 +117,6 @@ void SerializeDummy(const Dummy* dummy, YAML::Emitter& emitter)
 
 int main(int argc, char** argv)
 {
-    // AssetRegistry registry;
-    // SetAssetRegistryInstance(&registry);
-    // RegisterAssetType("dummy", SerializeDummy, LoadDummy, FreeDummy);
-    // auto [id, data] = CreateAsset<Dummy>("TheDummyAsset");
-    // NIT_LOG_TRACE("%s", data.name.c_str()); // Alex
-    // LoadAssets();
-    // NIT_LOG_TRACE("%s", data.name.c_str()); // Alex loaded
-    
     App app_instance;
     app_instance.im_gui_enabled = true;
     //app_instance.im_gui_renderer.show_demo_window = true;
