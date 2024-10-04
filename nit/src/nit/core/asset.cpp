@@ -74,9 +74,11 @@ namespace Nit
                 
                 if (YAML::Node asset_node = node[asset_info.type_name])
                 {
+                    PushAssetInfo(asset_info.id, asset_info.name, asset_info.path, asset_info.type_name);
                     Pool& pool = GetAssetPool(asset_info.type_name);
                     InsertPoolElementRawWithID(&pool, asset_info.id);
-                    PushAssetInfo(asset_info.id, asset_info.name, asset_info.path, asset_info.type_name);
+                    void* data = GetRawData(pool.type, pool.elements, pool.element_id_to_index[asset_info.id]);
+                    DeserializeRawData(pool.type, data, asset_node);
                 }
             }
         }
