@@ -18,7 +18,7 @@ namespace Nit
     
     void SetRawData(const Type* type, void* array, u32 index, void* data)
     {
-        NIT_CHECK(type && type->fn_set_data && array && data);
+        NIT_CHECK(type && type->fn_set_data && array);
         type->fn_set_data(array, index, data);
     }
 

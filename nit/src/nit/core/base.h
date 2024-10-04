@@ -130,6 +130,10 @@ namespace Nit
 
     using InputFile = std::ifstream;
 
+    using Path = std::filesystem::path;
+
+    using RecursiveDirectoryIterator = std::filesystem::recursive_directory_iterator;
+    
     template<typename T>
     using UniquePtr = std::unique_ptr<T>;
 
@@ -176,6 +180,11 @@ namespace Nit
         str.replace(start_pos, from.length(), to);
         
         return true;
+    }
+
+    inline Path GetWorkingDirectory()
+    {
+        return std::filesystem::current_path();
     }
 }
 

@@ -29,7 +29,7 @@ namespace Nit
     
     void FinishPool(Pool* pool);
     
-    void InsertPoolElementRawWithID(Pool* pool, ID element_id, void* data);
+    void InsertPoolElementRawWithID(Pool* pool, ID element_id, void* data = nullptr);
 
     template<typename T>
     void InsertPoolElementWithID(Pool* pool, ID element_id, T data)

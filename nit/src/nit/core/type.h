@@ -42,9 +42,9 @@ namespace Nit
     template<typename T>
     void SetLoadFunction(Type* type, FnLoad<T> fn_load)
     {
-        NIT_CHECK(type && fn_load);
+        NIT_CHECK(type);
         type->fn_load = fn_load;
-        if (!type->fn_invoke_load_free)
+        if (fn_load && !type->fn_invoke_load_free)
         {
             SetInvokeLoadFreeFunction<T>(type);
         }
@@ -56,9 +56,9 @@ namespace Nit
     template<typename T>
     void SetFreeFunction(Type* type, FnFree<T> fn_free)
     {
-        NIT_CHECK(type && fn_free);
+        NIT_CHECK(type);
         type->fn_free = fn_free;
-        if (!type->fn_invoke_load_free)
+        if (fn_free && !type->fn_invoke_load_free)
         {
             SetInvokeLoadFreeFunction<T>(type);
         }
@@ -68,12 +68,17 @@ namespace Nit
     using FnSerialize   = void  (*) (const T*, YAML::Emitter& emitter);
 
     template<typename T>
-    void SetTypeSerializeFunction(Type* type, FnSerialize<T> fn_serialize)
+    void SetSerializeFunction(Type* type, FnSerialize<T> fn_serialize)
     {
-        NIT_CHECK(type && fn_serialize);
+        NIT_CHECK(type);
         
         type->fn_serialize = fn_serialize;
-            
+
+        if (!fn_serialize)
+        {
+            return;
+        }
+        
         type->fn_invoke_serialize = [] (void* fn, void* data, YAML::Emitter& emitter) {
             FnSerialize<T> casted_fn = static_cast<FnSerialize<T>>(fn);
             const T* casted_data = static_cast<const T*>(data);
@@ -85,12 +90,17 @@ namespace Nit
     using FnDeserialize = void  (*) (T*, const YAML::Node& node);
 
     template<typename T>
-    void SetTypeDeserializeFunction(Type* type, FnDeserialize<T> fn_deserialize)
+    void SetDeserializeFunction(Type* type, FnDeserialize<T> fn_deserialize)
     {
-        NIT_CHECK(type && fn_deserialize);
+        NIT_CHECK(type);
 
         type->fn_deserialize = fn_deserialize;
-            
+
+        if (!fn_deserialize)
+        {
+            return;
+        }
+        
         type->fn_invoke_deserialize = [] (void* fn, void* data, const YAML::Node& node) {
             FnDeserialize<T> casted_fn = static_cast<FnDeserialize<T>>(fn);
             T* casted_data = static_cast<T*>(data);
@@ -123,9 +133,11 @@ namespace Nit
         GetTypeName<T>(type.name);
         
         type.fn_set_data = [](void* elements, u32 element_index, void* data) {
-            T* casted_data     = static_cast<T*>(data);
+
+            static T default_data;
+            T* casted_data = data != nullptr ? static_cast<T*>(data) : nullptr;
             T* casted_elements = static_cast<T*>(elements);
-            casted_elements[element_index] = *casted_data;
+            casted_elements[element_index] = casted_data ? *casted_data : default_data;
         };
         
         type.fn_get_data = [](void* elements, u32 element_index) -> void* {
@@ -136,12 +148,12 @@ namespace Nit
         
         if (auto fn_serialize = args.fn_serialize)
         {
-            SetTypeSerializeFunction(&type, fn_serialize);
+            SetSerializeFunction(&type, fn_serialize);
         }
 
         if (auto fn_deserialize = args.fn_deserialize)
         {
-            SetTypeDeserializeFunction(&type, fn_deserialize);
+            SetDeserializeFunction(&type, fn_deserialize);
         }
 
         if (auto fn_load = args.fn_load)
