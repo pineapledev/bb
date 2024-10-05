@@ -1,5 +1,6 @@
 #include "app.h"
 
+#include "logic/systems.h"
 #include "logic/components/camera.h"
 #include "logic/components/line_2d.h"
 #include "logic/components/sprite.h"
@@ -24,7 +25,7 @@ namespace Nit
         InitWindow();
         
         InitSystemStack();
-
+        
         SetTypeRegistryInstance(&app->type_registry);
         InitTypeRegistry();
 
@@ -37,8 +38,11 @@ namespace Nit
         RegisterComponentType<Circle>();
         RegisterComponentType<Line2D>();
         RegisterComponentType<Text>();
+
+        CreateDrawSystem();
         
         SetAssetRegistryInstance(&app->asset_registry);
+        RegisterTexture2DAsset();
         
         if (run_callback)
         {

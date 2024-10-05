@@ -18,52 +18,8 @@ int main(int argc, char** argv)
 
 // -----------------------------------------------------------------
 
-struct Dummy
-{
-    String name;
-};
-
-void LoadDummy(Dummy* dummy)
-{
-    dummy->name.append(" loaded");
-}
-
-void FreeDummy(Dummy* dummy)
-{
-    dummy->name.append(" unloaded");
-}
-
-void SerializeDummy(const Dummy* dummy, YAML::Emitter& emitter)
-{
-    emitter << YAML::Key << "name" << YAML::Value << dummy->name;
-}
-
-void DeserializeDummy(Dummy* dummy, const YAML::Node& node)
-{
-    dummy->name = node["name"].as<String>();
-}
-
-enum class TestEnum : u8
-{
-    TestEnumA,
-    TestEnumB,
-    TestEnumC
-};
-
 void OnApplicationRun()
 {
-    RegisterAssetType<Dummy>({ LoadDummy, FreeDummy, SerializeDummy, DeserializeDummy });
-
-    RegisterEnumType<TestEnum>();
-    RegisterEnumValue<TestEnum>("TestEnumA", TestEnum::TestEnumA);
-    RegisterEnumValue<TestEnum>("TestEnumB", TestEnum::TestEnumB);
-    RegisterEnumValue<TestEnum>("TestEnumC", TestEnum::TestEnumC);
-    
-    String value_b = GetStringFromEnumValue<TestEnum>(TestEnum::TestEnumB);
-    TestEnum value_c = GetEnumValueFromString<TestEnum>("TestEnumC");
-    
-    CreateDrawSystem();
-    
     //Create game system
     CreateSystem("Game", 1);
     SetSystemCallback(GameStart,   Stage::Start);
@@ -94,13 +50,6 @@ SharedPtr<Font>      font;
 
 void GameStart()
 {
-    if (ID id = FindAssetByName("alex"))
-    {
-        auto& alex = GetAssetData<Dummy>(id);
-        LoadAsset(id);
-        FreeAsset(id);
-    }
-    
     texture = CreateSharedPtr<Texture2D>();
     texture->image_path = "assets/bola.jpg";
     LoadTexture2D(texture.get());

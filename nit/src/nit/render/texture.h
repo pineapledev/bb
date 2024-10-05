@@ -41,7 +41,9 @@ namespace Nit
         WrapMode     wrap_mode_v       = WrapMode::Repeat;
     };
 
-    void RegisterTexture2D();
+    void RegisterTexture2DAsset();
+    void SerializeTexture2D(const Texture2D* texture, YAML::Emitter& emitter);
+    void DeserializeTexture2D(Texture2D* texture, const YAML::Node& node);
     void LoadTexture2D(Texture2D* texture);
     void FreeTexture2D(Texture2D* texture);
     void BindTexture2D(const Texture2D& texture, u32 slot = 0);

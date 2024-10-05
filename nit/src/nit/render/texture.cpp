@@ -47,8 +47,52 @@ namespace Nit
         }
     }
 
-    void RegisterTexture2D()
+    void RegisterTexture2DAsset()
     {
+        RegisterEnumType<MinFilter>();
+        RegisterEnumValue<MinFilter>("Linear", MinFilter::Linear);
+        RegisterEnumValue<MinFilter>("Nearest",MinFilter::Nearest);
+        
+        RegisterEnumType<MagFilter>();
+        RegisterEnumValue<MagFilter>("Linear", MagFilter::Linear);
+        RegisterEnumValue<MagFilter>("Nearest",MagFilter::Nearest);
+
+        RegisterEnumType<WrapMode>();
+        RegisterEnumValue<WrapMode>("Repeat",     WrapMode::Repeat);
+        RegisterEnumValue<WrapMode>("ClampToEdge",WrapMode::ClampToEdge);
+        
+        RegisterEnumType<TextureCoordinate>();
+        RegisterEnumValue<TextureCoordinate>("U",TextureCoordinate::U);
+        RegisterEnumValue<TextureCoordinate>("V",TextureCoordinate::V);
+        
+        RegisterAssetType<Texture2D>({
+              LoadTexture2D
+            , FreeTexture2D
+            , SerializeTexture2D
+            , DeserializeTexture2D
+        });
+    }
+
+    void SerializeTexture2D(const Texture2D* texture, YAML::Emitter& emitter)
+    {
+        using namespace YAML;
+        
+        emitter << Key << "image_path"       << Value << texture->image_path;
+        emitter << Key << "is_white_texture" << Value << texture->is_white_texture;
+        emitter << Key << "mag_filter"       << Value << GetStringFromEnumValue<MagFilter> (texture->mag_filter);
+        emitter << Key << "min_filter"       << Value << GetStringFromEnumValue<MinFilter> (texture->min_filter);
+        emitter << Key << "wrap_mode_u"      << Value << GetStringFromEnumValue<WrapMode>  (texture->wrap_mode_u);
+        emitter << Key << "wrap_mode_u"      << Value << GetStringFromEnumValue<WrapMode>  (texture->wrap_mode_v);
+    }
+
+    void DeserializeTexture2D(Texture2D* texture, const YAML::Node& node)
+    {
+        texture->image_path       = node["image_path"]                                     .as<String>();
+        texture->is_white_texture = node["is_white_texture"]                               .as<bool>();
+        texture->mag_filter       = GetEnumValueFromString<MagFilter> (node["mag_filter"]  .as<String>());
+        texture->min_filter       = GetEnumValueFromString<MinFilter> (node["min_filter"]  .as<String>());
+        texture->wrap_mode_u      = GetEnumValueFromString<WrapMode>  (node["wrap_mode_u"] .as<String>());
+        texture->wrap_mode_u      = GetEnumValueFromString<WrapMode>  (node["wrap_mode_u"] .as<String>());
     }
 
     void FreeTextureImage(Texture2D* texture)
@@ -103,8 +147,7 @@ namespace Nit
             data_format = GL_RGB;
         }
 
-        void* data_to_upload = nullptr;
-        data_to_upload = !texture->is_white_texture ? (void*) texture->pixel_data : (void*) &WHITE_TEXTURE_DATA;
+        void* data_to_upload = !texture->is_white_texture ? (void*) texture->pixel_data : (void*) &WHITE_TEXTURE_DATA;
 
         if (!data_to_upload)
         {

@@ -64,7 +64,7 @@ namespace Nit
     }
     
     void BuildAssetPath(const String& name, String& path);
-    void PushAssetInfo(const AssetInfo& asset_info, bool build_path);
+    void PushAssetInfo(AssetInfo& asset_info, bool build_path);
     void EraseAssetInfo(ID id);
     
     ID DeserializeAssetFromString(const String& asset_str);
