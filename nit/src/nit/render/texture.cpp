@@ -103,6 +103,15 @@ namespace Nit
             data_format = GL_RGB;
         }
 
+        void* data_to_upload = nullptr;
+        data_to_upload = !texture->is_white_texture ? (void*) texture->pixel_data : (void*) &WHITE_TEXTURE_DATA;
+
+        if (!data_to_upload)
+        {
+            NIT_CHECK_MSG(false, "Trying to load empty texture!");
+            return;
+        }
+        
         glCreateTextures(GL_TEXTURE_2D, 1, &texture->id);
         glTextureStorage2D(texture->id, 1, internal_format, texture->width, texture->height);
 
@@ -113,10 +122,6 @@ namespace Nit
         SetWrapMode(texture->id, TextureCoordinate::V, texture->wrap_mode_v);
         
         texture->size = {static_cast<f32>(texture->width), static_cast<f32>(texture->height)};
-        
-        void* data_to_upload = nullptr;
-        data_to_upload = !texture->is_white_texture ? (void*) texture->pixel_data : (void*) &WHITE_TEXTURE_DATA;
-        NIT_CHECK(data_to_upload);
         
         glTextureSubImage2D(texture->id, 0, 0, 0, texture->width, texture->height, data_format,
             GL_UNSIGNED_BYTE, data_to_upload);
