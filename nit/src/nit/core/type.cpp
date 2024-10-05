@@ -76,15 +76,27 @@ namespace Nit
         type_registry->count = 0;
     }
 
-    bool IsTypeRegistered(const String& type_name)
+    bool IsTypeRegistered(u64 type_hash)
     {
         NIT_CHECK(type_registry);
-        return type_registry->name_to_index.count(type_name) != 0;
+        return type_registry->hash_to_index.count(type_hash) != 0;
     }
 
-    Type* GetType(const String& type_name)
+    bool IsTypeRegistered(const String& name)
     {
         NIT_CHECK(type_registry && type_registry->types);
-        return &type_registry->types[type_registry->name_to_index[type_name]];
+        return type_registry->name_to_index.count(name) != 0;
+    }
+
+    Type* GetType(u64 type_hash)
+    {
+        NIT_CHECK(type_registry && type_registry->types);
+        return &type_registry->types[type_registry->hash_to_index.at(type_hash)];
+    }
+
+    Type* GetType(const String& name)
+    {
+        NIT_CHECK(type_registry && type_registry->types);
+        return &type_registry->types[type_registry->name_to_index.at(name)];
     }
 }

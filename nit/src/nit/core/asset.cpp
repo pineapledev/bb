@@ -18,10 +18,10 @@ namespace Nit
         return asset_registry;
     }
 
-    bool IsAssetTypeRegistered(const String& type_name)
+    bool IsAssetTypeRegistered(u64 type_hash)
     {
         NIT_CHECK_ASSET_REGISTRY_CREATED
-        return asset_registry->pools.count(type_name) != 0;
+        return asset_registry->pools.count(type_hash) != 0;
     }
 
     void BuildAssetPath(const String& name, String& path)
@@ -160,12 +160,21 @@ namespace Nit
         }
     }
 
+    Pool& GetAssetPool(u64 type_hash)
+    {
+        NIT_CHECK_ASSET_REGISTRY_CREATED
+        NIT_CHECK_MSG(asset_registry->pools.count(type_hash), "Asset type not registered!");
+        Pool& pool = asset_registry->pools[type_hash];
+        return pool;
+    }
+
     Pool& GetAssetPool(const String& type_name)
     {
         NIT_CHECK_ASSET_REGISTRY_CREATED
-        NIT_CHECK_MSG(asset_registry->pools.count(type_name), "Asset type not registered!");
-        Pool& pool = asset_registry->pools[type_name];
-        return pool;
+        Type* type = GetType(type_name);
+        u64 hash = type->hash;
+        NIT_CHECK(type && asset_registry->pools.count(hash));
+        return asset_registry->pools[hash];
     }
 
     void FindAssetsByName(const String& name, Array<ID>& asset_ids)

@@ -23,7 +23,7 @@ namespace Nit
     //TODO: Finds assets with name (returns id)
     struct AssetRegistry
     {
-        Map<String, Pool>  pools;
+        Map<u64, Pool>     pools;
         Map<ID, AssetInfo> id_to_info;
         String             extension = ".nit";
     };
@@ -35,9 +35,7 @@ namespace Nit
     void RegisterAssetType(const AssetTypeArgs<T>& args)
     {
         AssetRegistry* asset_registry = GetAssetRegistryInstance();
-        String type_name;
-        GetTypeName<T>(type_name);
-        Pool& pool = asset_registry->pools[type_name];
+        Pool& pool = asset_registry->pools[GetTypeHash<T>()];
 
         if (!IsTypeRegistered<T>())
         {
@@ -53,14 +51,12 @@ namespace Nit
         InitPool<T>(&pool, args.max_elements);
     }
 
-    bool IsAssetTypeRegistered(const String& type_name);
+    bool IsAssetTypeRegistered(u64 type_hash);
     
     template<typename T>
     bool IsAssetTypeRegistered()
     {
-        String type_name;
-        GetTypeName<T>(type_name);
-        return IsAssetTypeRegistered(type_name);
+        return IsAssetTypeRegistered(GetTypeHash<T>());
     }
     
     void BuildAssetPath(const String& name, String& path);
@@ -74,14 +70,14 @@ namespace Nit
     
     void InitAssetRegistry();
     
+    Pool& GetAssetPool(u64 type_hash);
+    
     Pool& GetAssetPool(const String& type_name);
 
     template<typename T>
     Pool& GetAssetPool()
     {
-        String type_name;
-        GetTypeName<T>(type_name);
-        return GetAssetPool(type_name);
+        return GetAssetPool(GetTypeHash<T>());
     }
 
     void FindAssetsByName(const String& name, Array<ID>& asset_ids);

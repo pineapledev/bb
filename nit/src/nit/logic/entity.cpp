@@ -17,16 +17,16 @@ namespace Nit
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         return entity_registry;
     }
-    
-    ComponentData* FindComponentDataByName(const char* name)
+
+    ComponentPool* FindComponentPool(const Type* type)
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
-        for (u32 i = 0; i < entity_registry->next_component_type; ++i)
+        for (u32 i = 0; i < entity_registry->next_component_type_index; ++i)
         {
-            ComponentData& data = entity_registry->component_data[i];
-            if (data.name == name)
+            ComponentPool& component_pool = entity_registry->component_pool[i];
+            if (component_pool.data_pool.type == type)
             {
-                return &data;
+                return &component_pool;
             }
         }
         return nullptr;
@@ -44,10 +44,10 @@ namespace Nit
     void FinishEntityRegistry()
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
-        for (u32 i = 0; i < entity_registry->next_component_type; ++i)
+        for (u32 i = 0; i < entity_registry->next_component_type_index; ++i)
         {
-            ComponentData& data = entity_registry->component_data[i];
-            FinishPool(&data.pool);
+            ComponentPool& data = entity_registry->component_pool[i];
+            FinishPool(&data.data_pool);
         }
     }
 
@@ -69,10 +69,10 @@ namespace Nit
         entity_registry->signatures[entity].reset();
         entity_registry->available_entities.push(entity);
 
-        for (u32 i = 0; i < entity_registry->next_component_type; ++i)
+        for (u32 i = 0; i < entity_registry->next_component_type_index; ++i)
         {
-            ComponentData& data = entity_registry->component_data[i];
-            RemovePoolElement(&data.pool, entity);
+            ComponentPool& component_pool = entity_registry->component_pool[i];
+            RemovePoolElement(&component_pool.data_pool, entity);
         }
         
         --entity_registry->entity_count;
@@ -105,11 +105,11 @@ namespace Nit
         }
     }
 
-    EntitySignature CreateEntityGroup(const Array<const char*>& types)
+    EntitySignature CreateEntityGroup(const Array<u64>& type_hashes)
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         NIT_CHECK_MSG(!entity_registry->entity_count, "Create the group before any entity gets created!");
-        EntitySignature group_signature = BuildEntitySignature(types);
+        EntitySignature group_signature = BuildEntitySignature(type_hashes);
 
         if (entity_registry->entity_groups.count(group_signature) != 0)
         {
@@ -121,16 +121,16 @@ namespace Nit
         return group_signature;
     }
 
-    EntitySignature BuildEntitySignature(const Array<const char*>& types)
+    EntitySignature BuildEntitySignature(const Array<u64>& type_hashes)
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         EntitySignature group_signature;
         group_signature.set(0, true);
-        for (const char* type_name : types)
+        for (u64 type_hash : type_hashes)
         {
-            if (ComponentData* data = FindComponentDataByName(type_name))
+            if (ComponentPool* pool = FindComponentPool(GetType(type_hash)))
             {
-                group_signature.set(data->type, true);
+                group_signature.set(pool->type_index, true);
             }
         }
         return group_signature;

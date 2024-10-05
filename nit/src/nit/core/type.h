@@ -11,7 +11,8 @@ namespace Nit
         using FnInvokeLoadFree    = void  (*) (void*, void*);
         using FnInvokeSerialize   = void  (*) (void*, void*, YAML::Emitter& emitter);
         using FnInvokeDeserialize = void  (*) (void*, void*, const YAML::Node& node);
-        
+
+        u64                 hash                  = 0;
         String              name                  = "Invalid";
         FnSetData           fn_set_data           = nullptr;
         FnGetData           fn_get_data           = nullptr;
@@ -118,19 +119,21 @@ namespace Nit
     };
 
     template<typename T>
-    void GetTypeName(String& str)
+    u64 GetTypeHash()
     {
-        static const String STRUCT_TEXT = "struct "; 
-        static const String CLASS_TEXT  = "class "; 
-        str = typeid(T).name();
-        Replace(str, STRUCT_TEXT, "");
-        Replace(str, CLASS_TEXT , "");
+        return typeid(T).hash_code();
     }
     
     template<typename T>
     void InitType(Type& type, const TypeArgs<T>& args)
     {
-        GetTypeName<T>(type.name);
+        type.hash = GetTypeHash<T>();
+        
+        static const String STRUCT_TEXT = "struct "; 
+        static const String CLASS_TEXT  = "class "; 
+        type.name = typeid(T).name();
+        Replace(type.name, STRUCT_TEXT, "");
+        Replace(type.name, CLASS_TEXT , "");
         
         type.fn_set_data = [](void* elements, u32 element_index, void* data) {
 
@@ -180,7 +183,7 @@ namespace Nit
         T* casted_array = static_cast<T*>(array);
         casted_array[index] = data;
     }
-
+    
     template<typename T>
     T& GetData(void* array, u32 index)
     {
@@ -193,7 +196,8 @@ namespace Nit
         Type*             types         = nullptr;
         u32               count         = 0;
         u32               max           = 0;
-        Map<String, u32>  name_to_index = {};
+        Map<u64, u32>     hash_to_index = {};
+        Map<String, u64>  name_to_index = {};
     };
 
     void SetTypeRegistryInstance(TypeRegistry* type_registry_instance);
@@ -213,28 +217,29 @@ namespace Nit
         }
         Type& type = type_registry->types[type_registry->count]; 
         InitType(type, args);
+        NIT_CHECK(type_registry->hash_to_index.count(type.hash) == 0);
+        type_registry->hash_to_index[type.hash] = type_registry->count;
         NIT_CHECK(type_registry->name_to_index.count(type.name) == 0);
         type_registry->name_to_index[type.name] = type_registry->count;
         ++type_registry->count;
     }
 
-    bool IsTypeRegistered(const String& type_name);
+    bool IsTypeRegistered(u64 type_hash);
+    bool IsTypeRegistered(const String& name);
     
     template <typename T>
     bool IsTypeRegistered()
     {
-        String type_name;
-        GetTypeName<T>(type_name);
-        return IsTypeRegistered(type_name);
+        return IsTypeRegistered(GetTypeHash<T>());
     }
     
-    Type* GetType(const String& type_name);
+    Type* GetType(u64 type_hash);
+    
+    Type* GetType(const String& name);
     
     template <typename T>
     Type* GetType()
     {
-        String type_name;
-        GetTypeName<T>(type_name);
-        return GetType(type_name);
+        return GetType(GetTypeHash<T>());
     }
 }

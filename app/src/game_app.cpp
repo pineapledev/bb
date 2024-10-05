@@ -81,7 +81,7 @@ void GameStart()
 {
     if (ID id = FindAssetByName("alex"))
     {
-        GetAssetData<Dummy>(id);
+        auto& alex = GetAssetData<Dummy>(id);
         LoadAsset(id);
         FreeAsset(id);
     }
