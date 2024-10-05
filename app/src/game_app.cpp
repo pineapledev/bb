@@ -101,8 +101,11 @@ void GameStart()
         FreeAsset(id);
     }
     
-    texture = CreateSharedPtr<Texture2D>("assets/bola.jpg"); 
-    font    = CreateSharedPtr<Font>("assets/AlbertSans-VariableFont_wght.ttf");
+    texture = CreateSharedPtr<Texture2D>();
+    texture->image_path = "assets/bola.jpg";
+    LoadTexture2D(texture.get());
+    
+    font = CreateSharedPtr<Font>("assets/AlbertSans-VariableFont_wght.ttf");
     
     Entity camera_entity = CreateEntity();
     AddComponent<Camera>(camera_entity);

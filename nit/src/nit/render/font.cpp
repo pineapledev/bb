@@ -87,8 +87,12 @@ namespace Nit
         }
 
         atlas = CreateSharedPtr<Texture2D>();
-        atlas->UploadToGPU(pixels_rgb, WIDTH, HEIGHT, 4);
-
+        atlas->pixel_data = pixels_rgb;
+        atlas->width      = WIDTH;
+        atlas->height     = HEIGHT;
+        atlas->channels   = 4;
+        LoadTexture2D(atlas.get());
+        
         delete[] pixels_rgb;
         delete[] pixels_alpha;
         delete[] buffer;

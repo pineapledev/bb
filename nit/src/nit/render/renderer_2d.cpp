@@ -15,7 +15,7 @@ namespace Nit
     i32  AssignTextureSlot(const SharedPtr<Texture2D>& texture);
     void TryUseDefaultMaterial(Shape shape);
     void SetCurrentShape(Shape shape_to_draw);
-
+    
     Renderer2D* renderer_2d = nullptr;
     
     void SetRenderer2DInstance(Renderer2D* renderer_2d_instance)
@@ -77,8 +77,9 @@ namespace Nit
 
             // White texture
             renderer_2d->white_texture = CreateSharedPtr<Texture2D>();
-            constexpr u32 white_texture_data = 0xffffffff;
-            renderer_2d->white_texture->UploadToGPU(&white_texture_data, 1, 1, 4);
+            renderer_2d->white_texture->is_white_texture = true;
+            LoadTexture2D(renderer_2d->white_texture.get());
+            
             renderer_2d->textures_to_bind[0] = renderer_2d->white_texture;
 
             // Texture slots
@@ -198,7 +199,9 @@ namespace Nit
         {
             NIT_CHECK(renderer_2d->default_material);
             for (u32 i = 0; i < renderer_2d->last_texture_slot; i++)
-                renderer_2d->textures_to_bind[i]->Bind(i);
+            {
+                BindTexture2D(*renderer_2d->textures_to_bind[i], i);
+            }
 
             renderer_2d->default_material->SetConstantSampler2D("u_Textures[0]", &renderer_2d->texture_slots.front(),
                                                                MAX_TEXTURE_SLOTS);
@@ -232,7 +235,9 @@ namespace Nit
         {
             NIT_CHECK(renderer_2d->default_material);
             for (u32 i = 0; i < renderer_2d->last_texture_slot; i++)
-                renderer_2d->textures_to_bind[i]->Bind(i);
+            {
+                BindTexture2D(*renderer_2d->textures_to_bind[i], i);
+            }
 
             renderer_2d->default_material->SetConstantSampler2D("u_Textures[0]", &renderer_2d->texture_slots.front(),
                                                                MAX_TEXTURE_SLOTS);

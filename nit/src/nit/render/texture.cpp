@@ -1,81 +1,16 @@
 #include "texture.h"
 
 #ifdef NIT_GRAPHICS_API_OPENGL
+
 #include <glad/glad.h>
-#endif
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
 namespace Nit
 {
-    Image::Image() = default;
-
-    Image::Image(const char* file_path)
-    {
-        Load(file_path);
-    }
-
-    Image::Image(Image&& other) noexcept
-        : data(other.data)
-          , width(other.width)
-          , height(other.height)
-          , channels(other.channels)
-    {
-        other.data = nullptr;
-    }
-
-    Image::~Image()
-    {
-        Free();
-    }
-
-    Image& Image::operator=(Image&& other) noexcept
-    {
-        data = other.data;
-        width = other.width;
-        height = other.height;
-        channels = other.channels;
-
-        other.data = nullptr;
-        return *this;
-    }
-
-    void Image::Load(const char* file_path)
-    {
-        if (data)
-        {
-            Free();
-        }
-
-        stbi_set_flip_vertically_on_load(1);
-        i32 w, h, c;
-        data = stbi_load(file_path, &w, &h, &c, 0);
-
-        if (!data)
-        {
-            NIT_CHECK_MSG(false, "Image not found!");
-            return;
-        }
-
-        width = static_cast<u32>(w);
-        height = static_cast<u32>(h);
-        channels = static_cast<u32>(c);
-    }
-
-    void Image::Free()
-    {
-        if (!data)
-        {
-            return;
-        }
-        stbi_image_free(data);
-        data = nullptr;
-    }
-
     void SetMagFilter(const u32 texture_id, const MagFilter mag_filter)
     {
-#ifdef NIT_GRAPHICS_API_OPENGL
         switch (mag_filter)
         {
         case MagFilter::Linear:
@@ -84,12 +19,10 @@ namespace Nit
         case MagFilter::Nearest:
             glTextureParameteri(texture_id, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         }
-#endif
     }
 
     void SetMinFilter(const u32 texture_id, const MinFilter mag_filter)
     {
-#ifdef NIT_GRAPHICS_API_OPENGL
         switch (mag_filter)
         {
         case MinFilter::Linear:
@@ -98,12 +31,10 @@ namespace Nit
         case MinFilter::Nearest:
             glTextureParameteri(texture_id, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         }
-#endif
     }
 
     void SetWrapMode(const u32 texture_id, const TextureCoordinate texture_coordinate, const WrapMode wrap_mode)
     {
-#ifdef NIT_GRAPHICS_API_OPENGL
         const GLenum coord = texture_coordinate == TextureCoordinate::U ? GL_TEXTURE_WRAP_S : GL_TEXTURE_WRAP_T;
 
         switch (wrap_mode)
@@ -114,87 +45,112 @@ namespace Nit
         case WrapMode::ClampToEdge:
             glTextureParameteri(texture_id, coord, GL_CLAMP_TO_EDGE);
         }
-#endif
     }
 
-    Texture2D::Texture2D() = default;
-
-    Texture2D::Texture2D(const void* data, u32 width, u32 height, u32 channels, const Texture2DCfg& cfg /*= {}*/)
+    void RegisterTexture2D()
     {
-        UploadToGPU(data, width, height, channels, cfg);
     }
 
-    Texture2D::Texture2D(const Image& image, const Texture2DCfg& cfg /*= {}*/)
+    void FreeTextureImage(Texture2D* texture)
     {
-        UploadToGPU(image, cfg);
-    }
-
-    Texture2D::~Texture2D()
-    {
-#ifdef NIT_GRAPHICS_API_OPENGL
-        glDeleteTextures(1, &id);
-#endif
-    }
-
-    void Texture2D::UploadToGPU(const void* data, u32 width, u32 height, u32 channels, const Texture2DCfg& cfg)
-    {
-#ifdef NIT_GRAPHICS_API_OPENGL
-        NIT_CHECK_MSG(data, "Missing texture data!");
-        NIT_CHECK_MSG(width && height, "Invalid width or height!");
-
-        if (uploaded)
+        if (!texture->pixel_data || !texture->loaded_from_image)
         {
-            glDeleteTextures(1, &id);
-            uploaded = false;
+            return;
+        }
+        stbi_image_free(texture->pixel_data);
+        texture->pixel_data = nullptr;
+    }
+
+    void LoadTexture2D(Texture2D* texture)
+    {
+        if (texture->loaded)
+        {
+            FreeTexture2D(texture);
+        }
+
+        static constexpr u32 WHITE_TEXTURE_DATA = 0xffffffff;
+
+        if (texture->is_white_texture)
+        {
+            texture->width    = 1;
+            texture->height   = 1;
+            texture->channels = 4;
+        }
+        else if (!texture->image_path.empty())
+        {
+            stbi_set_flip_vertically_on_load(1);
+            i32 width, height, channels;
+
+            texture->pixel_data = stbi_load(texture->image_path.c_str(), &width, &height, &channels, 0);
+
+            texture->width    = static_cast<u32>(width);
+            texture->height   = static_cast<u32>(height);
+            texture->channels = static_cast<u32>(channels);
+
+            texture->loaded_from_image = true;
         }
 
         GLenum internal_format = 0, data_format = 0;
-
-        if (channels == 4)
+        
+        if (texture->channels == 4)
         {
             internal_format = GL_RGBA8;
             data_format = GL_RGBA;
         }
-        else if (channels == 3)
+        else if (texture->channels == 3)
         {
             internal_format = GL_RGB8;
             data_format = GL_RGB;
         }
 
-        glCreateTextures(GL_TEXTURE_2D, 1, &id);
-        glTextureStorage2D(id, 1, internal_format, width, height);
+        glCreateTextures(GL_TEXTURE_2D, 1, &texture->id);
+        glTextureStorage2D(texture->id, 1, internal_format, texture->width, texture->height);
 
-        SetMinFilter(id, cfg.min_filter);
-        SetMagFilter(id, cfg.mag_filter);
+        SetMinFilter(texture->id, texture->min_filter);
+        SetMagFilter(texture->id, texture->mag_filter);
 
-        SetWrapMode(id, TextureCoordinate::U, cfg.wrap_mode_u);
-        SetWrapMode(id, TextureCoordinate::V, cfg.wrap_mode_v);
-
-        size = {static_cast<f32>(width), static_cast<f32>(height)};
-        glTextureSubImage2D(id, 0, 0, 0, width, height,
-                            data_format, GL_UNSIGNED_BYTE, data);
-
-        uploaded = true;
-#endif
+        SetWrapMode(texture->id, TextureCoordinate::U, texture->wrap_mode_u);
+        SetWrapMode(texture->id, TextureCoordinate::V, texture->wrap_mode_v);
+        
+        texture->size = {static_cast<f32>(texture->width), static_cast<f32>(texture->height)};
+        
+        void* data_to_upload = nullptr;
+        data_to_upload = !texture->is_white_texture ? (void*) texture->pixel_data : (void*) &WHITE_TEXTURE_DATA;
+        NIT_CHECK(data_to_upload);
+        
+        glTextureSubImage2D(texture->id, 0, 0, 0, texture->width, texture->height, data_format,
+            GL_UNSIGNED_BYTE, data_to_upload);
+    
+        texture->loaded = true;
+        
+        if (!texture->keep_pixel_data)
+        {
+            texture->pixel_data = nullptr;
+            
+            if (texture->loaded_from_image)
+            {
+                FreeTextureImage(texture);
+            }
+        }
     }
 
-    void Texture2D::UploadToGPU(const Image& image, const Texture2DCfg& cfg)
+    void FreeTexture2D(Texture2D* texture)
     {
-#ifdef NIT_GRAPHICS_API_OPENGL
-        if (!image.data)
+        if (!texture->loaded)
         {
-            NIT_CHECK_MSG(false, "Image is not loaded!");
             return;
         }
+        
+        glDeleteTextures(1, &texture->id);
+        texture->loaded = false;
 
-        UploadToGPU(image.data, image.width, image.height, image.channels, cfg);
-#endif
+        FreeTextureImage(texture);
     }
 
-    void Texture2D::Bind(const u32 slot) const
+    void BindTexture2D(const Texture2D& texture, u32 slot)
     {
-#ifdef NIT_GRAPHICS_API_OPENGL
-        glBindTextureUnit(slot, id);
-#endif
+        glBindTextureUnit(slot, texture.id);
     }
 }
+
+#endif
