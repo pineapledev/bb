@@ -34,19 +34,22 @@ namespace Nit
         path.append(name).append(asset_registry->extension);
     }
 
-    void PushAssetInfo(ID id, const String& name, const String& path, const String& type_name)
+    void PushAssetInfo(AssetInfo& asset_info, bool build_path)
     {
         NIT_CHECK_ASSET_REGISTRY_CREATED
-        NIT_CHECK_MSG(asset_registry->id_to_info.count(id) == 0, "Id already taken!");
-        String final_path = path;
-        BuildAssetPath(name, final_path);
-        AssetInfo info = { type_name, id, name, final_path};
-        asset_registry->id_to_info[id] = info;
+        NIT_CHECK(asset_info.id != 0);
+        NIT_CHECK_MSG(asset_registry->id_to_info.count(asset_info.id) == 0, "Id already taken!");
+        if (build_path)
+        {
+            BuildAssetPath(asset_info.name, asset_info.path);
+        }
+        asset_registry->id_to_info[asset_info.id] = asset_info;
     }
     
     void EraseAssetInfo(ID id)
     {
         NIT_CHECK_ASSET_REGISTRY_CREATED
+        NIT_CHECK(id != 0);
         NIT_CHECK_MSG(asset_registry->id_to_info.count(id) != 0, "Id not registered!");
         asset_registry->id_to_info.erase(id);
     }
@@ -61,17 +64,25 @@ namespace Nit
         {
             AssetInfo asset_info;
             asset_info.type_name = asset_info_node["type_name"].as<String>();
-            asset_info.id = asset_info_node["id"].as<ID>();
             asset_info.name = asset_info_node["name"].as<String>();
             asset_info.path = asset_info_node["path"].as<String>();
-                
+            asset_info.id = asset_info_node["id"].as<ID>();
+            asset_info.current_version = asset_info_node["current_version"].as<u32>();
+            asset_info.last_version = asset_info_node["last_version"].as<u32>();
+            
+            if (asset_info.current_version > asset_info.last_version)
+            {
+                NIT_CHECK_MSG(false, "Trying to load an outdated asset, please upgrade the current version!!");
+                return result_id;
+            }
+            
             if (YAML::Node asset_node = node[asset_info.type_name])
             {
                 Pool& pool = GetAssetPool(asset_info.type_name);
 
-                if (!asset_registry->id_to_info.count(asset_info.id))
+                if (asset_registry->id_to_info.count(asset_info.id) == 0)
                 {
-                    PushAssetInfo(asset_info.id, asset_info.name, asset_info.path, asset_info.type_name);
+                    PushAssetInfo(asset_info, false);
                     InsertPoolElementRawWithID(&pool, asset_info.id);
                 }
 
@@ -110,13 +121,15 @@ namespace Nit
         YAML::Emitter emitter;
             
         emitter << YAML::BeginMap;
-        emitter << YAML::Key << "AssetInfo" << YAML::Value << YAML::BeginMap;
-        emitter << YAML::Key << "type_name" << YAML::Value << info.type_name;
-        emitter << YAML::Key << "id"        << YAML::Value << info.id;
-        emitter << YAML::Key << "name"      << YAML::Value << info.name;
-        emitter << YAML::Key << "path"      << YAML::Value << info.path;
+        emitter << YAML::Key << "AssetInfo"       << YAML::Value << YAML::BeginMap;
+        emitter << YAML::Key << "type_name"       << YAML::Value << info.type_name;
+        emitter << YAML::Key << "name"            << YAML::Value << info.name;
+        emitter << YAML::Key << "path"            << YAML::Value << info.path;
+        emitter << YAML::Key << "id"              << YAML::Value << info.id;
+        emitter << YAML::Key << "current_version" << YAML::Value << info.current_version;
+        emitter << YAML::Key << "last_version"    << YAML::Value << info.last_version;
         emitter << YAML::EndMap;
-
+        
         emitter << YAML::Key << info.type_name << YAML::Value << YAML::BeginMap;
         SerializeRawData(pool.type, GetPoolElementRawPtr(&pool, id), emitter);
         emitter << YAML::EndMap;

@@ -5,9 +5,11 @@ namespace Nit
     struct AssetInfo
     {
         String type_name;
-        ID id;
         String name;
         String path;
+        ID     id              = 0;
+        u32    current_version = 0;
+        u32    last_version    = 0;
     };
     
     template<typename T>
@@ -60,7 +62,7 @@ namespace Nit
     }
     
     void BuildAssetPath(const String& name, String& path);
-    void PushAssetInfo(ID id, const String& name, const String& path, const String& type_name);
+    void PushAssetInfo(const AssetInfo& asset_info, bool build_path);
     void EraseAssetInfo(ID id);
     
     ID DeserializeAssetFromString(const String& asset_str);
@@ -97,7 +99,8 @@ namespace Nit
     {
         Pool& pool = GetAssetPool<T>();
         ID id; InsertPoolElement(&pool, id, data);
-        PushAssetInfo(id, name, path, pool.type->name);
+        AssetInfo info { pool.type->name, name, path, id, 0, 0 };
+        PushAssetInfo(info, true);
         return id;
     }
 
