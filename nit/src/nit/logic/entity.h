@@ -82,15 +82,13 @@ namespace Nit
     void EntitySignatureChanged(Entity entity, EntitySignature new_entity_signature);
     
     template<typename T>
-    T& AddComponent(Entity entity)
+    T& AddComponent(Entity entity, const T& data = {})
     {
         NIT_CHECK_MSG(IsEntityValid(entity), "Invalid entity!");
         NIT_CHECK_MSG(GetEntityRegistryInstance()->signatures[entity].size() <= MAX_COMPONENTS_PER_ENTITY + 1, "Components per entity out of range!");
         ComponentPool* component_pool = FindComponentPool<T>();
         NIT_CHECK_MSG(component_pool, "Invalid component type!");
-        T data;
-        InsertPoolElementWithID(&component_pool->data_pool, entity, data);
-        T& element = GetPoolElement<T>(&component_pool->data_pool, entity);
+        T& element = InsertPoolElementWithID(&component_pool->data_pool, entity, data);
         EntitySignature& signature = GetEntityRegistryInstance()->signatures[entity]; 
         signature.set(GetComponentTypeIndex<T>(), true);
         EntitySignatureChanged(entity, signature);

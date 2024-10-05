@@ -33,7 +33,7 @@ namespace Nit
     void InsertPoolElementRawWithID(Pool* pool, ID element_id, void* data = nullptr);
 
     template<typename T>
-    void InsertPoolElementWithID(Pool* pool, ID element_id, const T& data)
+    T& InsertPoolElementWithID(Pool* pool, ID element_id, const T& data)
     {
         NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");
 
@@ -48,14 +48,14 @@ namespace Nit
         ++pool->count;
 
         // Insert the data in the next element slot (count)
-        SetData(pool->elements, next_element, data);
+        return SetData(pool->elements, next_element, data);
     }
 
     template<typename T>
-    void InsertPoolElement(Pool* pool, ID& out_id, const T& data)
+    T& InsertPoolElement(Pool* pool, ID& out_id, const T& data)
     {
         out_id = GenerateID();
-        InsertPoolElementWithID(pool, out_id, data);
+        return InsertPoolElementWithID(pool, out_id, data);
     }
     
     void RemovePoolElement(Pool* pool, ID element_id);
@@ -128,7 +128,7 @@ namespace Nit
     void InsertPoolElementRawWithID(FastPool* pool, u32 element_id, void* data);
     
     template<typename T>
-    void InsertPoolElementWithID(FastPool* pool, u32 element_id, const T& data)
+    T& InsertPoolElementWithID(FastPool* pool, u32 element_id, const T& data)
     {
         NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");
         
@@ -142,16 +142,16 @@ namespace Nit
         pool->index_to_element_id[next_element] = element_id;
         ++pool->count;
 
-        SetData(pool->elements, next_element, data);
+        return SetData(pool->elements, next_element, data);
     }
 
     template<typename T>
-    void InsertPoolElement(FastPool* pool, u32& out_id, const T& data)
+    T& InsertPoolElement(FastPool* pool, u32& out_id, const T& data)
     {
         NIT_CHECK_MSG(pool->self_id_management, "This pool does not manage own u32s!");
         out_id = pool->available_ids.front();
         pool->available_ids.pop();
-        InsertPoolElementWithID(pool, out_id, data);
+        return InsertPoolElementWithID(pool, out_id, data);
     }
     
     void RemovePoolElement(FastPool* pool, u32 element_id);

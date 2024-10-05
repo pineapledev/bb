@@ -178,10 +178,12 @@ namespace Nit
     void  DeserializeRawData(const Type* type, void* data, const YAML::Node& node);
 
     template<typename T>
-    void SetData(void* array, u32 index, const T& data)
+    T& SetData(void* array, u32 index, const T& data)
     {
         T* casted_array = static_cast<T*>(array);
-        casted_array[index] = data;
+        T& saved_data = casted_array[index];
+        saved_data = data;
+        return saved_data;
     }
     
     template<typename T>
