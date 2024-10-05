@@ -70,3 +70,37 @@ namespace Nit
     template<>
     Vector4 Divide(const Vector4& a, const Vector4& b);
 }
+
+template<>
+struct YAML::convert<Nit::Vector4>
+{
+    static Node encode(const Nit::Vector4& v)
+    {
+        Node node;
+        node.push_back(v.x);
+        node.push_back(v.y);
+        node.push_back(v.z);
+        node.push_back(v.w);
+        node.SetStyle(EmitterStyle::Flow);
+        return node;
+    }
+
+    static bool decode(const Node& node, Nit::Vector4& v)
+    {
+        if (!node.IsSequence() || node.size() != 4)
+            return false;
+        
+        v.x = node[0].as<float>();
+        v.y = node[1].as<float>();
+        v.y = node[2].as<float>();
+        v.y = node[3].as<float>();
+        return true;
+    }
+};
+
+inline YAML::Emitter& operator<<(YAML::Emitter& out, const Nit::Vector4& c)
+{
+    out << YAML::Flow;
+    out << YAML::BeginSeq << c.x << c.y << c.z << c.w << YAML::EndSeq;
+    return out;
+}

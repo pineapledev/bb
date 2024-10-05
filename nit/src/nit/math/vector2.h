@@ -61,3 +61,33 @@ namespace Nit
     template<>
     f32 Distance(const Vector2& a, const Vector2& b);
 }
+
+template<>
+struct YAML::convert<Nit::Vector2>
+{
+    static Node encode(const Nit::Vector2& v)
+    {
+        Node node;
+        node.push_back(v.x);
+        node.push_back(v.y);
+        node.SetStyle(EmitterStyle::Flow);
+        return node;
+    }
+
+    static bool decode(const Node& node, Nit::Vector2& v)
+    {
+        if (!node.IsSequence() || node.size() != 2)
+            return false;
+        
+        v.x = node[0].as<float>();
+        v.y = node[1].as<float>();
+        return true;
+    }
+};
+
+inline YAML::Emitter& operator<<(YAML::Emitter& out, const Nit::Vector2& c)
+{
+    out << YAML::Flow;
+    out << YAML::BeginSeq << c.x << c.y << YAML::EndSeq;
+    return out;
+}
