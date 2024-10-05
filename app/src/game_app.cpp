@@ -43,9 +43,24 @@ void DeserializeDummy(Dummy* dummy, const YAML::Node& node)
     dummy->name = node["name"].as<String>();
 }
 
+enum class TestEnum : u8
+{
+    TestEnumA,
+    TestEnumB,
+    TestEnumC
+};
+
 void OnApplicationRun()
 {
     RegisterAssetType<Dummy>({ LoadDummy, FreeDummy, SerializeDummy, DeserializeDummy });
+
+    RegisterEnumType<TestEnum>();
+    RegisterEnumValue<TestEnum>("TestEnumA", TestEnum::TestEnumA);
+    RegisterEnumValue<TestEnum>("TestEnumB", TestEnum::TestEnumB);
+    RegisterEnumValue<TestEnum>("TestEnumC", TestEnum::TestEnumC);
+    
+    String value_b = GetStringFromEnumValue<TestEnum>(TestEnum::TestEnumB);
+    TestEnum value_c = GetEnumValueFromString<TestEnum>("TestEnumC");
     
     CreateDrawSystem();
     

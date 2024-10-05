@@ -70,10 +70,25 @@ namespace Nit
 
     void InitTypeRegistry(u32 max_types)
     {
-        NIT_CHECK(type_registry && !type_registry->types);
-        type_registry->types = new Type[max_types];
-        type_registry->max   = max_types;
-        type_registry->count = 0;
+        NIT_CHECK(type_registry && !type_registry->types && !type_registry->enum_types);
+        type_registry->types          = new Type[max_types];
+        type_registry->max            = max_types;
+        type_registry->count          = 0;
+        type_registry->enum_types     = new EnumType[max_types];
+        type_registry->max_enum_types = max_types;
+        type_registry->enum_count     = 0;
+    }
+
+    bool IsEnumTypeRegistered(u64 type_hash)
+    {
+        NIT_CHECK(type_registry);
+        return type_registry->hash_to_enum_index.count(type_hash) != 0;
+    }
+
+    EnumType* GetEnumType(u64 type_hash)
+    {
+        NIT_CHECK(type_registry && type_registry->enum_types);
+        return &type_registry->enum_types[type_registry->hash_to_enum_index.at(type_hash)];
     }
 
     bool IsTypeRegistered(u64 type_hash)

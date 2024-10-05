@@ -4,7 +4,6 @@ namespace Nit
 {
     constexpr u32 DEFAULT_MAX_TYPES = 300;
 
-    //TODO: Add enum support
     struct Type
     {
         using FnSetData           = void  (*) (void*, u32, void*);
@@ -13,8 +12,8 @@ namespace Nit
         using FnInvokeSerialize   = void  (*) (void*, void*, YAML::Emitter& emitter);
         using FnInvokeDeserialize = void  (*) (void*, void*, const YAML::Node& node);
 
+        String              name;
         u64                 hash                  = 0;
-        String              name                  = "Invalid";
         FnSetData           fn_set_data           = nullptr;
         FnGetData           fn_get_data           = nullptr;
         void*               fn_load               = nullptr;
@@ -193,14 +192,61 @@ namespace Nit
         T* casted_array = static_cast<T*>(array);
         return casted_array[index];
     }
+
+    struct EnumType
+    {
+        String name;
+        u64    hash  = 0;
+        Map<String, u8> name_to_index;
+        Map<u8, String> index_to_name;
+    };
+
+    template <typename T>
+    void InitEnumType(EnumType& enum_type)
+    {
+        enum_type.hash = typeid(T).hash_code();
+        static const String ENUM_TEXT  = "enum class "; 
+        static const String ENUM_CLASS_TEXT  = "enum "; 
+        enum_type.name = typeid(T).name();
+        Replace(enum_type.name, ENUM_TEXT , "");
+        Replace(enum_type.name, ENUM_CLASS_TEXT , "");
+    }
+
+    template <typename T>
+    void RegisterEnumValue(EnumType* enum_type, const String& value_name, T value)
+    {
+        NIT_CHECK(enum_type);
+        u8 index = (u8) value;
+        enum_type->name_to_index.insert({ value_name, index });
+        enum_type->index_to_name.insert({ index, value_name });
+    }
+
+    template <typename T>
+    T GetEnumValueFromString(EnumType* enum_type, const String& value_name)
+    {
+        NIT_CHECK(enum_type && enum_type->name_to_index.count(value_name) != 0);
+        return (T) enum_type->name_to_index.at(value_name);
+    }
+
+    template <typename T>
+    String GetStringFromEnumValue(EnumType* enum_type, T value)
+    {
+        u8 index = (u8) value;
+        NIT_CHECK(enum_type && enum_type->index_to_name.count(index) != 0);
+        return enum_type->index_to_name.at(index);
+    }
     
     struct TypeRegistry
     {
-        Type*             types         = nullptr;
-        u32               count         = 0;
-        u32               max           = 0;
-        Map<u64, u32>     hash_to_index = {};
-        Map<String, u64>  name_to_index = {};
+        Type*             types              = nullptr;
+        u32               count              = 0;
+        u32               max                = 0;
+        Map<u64, u32>     hash_to_index      = {};
+        Map<String, u64>  name_to_index      = {};
+        EnumType*         enum_types         = nullptr;
+        u32               enum_count         = 0;
+        u32               max_enum_types     = 0;
+        Map<u64, u32>     hash_to_enum_index = {};    
     };
 
     void SetTypeRegistryInstance(TypeRegistry* type_registry_instance);
@@ -227,6 +273,60 @@ namespace Nit
         ++type_registry->count;
     }
 
+    template <typename T>
+    void RegisterEnumType()
+    {
+        TypeRegistry* type_registry = GetTypeRegistryInstance();
+        if (type_registry->enum_count >= type_registry->max_enum_types)
+        {
+            NIT_CHECK_MSG(false, "Max enum type count reached!");
+            return;
+        }
+        
+        EnumType& enum_type = type_registry->enum_types[type_registry->enum_count];
+        InitEnumType<T>(enum_type);
+        NIT_CHECK(type_registry->hash_to_index.count(enum_type.hash) == 0);
+        type_registry->hash_to_enum_index[enum_type.hash] = type_registry->enum_count;
+        ++type_registry->enum_count;
+    }
+
+    bool IsEnumTypeRegistered(u64 type_hash);
+
+    template <typename T>
+    bool IsEnumTypeRegistered()
+    {
+        return IsEnumTypeRegistered(GetTypeHash<T>());
+    }
+
+    EnumType* GetEnumType(u64 type_hash);
+
+    template <typename T>
+    EnumType* GetEnumType()
+    {
+        return GetEnumType(GetTypeHash<T>());
+    }
+
+    template <typename EType, typename T>
+    void RegisterEnumValue(const String& value_name, T value)
+    {
+        EnumType* enum_type = GetEnumType<EType>();
+        u8 index = (u8) value;
+        enum_type->name_to_index.insert({ value_name, index });
+        enum_type->index_to_name.insert({ index, value_name });
+    }
+    
+    template <typename T>
+    T GetEnumValueFromString(const String& value_name)
+    {
+        return GetEnumValueFromString<T>(GetEnumType<T>(), value_name);
+    }
+    
+    template <typename EType, typename T>
+    String GetStringFromEnumValue(T value)
+    {
+        return GetStringFromEnumValue(GetEnumType<EType>(), value);
+    }
+    
     bool IsTypeRegistered(u64 type_hash);
     bool IsTypeRegistered(const String& name);
     
