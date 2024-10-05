@@ -173,6 +173,20 @@ namespace Nit
     void  FreeRawData(const Type* type, void* data);
     void  SerializeRawData(const Type* type, void* data, YAML::Emitter& emitter);
     void  DeserializeRawData(const Type* type, void* data, const YAML::Node& node);
+
+    template<typename T>
+    void SetData(void* array, u32 index, const T& data)
+    {
+        T* casted_array = static_cast<T*>(array);
+        casted_array[index] = data;
+    }
+
+    template<typename T>
+    T& GetData(void* array, u32 index)
+    {
+        T* casted_array = static_cast<T*>(array);
+        return casted_array[index];
+    }
     
     struct TypeRegistry
     {
