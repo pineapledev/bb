@@ -4,6 +4,7 @@ namespace Nit
 {
     constexpr u32 DEFAULT_MAX_TYPES = 300;
 
+    //TODO: Add enum support
     struct Type
     {
         using FnSetData           = void  (*) (void*, u32, void*);

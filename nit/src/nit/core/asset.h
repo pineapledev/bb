@@ -7,9 +7,8 @@ namespace Nit
         String type_name;
         String name;
         String path;
-        ID     id              = 0;
-        u32    current_version = 0;
-        u32    last_version    = 0;
+        ID     id      = 0;
+        u32    version = 0;
     };
     
     template<typename T>
@@ -26,6 +25,7 @@ namespace Nit
     struct AssetRegistry
     {
         Map<u64, Pool>     pools;
+        Map<u64, u32>      hash_to_version;
         Map<ID, AssetInfo> id_to_info;
         String             extension = ".nit";
     };
@@ -34,11 +34,13 @@ namespace Nit
     AssetRegistry* GetAssetRegistryInstance();
     
     template<typename T>
-    void RegisterAssetType(const AssetTypeArgs<T>& args)
+    void RegisterAssetType(const AssetTypeArgs<T>& args, u32 version = 0)
     {
         AssetRegistry* asset_registry = GetAssetRegistryInstance();
-        Pool& pool = asset_registry->pools[GetTypeHash<T>()];
-
+        u64 type_hash = GetTypeHash<T>();
+        asset_registry->pools.insert({type_hash, {}});
+        asset_registry->hash_to_version.insert({type_hash, version});
+        
         if (!IsTypeRegistered<T>())
         {
             RegisterType<T>();
@@ -50,7 +52,7 @@ namespace Nit
         SetSerializeFunction(type, args.fn_serialize);
         SetDeserializeFunction(type, args.fn_deserialize);
         
-        InitPool<T>(&pool, args.max_elements);
+        InitPool<T>(&asset_registry->pools.at(type_hash), args.max_elements);
     }
 
     bool IsAssetTypeRegistered(u64 type_hash);
@@ -76,6 +78,16 @@ namespace Nit
     
     Pool& GetAssetPool(const String& type_name);
 
+    u32 GetLastAssetVersion(u64 type_hash);
+    
+    u32 GetLastAssetVersion(const String& type_name);
+
+    template<typename T>
+    u32 GetLastAssetVersion()
+    {
+        return GetLastAssetVersion(GetTypeHash<T>());
+    }
+    
     template<typename T>
     Pool& GetAssetPool()
     {
@@ -99,7 +111,7 @@ namespace Nit
     {
         Pool& pool = GetAssetPool<T>();
         ID id; InsertPoolElement(&pool, id, data);
-        AssetInfo info { pool.type->name, name, path, id, 0, 0 };
+        AssetInfo info { pool.type->name, name, path, id, GetLastAssetVersion<T>(), };
         PushAssetInfo(info, true);
         return id;
     }
