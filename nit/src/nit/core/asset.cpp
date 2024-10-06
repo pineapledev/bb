@@ -85,7 +85,11 @@ namespace Nit
                     InsertPoolElementRawWithID(&pool, asset_info.id);
                 }
 
-                //TODO: In this case reload the asset?
+                if (IsAssetLoaded(asset_info.id))
+                {
+                    LoadAsset(asset_info.id, true);
+                }
+                
                 void* data = GetRawData(pool.type, pool.elements, pool.element_id_to_index[asset_info.id]);
                 DeserializeRawData(pool.type, data, asset_node);
                 result_id = asset_info.id;
