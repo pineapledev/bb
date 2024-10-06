@@ -85,6 +85,7 @@ namespace Nit
                     InsertPoolElementRawWithID(&pool, asset_info.id);
                 }
 
+                //TODO: In this case reload the asset?
                 void* data = GetRawData(pool.type, pool.elements, pool.element_id_to_index[asset_info.id]);
                 DeserializeRawData(pool.type, data, asset_node);
                 result_id = asset_info.id;
@@ -230,6 +231,17 @@ namespace Nit
         NIT_CHECK_ASSET_REGISTRY_CREATED
         return id != 0 && asset_registry->id_to_info.count(id) != 0;
     }
+    
+    bool IsAssetLoaded(ID id)
+    {
+        NIT_CHECK_ASSET_REGISTRY_CREATED
+        if (!IsAssetValid(id))
+        {
+            return false;
+        }
+        AssetInfo& info = asset_registry->id_to_info[id];
+        return info.loaded;
+    }
 
     void DestroyAsset(ID id)
     {
@@ -242,11 +254,25 @@ namespace Nit
         EraseAssetInfo(id);
     }
 
-    void LoadAsset(ID id)
+    void LoadAsset(ID id, bool force_reload)
     {
         NIT_CHECK_ASSET_REGISTRY_CREATED
         NIT_CHECK_MSG(asset_registry->id_to_info.count(id) != 0, "Id not registered!");
         AssetInfo& info = asset_registry->id_to_info[id];
+        
+        if (info.loaded)
+        {
+            if (force_reload)
+            {
+                FreeAsset(id);    
+            }
+            else
+            {
+                return;
+            }
+        }
+        
+        info.loaded = true;
         Pool& pool = GetAssetPool(info.type_name);
         LoadRawData(pool.type, GetPoolElementRawPtr(&pool, id));
     }
@@ -256,6 +282,12 @@ namespace Nit
         NIT_CHECK_ASSET_REGISTRY_CREATED
         NIT_CHECK_MSG(asset_registry->id_to_info.count(id) != 0, "Id not registered!");
         AssetInfo& info = asset_registry->id_to_info[id];
+
+        if (!info.loaded)
+        {
+            return;
+        }
+        
         Pool& pool = GetAssetPool(info.type_name);
         FreeRawData(pool.type, GetPoolElementRawPtr(&pool, id));
     }

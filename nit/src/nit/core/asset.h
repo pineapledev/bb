@@ -4,6 +4,7 @@ namespace Nit
 {
     struct AssetInfo
     {
+        bool   loaded  = false;
         String type_name;
         String name;
         String path;
@@ -21,7 +22,6 @@ namespace Nit
         u32              max_elements   = DEFAULT_POOL_ELEMENT_COUNT;
     };
 
-    //TODO: Finds assets with name (returns id)
     struct AssetRegistry
     {
         Map<u64, Pool>     pools;
@@ -105,6 +105,8 @@ namespace Nit
     }
 
     bool IsAssetValid(ID id);
+
+    bool IsAssetLoaded(ID id);
     
     template<typename T>
     ID CreateAsset(const String& name, const String& path = "", const T& data = {})
@@ -115,8 +117,8 @@ namespace Nit
         PushAssetInfo(info, true);
         return id;
     }
-
-    void LoadAsset(ID id);
+    
+    void LoadAsset(ID id, bool force_reload = false);
     void FreeAsset(ID id);
     void DestroyAsset(ID id);
 }

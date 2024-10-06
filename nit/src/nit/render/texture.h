@@ -25,7 +25,6 @@ namespace Nit
     struct Texture2D
     {
         u32          id                = 0;
-        bool         loaded            = false;
         bool         loaded_from_image = false;
         bool         keep_pixel_data   = false;
         bool         is_white_texture  = false;

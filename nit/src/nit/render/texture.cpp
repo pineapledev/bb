@@ -107,11 +107,6 @@ namespace Nit
 
     void LoadTexture2D(Texture2D* texture)
     {
-        if (texture->loaded)
-        {
-            FreeTexture2D(texture);
-        }
-
         static constexpr u32 WHITE_TEXTURE_DATA = 0xffffffff;
 
         if (texture->is_white_texture)
@@ -169,8 +164,6 @@ namespace Nit
         glTextureSubImage2D(texture->id, 0, 0, 0, texture->width, texture->height, data_format,
             GL_UNSIGNED_BYTE, data_to_upload);
     
-        texture->loaded = true;
-        
         if (!texture->keep_pixel_data)
         {
             texture->pixel_data = nullptr;
@@ -184,14 +177,7 @@ namespace Nit
 
     void FreeTexture2D(Texture2D* texture)
     {
-        if (!texture->loaded)
-        {
-            return;
-        }
-        
         glDeleteTextures(1, &texture->id);
-        texture->loaded = false;
-
         FreeTextureImage(texture);
     }
 
