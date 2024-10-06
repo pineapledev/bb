@@ -1,6 +1,6 @@
 ﻿#include "asset.h"
 
-#define NIT_CHECK_ASSET_REGISTRY_CREATED NIT_CHECK_MSG(asset_registry, "Forget to call SetRenderer2DInstance!");
+#define NIT_CHECK_ASSET_REGISTRY_CREATED NIT_CHECK_MSG(asset_registry, "Forget to call SetAssetRegistryInstance!");
 
 namespace Nit
 {
@@ -268,7 +268,10 @@ namespace Nit
         {
             if (force_reload)
             {
-                FreeAsset(id);    
+                // In this case we should keep the reference count.
+                u32 reference_count = info.reference_count;
+                FreeAsset(id);
+                info.reference_count = reference_count;
             }
             else
             {
@@ -286,13 +289,60 @@ namespace Nit
         NIT_CHECK_ASSET_REGISTRY_CREATED
         NIT_CHECK_MSG(asset_registry->id_to_info.count(id) != 0, "Id not registered!");
         AssetInfo& info = asset_registry->id_to_info[id];
+        
+        if (!info.loaded)
+        {
+            return;
+        }
+
+        info.reference_count = 0;
+        Pool& pool = GetAssetPool(info.type_name);
+        FreeRawData(pool.type, GetPoolElementRawPtr(&pool, id));
+    }
+
+    void RetainAsset(ID id)
+    {
+        NIT_CHECK_ASSET_REGISTRY_CREATED
+
+        if (!IsAssetValid(id))
+        {
+            return;
+        }
+        
+        AssetInfo& info = asset_registry->id_to_info[id];
+
+        if (!info.loaded)
+        {
+            LoadAsset(id);
+        }
+
+        ++info.reference_count;
+    }
+
+    void ReleaseAsset(ID id, bool force_free)
+    {
+        NIT_CHECK_ASSET_REGISTRY_CREATED
+
+        if (!IsAssetValid(id))
+        {
+            return;
+        }
+        
+        AssetInfo& info = asset_registry->id_to_info[id];
 
         if (!info.loaded)
         {
             return;
         }
+
+        // A loaded asset with reference_count of 0 is a valid case.
+        if (force_free || info.reference_count <= 1)
+        {
+            FreeAsset(id);
+            info.reference_count = 0;
+            return;
+        }
         
-        Pool& pool = GetAssetPool(info.type_name);
-        FreeRawData(pool.type, GetPoolElementRawPtr(&pool, id));
+        --info.reference_count;
     }
 }

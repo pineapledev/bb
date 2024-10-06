@@ -4,12 +4,13 @@ namespace Nit
 {
     struct AssetInfo
     {
-        bool   loaded  = false;
         String type_name;
         String name;
         String path;
-        ID     id      = 0;
-        u32    version = 0;
+        ID     id              = 0;
+        u32    version         = 0;
+        bool   loaded          = false;
+        u32    reference_count = 0;
     };
     
     template<typename T>
@@ -31,6 +32,7 @@ namespace Nit
     };
     
     void SetAssetRegistryInstance(AssetRegistry* asset_registry_instance);
+    
     AssetRegistry* GetAssetRegistryInstance();
     
     template<typename T>
@@ -64,12 +66,17 @@ namespace Nit
     }
     
     void BuildAssetPath(const String& name, String& path);
+    
     void PushAssetInfo(AssetInfo& asset_info, bool build_path);
+    
     void EraseAssetInfo(ID id);
     
     ID DeserializeAssetFromString(const String& asset_str);
+    
     ID DeserializeAssetFromFile(const String& file_path);
+    
     void SerializeAssetToString(ID id, String& result);
+    
     void SerializeAssetToFile(ID id);
     
     void InitAssetRegistry();
@@ -95,6 +102,7 @@ namespace Nit
     }
 
     void FindAssetsByName(const String& name, Array<ID>& asset_ids);
+    
     ID FindAssetByName(const String& name);
     
     template<typename T>
@@ -102,6 +110,13 @@ namespace Nit
     {
         Pool& pool = GetAssetPool<T>();
         return GetPoolElement<T>(&pool, id);
+    }
+
+    template<typename T>
+    T* GetAssetDataPtr(ID id)
+    {
+        Pool& pool = GetAssetPool<T>();
+        return GetPoolElementPtr<T>(&pool, id);
     }
 
     bool IsAssetValid(ID id);
@@ -119,6 +134,12 @@ namespace Nit
     }
     
     void LoadAsset(ID id, bool force_reload = false);
+
     void FreeAsset(ID id);
+
+    void RetainAsset(ID id);
+    
+    void ReleaseAsset(ID id, bool force_free = false);
+    
     void DestroyAsset(ID id);
 }

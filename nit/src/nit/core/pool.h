@@ -65,6 +65,20 @@ namespace Nit
     void* GetPoolElementRawPtr(const Pool* pool, ID element_id);
 
     template<typename T>
+    T* GetPoolElementPtr(const Pool* pool, ID element_id)
+    {
+        NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");
+        // Sanity checks
+        NIT_CHECK_MSG(pool, "Invalid pool!");
+        NIT_CHECK_MSG(element_id != 0, "Invalid pool id!");
+        NIT_CHECK_MSG(pool->element_id_to_index.count(element_id) != 0, "Trying to get non-existent element!");
+        
+        // Retrieve the element data
+        u32 element_index = pool->element_id_to_index.at(element_id);
+        return GetDataPtr<T>(pool->elements, element_index);
+    }
+    
+    template<typename T>
     T& GetPoolElement(const Pool* pool, ID element_id)
     {
         NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");

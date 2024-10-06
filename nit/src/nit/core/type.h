@@ -185,6 +185,13 @@ namespace Nit
         saved_data = data;
         return saved_data;
     }
+
+    template<typename T>
+    T* GetDataPtr(void* array, u32 index)
+    {
+        T* casted_array = static_cast<T*>(array);
+        return &casted_array[index];
+    }
     
     template<typename T>
     T& GetData(void* array, u32 index)
