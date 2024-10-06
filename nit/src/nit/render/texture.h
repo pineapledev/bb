@@ -45,5 +45,6 @@ namespace Nit
     void DeserializeTexture2D(Texture2D* texture, const YAML::Node& node);
     void LoadTexture2D(Texture2D* texture);
     void FreeTexture2D(Texture2D* texture);
-    void BindTexture2D(const Texture2D& texture, u32 slot = 0);
+    void BindTexture2D(const Texture2D* texture, u32 slot = 0);
+    bool IsTexture2DValid(const Texture2D* texture);
 }

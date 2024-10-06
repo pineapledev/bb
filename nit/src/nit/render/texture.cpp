@@ -178,12 +178,19 @@ namespace Nit
     void FreeTexture2D(Texture2D* texture)
     {
         glDeleteTextures(1, &texture->id);
+        texture->id = 0;
         FreeTextureImage(texture);
     }
 
-    void BindTexture2D(const Texture2D& texture, u32 slot)
+    bool IsTexture2DValid(const Texture2D* texture)
     {
-        glBindTextureUnit(slot, texture.id);
+        return texture != nullptr && texture->id != 0;
+    }
+
+    void BindTexture2D(const Texture2D* texture, u32 slot)
+    {
+        NIT_CHECK(IsTexture2DValid(texture));
+        glBindTextureUnit(slot, texture->id);
     }
 }
 

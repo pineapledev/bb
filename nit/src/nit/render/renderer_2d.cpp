@@ -200,7 +200,7 @@ namespace Nit
             NIT_CHECK(renderer_2d->default_material);
             for (u32 i = 0; i < renderer_2d->last_texture_slot; i++)
             {
-                BindTexture2D(*renderer_2d->textures_to_bind[i], i);
+                BindTexture2D(renderer_2d->textures_to_bind[i].get(), i);
             }
 
             renderer_2d->default_material->SetConstantSampler2D("u_Textures[0]", &renderer_2d->texture_slots.front(),
@@ -236,7 +236,7 @@ namespace Nit
             NIT_CHECK(renderer_2d->default_material);
             for (u32 i = 0; i < renderer_2d->last_texture_slot; i++)
             {
-                BindTexture2D(*renderer_2d->textures_to_bind[i], i);
+                BindTexture2D(renderer_2d->textures_to_bind[i].get(), i);
             }
 
             renderer_2d->default_material->SetConstantSampler2D("u_Textures[0]", &renderer_2d->texture_slots.front(),
