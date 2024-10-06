@@ -48,8 +48,21 @@ Entity               cat_entity;
 SharedPtr<Texture2D> texture;
 SharedPtr<Font>      font;
 
+void AddOp(int a, int b)
+{
+}
+
+void AddOpjaja(int a, int b)
+{
+}
+
 void GameStart()
 {
+    Event<int, int> event;
+    AddListener(event, Delegate<void(int, int)>::Create(AddOp));
+    AddListener(event, Delegate<void(int, int)>::Create(AddOpjaja));
+    RemoveListener(event, Delegate<void(int, int)>::Create(AddOpjaja));
+    
     texture = CreateSharedPtr<Texture2D>();
     texture->image_path = "assets/bola.jpg";
     LoadTexture2D(texture.get());

@@ -23,6 +23,7 @@
 #include <yaml-cpp/yaml.h>
 
 #include "nit/core/base.h"
+#include "nit/core/event.h"
 #include "nit/core/type.h"
 #include "nit/core/pool.h"
 #include "nit/core/asset.h"
