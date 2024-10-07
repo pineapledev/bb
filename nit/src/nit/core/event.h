@@ -42,29 +42,59 @@ namespace Nit
         return delegate.function_ptr(std::forward<Args>(args)...);
     }
 
-    // handle stay linked, etc..
-    // handle pointers to same func. Use set?
+    enum class ListenerAction : u8
+    {
+        StayListening = 0,
+        StopListening
+    };
+
+    template<typename... Args>
+    using Listener = Delegate<ListenerAction(Args...)>; 
     
     template<typename... Args>
     struct Event
     {
-        Array<Delegate<void(Args...)>> delegates;
+        Array<Listener<Args...>> listeners;
     };
     
     template<typename... Args>
-    void AddListener(Event<Args...>& event, const Delegate<void(Args...)>& delegate)
+    void AddListener(Event<Args...>& event, const Listener<Args...>& listener)
     {
-        event.delegates.push_back(delegate);
+        event.listeners.push_back(listener);
     }
     
     template<typename... Args>
-    void RemoveListener(Event<Args...>& event, const Delegate<void(Args...)>& delegate)
+    void RemoveListener(Event<Args...>& event, const Listener<Args...>& listener)
     {
-        auto it = std::find(event.delegates.begin(), event.delegates.end(), delegate);
-        if (it == event.delegates.end())
+        auto it = std::find(event.listeners.begin(), event.listeners.end(), listener);
+        if (it == event.listeners.end())
         {
             return;
         }
-        event.delegates.erase(it);
+        event.listeners.erase(it);
+    }
+
+    template<typename... Args>
+    void Broadcast(Event<Args...>& event, Args&&... args)
+    {
+        Array<Listener<Args...>> listeners_to_remove;
+        listeners_to_remove.reserve(event.listeners.size());
+        
+        for (Listener<Args...>& listener : event.listeners)
+        {
+            switch (listener.function_ptr(std::forward<Args>(args)...))
+            {
+            case ListenerAction::StayListening:
+                break;
+            case ListenerAction::StopListening:
+                listeners_to_remove.push_back(listener);
+                break;
+            }
+        }
+
+        for (Listener<Args...>& listener : listeners_to_remove)
+        {
+            RemoveListener(event, listener);
+        }
     }
 }
