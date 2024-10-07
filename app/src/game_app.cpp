@@ -56,7 +56,9 @@ void GameStart()
     AddComponent<Transform>(camera_entity);
     
     cat_entity = CreateEntity();
-    AddComponent<Sprite>(cat_entity).texture = FindAssetByName("bola");
+    auto& cat_sprite = AddComponent<Sprite>(cat_entity);
+    AddTextureToSprite(cat_sprite, FindAssetByName("bola"));
+    
     AddComponent<Transform>(cat_entity).position = V3_RIGHT * 2.f;
     
     Entity quad = CreateEntity();

@@ -37,6 +37,8 @@ namespace Nit
         CreateEntityGroup<Text,   Transform>();
     }
     
+    //TODO: ON COMPONENT REMOVED RELEASE THE SPRITE TEXTURE
+    
     void Start()
     {
         app->asset_registry.asset_destroyed_event += Listener<const AssetDestroyedArgs&>::Create(OnAssetDestroyed);
@@ -58,14 +60,14 @@ namespace Nit
         {
             auto& sprite = GetComponent<Sprite>(entity);
             
-            if (!IsAssetValid(sprite.texture))
+            if (!IsAssetValid(sprite.texture_id))
             {
-                sprite.texture = 0;
-                sprite.texture_data = nullptr;
+                sprite.texture_id = 0;
+                sprite.texture = nullptr;
                 continue;
             }
 
-            sprite.texture_data = GetAssetDataPtr<Texture2D>(sprite.texture);
+            sprite.texture = GetAssetDataPtr<Texture2D>(sprite.texture_id);
         }
         
         return ListenerAction::StayListening;
@@ -96,20 +98,11 @@ namespace Nit
                     continue;
                 }
                 
-                if (IsAssetValid(sprite.texture))
+                if (sprite.texture)
                 {
-                    if (!sprite.texture_data)
-                    {
-                        sprite.texture_data = GetAssetDataPtr<Texture2D>(sprite.texture);
-                        if (!IsTexture2DValid(sprite.texture_data))
-                        {
-                            RetainAsset(sprite.texture);
-                        }
-                    }
-                    
                     FillQuadVertexPositions(
                           vertex_positions
-                        , sprite.texture_data, sprite.tiling_factor
+                        , sprite.texture, sprite.tiling_factor
                         , sprite.keep_aspect);
                 
                     FillQuadVertexUVs(
@@ -127,7 +120,7 @@ namespace Nit
                 }
                 
                 FillVertexColors(vertex_colors, sprite.tint);
-                DrawQuad(sprite.texture_data, vertex_positions, vertex_uvs, vertex_colors);
+                DrawQuad(sprite.texture, vertex_positions, vertex_uvs, vertex_colors);
             }
 
             for (Entity entity : GetEntityGroup<Circle, Transform>().entities)
