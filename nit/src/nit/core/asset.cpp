@@ -79,20 +79,30 @@ namespace Nit
             {
                 Pool& pool = GetAssetPool(asset_info.type_name);
 
-                if (asset_registry->id_to_info.count(asset_info.id) == 0)
+                const bool created = asset_registry->id_to_info.count(asset_info.id) == 0; 
+                
+                if (created)
                 {
                     PushAssetInfo(asset_info, false);
                     InsertPoolElementRawWithID(&pool, asset_info.id);
                 }
 
-                if (IsAssetLoaded(asset_info.id))
-                {
-                    LoadAsset(asset_info.id, true);
-                }
-                
                 void* data = GetRawData(pool.type, pool.elements, pool.element_id_to_index[asset_info.id]);
                 DeserializeRawData(pool.type, data, asset_node);
                 result_id = asset_info.id;
+
+                if (created)
+                {
+                    AssetCreatedArgs args;
+                    args.id   = asset_info.id;
+                    args.type = GetType(asset_info.type_name);
+                    Broadcast<const AssetCreatedArgs&>(GetAssetRegistryInstance()->asset_created_event, args);
+                }
+                
+                if (IsAssetLoaded(asset_info.id))
+                {
+                    LoadAsset(result_id, true);
+                }
             }
         }
         
@@ -247,12 +257,20 @@ namespace Nit
         return info.loaded;
     }
 
-    void DestroyAsset(ID id)
+    void RemoveAsset(ID id)
     {
         NIT_CHECK_ASSET_REGISTRY_CREATED
         //TODO: Delete file?
         NIT_CHECK_MSG(asset_registry->id_to_info.count(id) != 0, "Id not registered!");
         AssetInfo& info = asset_registry->id_to_info[id];
+
+        FreeAsset(id);
+
+        AssetRemovedArgs args;
+        args.id   = info.id;
+        args.type = GetType(info.type_name);
+        Broadcast<const AssetRemovedArgs&>(GetAssetRegistryInstance()->asset_removed_event, args);
+        
         Pool& pool = GetAssetPool(info.type_name);
         RemovePoolElement(&pool, id);
         EraseAssetInfo(id);

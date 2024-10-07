@@ -48,27 +48,8 @@ Entity               cat_entity;
 SharedPtr<Texture2D> texture;
 SharedPtr<Font>      font;
 
-ListenerAction AddOp(int a, int b)
-{
-    NIT_LOG_TRACE("add result %i", a + b);
-    return ListenerAction::StayListening;
-}
-
-ListenerAction MultOp(int a, int b)
-{
-    NIT_LOG_TRACE("mult result %i", a * b);
-    return ListenerAction::StopListening;
-}
-
 void GameStart()
 {
-    Event<int, int> event;
-    AddListener(event, Listener<int, int>::Create(AddOp));
-    AddListener(event, Listener<int, int>::Create(MultOp));
-
-    Broadcast(event, 3, 4);
-    Broadcast(event, 3, 4);
-    
     texture = CreateSharedPtr<Texture2D>();
     texture->image_path = "assets/bola.jpg";
     LoadTexture2D(texture.get());

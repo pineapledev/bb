@@ -31,14 +31,33 @@ namespace Nit
     }
 
     template<typename R, typename... Args>
+    bool IsDelegateEmpty(const Delegate<R(Args...)>& delegate)
+    {
+        return delegate.function_ptr == nullptr;
+    }
+
+    template<typename R, typename... Args>
+    bool operator!(const Delegate<R(Args...)>& delegate)
+    {
+        return IsDelegateEmpty(delegate);
+    }
+    
+    template<typename R, typename... Args>
     void Bind(Delegate<R(Args...)>& delegate, R (*function_ptr)(Args...))
     {
         delegate.function_ptr = function_ptr;
+    }
+
+    template<typename R, typename... Args>
+    void Unbind(Delegate<R(Args...)>& delegate)
+    {
+        delegate.function_ptr = nullptr;
     }
     
     template<typename R, typename... Args>
     R Invoke(Delegate<R(Args...)>& delegate, Args&&... args)
     {
+        NIT_CHECK_MSG(!IsDelegateEmpty(delegate), "Trying to invoke empty delegate!");
         return delegate.function_ptr(std::forward<Args>(args)...);
     }
 
@@ -56,22 +75,56 @@ namespace Nit
     {
         Array<Listener<Args...>> listeners;
     };
+
+    template<typename... Args>
+    bool IsEventEmpty(const Event<Args...>& event)
+    {
+        return event.listeners.empty();
+    }
+    
+    template<typename... Args>
+    bool operator !(const Event<Args...>& event)
+    {
+        return IsEventEmpty(event);
+    }
     
     template<typename... Args>
     void AddListener(Event<Args...>& event, const Listener<Args...>& listener)
     {
+        if (IsDelegateEmpty(listener))
+        {
+            NIT_CHECK_MSG(false, "Trying to add empty listener!");
+            return;
+        }
         event.listeners.push_back(listener);
+    }
+
+    template<typename... Args>
+    void operator +=(Event<Args...>& event, const Listener<Args...>& listener)
+    {
+       AddListener(event, listener);
     }
     
     template<typename... Args>
     void RemoveListener(Event<Args...>& event, const Listener<Args...>& listener)
     {
+        if (IsDelegateEmpty(listener))
+        {
+            NIT_CHECK_MSG(false, "Trying to remove empty listener!");
+            return;
+        }
         auto it = std::find(event.listeners.begin(), event.listeners.end(), listener);
         if (it == event.listeners.end())
         {
             return;
         }
         event.listeners.erase(it);
+    }
+    
+    template<typename... Args>
+    void operator -=(Event<Args...>& event, const Listener<Args...>& listener)
+    {
+        RemoveListener(event, listener);
     }
     
     template<typename... Args>
@@ -83,6 +136,11 @@ namespace Nit
     template<typename... Args>
     void Broadcast(Event<Args...>& event, Args&&... args)
     {
+        if (IsEventEmpty(event))
+        {
+            return;
+        }
+        
         Array<Listener<Args...>> listeners_to_remove;
         listeners_to_remove.reserve(event.listeners.size());
         

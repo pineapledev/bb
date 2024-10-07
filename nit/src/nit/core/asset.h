@@ -23,12 +23,29 @@ namespace Nit
         u32              max_elements   = DEFAULT_POOL_ELEMENT_COUNT;
     };
 
+    struct AssetCreatedArgs
+    {
+        ID    id    = 0;
+        Type* type  = nullptr;
+    };
+    
+    struct AssetRemovedArgs
+    {
+        ID    id    = 0;
+        Type* type  = nullptr;
+    };
+
+    using AssetCreatedEvent = Event<const AssetCreatedArgs&>;
+    using AssetRemovedEvent = Event<const AssetRemovedArgs&>;
+    
     struct AssetRegistry
     {
-        Map<u64, Pool>     pools;
-        Map<u64, u32>      hash_to_version;
-        Map<ID, AssetInfo> id_to_info;
-        String             extension = ".nit";
+        Map<u64, Pool>          pools;
+        Map<u64, u32>           hash_to_version;
+        Map<ID, AssetInfo>      id_to_info;
+        String                  extension = ".nit";
+        AssetCreatedEvent       asset_created_event;
+        AssetRemovedEvent       asset_removed_event;
     };
     
     void SetAssetRegistryInstance(AssetRegistry* asset_registry_instance);
@@ -130,6 +147,10 @@ namespace Nit
         ID id; InsertPoolElement(&pool, id, data);
         AssetInfo info { pool.type->name, name, path, id, GetLastAssetVersion<T>(), };
         PushAssetInfo(info, true);
+        AssetCreatedArgs args;
+        args.id   = id;
+        args.type = GetType<T>();
+        Broadcast<const AssetCreatedArgs&>(GetAssetRegistryInstance()->asset_created_event, args);
         return id;
     }
     
@@ -141,5 +162,5 @@ namespace Nit
     
     void ReleaseAsset(ID id, bool force_free = false);
     
-    void DestroyAsset(ID id);
+    void RemoveAsset(ID id);
 }
