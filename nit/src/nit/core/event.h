@@ -73,6 +73,12 @@ namespace Nit
         }
         event.listeners.erase(it);
     }
+    
+    template<typename... Args>
+    void RemoveAllListeners(Event<Args...>& event)
+    {
+        event.listeners.clear();
+    }
 
     template<typename... Args>
     void Broadcast(Event<Args...>& event, Args&&... args)
