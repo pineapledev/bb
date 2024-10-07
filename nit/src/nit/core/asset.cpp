@@ -95,7 +95,7 @@ namespace Nit
                 {
                     AssetCreatedArgs args;
                     args.id   = asset_info.id;
-                    args.type = GetType(asset_info.type_name);
+                    args.type = pool.type;
                     Broadcast<const AssetCreatedArgs&>(GetAssetRegistryInstance()->asset_created_event, args);
                 }
                 
@@ -266,12 +266,13 @@ namespace Nit
 
         FreeAsset(id);
 
+        Pool& pool = GetAssetPool(info.type_name);
+        
         AssetDestroyedArgs args;
         args.id   = info.id;
-        args.type = GetType(info.type_name);
+        args.type = pool.type;
         Broadcast<const AssetDestroyedArgs&>(GetAssetRegistryInstance()->asset_destroyed_event, args);
         
-        Pool& pool = GetAssetPool(info.type_name);
         RemovePoolElement(&pool, id);
         EraseAssetInfo(id);
     }

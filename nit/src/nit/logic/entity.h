@@ -24,6 +24,21 @@ namespace Nit
         Set<Entity>     entities;
     };
 
+    struct ComponentAddedArgs
+    {
+        Entity entity = 0;
+        Type*  type   = nullptr;
+    };
+
+    struct ComponentRemovedArgs
+    {
+        Entity entity = 0;
+        Type*  type   = nullptr;
+    };
+
+    using ComponentAddedEvent   = Event<const ComponentAddedArgs&>;
+    using ComponentRemovedEvent = Event<const ComponentRemovedArgs&>;
+    
     struct EntityRegistry
     {
         Queue<Entity>                     available_entities;
@@ -32,6 +47,8 @@ namespace Nit
         Map<EntitySignature, EntityGroup> entity_groups;
         ComponentPool                     component_pool[MAX_COMPONENTS_TYPES];
         u8                                next_component_type_index = 1;
+        ComponentAddedEvent               component_added_event;
+        ComponentRemovedEvent             component_removed_event;
     };
 
     void SetEntityRegistryInstance(EntityRegistry* entity_registry_instance);
@@ -92,6 +109,10 @@ namespace Nit
         EntitySignature& signature = GetEntityRegistryInstance()->signatures[entity]; 
         signature.set(GetComponentTypeIndex<T>(), true);
         EntitySignatureChanged(entity, signature);
+        ComponentAddedArgs args;
+        args.entity = entity;
+        args.type = component_pool->data_pool.type;
+        Broadcast<const ComponentAddedArgs&>(GetEntityRegistryInstance()->component_added_event, args);
         return element;
     }
 
@@ -102,6 +123,12 @@ namespace Nit
         NIT_CHECK_MSG(entity < MAX_ENTITIES, "Entity out of range!");
         ComponentPool* component_pool = FindComponentPool<T>();
         NIT_CHECK_MSG(component_pool, "Invalid component type!");
+
+        ComponentRemovedArgs args;
+        args.entity = entity;
+        args.type = component_pool->data_pool.type;
+        Broadcast<const ComponentRemovedArgs&>(GetEntityRegistryInstance()->component_removed_event, args);
+        
         RemovePoolElement(&component_pool->data_pool, entity);
         EntitySignature& signature = GetEntityRegistryInstance()->signatures[entity]; 
         signature.set(GetComponentTypeIndex<T>(), false);

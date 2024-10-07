@@ -149,7 +149,7 @@ namespace Nit
         PushAssetInfo(info, true);
         AssetCreatedArgs args;
         args.id   = id;
-        args.type = GetType<T>();
+        args.type = pool.type;
         Broadcast<const AssetCreatedArgs&>(GetAssetRegistryInstance()->asset_created_event, args);
         return id;
     }

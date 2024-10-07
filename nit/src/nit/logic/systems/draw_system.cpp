@@ -22,6 +22,8 @@ namespace Nit
     void Draw();
     
     ListenerAction OnAssetDestroyed(const AssetDestroyedArgs& args);
+    ListenerAction OnComponentAdded(const ComponentAddedArgs& args);
+    ListenerAction OnComponentRemoved(const ComponentRemovedArgs& args);
     
     void CreateDrawSystem()
     {
@@ -41,12 +43,14 @@ namespace Nit
     
     void Start()
     {
-        app->asset_registry.asset_destroyed_event += Listener<const AssetDestroyedArgs&>::Create(OnAssetDestroyed);
+        app->asset_registry.asset_destroyed_event  += Listener<const AssetDestroyedArgs&>::Create(OnAssetDestroyed);
+        app->entity_registry.component_added_event += Listener<const ComponentAddedArgs&>::Create(OnComponentAdded);
     }
 
     void End()
     {
-        app->asset_registry.asset_destroyed_event -= Listener<const AssetDestroyedArgs&>::Create(OnAssetDestroyed);
+        app->asset_registry.asset_destroyed_event    -= Listener<const AssetDestroyedArgs&>::Create(OnAssetDestroyed);
+        app->entity_registry.component_removed_event -= Listener<const ComponentRemovedArgs&>::Create(OnComponentRemoved);
     }
     
     ListenerAction OnAssetDestroyed(const AssetDestroyedArgs& args)
@@ -73,6 +77,26 @@ namespace Nit
         return ListenerAction::StayListening;
     }
 
+    ListenerAction OnComponentAdded(const ComponentAddedArgs& args)
+    {
+        if (args.type == GetType<Sprite>())
+        {
+            Sprite& sprite = GetComponent<Sprite>(args.entity);
+            AddTextureToSprite(sprite, sprite.texture_id);
+        }
+        return ListenerAction::StayListening;
+    }
+
+    ListenerAction OnComponentRemoved(const ComponentRemovedArgs& args)
+    {
+        if (args.type == GetType<Sprite>())
+        {
+            Sprite& sprite = GetComponent<Sprite>(args.entity);
+            RemoveTextureFromSprite(sprite);
+        }
+        return ListenerAction::StayListening;
+    }
+    
     void Draw()
     {
         ClearScreen();
