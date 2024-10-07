@@ -39,8 +39,6 @@ namespace Nit
         CreateEntityGroup<Text,   Transform>();
     }
     
-    //TODO: ON COMPONENT REMOVED RELEASE THE SPRITE TEXTURE
-    
     void Start()
     {
         app->asset_registry.asset_destroyed_event  += Listener<const AssetDestroyedArgs&>::Create(OnAssetDestroyed);
