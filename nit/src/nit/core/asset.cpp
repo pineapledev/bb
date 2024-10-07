@@ -257,7 +257,7 @@ namespace Nit
         return info.loaded;
     }
 
-    void RemoveAsset(ID id)
+    void DestroyAsset(ID id)
     {
         NIT_CHECK_ASSET_REGISTRY_CREATED
         //TODO: Delete file?
@@ -266,10 +266,10 @@ namespace Nit
 
         FreeAsset(id);
 
-        AssetRemovedArgs args;
+        AssetDestroyedArgs args;
         args.id   = info.id;
         args.type = GetType(info.type_name);
-        Broadcast<const AssetRemovedArgs&>(GetAssetRegistryInstance()->asset_removed_event, args);
+        Broadcast<const AssetDestroyedArgs&>(GetAssetRegistryInstance()->asset_destroyed_event, args);
         
         Pool& pool = GetAssetPool(info.type_name);
         RemovePoolElement(&pool, id);

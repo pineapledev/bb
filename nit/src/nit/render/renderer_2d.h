@@ -76,7 +76,7 @@ namespace Nit
     void PopMaterial2D();
     
     void DrawQuad(
-          const SharedPtr<Texture2D>& texture_2d       = nullptr
+          Texture2D*                  texture_2d       = nullptr
         , const V4Verts2D&            vertex_positions = DEFAULT_VERTEX_POSITIONS_2D
         , const V2Verts2D&            vertex_uvs       = DEFAULT_VERTEX_U_VS_2D
         , const V4Verts2D&            vertex_colors    = DEFAULT_VERTEX_COLORS_2D
@@ -117,7 +117,7 @@ namespace Nit
     struct Renderer2D
     {
         Matrix4                     projection_view;   
-        Array<SharedPtr<Texture2D>> textures_to_bind   = {};
+        Array<Texture2D*>           textures_to_bind   = {};
         Array<i32>                  texture_slots      = {};
         u32                         last_texture_slot  = 1;
         SharedPtr<Material>         default_material   = nullptr;
@@ -129,7 +129,8 @@ namespace Nit
         QuadVertex*                 quad_batch         = nullptr;
         QuadVertex*                 last_quad_vertex   = nullptr;
         SharedPtr<Material>         quad_material      = nullptr;
-        SharedPtr<Texture2D>        white_texture      = nullptr;
+        Texture2D*                  white_texture      = nullptr;
+        ID                          white_texture_id   = 0;
         u32                         quad_count         = 0;
         u32                         quad_index_count   = 0;
         SharedPtr<VertexArray>      circle_vao         = nullptr;

@@ -45,23 +45,18 @@ Transform& GetCameraTransform()
 
 Entity               circle;
 Entity               cat_entity;
-SharedPtr<Texture2D> texture;
 SharedPtr<Font>      font;
 
 void GameStart()
 {
-    texture = CreateSharedPtr<Texture2D>();
-    texture->image_path = "assets/bola.jpg";
-    LoadTexture2D(texture.get());
-    
     font = CreateSharedPtr<Font>("assets/AlbertSans-VariableFont_wght.ttf");
-    
+
     Entity camera_entity = CreateEntity();
     AddComponent<Camera>(camera_entity);
     AddComponent<Transform>(camera_entity);
     
     cat_entity = CreateEntity();
-    AddComponent<Sprite>(cat_entity).texture = texture;
+    AddComponent<Sprite>(cat_entity).texture = FindAssetByName("bola");
     AddComponent<Transform>(cat_entity).position = V3_RIGHT * 2.f;
     
     Entity quad = CreateEntity();

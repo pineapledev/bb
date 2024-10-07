@@ -18,11 +18,16 @@ namespace Nit
     V4Verts2D vertex_colors    = DEFAULT_VERTEX_COLORS_2D;
     
     void Start();
+    void End();
     void Draw();
+    
+    ListenerAction OnAssetDestroyed(const AssetDestroyedArgs& args);
     
     void CreateDrawSystem()
     {
         CreateSystem("Draw");
+        SetSystemCallback(Start, Stage::Start);
+        SetSystemCallback(End,   Stage::End);
         SetSystemCallback(Draw,  Stage::Draw);
         
         CreateEntityGroup<Sprite, Transform>();
@@ -30,6 +35,40 @@ namespace Nit
         CreateEntityGroup<Circle, Transform>();
         CreateEntityGroup<Line2D, Transform>();
         CreateEntityGroup<Text,   Transform>();
+    }
+    
+    void Start()
+    {
+        app->asset_registry.asset_destroyed_event += Listener<const AssetDestroyedArgs&>::Create(OnAssetDestroyed);
+    }
+
+    void End()
+    {
+        app->asset_registry.asset_destroyed_event -= Listener<const AssetDestroyedArgs&>::Create(OnAssetDestroyed);
+    }
+    
+    ListenerAction OnAssetDestroyed(const AssetDestroyedArgs& args)
+    {
+        if (args.type != GetType<Texture2D>())
+        {
+            return ListenerAction::StayListening;    
+        }
+        
+        for (Entity entity : GetEntityGroup<Sprite, Transform>().entities)
+        {
+            auto& sprite = GetComponent<Sprite>(entity);
+            
+            if (!IsAssetValid(sprite.texture))
+            {
+                sprite.texture = 0;
+                sprite.texture_data = nullptr;
+                continue;
+            }
+
+            sprite.texture_data = GetAssetDataPtr<Texture2D>(sprite.texture);
+        }
+        
+        return ListenerAction::StayListening;
     }
 
     void Draw()
@@ -57,11 +96,20 @@ namespace Nit
                     continue;
                 }
                 
-                if (sprite.texture)
+                if (IsAssetValid(sprite.texture))
                 {
+                    if (!sprite.texture_data)
+                    {
+                        sprite.texture_data = GetAssetDataPtr<Texture2D>(sprite.texture);
+                        if (!IsTexture2DValid(sprite.texture_data))
+                        {
+                            RetainAsset(sprite.texture);
+                        }
+                    }
+                    
                     FillQuadVertexPositions(
                           vertex_positions
-                        , sprite.texture, sprite.tiling_factor
+                        , sprite.texture_data, sprite.tiling_factor
                         , sprite.keep_aspect);
                 
                     FillQuadVertexUVs(
@@ -79,7 +127,7 @@ namespace Nit
                 }
                 
                 FillVertexColors(vertex_colors, sprite.tint);
-                DrawQuad(sprite.texture, vertex_positions, vertex_uvs, vertex_colors);
+                DrawQuad(sprite.texture_data, vertex_positions, vertex_uvs, vertex_colors);
             }
 
             for (Entity entity : GetEntityGroup<Circle, Transform>().entities)
@@ -135,10 +183,5 @@ namespace Nit
             }
         }
         EndScene2D();
-    }
-
-    void End()
-    {
-        FinishRenderer2D();
     }
 }

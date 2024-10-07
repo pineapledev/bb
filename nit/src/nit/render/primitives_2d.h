@@ -50,10 +50,10 @@ namespace Nit
     );
 
     void FillQuadVertexPositions(
-          V4Verts2D&                  vertex_positions
-        , const SharedPtr<Texture2D>& texture
-        , const Vector2&               size
-        , bool                         keep_aspect
+          V4Verts2D&       vertex_positions
+        , const Texture2D* texture
+        , const Vector2&   size
+        , bool             keep_aspect
     );
     
     void FillQuadVertexUVs(

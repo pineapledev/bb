@@ -29,14 +29,14 @@ namespace Nit
         Type* type  = nullptr;
     };
     
-    struct AssetRemovedArgs
+    struct AssetDestroyedArgs
     {
         ID    id    = 0;
         Type* type  = nullptr;
     };
 
     using AssetCreatedEvent = Event<const AssetCreatedArgs&>;
-    using AssetRemovedEvent = Event<const AssetRemovedArgs&>;
+    using AssetRemovedEvent = Event<const AssetDestroyedArgs&>;
     
     struct AssetRegistry
     {
@@ -45,7 +45,7 @@ namespace Nit
         Map<ID, AssetInfo>      id_to_info;
         String                  extension = ".nit";
         AssetCreatedEvent       asset_created_event;
-        AssetRemovedEvent       asset_removed_event;
+        AssetRemovedEvent       asset_destroyed_event;
     };
     
     void SetAssetRegistryInstance(AssetRegistry* asset_registry_instance);
@@ -162,5 +162,5 @@ namespace Nit
     
     void ReleaseAsset(ID id, bool force_free = false);
     
-    void RemoveAsset(ID id);
+    void DestroyAsset(ID id);
 }

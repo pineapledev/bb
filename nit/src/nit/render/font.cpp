@@ -85,13 +85,16 @@ namespace Nit
 
             pixels_rgb[i] = 255;
         }
-
-        atlas = CreateSharedPtr<Texture2D>();
+        
+        font_atlas_id = CreateAsset<Texture2D>("font_atlas");
+        atlas = GetAssetDataPtr<Texture2D>(font_atlas_id);
+        
         atlas->pixel_data = pixels_rgb;
         atlas->width      = WIDTH;
         atlas->height     = HEIGHT;
         atlas->channels   = 4;
-        LoadTexture2D(atlas.get());
+
+        RetainAsset(font_atlas_id);
         
         delete[] pixels_rgb;
         delete[] pixels_alpha;
@@ -100,7 +103,11 @@ namespace Nit
 
     void Font::Free()
     {
-        atlas.reset();
+        if (IsAssetValid(font_atlas_id))
+        {
+            DestroyAsset(font_atlas_id);
+            atlas = nullptr;
+        }
 
         if (baked_char_data)
         {

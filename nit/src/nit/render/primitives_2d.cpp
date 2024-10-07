@@ -22,7 +22,7 @@ namespace Nit
         vertex_positions[3] = transform * vertex_positions[3];
     }
 
-    void FillQuadVertexPositions(V4Verts2D& vertex_positions, const SharedPtr<Texture2D>& texture, const Vector2& size, bool keep_aspect)
+    void FillQuadVertexPositions(V4Verts2D& vertex_positions, const Texture2D* texture, const Vector2& size, bool keep_aspect)
     {
         if (keep_aspect && texture)
         {

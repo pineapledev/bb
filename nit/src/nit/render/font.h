@@ -28,6 +28,7 @@ namespace Nit
         void GetChar(char c, CharData& char_data) const;
         
         void* baked_char_data = nullptr;
-        SharedPtr<Texture2D> atlas = nullptr;
+        Texture2D* atlas = nullptr;
+        ID font_atlas_id = 0;
     };
 }

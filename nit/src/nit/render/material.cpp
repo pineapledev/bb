@@ -4,10 +4,8 @@
 
 namespace Nit
 {
-    Material::Material(const SharedPtr<Shader>& shader, const SharedPtr<MaterialData>& mat_data,
-                       const SharedPtr<Texture2D>& texture)
+    Material::Material(const SharedPtr<Shader>& shader, const SharedPtr<MaterialData>& mat_data)
         : shader(shader)
-          , texture(texture)
           , material_data(mat_data)
     {
         if (!shader)

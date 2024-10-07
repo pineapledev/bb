@@ -20,12 +20,10 @@ namespace Nit
         using TConstantMap = Map<String, UniquePtr<Constant>>;
         using TUsedConstantMap = Map<String, Constant*>;
 
-        Material(const SharedPtr<Shader>& shader, const SharedPtr<MaterialData>& mat_data = {},
-                 const SharedPtr<Texture2D>& texture = {});
+        Material(const SharedPtr<Shader>& shader, const SharedPtr<MaterialData>& mat_data = {});
         ~Material() = default;
 
         const SharedPtr<Shader>& GetShader() const { return shader; }
-        const SharedPtr<Texture2D>& GetTexture() const { return texture; }
         const SharedPtr<MaterialData>& GetMaterialData() const { return material_data; }
         
         f32 GetConstantFloat(const String& name);
@@ -43,7 +41,6 @@ namespace Nit
         Constant* GetConstant(const String& name);
 
         SharedPtr<Shader> shader = nullptr;
-        SharedPtr<Texture2D> texture = nullptr;
         TConstantMap constants;
         TUsedConstantMap used_constants;
         SharedPtr<MaterialData> material_data = nullptr;

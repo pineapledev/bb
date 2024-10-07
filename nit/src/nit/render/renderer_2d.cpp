@@ -12,7 +12,7 @@
 
 namespace Nit
 {
-    i32  AssignTextureSlot(const SharedPtr<Texture2D>& texture);
+    i32  AssignTextureSlot(Texture2D* texture);
     void TryUseDefaultMaterial(Shape shape);
     void SetCurrentShape(Shape shape_to_draw);
     
@@ -76,9 +76,10 @@ namespace Nit
             renderer_2d->textures_to_bind.resize(MAX_TEXTURE_SLOTS);
 
             // White texture
-            renderer_2d->white_texture = CreateSharedPtr<Texture2D>();
+            ID white_texture_id = CreateAsset<Texture2D>("white_texture");
+            renderer_2d->white_texture = GetAssetDataPtr<Texture2D>(white_texture_id); 
             renderer_2d->white_texture->is_white_texture = true;
-            LoadTexture2D(renderer_2d->white_texture.get());
+            RetainAsset(white_texture_id);
             
             renderer_2d->textures_to_bind[0] = renderer_2d->white_texture;
 
@@ -200,7 +201,7 @@ namespace Nit
             NIT_CHECK(renderer_2d->default_material);
             for (u32 i = 0; i < renderer_2d->last_texture_slot; i++)
             {
-                BindTexture2D(renderer_2d->textures_to_bind[i].get(), i);
+                BindTexture2D(renderer_2d->textures_to_bind[i], i);
             }
 
             renderer_2d->default_material->SetConstantSampler2D("u_Textures[0]", &renderer_2d->texture_slots.front(),
@@ -236,7 +237,7 @@ namespace Nit
             NIT_CHECK(renderer_2d->default_material);
             for (u32 i = 0; i < renderer_2d->last_texture_slot; i++)
             {
-                BindTexture2D(renderer_2d->textures_to_bind[i].get(), i);
+                BindTexture2D(renderer_2d->textures_to_bind[i], i);
             }
 
             renderer_2d->default_material->SetConstantSampler2D("u_Textures[0]", &renderer_2d->texture_slots.front(),
@@ -283,7 +284,7 @@ namespace Nit
         renderer_2d->custom_material = nullptr;
     }
 
-    i32 AssignTextureSlot(const SharedPtr<Texture2D>& texture)
+    i32 AssignTextureSlot(Texture2D* texture)
     {
         NIT_CHECK_RENDERER_2D_CREATED
         i32 texture_slot = 0;
@@ -359,7 +360,7 @@ namespace Nit
     }
 
     void DrawQuad(
-          const SharedPtr<Texture2D>& texture_2d
+          Texture2D*                  texture_2d
         , const V4Verts2D&            vertex_positions
         , const V2Verts2D&            vertex_uvs      
         , const V4Verts2D&            vertex_colors
@@ -531,6 +532,12 @@ namespace Nit
     void FinishRenderer2D()
     {
         NIT_CHECK_RENDERER_2D_CREATED
+
+        if (IsAssetValid(renderer_2d->white_texture_id))
+        {
+            DestroyAsset(renderer_2d->white_texture_id);
+            renderer_2d->white_texture = nullptr;
+        }
         
         delete renderer_2d->quad_batch;
         delete renderer_2d->circle_batch;
