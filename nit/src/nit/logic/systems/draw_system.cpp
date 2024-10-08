@@ -113,6 +113,11 @@ namespace Nit
             Sprite& sprite = GetComponent<Sprite>(args.entity);
             RemoveTextureFromSprite(sprite);
         }
+        else if (args.type == GetType<Text>())
+        {
+            Text& text = GetComponent<Text>(args.entity);
+            RemoveFontFromText(text);
+        }
         return ListenerAction::StayListening;
     }
     
