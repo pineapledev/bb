@@ -1,15 +1,12 @@
 ﻿#include "nit/render/primitives_2d.h"
-#include "logic/components/line_2d.h"
-#include "logic/components/text.h"
 #include "nit/render/renderer_2d.h"
 #include "nit/render/render_api.h"
 #include "nit/core/system.h"
 #include "nit/core/app.h"
 #include "nit/logic/entity.h"
-#include "nit/logic/components/transform.h"
-#include "nit/logic/components/camera.h"
-#include "nit/logic/components/sprite.h"
-#include "nit/logic/components/circle.h"
+#include "nit/logic/components.h"
+#include "nit/render/texture.h"
+#include "nit/render/font.h"
 
 namespace Nit
 {

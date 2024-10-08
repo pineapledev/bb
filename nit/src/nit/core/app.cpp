@@ -1,12 +1,8 @@
 #include "app.h"
-
+#include "render/font.h"
+#include "render/texture.h"
+#include "logic/components.h"
 #include "logic/systems.h"
-#include "logic/components/camera.h"
-#include "logic/components/line_2d.h"
-#include "logic/components/sprite.h"
-#include "logic/components/circle.h"
-#include "logic/components/text.h"
-#include "logic/components/transform.h"
 
 namespace Nit
 {
