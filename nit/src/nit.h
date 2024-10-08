@@ -13,3 +13,4 @@
 #include "nit/logic/entity.h"
 #include "nit/logic/systems.h"
 #include "nit/logic/components.h"
+#include "nit/logic/scene.h"

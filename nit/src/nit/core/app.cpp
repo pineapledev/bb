@@ -2,6 +2,7 @@
 #include "render/font.h"
 #include "render/texture.h"
 #include "logic/components.h"
+#include "logic/scene.h"
 #include "logic/systems.h"
 
 namespace Nit
@@ -40,6 +41,7 @@ namespace Nit
         SetAssetRegistryInstance(&app->asset_registry);
         RegisterTexture2DAsset();
         RegisterFontAsset();
+        RegisterSceneAsset();
         
         if (run_callback)
         {
