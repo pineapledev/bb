@@ -212,8 +212,6 @@ namespace Nit
                 {
                     continue;
                 }
-
-                
                 
                 DrawText(
                       text.font
