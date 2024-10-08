@@ -102,7 +102,7 @@ namespace Nit
     );
     
     void DrawText(
-          const SharedPtr<Font>& font
+          const Font*            font
         , const String&          text
         , const Matrix4&         transform  = {}
         , const Vector4&         tint       = V4_ONE

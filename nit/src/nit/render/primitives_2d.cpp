@@ -106,11 +106,11 @@ namespace Nit
         vertex_positions[3] = {v_pos_3.x, v_pos_3.y, v_pos_3.z, 1 };
     }
 
-    void FillCharVertexData(const Matrix4& transform, V4Verts2D& vertex_positions, V2Verts2D& vertex_uvs, const SharedPtr<Font>& font, f32 size, Vector2& offset, f32 spacing, char c)
+    void FillCharVertexData(const Matrix4& transform, V4Verts2D& vertex_positions, V2Verts2D& vertex_uvs, const Font* font, f32 size, Vector2& offset, f32 spacing, char c)
     {
         CharData d;
-        font->GetChar(c, d);
-
+        GetChar(font, c, d);
+        
         static constexpr f32 SCALE = 0.002f;
 
         Matrix4 transform_offset = Translate(transform, { offset.x, offset.y });

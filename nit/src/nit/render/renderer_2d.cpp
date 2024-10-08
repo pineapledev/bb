@@ -452,7 +452,7 @@ namespace Nit
     }
 
     void DrawChar(
-          const SharedPtr<Font>& font
+          const Font*      font
         , const V4Verts2D& vertex_positions
         , const V2Verts2D& vertex_uvs
         , const V4Verts2D& vertex_colors
@@ -486,12 +486,12 @@ namespace Nit
     }
 
     void DrawText(
-          const SharedPtr<Font>& font
-        , const String&          text
-        , const Matrix4&          transform
-        , const Vector4&          tint
-        , f32                     spacing
-        , f32                     size
+          const Font*     font
+        , const String&   text
+        , const Matrix4&  transform
+        , const Vector4&  tint
+        , f32             spacing
+        , f32             size
     )
     {
         if (!font)

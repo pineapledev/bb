@@ -79,7 +79,7 @@ namespace Nit
           const Matrix4&          transform
         , V4Verts2D&              vertex_positions
         , V2Verts2D&              vertex_uvs
-        , const SharedPtr<Font>&  font
+        , const Font*             font
         , f32                     size
         , Vector2&                offset
         , f32                     spacing

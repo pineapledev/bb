@@ -6,40 +6,31 @@
 
 namespace Nit
 {
-    Font::Font(const char* file_path)
+    void RegisterFontAsset()
     {
-        Load(file_path);
+        RegisterAssetType<Font>({
+              LoadFont
+            , FreeFont
+            , SerializeFont
+            , DeserializeFont
+        });
     }
 
-    Font::Font(Font&& other) noexcept
-        : baked_char_data(other.baked_char_data)
-          , atlas(std::move(other.atlas))
+    void SerializeFont(const Font* font, YAML::Emitter& emitter)
     {
-        other.baked_char_data = nullptr;
-    }
-    
-    Font::~Font()
-    {
-        Free();
+        emitter << YAML::Key << "font_path" << YAML::Value << font->font_path;
     }
 
-    Font& Font::operator=(Font&& other) noexcept
+    void DeserializeFont(Font* font, const YAML::Node& node)
     {
-        baked_char_data = other.baked_char_data;
-        other.baked_char_data = nullptr;
-        atlas = other.atlas;
-        return *this;
+        font->font_path = node["font_path"].as<String>();
     }
 
-    void Font::Load(const char* file_path)
+    //TODO: All of this is just garbage, pending to refactor. 
+    void LoadFont(Font* font)
     {
-        if (baked_char_data)
-        {
-            Free();
-        }
-
-        std::ifstream file_stream(file_path, std::ifstream::binary);
-
+        std::ifstream file_stream(font->font_path, std::ifstream::binary);
+        
         if (!file_stream)
         {
             NIT_CHECK_MSG(false, "Font not found!");
@@ -65,7 +56,7 @@ namespace Nit
         auto* baked_char = new stbtt_bakedchar[CHAR_COUNT];
 
         stbtt_BakeFontBitmap(font_buffer, 0, PIXEL_HEIGHT, pixels_alpha, WIDTH, HEIGHT, 0, CHAR_COUNT, baked_char);
-        baked_char_data = reinterpret_cast<void*>(baked_char);
+        font->baked_char_data = reinterpret_cast<void*>(baked_char);
 
         constexpr i32 pixels_rgb_lenght = pixels_alpha_lenght * 4;
         const auto pixels_rgb = new unsigned char[pixels_rgb_lenght];
@@ -86,45 +77,56 @@ namespace Nit
             pixels_rgb[i] = 255;
         }
         
-        font_atlas_id = CreateAsset<Texture2D>("font_atlas");
-        atlas = GetAssetDataPtr<Texture2D>(font_atlas_id);
+        font->font_atlas_id = CreateAsset<Texture2D>("font_atlas");
+        font->atlas = GetAssetDataPtr<Texture2D>(font->font_atlas_id);
         
-        atlas->pixel_data = pixels_rgb;
-        atlas->width      = WIDTH;
-        atlas->height     = HEIGHT;
-        atlas->channels   = 4;
+        font->atlas->pixel_data = pixels_rgb;
+        font->atlas->width      = WIDTH;
+        font->atlas->height     = HEIGHT;
+        font->atlas->channels   = 4;
 
-        RetainAsset(font_atlas_id);
+        RetainAsset(font->font_atlas_id);
         
         delete[] pixels_rgb;
         delete[] pixels_alpha;
         delete[] buffer;
     }
 
-    void Font::Free()
+    void FreeFont(Font* font)
     {
-        if (IsAssetValid(font_atlas_id))
+        if (IsAssetValid(font->font_atlas_id))
         {
-            DestroyAsset(font_atlas_id);
-            atlas = nullptr;
+            DestroyAsset(font->font_atlas_id);
+            font->atlas = nullptr;
         }
-
-        if (baked_char_data)
+        
+        if (font->baked_char_data)
         {
-            const auto* baked_char = static_cast<stbtt_bakedchar*>(baked_char_data);
+            const auto* baked_char = static_cast<stbtt_bakedchar*>(font->baked_char_data);
             delete[] baked_char;
-            baked_char_data = nullptr;
+            font->baked_char_data = nullptr;
         }
     }
-    
-    void Font::GetChar(char c, CharData& char_data) const
+
+    bool IsFontValid(const Font* font)
     {
-        NIT_CHECK_MSG(atlas, "Missing Atlas!");
-        const auto* baked_char = static_cast<stbtt_bakedchar*>(baked_char_data);
+        return font->baked_char_data != nullptr;
+    }
+
+    void GetChar(const Font* font, char c, CharData& char_data)
+    {
+        NIT_CHECK_MSG(font->atlas, "Missing Atlas!");
+        const auto* baked_char = static_cast<stbtt_bakedchar*>(font->baked_char_data);
         f32 x_pos(0), y_pos(0);
         stbtt_aligned_quad quad;
-        stbtt_GetBakedQuad(baked_char, static_cast<i32>(atlas->size.x), static_cast<i32>(atlas->size.y), c,
-                           &x_pos, &y_pos, &quad, true);
+
+        stbtt_GetBakedQuad(baked_char
+            , static_cast<i32>(font->atlas->size.x)
+            , static_cast<i32>(font->atlas->size.y)
+            , c
+            , &x_pos, &y_pos, &quad, true
+        );
+
         char_data.x0 = quad.x0;
         char_data.x1 = quad.x1;
         char_data.y0 = quad.y0;

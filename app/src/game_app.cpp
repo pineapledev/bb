@@ -45,12 +45,9 @@ Transform& GetCameraTransform()
 
 Entity               circle;
 Entity               cat_entity;
-SharedPtr<Font>      font;
 
 void GameStart()
 {
-    font = CreateSharedPtr<Font>("assets/AlbertSans-VariableFont_wght.ttf");
-
     Entity camera_entity = CreateEntity();
     AddComponent<Camera>(camera_entity);
     AddComponent<Transform>(camera_entity);
@@ -74,12 +71,13 @@ void GameStart()
     AddComponent<Line2D>(line).tint = V4_COLOR_CYAN;
     AddComponent<Transform>(line).position = V3_LEFT;
 
-    Entity text = CreateEntity();
-    AddComponent<Text>(text).text = "UWU";
-    GetComponent<Text>(text).tint = V4_COLOR_MAGENTA;
-    GetComponent<Text>(text).font = font;
-    
-    AddComponent<Transform>(text).position = V3_RIGHT * 2.f;
+    Entity text_entity = CreateEntity();
+    Text text;
+    text.text = "UWU";
+    text.tint = V4_COLOR_MAGENTA;
+    text.font_id = FindAssetByName("default_font");
+    AddComponent<Text>(text_entity, text);
+    AddComponent<Transform>(text_entity).position = V3_RIGHT * 2.f;
     
     GetCameraTransform().position = V3_FRONT * 3.f;
 }

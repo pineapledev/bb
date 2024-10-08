@@ -1,4 +1,6 @@
-﻿#include "logic/components/line_2d.h"
+﻿#include <complex>
+
+#include "logic/components/line_2d.h"
 #include "logic/components/text.h"
 #include "nit/render/renderer_2d.h"
 #include "nit/render/primitives_2d.h"
@@ -53,23 +55,37 @@ namespace Nit
     
     ListenerAction OnAssetDestroyed(const AssetDestroyedArgs& args)
     {
-        if (args.type != GetType<Texture2D>())
+        if (args.type == GetType<Texture2D>())
         {
-            return ListenerAction::StayListening;    
-        }
-        
-        for (Entity entity : GetEntityGroup<Sprite, Transform>().entities)
-        {
-            auto& sprite = GetComponent<Sprite>(entity);
-            
-            if (!IsAssetValid(sprite.texture_id))
+            for (Entity entity : GetEntityGroup<Sprite, Transform>().entities)
             {
-                sprite.texture_id = 0;
-                sprite.texture = nullptr;
-                continue;
-            }
+                auto& sprite = GetComponent<Sprite>(entity);
+            
+                if (!IsAssetValid(sprite.texture_id))
+                {
+                    sprite.texture_id = 0;
+                    sprite.texture = nullptr;
+                    continue;
+                }
 
-            sprite.texture = GetAssetDataPtr<Texture2D>(sprite.texture_id);
+                sprite.texture = GetAssetDataPtr<Texture2D>(sprite.texture_id);
+            }
+        }
+        else if (args.type == GetType<Font>())
+        {
+            for (Entity entity : GetEntityGroup<Text, Transform>().entities)
+            {
+                auto& text = GetComponent<Text>(entity);
+            
+                if (!IsAssetValid(text.font_id))
+                {
+                    text.font_id = 0;
+                    text.font = nullptr;
+                    continue;
+                }
+
+                text.font = GetAssetDataPtr<Font>(text.font_id);
+            }
         }
         
         return ListenerAction::StayListening;
@@ -81,6 +97,11 @@ namespace Nit
         {
             Sprite& sprite = GetComponent<Sprite>(args.entity);
             AddTextureToSprite(sprite, sprite.texture_id);
+        }
+        else if (args.type == GetType<Text>())
+        {
+            Text& text = GetComponent<Text>(args.entity);
+            AddFontToText(text, text.font_id);
         }
         return ListenerAction::StayListening;
     }
@@ -182,10 +203,12 @@ namespace Nit
                 auto& transform = GetComponent<Transform>(entity);
                 auto& text = GetComponent<Text>(entity);
 
-                if (!text.visible || text.text.empty())
+                if (!text.visible || text.text.empty() || !text.font)
                 {
                     continue;
                 }
+
+                
                 
                 DrawText(
                       text.font

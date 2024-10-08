@@ -43,6 +43,7 @@ namespace Nit
         
         SetAssetRegistryInstance(&app->asset_registry);
         RegisterTexture2DAsset();
+        RegisterFontAsset();
         
         if (run_callback)
         {

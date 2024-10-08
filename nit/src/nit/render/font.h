@@ -3,7 +3,7 @@
 namespace Nit
 {
     struct Texture2D;
-
+    
     struct CharData
     {
         f32 x0, y0, s0, t0; // top-left
@@ -13,22 +13,17 @@ namespace Nit
     
     struct Font
     {
-        Font() = default;
-        Font(const char* file_path);
-        Font(const Font& other) = delete;
-        Font(Font&& other) noexcept;
-        ~Font();
-
-        Font& operator=(const Font& other) = delete;
-        Font& operator=(Font&& other) noexcept;
-
-        void Load(const char* file_path);
-        void Free();
-
-        void GetChar(char c, CharData& char_data) const;
-        
-        void* baked_char_data = nullptr;
-        Texture2D* atlas = nullptr;
-        ID font_atlas_id = 0;
+        String     font_path;
+        void*      baked_char_data = nullptr;
+        ID         font_atlas_id   = 0;
+        Texture2D* atlas           = nullptr;
     };
+    
+    void RegisterFontAsset();
+    void SerializeFont(const Font* font, YAML::Emitter& emitter);
+    void DeserializeFont(Font* font, const YAML::Node& node);
+    void LoadFont(Font* font);
+    void FreeFont(Font* font);
+    bool IsFontValid(const Font* font);
+    void GetChar(const Font* font, char c, CharData& char_data);
 }
