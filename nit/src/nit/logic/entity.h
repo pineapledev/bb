@@ -11,13 +11,16 @@ namespace Nit
 
     // First bit of the signature would be used to know if the entity is valid or not
     using EntitySignature = Bitset<MAX_COMPONENTS_PER_ENTITY + 1>;
-    
+
     struct ComponentPool
     {
-        FastPool data_pool;
-        u8       type_index  = 0;
+        u8                      type_index  = 0;
+        FastPool                data_pool;
+        Delegate<void(Entity)>  fn_add_to_entity;
+        Delegate<void(Entity)>  fn_remove_from_entity;
+        Delegate<bool(Entity)>  fn_is_in_entity;
     };
-
+    
     struct EntityGroup
     {
         EntitySignature signature;
@@ -62,6 +65,15 @@ namespace Nit
     {
         return FindComponentPool(GetType<T>());
     }
+
+    template<typename T>
+    T& AddComponent(Entity entity, const T& data = {});
+    
+    template<typename T>
+    void RemoveComponent(Entity entity);
+    
+    template<typename T>
+    bool HasComponent(Entity entity);
     
     template<typename T>
     void RegisterComponentType()
@@ -77,6 +89,18 @@ namespace Nit
         ComponentPool& component_pool  = entity_registry->component_pool[entity_registry->next_component_type_index - 1];
         component_pool.data_pool.type  = GetType<T>();
         component_pool.type_index      = entity_registry->next_component_type_index;
+        
+        Bind(component_pool.fn_add_to_entity, {[](Entity entity) {
+            AddComponent<T>(entity);  
+        }});
+        
+        Bind(component_pool.fn_remove_from_entity, {[](Entity entity){
+            RemoveComponent<T>(entity);
+        }});
+        
+        Bind(component_pool.fn_is_in_entity, {[](Entity entity){
+            return HasComponent<T>(entity);
+        }});
         
         InitPool<T>(&component_pool.data_pool, MAX_COMPONENTS_TYPES, false);
         ++entity_registry->next_component_type_index;
@@ -99,7 +123,7 @@ namespace Nit
     void EntitySignatureChanged(Entity entity, EntitySignature new_entity_signature);
     
     template<typename T>
-    T& AddComponent(Entity entity, const T& data = {})
+    T& AddComponent(Entity entity, const T& data)
     {
         NIT_CHECK_MSG(IsEntityValid(entity), "Invalid entity!");
         NIT_CHECK_MSG(GetEntityRegistryInstance()->signatures[entity].size() <= MAX_COMPONENTS_PER_ENTITY + 1, "Components per entity out of range!");
@@ -142,6 +166,15 @@ namespace Nit
         ComponentPool* component_pool = FindComponentPool<T>();
         NIT_CHECK_MSG(component_pool, "Invalid component type!");
         return GetPoolElement<T>(&component_pool->data_pool, entity);
+    }
+    
+    template<typename T>
+    T* GetComponentPtr(Entity entity)
+    {
+        NIT_CHECK_MSG(IsEntityValid(entity), "Invalid entity!");
+        ComponentPool* component_pool = FindComponentPool<T>();
+        NIT_CHECK_MSG(component_pool, "Invalid component type!");
+        return GetPoolElementPtr<T>(&component_pool->data_pool, entity);
     }
 
     template<typename T>
