@@ -43,8 +43,8 @@ Transform& GetCameraTransform()
     return camera_transform;
 }
 
-Entity               circle;
-Entity               cat_entity;
+Entity circle_entity;
+Entity cat_entity;
 
 void GameStart()
 {
@@ -59,17 +59,17 @@ void GameStart()
     
     AddComponent<Transform>(cat_entity).position = V3_RIGHT * 2.f;
     
-    Entity quad = CreateEntity();
-    AddComponent<Sprite>(quad).tint = V4_COLOR_LIGHT_RED;
-    AddComponent<Transform>(quad);
+    Entity quad_entity = CreateEntity();
+    AddComponent<Sprite>(quad_entity).tint = V4_COLOR_LIGHT_RED;
+    AddComponent<Transform>(quad_entity);
 
-    circle = CreateEntity();
-    AddComponent<Circle>(circle).tint = V4_COLOR_LIGHT_GREEN;
-    AddComponent<Transform>(circle).position = V3_DOWN;
+    circle_entity = CreateEntity();
+    AddComponent<Circle>(circle_entity).tint = V4_COLOR_LIGHT_GREEN;
+    AddComponent<Transform>(circle_entity).position = V3_DOWN;
 
-    Entity line = CreateEntity();
-    AddComponent<Line2D>(line).tint = V4_COLOR_CYAN;
-    AddComponent<Transform>(line).position = V3_LEFT;
+    Entity line_entity = CreateEntity();
+    AddComponent<Line2D>(line_entity).tint = V4_COLOR_CYAN;
+    AddComponent<Transform>(line_entity).position = V3_LEFT;
 
     Entity text_entity = CreateEntity();
     Text text;
@@ -80,6 +80,16 @@ void GameStart()
     AddComponent<Transform>(text_entity).position = V3_RIGHT * 2.f;
     
     GetCameraTransform().position = V3_FRONT * 3.f;
+
+    ID scene_id = CreateAsset<Scene>("test_scene", "assets");
+    Scene& scene = GetAssetData<Scene>(scene_id);
+    
+    scene.entities.push_back(camera_entity);
+    scene.entities.push_back(circle_entity);
+    scene.entities.push_back(line_entity);
+    scene.entities.push_back(text_entity);
+
+    SerializeAssetToFile(scene_id);
 }
 
 void GameUpdate()

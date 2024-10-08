@@ -61,6 +61,13 @@ namespace Nit
         return delegate.function_ptr(std::forward<Args>(args)...);
     }
 
+    template<typename R, typename... Args>
+    R Invoke(Delegate<R(Args...)>& delegate, Args&... args)
+    {
+        NIT_CHECK_MSG(!IsDelegateEmpty(delegate), "Trying to invoke empty delegate!");
+        return delegate.function_ptr(args...);
+    }
+
     enum class ListenerAction : u8
     {
         StayListening = 0,

@@ -131,9 +131,11 @@ namespace Nit
         
         static const String STRUCT_TEXT = "struct "; 
         static const String CLASS_TEXT  = "class "; 
+        static const String NAMESPACE_TEXT  = "Nit::"; 
         type.name = typeid(T).name();
         Replace(type.name, STRUCT_TEXT, "");
         Replace(type.name, CLASS_TEXT , "");
+        Replace(type.name, NAMESPACE_TEXT , "");
         
         type.fn_set_data = [](void* elements, u32 element_index, void* data) {
 

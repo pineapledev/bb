@@ -14,6 +14,8 @@ namespace Nit
     Vector3 Right(const Transform& transform);
     Vector3 Front(const Transform& transform);
 
+    void RegisterTransformComponent();
+    
     enum class CameraProjection : u8 { Perspective, Orthographic };
     
     struct Camera

@@ -1,10 +1,11 @@
 ﻿#pragma once
+#include "entity.h"
 
 namespace Nit
 {
     struct Scene
     {
-        
+        Array<Entity> entities;
     };
     
     void RegisterSceneAsset();

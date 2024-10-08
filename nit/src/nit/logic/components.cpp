@@ -1,4 +1,6 @@
 ﻿#include "components.h"
+
+#include "entity.h"
 #include "render/font.h"
 #include "render/texture.h"
 
@@ -22,6 +24,29 @@ namespace Nit
     Vector3 Front(const Transform& transform)
     {
         return LookRotation(transform.rotation, V3_FRONT);
+    }
+
+    void SerializeTransform(const Transform* transform, YAML::Emitter& emitter)
+    {
+        emitter << YAML::Key << "position" << YAML::Value << transform->position;
+        emitter << YAML::Key << "rotation" << YAML::Value << transform->rotation;
+        emitter << YAML::Key << "scale"    << YAML::Value << transform->scale;
+    }
+
+    void DeserializeTransform(Transform* transform, const YAML::Node& node)
+    {
+        transform->position = node["position"].as<Vector3>();
+        transform->rotation = node["rotation"].as<Vector3>();
+        transform->scale    = node["scale"].as<Vector3>();
+    }
+    
+    void RegisterTransformComponent()
+    {
+        TypeArgs<Transform> args;
+        args.fn_serialize   = SerializeTransform;
+        args.fn_deserialize = DeserializeTransform;
+        RegisterType<Transform>(args);
+        RegisterComponentType<Transform>();
     }
 
     Matrix4 CalculateProjectionViewMatrix(const Camera& camera, const Transform& transform)

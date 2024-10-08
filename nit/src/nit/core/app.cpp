@@ -29,7 +29,7 @@ namespace Nit
         SetEntityRegistryInstance(&app->entity_registry);
         InitEntityRegistry();
         
-        RegisterComponentType<Transform>();
+        RegisterTransformComponent();
         RegisterComponentType<Camera>();
         RegisterComponentType<Sprite>();
         RegisterComponentType<Circle>();
