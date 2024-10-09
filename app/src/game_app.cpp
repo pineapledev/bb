@@ -85,6 +85,8 @@ void GameStart()
     Scene& scene = GetAssetData<Scene>(scene_id);
     
     scene.entities.push_back(camera_entity);
+    scene.entities.push_back(cat_entity);
+    scene.entities.push_back(quad_entity);
     scene.entities.push_back(circle_entity);
     scene.entities.push_back(line_entity);
     scene.entities.push_back(text_entity);

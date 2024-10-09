@@ -32,7 +32,7 @@ namespace Nit
         RegisterTransformComponent();
         RegisterCameraComponent();
         RegisterTextComponent();
-        RegisterComponentType<Sprite>();
+        RegisterSpriteComponent();
         RegisterComponentType<Circle>();
         RegisterComponentType<Line2D>();
 

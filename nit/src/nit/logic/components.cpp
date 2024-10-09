@@ -157,6 +157,39 @@ namespace Nit
         }
     }
 
+    void SerializeSprite(const Sprite* sprite, YAML::Emitter& emitter)
+    {                                         
+        emitter << YAML::Key << "visible"       << YAML::Value << sprite->visible;
+        emitter << YAML::Key << "texture_id"    << YAML::Value << sprite->texture_id;
+        emitter << YAML::Key << "tint"          << YAML::Value << sprite->tint;
+        emitter << YAML::Key << "size"          << YAML::Value << sprite->size;
+        emitter << YAML::Key << "flip_x"        << YAML::Value << sprite->flip_x;
+        emitter << YAML::Key << "flip_y"        << YAML::Value << sprite->flip_y;
+        emitter << YAML::Key << "tiling_factor" << YAML::Value << sprite->tiling_factor;
+        emitter << YAML::Key << "keep_aspect"   << YAML::Value << sprite->keep_aspect;
+    }
+    
+    void DeserializeSprite(Sprite* sprite, const YAML::Node& node)
+    {
+        sprite->visible       = node["visible"]       .as<bool>();
+        sprite->texture_id    = node["texture_id"]    .as<ID>();
+        sprite->tint          = node["tint"]          .as<Vector4>();
+        sprite->size          = node["size"]          .as<Vector2>();
+        sprite->flip_x        = node["flip_x"]        .as<bool>();
+        sprite->flip_y        = node["flip_y"]        .as<bool>();
+        sprite->tiling_factor = node["tiling_factor"] .as<Vector2>();
+        sprite->keep_aspect   = node["keep_aspect"]   .as<bool>();
+    }
+
+    void RegisterSpriteComponent()
+    {
+        TypeArgs<Sprite> args;
+        args.fn_serialize   = SerializeSprite;
+        args.fn_deserialize = DeserializeSprite;
+        RegisterType<Sprite>(args);
+        RegisterComponentType<Sprite>();
+    }
+
     void AddTextureToSprite(Sprite& sprite, ID texture_id)
     {
         RemoveTextureFromSprite(sprite);

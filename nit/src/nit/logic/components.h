@@ -65,6 +65,8 @@ namespace Nit
         bool                  keep_aspect      = true;
     };
 
+    void RegisterSpriteComponent();
+
     void AddTextureToSprite(Sprite& sprite, ID texture_id);
     void RemoveTextureFromSprite(Sprite& sprite);
 

@@ -2,7 +2,7 @@ AssetInfo:
   type_name: Scene
   name: test_scene
   path: assets\test_scene.nit
-  id: 12470011399208415966
+  id: 1243619691922226734
   version: 0
 Scene:
   Entity:
@@ -17,6 +17,34 @@ Scene:
       near_clip: 0.100000001
       far_clip: 1000
       size: 3
+  Entity:
+    Transform:
+      position: [2, 0, 0]
+      rotation: [0, 0, 0]
+      scale: [1, 1, 1]
+    Sprite:
+      visible: true
+      texture_id: 3831492576437513736
+      tint: [1, 1, 1, 1]
+      size: [1, 1]
+      flip_x: false
+      flip_y: false
+      tiling_factor: [1, 1]
+      keep_aspect: true
+  Entity:
+    Transform:
+      position: [0, 0, 0]
+      rotation: [0, 0, 0]
+      scale: [1, 1, 1]
+    Sprite:
+      visible: true
+      texture_id: 0
+      tint: [1, 0.300000012, 0.300000012, 1]
+      size: [1, 1]
+      flip_x: false
+      flip_y: false
+      tiling_factor: [1, 1]
+      keep_aspect: true
   Entity:
     Transform:
       position: [0, -1, 0]
