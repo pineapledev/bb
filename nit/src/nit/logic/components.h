@@ -45,6 +45,8 @@ namespace Nit
         f32              size    = 1.f;
     };
 
+    void RegisterTextComponent();
+
     void AddFontToText(Text& text, ID font_id);
     void RemoveFontFromText(Text& text);
 

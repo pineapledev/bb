@@ -2,7 +2,7 @@ AssetInfo:
   type_name: Scene
   name: test_scene
   path: assets\test_scene.nit
-  id: 1886015000536548561
+  id: 12470011399208415966
   version: 0
 Scene:
   Entity:
@@ -32,3 +32,10 @@ Scene:
       position: [2, 0, 0]
       rotation: [0, 0, 0]
       scale: [1, 1, 1]
+    Text:
+      visible: true
+      text: UWU
+      font_id: 6758496758947967
+      tint: [1, 0, 1, 1]
+      spacing: 1
+      size: 1

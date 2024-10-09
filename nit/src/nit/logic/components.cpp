@@ -107,6 +107,35 @@ namespace Nit
         return proj * Inverse(ToMatrix4(transform));
     }
 
+    void SerializeText(const Text* text, YAML::Emitter& emitter)
+    {
+        emitter << YAML::Key << "visible"     << YAML::Value << text->visible;
+        emitter << YAML::Key << "text"        << YAML::Value << text->text;
+        emitter << YAML::Key << "font_id"     << YAML::Value << text->font_id;
+        emitter << YAML::Key << "tint"        << YAML::Value << text->tint;
+        emitter << YAML::Key << "spacing"     << YAML::Value << text->spacing;
+        emitter << YAML::Key << "size"        << YAML::Value << text->size;
+    }
+    
+    void DeserializeText(Text* text, const YAML::Node& node)
+    {
+        text->visible  = node["visible"] .as<bool>();
+        text->text     = node["text"]    .as<String>();
+        text->font_id  = node["font_id"] .as<ID>();
+        text->tint     = node["tint"]    .as<Vector4>();
+        text->spacing  = node["spacing"] .as<f32>();
+        text->size     = node["size"]    .as<f32>();
+    }
+    
+    void RegisterTextComponent()
+    {
+        TypeArgs<Text> args;
+        args.fn_serialize   = SerializeText;
+        args.fn_deserialize = DeserializeText;
+        RegisterType<Text>(args);
+        RegisterComponentType<Text>();
+    }
+
     void AddFontToText(Text& text, ID font_id)
     {
         RemoveFontFromText(text);
