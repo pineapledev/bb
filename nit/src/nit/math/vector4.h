@@ -92,8 +92,8 @@ struct YAML::convert<Nit::Vector4>
         
         v.x = node[0].as<float>();
         v.y = node[1].as<float>();
-        v.y = node[2].as<float>();
-        v.y = node[3].as<float>();
+        v.z = node[2].as<float>();
+        v.w = node[3].as<float>();
         return true;
     }
 };

@@ -14,50 +14,77 @@ namespace Nit
         });
     }
 
+    void SerializeSceneEntities(const Scene* scene, YAML::Emitter& emitter)
+    {
+        emitter << YAML::Key << "Entities" << YAML::Value << YAML::BeginMap;
+        for (Entity entity : scene->entities)
+        {
+            SerializeEntity(entity, emitter);
+        }
+        emitter << YAML::EndMap;
+    }
+    
     void SerializeScene(const Scene* scene, YAML::Emitter& emitter)
     {
-        for(Entity entity : scene->entities)
-        {
-            emitter << YAML::Key << "Entity" << YAML::Value << YAML::BeginMap;
-            
-            for (u32 i = 0; i < app->entity_registry.next_component_type_index - 1; ++i)
-            {
-                auto& component_pool = app->entity_registry.component_pool[i];
-                auto& data_pool = component_pool.data_pool;
-            
-                if (!data_pool.type->fn_deserialize
-                    || !data_pool.type->fn_serialize
-                    || !Invoke(component_pool.fn_is_in_entity, entity))
-                {
-                    continue;
-                }
-
-                emitter << YAML::Key << data_pool.type->name << YAML::Value << YAML::BeginMap;
-                
-                void* raw_data = GetPoolElementRawPtr(&data_pool, entity);
-                SerializeRawData(data_pool.type, raw_data, emitter);
-                
-                emitter << YAML::EndMap;
-            }
-
-            emitter << YAML::EndMap;
-        }
+        // More items to serialize
+        SerializeSceneEntities(scene, emitter);
     }
 
     void DeserializeScene(Scene* scene, const YAML::Node& node)
     {
+        StringStream ss;
+        ss << node;
+        scene->cached_scene = ss.str();
     }
     
     void LoadScene(Scene* scene)
     {
+        LoadSceneEntities(scene);
     }
 
     void FreeScene(Scene* scene)
     {
+        FreeSceneEntities(scene);
     }
 
-    bool IsSceneLoaded(const Scene* scene)
+    bool AreSceneEntitiesLoaded(const Scene* scene)
     {
-        return false;
+        return !scene->entities.empty();
+    }
+
+    void SaveSceneEntities(Scene* scene)
+    {
+        NIT_CHECK(scene);
+        YAML::Emitter emitter;
+        SerializeSceneEntities(scene, emitter);
+        scene->cached_scene = emitter.c_str();
+    }
+
+    void FreeSceneEntities(Scene* scene)
+    {
+        NIT_CHECK(scene);
+        if (!scene->entities.empty())
+        {
+            for (Entity entity : scene->entities)
+            {
+                DestroyEntity(entity);
+            }
+        }
+        scene->entities.clear();
+    }
+
+    void LoadSceneEntities(Scene* scene)
+    {
+        NIT_CHECK(scene);
+        FreeSceneEntities(scene);
+        const YAML::Node node = YAML::Load(scene->cached_scene);
+        const YAML::Node& entities_node = node["Entities"];
+
+        for (const auto& entity_node : entities_node)
+        {
+            const YAML::Node& entity_node_value = entity_node.second;
+            Entity entity = DeserializeEntity(entity_node_value);
+            scene->entities.push_back(entity);
+        }
     }
 }

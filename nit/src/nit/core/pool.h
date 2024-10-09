@@ -185,4 +185,16 @@ namespace Nit
         u32 element_index = pool->element_id_to_index[element_id];
         return GetData<T>(pool->elements, element_index);
     }
+
+    template<typename T>
+    T* GetPoolElementPtr(const FastPool* pool, u32 element_id)
+    {
+        NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");
+        NIT_CHECK_MSG(pool, "Invalid pool!");
+        NIT_CHECK_MSG(IsPoolElementValid(pool, element_id), "Trying to get non-existent element!");
+        
+        // Retrieve the element data
+        u32 element_index = pool->element_id_to_index[element_id];
+        return GetDataPtr<T>(pool->elements, element_index);
+    }
 }

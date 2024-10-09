@@ -33,7 +33,6 @@ Transform& GetCameraTransform()
 
     if (camera_group.entities.empty())
     {
-        NIT_CHECK(false);
         static Transform def;
         return def;
     }
@@ -43,55 +42,10 @@ Transform& GetCameraTransform()
     return camera_transform;
 }
 
-Entity circle_entity;
-Entity cat_entity;
-
 void GameStart()
 {
-    Entity camera_entity = CreateEntity();
-    AddComponent<Camera>(camera_entity);
-    AddComponent<Transform>(camera_entity);
-    
-    cat_entity = CreateEntity();
-    Sprite sprite;
-    sprite.texture_id = FindAssetByName("bola");
-    AddComponent<Sprite>(cat_entity, sprite);
-    
-    AddComponent<Transform>(cat_entity).position = V3_RIGHT * 2.f;
-    
-    Entity quad_entity = CreateEntity();
-    AddComponent<Sprite>(quad_entity).tint = V4_COLOR_LIGHT_RED;
-    AddComponent<Transform>(quad_entity);
-
-    circle_entity = CreateEntity();
-    AddComponent<Circle>(circle_entity).tint = V4_COLOR_LIGHT_GREEN;
-    AddComponent<Transform>(circle_entity).position = V3_DOWN;
-
-    Entity line_entity = CreateEntity();
-    AddComponent<Line2D>(line_entity).tint = V4_COLOR_CYAN;
-    AddComponent<Transform>(line_entity).position = V3_LEFT;
-
-    Entity text_entity = CreateEntity();
-    Text text;
-    text.text = "UWU";
-    text.tint = V4_COLOR_MAGENTA;
-    text.font_id = FindAssetByName("default_font");
-    AddComponent<Text>(text_entity, text);
-    AddComponent<Transform>(text_entity).position = V3_RIGHT * 2.f;
-    
-    GetCameraTransform().position = V3_FRONT * 3.f;
-
-    ID scene_id = CreateAsset<Scene>("test_scene", "assets");
-    Scene& scene = GetAssetData<Scene>(scene_id);
-    
-    scene.entities.push_back(camera_entity);
-    scene.entities.push_back(cat_entity);
-    scene.entities.push_back(quad_entity);
-    scene.entities.push_back(circle_entity);
-    scene.entities.push_back(line_entity);
-    scene.entities.push_back(text_entity);
-
-    SerializeAssetToFile(scene_id);
+    ID test_scene_id = FindAssetByName("test_scene");
+    LoadAsset(test_scene_id);
 }
 
 void GameUpdate()
@@ -106,7 +60,7 @@ void DrawImGUI()
     auto& camera_transform = GetCameraTransform();
     ImGui::DragFloat3("Position", &camera_transform.position.x, .1f);
     ImGui::DragFloat3("Rotation", &camera_transform.rotation.x);
-    ImGui::DragFloat("Cat Alpha", &GetComponent<Sprite>(cat_entity).tint.w, 0.001f);
+    //ImGui::DragFloat("Cat Alpha", &GetComponent<Sprite>(cat_entity).tint.w, 0.001f);
     ImGui::Checkbox("Use dock space", &app->im_gui_renderer.use_dockspace);
     ImGui::End();
 }
