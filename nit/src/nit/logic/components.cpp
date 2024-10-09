@@ -210,4 +210,58 @@ namespace Nit
             ReleaseAsset(sprite.texture_id);
         }
     }
+
+    void SerializeCircle(const Circle* circle, YAML::Emitter& emitter)
+    {                                         
+        emitter << YAML::Key << "visible"   << YAML::Value << circle->visible;
+        emitter << YAML::Key << "tint"      << YAML::Value << circle->tint;
+        emitter << YAML::Key << "radius"    << YAML::Value << circle->radius;
+        emitter << YAML::Key << "thickness" << YAML::Value << circle->thickness;
+        emitter << YAML::Key << "fade"      << YAML::Value << circle->fade;
+    }
+    
+    void DeserializeCircle(Circle* circle, const YAML::Node& node)
+    {
+        circle->visible   = node["visible"]   .as<bool>();
+        circle->tint      = node["tint"]      .as<Vector4>();
+        circle->radius    = node["radius"]    .as<f32>();
+        circle->thickness = node["thickness"] .as<f32>();
+        circle->fade      = node["fade"]      .as<f32>();
+    }
+
+    void RegisterCircleComponent()
+    {
+        TypeArgs<Circle> args;
+        args.fn_serialize   = SerializeCircle;
+        args.fn_deserialize = DeserializeCircle;
+        RegisterType<Circle>(args);
+        RegisterComponentType<Circle>();
+    }
+
+    void SerializeLine2D(const Line2D* line_2d, YAML::Emitter& emitter)
+    {                                         
+        emitter << YAML::Key << "visible"   << YAML::Value << line_2d->visible;
+        emitter << YAML::Key << "tint"      << YAML::Value << line_2d->tint;
+        emitter << YAML::Key << "start"     << YAML::Value << line_2d->start;
+        emitter << YAML::Key << "end"       << YAML::Value << line_2d->end;
+        emitter << YAML::Key << "thickness" << YAML::Value << line_2d->thickness;
+    }
+    
+    void DeserializeLine2D(Line2D* line_2d, const YAML::Node& node)
+    {
+        line_2d->visible   = node["visible"]   .as<bool>();
+        line_2d->tint      = node["tint"]      .as<Vector4>();
+        line_2d->start     = node["start"]     .as<Vector2>();
+        line_2d->end       = node["end"]       .as<Vector2>();
+        line_2d->thickness = node["thickness"] .as<f32>();
+    }
+
+    void RegisterLine2DComponent()
+    {
+        TypeArgs<Line2D> args;
+        args.fn_serialize   = SerializeLine2D;
+        args.fn_deserialize = DeserializeLine2D;
+        RegisterType<Line2D>(args);
+        RegisterComponentType<Line2D>();
+    }
 }

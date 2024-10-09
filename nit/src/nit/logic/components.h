@@ -79,6 +79,8 @@ namespace Nit
         f32             fade                   = .01f;
     };
 
+    void RegisterCircleComponent();
+
     struct Line2D
     {
         bool            visible          = true;
@@ -87,4 +89,6 @@ namespace Nit
         Vector2         end              = V2_ONE;
         f32             thickness        = .05f;
     };
+
+    void RegisterLine2DComponent();
 }

@@ -2,7 +2,7 @@ AssetInfo:
   type_name: Scene
   name: test_scene
   path: assets\test_scene.nit
-  id: 1243619691922226734
+  id: 9621028665531299668
   version: 0
 Scene:
   Entity:
@@ -50,11 +50,23 @@ Scene:
       position: [0, -1, 0]
       rotation: [0, 0, 0]
       scale: [1, 1, 1]
+    Circle:
+      visible: true
+      tint: [0.300000012, 1, 0.300000012, 1]
+      radius: 0.5
+      thickness: 0.0500000007
+      fade: 0.00999999978
   Entity:
     Transform:
       position: [-1, 0, 0]
       rotation: [0, 0, 0]
       scale: [1, 1, 1]
+    Line2D:
+      visible: true
+      tint: [0, 1, 1, 1]
+      start: [0, 0]
+      end: [1, 1]
+      thickness: 0.0500000007
   Entity:
     Transform:
       position: [2, 0, 0]
