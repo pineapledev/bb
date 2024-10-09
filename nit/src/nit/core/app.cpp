@@ -30,7 +30,7 @@ namespace Nit
         InitEntityRegistry();
         
         RegisterTransformComponent();
-        RegisterComponentType<Camera>();
+        RegisterCameraComponent();
         RegisterComponentType<Sprite>();
         RegisterComponentType<Circle>();
         RegisterComponentType<Line2D>();

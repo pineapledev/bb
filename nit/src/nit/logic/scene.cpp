@@ -34,9 +34,9 @@ namespace Nit
 
                 emitter << YAML::Key << data_pool.type->name << YAML::Value << YAML::BeginMap;
                 
-                void* raw_data = GetRawData(data_pool.type, data_pool.type, data_pool.element_id_to_index[entity]);
+                void* raw_data = GetPoolElementRawPtr(&data_pool, entity);
                 SerializeRawData(data_pool.type, raw_data, emitter);
-
+                
                 emitter << YAML::EndMap;
             }
 

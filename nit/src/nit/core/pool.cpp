@@ -136,4 +136,15 @@ namespace Nit
         NIT_CHECK_MSG(pool, "Invalid pool!");
         return pool->element_id_to_index[element_id] != FastPool::INVALID_INDEX;
     }
+
+    void* GetPoolElementRawPtr(const FastPool* pool, u32 element_id)
+    {
+        //Sanity checks
+        NIT_CHECK_MSG(pool, "Invalid pool!");
+        NIT_CHECK_MSG(element_id != FastPool::INVALID_INDEX, "Invalid pool id!");
+
+        // Retrieve the element data
+        u32 element_index = pool->element_id_to_index[element_id];
+        return GetRawData(pool->type, pool->elements, element_index);
+    }
 }

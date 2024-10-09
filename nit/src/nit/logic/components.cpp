@@ -1,5 +1,4 @@
 ﻿#include "components.h"
-
 #include "entity.h"
 #include "render/font.h"
 #include "render/texture.h"
@@ -47,6 +46,39 @@ namespace Nit
         args.fn_deserialize = DeserializeTransform;
         RegisterType<Transform>(args);
         RegisterComponentType<Transform>();
+    }
+
+    void SerializeCamera(const Camera* camera, YAML::Emitter& emitter)
+    {
+        emitter << YAML::Key << "projection" << YAML::Value << GetStringFromEnumValue<CameraProjection>(camera->projection);
+        emitter << YAML::Key << "aspect"     << YAML::Value << camera->aspect;
+        emitter << YAML::Key << "fov"        << YAML::Value << camera->fov;
+        emitter << YAML::Key << "near_clip"  << YAML::Value << camera->near_clip;
+        emitter << YAML::Key << "far_clip"   << YAML::Value << camera->far_clip;
+        emitter << YAML::Key << "size"       << YAML::Value << camera->size;
+    }
+
+    void DeserializeCamera(Camera* camera, const YAML::Node& node)
+    {
+        camera->projection = GetEnumValueFromString<CameraProjection>(node["projection"].as<String>());
+        camera->aspect     = node["aspect"]     .as<f32>();
+        camera->fov        = node["fov"]        .as<f32>();
+        camera->near_clip  = node["near_clip"]  .as<f32>();
+        camera->far_clip   = node["far_clip"]   .as<f32>();
+        camera->size       = node["size"]       .as<f32>();
+    }
+    
+    void RegisterCameraComponent()
+    {
+        RegisterEnumType<CameraProjection>();
+        RegisterEnumValue<CameraProjection>("Orthographic", CameraProjection::Orthographic);
+        RegisterEnumValue<CameraProjection>("Perspective", CameraProjection::Perspective);
+        
+        TypeArgs<Camera> args;
+        args.fn_serialize   = SerializeCamera;
+        args.fn_deserialize = DeserializeCamera;
+        RegisterType<Camera>(args);
+        RegisterComponentType<Camera>();
     }
 
     Matrix4 CalculateProjectionViewMatrix(const Camera& camera, const Transform& transform)
