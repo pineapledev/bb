@@ -160,7 +160,7 @@ namespace Nit
     }
 
     template<typename T>
-    T& InsertPoolElement(FastPool* pool, u32& out_id, const T& data)
+    T& InsertPoolElement(FastPool* pool, u32& out_id, const T& data = {})
     {
         NIT_CHECK_MSG(pool->self_id_management, "This pool does not manage own u32s!");
         out_id = pool->available_ids.front();
