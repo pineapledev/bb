@@ -153,9 +153,14 @@ namespace Nit
     {
         NIT_CHECK(framebuffer);
         glDeleteFramebuffers(1, &framebuffer->frame_buffer_id);
-        framebuffer->frame_buffer_id = 0;
         glDeleteTextures(((GLsizei)framebuffer->color_attachment_ids.size()), framebuffer->color_attachment_ids.data());
         glDeleteTextures(1, &framebuffer->depth_attachment_id);
+        
+        framebuffer->frame_buffer_id = 0;
+        framebuffer->color_attachments.clear();
+        framebuffer->depth_attachment = FramebufferTextureFormat::None;
+        framebuffer->color_attachment_ids.clear();
+        framebuffer->depth_attachment_id = 0;
     }
 
     void ResizeFrameBuffer(FrameBuffer* framebuffer, u32 new_width, u32 new_height)
