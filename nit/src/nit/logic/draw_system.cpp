@@ -128,8 +128,14 @@ namespace Nit
         }
 
         Entity main_camera = *camera_group.entities.begin();
+        Camera& camera = GetComponent<Camera>(main_camera);
         
-        BeginScene2D(CalculateProjectionViewMatrix(GetComponent<Camera>(main_camera), GetComponent<Transform>(main_camera)));
+        i32 width, height;
+        RetrieveWindowSize(&width, &height);
+        SetViewport(0, 0, width, height);
+        camera.aspect = (f32) width / (f32) height;
+        
+        BeginScene2D(CalculateProjectionViewMatrix(camera, GetComponent<Transform>(main_camera)));
         {
             for (Entity entity : GetEntityGroup<Sprite, Transform>().entities)
             {
