@@ -17,22 +17,8 @@ namespace Nit
         Depth = DEPTH24STENCIL8
     };
 
-    struct Framebuffer
+    struct FrameBuffer
     {
-        void Invalidate();
-        void Bind();
-        void Unbind();
-        void Resize(u32 new_width, u32 new_height);
-        
-        i32 ReadPixel(u32 attachment_index, i32 x, i32 y);
-        void ClearAttachment(u32 attachment_index, i32 value);
-
-        u32 GetColorAttachmentID(u32 index = 0)
-        {
-            NIT_CHECK((index < (u32) color_attachment_ids.size()), "Invalid color attachment!");
-            return color_attachment_ids[index];
-        }
-
         u32                             width                = 0;
         u32                             height               = 0;
         u32                             samples              = 1;
@@ -43,6 +29,17 @@ namespace Nit
         u32                             depth_attachment_id  = 0;
     };
 
-    void LoadFrameBuffer(Framebuffer* framebuffer);
-    void FreeFrameBuffer(Framebuffer* framebuffer);
+    void LoadFrameBuffer(FrameBuffer* framebuffer);
+    
+    void FreeFrameBuffer(FrameBuffer* framebuffer);
+    
+    void ResizeFrameBuffer(FrameBuffer* framebuffer, u32 new_width, u32 new_height);
+    
+    i32  ReadFrameBufferPixel(const FrameBuffer* framebuffer, u32 attachment_index, i32 x, i32 y);
+    
+    void ClearAttachment(const FrameBuffer* framebuffer, u32 attachment_index, i32 value);
+    
+    void BindFrameBuffer(const FrameBuffer* framebuffer);
+    
+    void UnbindFrameBuffer();
 }
