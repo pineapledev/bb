@@ -1,6 +1,8 @@
 ﻿#include "framebuffer.h"
 #include "glad/glad.h"
 
+#ifdef NIT_GRAPHICS_API_OPENGL
+
 namespace Nit
 {
     static constexpr u32 MAX_FRAMEBUFFER_SIZE = 8192;
@@ -205,3 +207,5 @@ namespace Nit
         glDeleteTextures(1, &framebuffer->depth_attachment_id);
     }
 }
+
+#endif

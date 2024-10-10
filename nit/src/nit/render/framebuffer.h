@@ -24,8 +24,8 @@ namespace Nit
         void Unbind();
         void Resize(u32 new_width, u32 new_height);
         
-        int ReadPixel(u32 attachment_index, int x, int y);
-        void ClearAttachment(u32 attachment_index, int value);
+        i32 ReadPixel(u32 attachment_index, i32 x, i32 y);
+        void ClearAttachment(u32 attachment_index, i32 value);
 
         u32 GetColorAttachmentID(u32 index = 0)
         {
