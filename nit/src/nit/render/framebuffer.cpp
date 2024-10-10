@@ -3,25 +3,24 @@
 
 namespace Nit
 {
-    static constexpr uint32_t MAX_FRAMEBUFFER_SIZE = 8192;
+    static constexpr u32 MAX_FRAMEBUFFER_SIZE = 8192;
 
     GLenum TextureTarget(bool multisampled)
     {
         return multisampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
     }
 
-    void CreateTextures(bool multisampled, uint32_t* out_id, uint32_t count)
+    void CreateTextures(bool multisampled, u32* out_id, u32 count)
     {
         glCreateTextures(TextureTarget(multisampled), count, out_id);
     }
 
-    void BindTexture(bool multisampled, uint32_t id)
+    void BindTexture(bool multisampled, u32 id)
     {
         glBindTexture(TextureTarget(multisampled), id);
     }
 
-    void AttachColorTexture(uint32_t id, uint32_t samples, GLenum internal_format, GLenum format, uint32_t width,
-                            uint32_t height, int index)
+    void AttachColorTexture(u32 id, u32 samples, GLenum internal_format, GLenum format, u32 width, u32 height, i32 index)
     {
         bool multisampled = samples > 1;
         if (multisampled)
@@ -42,8 +41,7 @@ namespace Nit
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, TextureTarget(multisampled), id, 0);
     }
 
-    void AttachDepthTexture(uint32_t id, int samples, GLenum format, GLenum attachment_type, uint32_t width,
-                            uint32_t height)
+    void AttachDepthTexture(u32 id, i32 samples, GLenum format, GLenum attachment_type, u32 width, u32 height)
     {
         bool multisampled = samples > 1;
         
@@ -65,16 +63,6 @@ namespace Nit
         glFramebufferTexture2D(GL_FRAMEBUFFER, attachment_type, TextureTarget(multisampled), id, 0);
     }
 
-    bool IsDepthFormat(FramebufferTextureFormat format)
-    {
-        switch (format)
-        {
-        case FramebufferTextureFormat::DEPTH24STENCIL8: return true;
-        }
-
-        return false;
-    }
-
     GLenum FbTextureFormatToGL(FramebufferTextureFormat format)
     {
         switch (format)
@@ -92,63 +80,63 @@ namespace Nit
         if (frame_buffer_id)
         {
             glDeleteFramebuffers(1, &frame_buffer_id);
-            glDeleteTextures((GLsizei)color_attachments.size(), color_attachments.data());
-            glDeleteTextures(1, &depth_attachment);
+            glDeleteTextures((GLsizei)color_attachment_ids.size(), color_attachment_ids.data());
+            glDeleteTextures(1, &depth_attachment_id);
 
-            color_attachments.clear();
-            depth_attachment = 0;
+            color_attachment_ids.clear();
+            depth_attachment_id = 0;
         }
 
         glCreateFramebuffers(1, &frame_buffer_id);
         glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer_id);
 
-        bool multisample = specification.samples > 1;
+        bool multisample = samples > 1;
 
         // Attachments
-        if (!color_attachment_specifications.empty())
+        if (!color_attachments.empty())
         {
-            color_attachments.resize(color_attachment_specifications.size());
-            CreateTextures(multisample, color_attachments.data(), (uint32_t)color_attachments.size());
+            color_attachment_ids.resize(color_attachments.size());
+            CreateTextures(multisample, color_attachment_ids.data(), (u32)color_attachment_ids.size());
 
-            for (size_t i = 0; i < color_attachments.size(); i++)
+            for (size_t i = 0; i < color_attachment_ids.size(); i++)
             {
-                BindTexture(multisample, color_attachments[i]);
-                switch (color_attachment_specifications[i].texture_format)
+                BindTexture(multisample, color_attachment_ids[i]);
+                switch (color_attachments[i])
                 {
                 case FramebufferTextureFormat::RGBA8:
-                    AttachColorTexture(color_attachments[i], specification.samples, GL_RGBA8, GL_RGBA,
-                                       specification.width, specification.height, (int)i);
+                    AttachColorTexture(color_attachment_ids[i], samples, GL_RGBA8, GL_RGBA,
+                                       width, height, (i32)i);
                     break;
                 case FramebufferTextureFormat::RED_INTEGER:
-                    AttachColorTexture(color_attachments[i], specification.samples, GL_R32I, GL_RED_INTEGER,
-                                       specification.width, specification.height, (int)i);
+                    AttachColorTexture(color_attachment_ids[i], samples, GL_R32I, GL_RED_INTEGER,
+                                       width, height, (i32)i);
                     break;
                 }
             }
         }
 
-        if (depth_attachment_specification.texture_format != FramebufferTextureFormat::None)
+        if (depth_attachment != FramebufferTextureFormat::None)
         {
-            CreateTextures(multisample, &depth_attachment, 1);
-            BindTexture(multisample, depth_attachment);
-            switch (depth_attachment_specification.texture_format)
+            CreateTextures(multisample, &depth_attachment_id, 1);
+            BindTexture(multisample, depth_attachment_id);
+            switch (depth_attachment)
             {
             case FramebufferTextureFormat::DEPTH24STENCIL8:
-                AttachDepthTexture(depth_attachment, specification.samples, GL_DEPTH24_STENCIL8,
-                                   GL_DEPTH_STENCIL_ATTACHMENT, specification.width, specification.height);
+                AttachDepthTexture(depth_attachment_id, samples, GL_DEPTH24_STENCIL8,
+                                   GL_DEPTH_STENCIL_ATTACHMENT, width, height);
                 break;
             }
         }
 
-        if (color_attachments.size() > 1)
+        if (color_attachment_ids.size() > 1)
         {
-            NIT_CHECK((color_attachments.size() <= 4), "Invalid size!");
+            NIT_CHECK((color_attachment_ids.size() <= 4), "Invalid size!");
             GLenum buffers[4] = {
                 GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3
             };
-            glDrawBuffers((GLsizei)color_attachments.size(), buffers);
+            glDrawBuffers((GLsizei)color_attachment_ids.size(), buffers);
         }
-        else if (color_attachments.empty())
+        else if (color_attachment_ids.empty())
         {
             // Only depth-pass
             glDrawBuffer(GL_NONE);
@@ -159,64 +147,52 @@ namespace Nit
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    void Framebuffer::Bind() const
+    void Framebuffer::Bind()
     {
         glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer_id);
-        glViewport(0, 0, specification.width, specification.height);
+        glViewport(0, 0, width, height);
     }
 
-    void Framebuffer::Unbind() const
+    void Framebuffer::Unbind()
     {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    void Framebuffer::Resize(uint32_t width, uint32_t height)
+    void Framebuffer::Resize(u32 new_width, u32 new_height)
     {
-        if (width == 0 || height == 0 || width > MAX_FRAMEBUFFER_SIZE || height > MAX_FRAMEBUFFER_SIZE)
+        if (new_width == 0 || new_height == 0 || new_width > MAX_FRAMEBUFFER_SIZE || new_height > MAX_FRAMEBUFFER_SIZE)
         {
-            NIT_LOG_WARN("Attempted to resize Framebuffer to %i, %i", width, height);
+            NIT_LOG_WARN("Attempted to resize Framebuffer to %i, %i", new_width, new_height);
             return;
         }
-        specification.width = width;
-        specification.height = height;
+
+        width = new_width;
+        height = new_height;
 
         Invalidate();
     }
 
-    int Framebuffer::ReadPixel(uint32_t attachment_index, int x, int y)
+    i32 Framebuffer::ReadPixel(u32 attachment_index, i32 x, i32 y)
     {
-        NIT_CHECK((attachment_index < color_attachments.size()), "Invalid index!");
+        NIT_CHECK((attachment_index < color_attachment_ids.size()), "Invalid index!");
 
         glReadBuffer(GL_COLOR_ATTACHMENT0 + attachment_index);
-        int pixel_data;
+        i32 pixel_data;
         glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixel_data);
         return pixel_data;
     }
 
-    void Framebuffer::ClearAttachment(uint32_t attachment_index, int value)
+    void Framebuffer::ClearAttachment(u32 attachment_index, i32 value)
     {
-        NIT_CHECK((attachment_index < color_attachments.size()), "Invalid index!");
+        NIT_CHECK((attachment_index < color_attachment_ids.size()), "Invalid index!");
 
-        auto& spec = color_attachment_specifications[attachment_index];
-        glClearTexImage(color_attachments[attachment_index], 0,
-                        FbTextureFormatToGL(spec.texture_format), GL_INT, &value);
+        auto& spec = color_attachments[attachment_index];
+        glClearTexImage(color_attachment_ids[attachment_index], 0,
+                        FbTextureFormatToGL(spec), GL_INT, &value);
     }
 
     void LoadFrameBuffer(Framebuffer* framebuffer)
     {
-        NIT_CHECK(framebuffer);
-        for (auto texture_specification : framebuffer->specification.attachments.attachments)
-        {
-            if (!IsDepthFormat(texture_specification.texture_format))
-            {
-                framebuffer->color_attachment_specifications.emplace_back(texture_specification);
-            }
-            else
-            {
-                framebuffer->depth_attachment_specification = texture_specification;
-            }
-        }
-
         framebuffer->Invalidate();
     }
 
@@ -225,7 +201,7 @@ namespace Nit
         NIT_CHECK(framebuffer);
         glDeleteFramebuffers(1, &framebuffer->frame_buffer_id);
         framebuffer->frame_buffer_id = 0;
-        glDeleteTextures(((GLsizei)framebuffer->color_attachments.size()), framebuffer->color_attachments.data());
-        glDeleteTextures(1, &framebuffer->depth_attachment);
+        glDeleteTextures(((GLsizei)framebuffer->color_attachment_ids.size()), framebuffer->color_attachment_ids.data());
+        glDeleteTextures(1, &framebuffer->depth_attachment_id);
     }
 }
