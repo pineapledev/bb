@@ -15,15 +15,17 @@ namespace Nit
     {
         bool stopped        = false;
         bool paused         = false;
-        bool im_gui_enabled = false;
         
         TypeRegistry   type_registry;
         AssetRegistry  asset_registry;
         SystemStack    system_stack;
         EntityRegistry entity_registry;
-        ImGuiRenderer  im_gui_renderer;
         Renderer2D     renderer_2d;
         Window         window;
+
+#ifdef NIT_IMGUI_ENABLED
+        ImGuiRenderer  im_gui_renderer;
+#endif
         
         f32 delta_seconds    = 0;
         f64 seconds          = 0;

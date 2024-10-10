@@ -38,11 +38,11 @@ namespace Nit
         window->handler = glfwCreateWindow(cfg.width, cfg.height, cfg.title.c_str(), nullptr, nullptr);
         NIT_CHECK_MSG(window->handler, "GLFW Window creation failed!");
         glfwMakeContextCurrent(window->handler);
-    
-#if defined NIT_GRAPHICS_API_OPENGL && NIT_DEBUG
+
         const bool gl_context = gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
         NIT_CHECK_MSG(gl_context, "Failed to set the OpenGL context!");
-
+        
+#if defined NIT_GRAPHICS_API_OPENGL && NIT_DEBUG
         if (cfg.render_api_logs)
         {
             glEnable(GL_DEBUG_OUTPUT);

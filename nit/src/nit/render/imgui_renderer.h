@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef NIT_IMGUI_ENABLED
+
 namespace Nit
 {
     struct ImGuiRenderer
@@ -18,3 +20,5 @@ namespace Nit
     void BeginImGui();
     void EndImGui(float window_width, float window_height);
 }
+
+#endif

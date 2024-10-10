@@ -17,7 +17,7 @@ namespace Nit
     {
         NIT_CHECK_APP_CREATED
         NIT_LOG_TRACE("Creating application...");
-
+        
         SetWindowInstance(&app->window);
         InitWindow();
         
@@ -52,9 +52,11 @@ namespace Nit
         
         SetRenderer2DInstance(&app->renderer_2d);
         InitRenderer2D();
-        
+
+#ifdef NIT_IMGUI_ENABLED
         SetImGuiRendererInstance(&app->im_gui_renderer);
         InitImGui(app->window.handler);
+#endif
         
         // Init time
         app->seconds          = 0;
@@ -86,13 +88,12 @@ namespace Nit
             
             InvokeSystemCallbacks(Stage::Draw);
 
-            if (app->im_gui_enabled)
-            {
-                BeginImGui();
-                InvokeSystemCallbacks(Stage::DrawImGUI);
-                auto [window_width, window_height] = GetWindowSize(); 
-                EndImGui(window_width, window_height);
-            }
+#ifdef NIT_IMGUI_ENABLED
+            BeginImGui();
+            InvokeSystemCallbacks(Stage::DrawImGUI);
+            auto [window_width, window_height] = GetWindowSize(); 
+            EndImGui(window_width, window_height);
+#endif
             
             UpdateWindow();
         }

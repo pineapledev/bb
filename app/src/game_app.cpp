@@ -10,8 +10,6 @@ void DrawImGUI();
 int main(int argc, char** argv)
 {
     App app_instance;
-    app_instance.im_gui_enabled = true;
-    //app_instance.im_gui_renderer.show_demo_window = true;
     SetAppInstance(&app_instance);
     RunApp(OnApplicationRun);
 }
@@ -56,6 +54,7 @@ void GameUpdate()
 
 void DrawImGUI()
 {
+#ifdef NIT_IMGUI_ENABLED
     ImGui::Begin("Camera");
     auto& camera_transform = GetCameraTransform();
     ImGui::DragFloat3("Position", &camera_transform.position.x, .1f);
@@ -63,4 +62,5 @@ void DrawImGUI()
     //ImGui::DragFloat("Cat Alpha", &GetComponent<Sprite>(cat_entity).tint.w, 0.001f);
     ImGui::Checkbox("Use dock space", &app->im_gui_renderer.use_dockspace);
     ImGui::End();
+#endif
 }

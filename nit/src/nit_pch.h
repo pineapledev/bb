@@ -19,10 +19,12 @@
 #include <bitset>
 #include <queue>
 #include <set>
-#include <imgui.h>
 #include <yaml-cpp/yaml.h>
 
 #include "nit/core/base.h"
+#ifdef NIT_IMGUI_ENABLED
+#include <imgui.h>
+#endif
 #include "nit/core/event.h"
 #include "nit/core/type.h"
 #include "nit/core/pool.h"

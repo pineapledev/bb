@@ -230,14 +230,17 @@ project "glfw"
         filter "configurations:Debug"
         symbols "On"
         runtime "Debug"
+        defines "NIT_DEBUG"
 
     filter "configurations:Release"
         optimize "On"
         runtime "Release"
+        defines "NIT_RELEASE"
 
     filter "configurations:Dist"
 		runtime "Release"
 		optimize "On"
+        defines "NIT_DIST"
 
 project "glad"
 
@@ -263,10 +266,17 @@ project "glad"
     filter "configurations:Debug"
         symbols "On"
         runtime "Debug"
+        defines "NIT_DEBUG"
 
     filter "configurations:Release"
         optimize "On"
         runtime "Release"
+        defines "NIT_RELEASE"
+
+    filter "configurations:Dist"
+		runtime "Release"
+		optimize "On"
+        defines "NIT_DIST"
 
     filter "system:windows"
         systemversion "latest"
@@ -337,17 +347,20 @@ project "openal"
             "winmm"
         }
 
-	filter "configurations:Debug"
+        filter "configurations:Debug"
         symbols "On"
         runtime "Debug"
+        defines "NIT_DEBUG"
 
     filter "configurations:Release"
         optimize "On"
         runtime "Release"
+        defines "NIT_RELEASE"
 
     filter "configurations:Dist"
 		runtime "Release"
 		optimize "On"
+        defines "NIT_DIST"
 
 project "yaml"
 
@@ -375,14 +388,17 @@ project "yaml"
     filter "configurations:Debug"
         symbols "On"
         runtime "Debug"
+        defines "NIT_DEBUG"
 
     filter "configurations:Release"
         optimize "On"
         runtime "Release"
+        defines "NIT_RELEASE"
 
     filter "configurations:Dist"
 		runtime "Release"
 		optimize "On"
+        defines "NIT_DIST"
 
     filter "system:windows"
         systemversion "latest"
@@ -544,17 +560,20 @@ project "assimp"
    filter "system:windows"
       systemversion "latest"
 
-    filter "configurations:Debug"
+      filter "configurations:Debug"
       symbols "On"
       runtime "Debug"
+      defines "NIT_DEBUG"
 
   filter "configurations:Release"
       optimize "On"
       runtime "Release"
+      defines "NIT_RELEASE"
 
   filter "configurations:Dist"
       runtime "Release"
       optimize "On"
+      defines "NIT_DIST"
 
 
 project "imgui"
@@ -591,13 +610,16 @@ project "imgui"
     filter "configurations:Debug"
         symbols "On"
         runtime "Debug"
-    
+        defines "NIT_DEBUG"
+
     filter "configurations:Release"
         optimize "On"
         runtime "Release"
-    
+        defines "NIT_RELEASE"
+
     filter "configurations:Dist"
-        runtime "Release"
-        optimize "On"
+		runtime "Release"
+		optimize "On"
+        defines "NIT_DIST"
 
 group ""

@@ -37,6 +37,9 @@ NIT_PRINT("\x1B[93m"); NIT_PRINTLN(__VA_ARGS__); NIT_PRINT("\033[0m")
 
 #define NIT_LOG_ERR(...) \
 NIT_PRINT("\x1B[91m"); NIT_PRINTLN(__VA_ARGS__); NIT_PRINT("\033[0m")
+
+#define NIT_EDITOR_ENABLED
+
 #else
 
 #define NIT_LOG(...)
@@ -44,6 +47,10 @@ NIT_PRINT("\x1B[91m"); NIT_PRINTLN(__VA_ARGS__); NIT_PRINT("\033[0m")
 #define NIT_LOG_WARN(...)
 #define NIT_LOG_ERR(...)
 
+#endif
+
+#ifdef NIT_EDITOR_ENABLED
+#define NIT_IMGUI_ENABLED
 #endif
 
 #ifdef NIT_DEBUG

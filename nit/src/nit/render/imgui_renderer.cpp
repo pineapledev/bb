@@ -1,4 +1,7 @@
 #include "imgui_renderer.h"
+
+#ifdef NIT_IMGUI_ENABLED
+
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
@@ -112,3 +115,5 @@ namespace Nit
         }
     }
 }
+
+#endif
