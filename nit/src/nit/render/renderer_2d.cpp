@@ -364,6 +364,7 @@ namespace Nit
         , const V4Verts2D&            vertex_positions
         , const V2Verts2D&            vertex_uvs      
         , const V4Verts2D&            vertex_colors
+        , i32                         entity_id
     )
     {
         NIT_CHECK_RENDERER_2D_CREATED
@@ -384,7 +385,8 @@ namespace Nit
             vertex.uv = vertex_uvs[i];
             vertex.tint = vertex_colors[i];
             vertex.texture = texture_slot;
-
+            vertex.entity_id = entity_id;
+            
             renderer_2d->last_quad_vertex++;
         }
 
@@ -396,7 +398,8 @@ namespace Nit
           const V4Verts2D& vertex_positions
         , const V4Verts2D& vertex_colors          
         , f32              thickness              
-        , f32              fade                   
+        , f32              fade
+        , i32              entity_id
     )
     {
         NIT_CHECK_RENDERER_2D_CREATED
@@ -416,6 +419,7 @@ namespace Nit
             vertex.tint           = vertex_colors[i];
             vertex.thickness      = thickness;
             vertex.fade           = fade;
+            vertex.entity_id      = entity_id;
             
             renderer_2d->last_circle_vertex++;
         }
@@ -427,6 +431,7 @@ namespace Nit
     void DrawLine2D(
           const V4Verts2D& vertex_positions
         , const V4Verts2D& vertex_colors
+        , i32              entity_id
     )
     {
         NIT_CHECK_RENDERER_2D_CREATED
@@ -441,8 +446,9 @@ namespace Nit
         {
             LineVertex& vertex = *renderer_2d->last_line_vertex;
 
-            vertex.position = vertex_positions[i];
-            vertex.tint     = vertex_colors[i];
+            vertex.position  = vertex_positions[i];
+            vertex.tint      = vertex_colors[i];
+            vertex.entity_id = entity_id;
 
             renderer_2d->last_line_vertex++;
         }
@@ -456,6 +462,7 @@ namespace Nit
         , const V4Verts2D& vertex_positions
         , const V2Verts2D& vertex_uvs
         , const V4Verts2D& vertex_colors
+        , i32              entity_id
     )
     {
         NIT_CHECK_RENDERER_2D_CREATED
@@ -472,11 +479,12 @@ namespace Nit
         {
             CharVertex& vertex = *renderer_2d->last_char_vertex;
 
-            vertex.position= vertex_positions[i];
-            vertex.uv      = vertex_uvs[i];
-            vertex.uv      = vertex_uvs[i];
-            vertex.tint    = vertex_colors[i];
-            vertex.texture = texture_slot;
+            vertex.position  = vertex_positions[i];
+            vertex.uv        = vertex_uvs[i];
+            vertex.uv        = vertex_uvs[i];
+            vertex.tint      = vertex_colors[i];
+            vertex.texture   = texture_slot;
+            vertex.entity_id = entity_id;
             
             renderer_2d->last_char_vertex++;
         }
@@ -492,6 +500,7 @@ namespace Nit
         , const Vector4&  tint
         , f32             spacing
         , f32             size
+        , i32             entity_id
     )
     {
         if (!font)
@@ -519,7 +528,7 @@ namespace Nit
             );
             
             FillVertexColors(vertex_colors, tint);
-            DrawChar(font, vertex_positions, vertex_uvs, vertex_colors);
+            DrawChar(font, vertex_positions, vertex_uvs, vertex_colors, entity_id);
         }
     }
 

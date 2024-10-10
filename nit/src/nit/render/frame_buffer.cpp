@@ -73,12 +73,13 @@ namespace Nit
         case FramebufferTextureFormat::RED_INTEGER: return GL_RED_INTEGER;
         }
 
-        NIT_CHECK(false, "Invalid format!");
+        NIT_CHECK_MSG(false, "Invalid format!");
         return 0;
     }
 
     void LoadFrameBuffer(FrameBuffer* framebuffer)
     {
+        NIT_CHECK(framebuffer);
         if (framebuffer->frame_buffer_id)
         {
             glDeleteFramebuffers(1, &framebuffer->frame_buffer_id);
@@ -132,7 +133,7 @@ namespace Nit
 
         if (framebuffer->color_attachment_ids.size() > 1)
         {
-            NIT_CHECK((framebuffer->color_attachment_ids.size() <= 4), "Invalid size!");
+            NIT_CHECK_MSG((framebuffer->color_attachment_ids.size() <= 4), "Invalid size!");
             GLenum buffers[4] = {
                 GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3
             };
@@ -144,7 +145,7 @@ namespace Nit
             glDrawBuffer(GL_NONE);
         }
 
-        NIT_CHECK((glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE), "Framebuffer is incomplete!");
+        NIT_CHECK_MSG((glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE), "Framebuffer is incomplete!");
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
@@ -165,6 +166,7 @@ namespace Nit
 
     void ResizeFrameBuffer(FrameBuffer* framebuffer, u32 new_width, u32 new_height)
     {
+        NIT_CHECK(framebuffer);
         if (new_width == 0 || new_height == 0 || new_width > MAX_FRAMEBUFFER_SIZE || new_height > MAX_FRAMEBUFFER_SIZE)
         {
             NIT_LOG_WARN("Attempted to resize Framebuffer to %i, %i", new_width, new_height);
@@ -179,7 +181,8 @@ namespace Nit
 
     i32 ReadFrameBufferPixel(const FrameBuffer* framebuffer, u32 attachment_index, i32 x, i32 y)
     {
-        NIT_CHECK((attachment_index < framebuffer->color_attachment_ids.size()), "Invalid index!");
+        NIT_CHECK(framebuffer);
+        NIT_CHECK_MSG((attachment_index < framebuffer->color_attachment_ids.size()), "Invalid index!");
 
         glReadBuffer(GL_COLOR_ATTACHMENT0 + attachment_index);
         i32 pixel_data;
@@ -189,7 +192,8 @@ namespace Nit
 
     void ClearAttachment(const FrameBuffer* framebuffer, u32 attachment_index, i32 value)
     {
-        NIT_CHECK((attachment_index < framebuffer->color_attachment_ids.size()), "Invalid index!");
+        NIT_CHECK(framebuffer);
+        NIT_CHECK_MSG((attachment_index < framebuffer->color_attachment_ids.size()), "Invalid index!");
 
         auto& spec = framebuffer->color_attachments[attachment_index];
         glClearTexImage(framebuffer->color_attachment_ids[attachment_index], 0,
@@ -198,6 +202,7 @@ namespace Nit
 
     void BindFrameBuffer(const FrameBuffer* framebuffer)
     {
+        NIT_CHECK(framebuffer);
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer->frame_buffer_id);
         glViewport(0, 0, framebuffer->width, framebuffer->height);
     }

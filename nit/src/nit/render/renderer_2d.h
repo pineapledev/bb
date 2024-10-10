@@ -80,6 +80,7 @@ namespace Nit
         , const V4Verts2D&            vertex_positions = DEFAULT_VERTEX_POSITIONS_2D
         , const V2Verts2D&            vertex_uvs       = DEFAULT_VERTEX_U_VS_2D
         , const V4Verts2D&            vertex_colors    = DEFAULT_VERTEX_COLORS_2D
+        , i32                         entity_id        = -1
     );                                                  
     
     void DrawCircle(                                    
@@ -87,18 +88,21 @@ namespace Nit
         , const V4Verts2D&            vertex_colors     = DEFAULT_VERTEX_COLORS_2D
         , f32                         thickness         = .05f
         , f32                         fade              = .01f
+        , i32                         entity_id         = -1
     );                                                  
                                                         
     void DrawLine2D(                                    
           const V4Verts2D&            vertex_positions  = DEFAULT_VERTEX_POSITIONS_2D
         , const V4Verts2D&            vertex_colors     = DEFAULT_VERTEX_COLORS_2D
+        , i32                         entity_id         = -1
     );                                                  
                                                         
     void DrawChar(                                      
-          const SharedPtr<Font>&      font             = nullptr
+          const Font*                 font             = nullptr
         , const V4Verts2D&            vertex_positions = DEFAULT_VERTEX_POSITIONS_2D
         , const V2Verts2D&            vertex_uvs       = DEFAULT_VERTEX_U_VS_2D
         , const V4Verts2D&            vertex_colors    = DEFAULT_VERTEX_COLORS_2D
+        , i32                         entity_id        = -1
     );
     
     void DrawText(
@@ -108,6 +112,7 @@ namespace Nit
         , const Vector4&         tint       = V4_ONE
         , f32                    spacing    = 1.f
         , f32                    size       = 1.f
+        , i32                    entity_id  = -1
     );
     
     void EndScene2D();
