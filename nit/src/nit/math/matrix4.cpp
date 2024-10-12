@@ -145,11 +145,6 @@ namespace Nit
         return matrix * scale_matrix;
     }
 
-    Vector3 GetTranslation(const Matrix4& matrix)
-    {
-        return { matrix.m[0][3], matrix.m[1][3], matrix.m[2][3] };
-    }
-
     f32 Determinant(const Matrix4& matrix)
     {
         return matrix.n[12] * matrix.n[9]  * matrix.n[6]  * matrix.n[3] -
@@ -300,5 +295,54 @@ namespace Nit
         result.m[2][3] = - static_cast<f32>(1);
         result.m[3][2] = - (static_cast<f32>(2) * far_clip * near_clip) / (far_clip - near_clip);
         return result;
+    }
+
+    bool Decompose(const Matrix4& matrix, Vector3& position, Vector3& rotation, Vector3& scale)
+    {
+        Matrix4 local_matrix = matrix;
+        
+        if (Abs(local_matrix.m[3][3]) < F32_EPSILON)
+        {
+            return false;
+        }
+
+        if (Abs(local_matrix.m[0][3]) > F32_EPSILON || Abs(local_matrix.m[1][3]) > F32_EPSILON || Abs(local_matrix.m[2][3]) > F32_EPSILON)
+        {
+            local_matrix.m[0][3] = local_matrix.m[1][3] = local_matrix.m[2][3] = 0.0f;
+            local_matrix.m[3][3] = 1.0f;
+        }
+
+        position = { local_matrix.m[3][0], local_matrix.m[3][1], local_matrix.m[3][2] };
+        local_matrix.m[3][0] = local_matrix.m[3][1] = local_matrix.m[3][2] = 0.0f;
+
+        Vector3 row[3] = {
+            { local_matrix.m[0][0], local_matrix.m[0][1], local_matrix.m[0][2] },
+            { local_matrix.m[1][0], local_matrix.m[1][1], local_matrix.m[1][2] },
+            { local_matrix.m[2][0], local_matrix.m[2][1], local_matrix.m[2][2] }
+        };
+
+        scale.x = Lenght(row[0]);
+        scale.y = Lenght(row[1]);
+        scale.z = Lenght(row[2]);
+
+        row[0] = Normalize(row[0]);
+        row[1] = Normalize(row[1]);
+        row[2] = Normalize(row[2]);
+
+        rotation.y = std::asin(-row[0].z); // Pitch
+        
+        if (std::cos(rotation.y) > 1e-6f)
+        {
+            rotation.x = std::atan2(row[1].z, row[2].z); // Yaw
+            rotation.z = std::atan2(row[0].y, row[0].x); // Roll
+        }
+        else
+        {
+            rotation.x = std::atan2(-row[2].x, row[1].y); // Gimbal lock
+            rotation.z = 0.0f;
+        }
+
+        rotation = ToDegrees(rotation);
+        return true;
     }
 }

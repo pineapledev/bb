@@ -73,6 +73,11 @@ namespace Nit
         return { look_rot.x, look_rot.y, look_rot.z };
     }
 
+    f32 Lenght(const Vector3& val)
+    {
+        return std::sqrt(val.x * val.x + val.y * val.y + val.z * val.z);
+    }
+
     template <>
     f32 Magnitude<Vector3>(const Vector3& val)
     {

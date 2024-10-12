@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include "nit/math/math_common.h"
 
 namespace Nit
 {
@@ -47,8 +46,6 @@ namespace Nit
     
     Matrix4 Scale(const Matrix4& matrix, const Vector3& scale);
     
-    Vector3 GetTranslation(const Matrix4& matrix);
-    
     f32 Determinant(const Matrix4& matrix);
     
     Matrix4 Transpose(const Matrix4& matrix);
@@ -62,4 +59,6 @@ namespace Nit
     Matrix4 ViewProjection(const Vector3& position, const Vector3& rotation);
     
     Matrix4 PerspectiveProjection(f32 fov, f32 aspect, f32 near_clip, f32 far_clip);
+
+    bool Decompose(const Matrix4& matrix, Vector3& position, Vector3& rotation, Vector3& scale);
 }

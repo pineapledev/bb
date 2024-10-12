@@ -132,7 +132,7 @@ namespace Nit
                         ImGuizmo::SetRect(window_pos.x, window_pos.y, window_size.x, window_size.y);
                         
                         static ImGuizmo::OPERATION operation = ImGuizmo::TRANSLATE;
-                        static ImGuizmo::MODE mode = ImGuizmo::WORLD;
+                        static ImGuizmo::MODE mode = ImGuizmo::LOCAL;
                         static bool snap_enabled = false;
                         static float snap = 0;
                         
@@ -145,23 +145,12 @@ namespace Nit
 
                         Transform& transform = GetComponent<Transform>(selected_entity);
                         Matrix4 gizmo_matrix = ToMatrix4(transform);
-                        float* gizmo_matrix_ptr = &gizmo_matrix.m[0][0];
 
-                        ImGuizmo::Manipulate(view, projection, operation, mode, gizmo_matrix_ptr, nullptr, snap_enabled ? &snap : nullptr);
+                        ImGuizmo::Manipulate(view, projection, operation, mode, &gizmo_matrix.m[0][0], nullptr, snap_enabled ? &snap : nullptr);
 
-                        if (ImGuizmo::IsUsing())
+                        if (ImGuizmo::IsUsing() && !isnan(gizmo_matrix.m[0][0]))
                         {
-                            float matrix_translation[3], matrix_rotation[3], matrix_scale[3];
-
-                            ImGuizmo::DecomposeMatrixToComponents(gizmo_matrix_ptr, matrix_translation, matrix_rotation, matrix_scale);
-
-                            if (!isnan(*gizmo_matrix_ptr))
-                            {
-                                const float z_pos =  camera_data.projection == CameraProjection::Orthographic ? transform.position.z : matrix_translation[2];
-                                transform.position = {matrix_translation[0], matrix_translation[1], z_pos};
-                                transform.rotation = {matrix_rotation[0], matrix_rotation[1], matrix_rotation[2]};
-                                transform.scale = {matrix_scale[0], matrix_scale[1], matrix_scale[2]};
-                            }
+                            Decompose(gizmo_matrix, transform.position, transform.rotation, transform.scale);
                         }
                     }
                 }

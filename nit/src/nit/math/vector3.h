@@ -45,6 +45,8 @@ namespace Nit
     
     inline Vector3 ToRadians(const Vector3& degrees) { return degrees * DEGREES_TO_RADIANS_FACTOR; }
 
+    f32 Lenght(const Vector3& val);
+    
     template<>
     inline Vector3 Abs(const Vector3& val) { return { Abs(val.x), Abs(val.y), Abs(val.z)  }; }
 
