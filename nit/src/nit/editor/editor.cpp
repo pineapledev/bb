@@ -150,6 +150,12 @@ namespace Nit
 
                         if (ImGuizmo::IsUsing() && !isnan(gizmo_matrix.m[0][0]))
                         {
+                            float matrix_translation[3], matrix_rotation[3], matrix_scale[3];
+             
+                            transform.position = { matrix_translation[0], matrix_translation[1], matrix_translation[2] };
+                            transform.rotation = { matrix_rotation[0], matrix_rotation[1], matrix_rotation[2] };
+                            transform.scale = { matrix_scale[0], matrix_scale[1], matrix_scale[2] };
+                            
                             Decompose(gizmo_matrix, transform.position, transform.rotation, transform.scale);
                         }
                     }
