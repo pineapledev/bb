@@ -93,22 +93,27 @@ namespace Nit
         ComponentPool& component_pool  = entity_registry->component_pool[entity_registry->next_component_type_index - 1];
         component_pool.data_pool.type  = GetType<T>();
         component_pool.type_index      = entity_registry->next_component_type_index;
-        
-        Bind(component_pool.fn_add_to_entity, {[](Entity entity) {
-            AddComponentSilent<T>(entity);  
-        }});
-        
-        Bind(component_pool.fn_remove_from_entity, {[](Entity entity){
-            RemoveComponent<T>(entity);
-        }});
-        
-        Bind(component_pool.fn_is_in_entity, {[](Entity entity){
-            return HasComponent<T>(entity);
-        }});
 
-        Bind(component_pool.fn_get_from_entity, {[](Entity entity) -> void* {
+        void (*fn_add_to_entity)(Entity) = [](Entity entity) {
+            AddComponentSilent<T>(entity);  
+        };
+
+        void (*fn_remove_from_entity)(Entity) = [](Entity entity){
+            RemoveComponent<T>(entity);
+        };
+
+        bool (*fn_is_in_entity)(Entity) = [](Entity entity){
+            return HasComponent<T>(entity);
+        };
+
+        void* (*fn_get_from_entity)(Entity) = [](Entity entity) -> void* {
             return GetComponentPtr<T>(entity);
-        }});
+        };
+        
+        Bind(component_pool.fn_add_to_entity, fn_add_to_entity);
+        Bind(component_pool.fn_remove_from_entity, fn_remove_from_entity);
+        Bind(component_pool.fn_is_in_entity, fn_is_in_entity);
+        Bind(component_pool.fn_get_from_entity, fn_get_from_entity);
         
         InitPool<T>(&component_pool.data_pool, MAX_COMPONENTS_TYPES, false);
         ++entity_registry->next_component_type_index;
