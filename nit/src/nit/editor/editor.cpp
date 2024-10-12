@@ -38,24 +38,6 @@ namespace Nit
     void BeginDrawEditor()
     {
         NIT_CHECK_EDITOR_CREATED
-
-        ImGuiWindowFlags settings_flags =
-            ImGuiWindowFlags_NoDecoration
-          | ImGuiWindowFlags_NoDocking
-          | ImGuiWindowFlags_AlwaysAutoResize
-          | ImGuiWindowFlags_NoFocusOnAppearing
-          | ImGuiWindowFlags_NoResize
-          | ImGuiWindowFlags_NoBackground
-          | ImGuiWindowFlags_NoNav;
-        
-        ImGui::Begin("Editor Settings", nullptr, settings_flags);
-        const char* toggle_button_name = editor->enabled ? "Editor" : "Game";
-        if (ImGui::Button(toggle_button_name))
-        {
-            editor->enabled = !editor->enabled;
-            app->im_gui_renderer.use_dockspace = editor->enabled;
-        }
-        ImGui::End();
         
         if (!editor->enabled)
         {
@@ -201,6 +183,24 @@ namespace Nit
     void EndDrawEditor()
     {
         UnbindFrameBuffer();
+        
+        ImGuiWindowFlags settings_flags =
+            ImGuiWindowFlags_NoDecoration
+          | ImGuiWindowFlags_NoDocking
+          | ImGuiWindowFlags_AlwaysAutoResize
+          | ImGuiWindowFlags_NoFocusOnAppearing
+          | ImGuiWindowFlags_NoResize
+          | ImGuiWindowFlags_NoBackground
+          | ImGuiWindowFlags_NoNav;
+        
+        ImGui::Begin("Editor Settings", nullptr, settings_flags);
+        const char* toggle_button_name = editor->enabled ? "Editor" : "Game";
+        if (ImGui::Button(toggle_button_name))
+        {
+            editor->enabled = !editor->enabled;
+            app->im_gui_renderer.use_dockspace = editor->enabled;
+        }
+        ImGui::End();
     }
 }
 
