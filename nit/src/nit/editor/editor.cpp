@@ -63,9 +63,6 @@ namespace Nit
             {
                 BindFrameBuffer(&editor->frame_buffer);
 
-                // if (!Input::IsEnabled() && ImGui::IsWindowFocused())
-                //     Input::SetEnabled(true);
-
                 const ImVec2 viewport_offset = ImGui::GetCursorPos();
                 const ImVec2 panel_size = ImGui::GetContentRegionAvail();
 
