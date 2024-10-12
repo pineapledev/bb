@@ -145,7 +145,7 @@ namespace Nit
 
                         Transform& transform = GetComponent<Transform>(selected_entity);
                         
-                        Matrix4 gizmo_matrix = ToMatrix4(transform);
+                        Matrix4 gizmo_matrix;
                         ImGuizmo::RecomposeMatrixFromComponents(&transform.position.x, &transform.rotation.x, &transform.scale.x, &gizmo_matrix.m[0][0]);
                         
                         ImGuizmo::Manipulate(view, projection, operation, mode, &gizmo_matrix.m[0][0], nullptr, snap_enabled ? &snap : nullptr);
