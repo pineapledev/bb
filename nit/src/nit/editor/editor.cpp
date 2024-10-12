@@ -144,18 +144,14 @@ namespace Nit
                         const float* projection = &CalculateProjectionMatrix(camera_data).m[0][0];
 
                         Transform& transform = GetComponent<Transform>(selected_entity);
-                        Matrix4 gizmo_matrix = ToMatrix4(transform);
-
+                        
+                        Matrix4 gizmo_matrix;
+                        ImGuizmo::RecomposeMatrixFromComponents(&transform.position.x, &transform.rotation.x, &transform.scale.x, &gizmo_matrix.m[0][0]);
+                        
                         ImGuizmo::Manipulate(view, projection, operation, mode, &gizmo_matrix.m[0][0], nullptr, snap_enabled ? &snap : nullptr);
 
-                        if (ImGuizmo::IsUsing() && !isnan(gizmo_matrix.m[0][0]))
+                        if (ImGuizmo::IsUsing())
                         {
-                            float matrix_translation[3], matrix_rotation[3], matrix_scale[3];
-             
-                            transform.position = { matrix_translation[0], matrix_translation[1], matrix_translation[2] };
-                            transform.rotation = { matrix_rotation[0], matrix_rotation[1], matrix_rotation[2] };
-                            transform.scale = { matrix_scale[0], matrix_scale[1], matrix_scale[2] };
-                            
                             Decompose(gizmo_matrix, transform.position, transform.rotation, transform.scale);
                         }
                     }
