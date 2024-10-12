@@ -12,7 +12,7 @@ Scene:
         rotation: [0, 0, 0]
         scale: [1, 1, 1]
       Camera:
-        projection: Perspective
+        projection: Orthographic
         aspect: 1.77777779
         fov: 100
         near_clip: 0.100000001

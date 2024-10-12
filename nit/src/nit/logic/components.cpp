@@ -83,6 +83,11 @@ namespace Nit
 
     Matrix4 CalculateProjectionViewMatrix(const Camera& camera, const Transform& transform)
     {
+        return CalculateProjectionMatrix(camera) * CalculateViewMatrix(transform);
+    }
+
+    Matrix4 CalculateProjectionMatrix(const Camera& camera)
+    {
         Matrix4 proj;
 
         switch (camera.projection)
@@ -104,7 +109,12 @@ namespace Nit
             break;
         }
 
-        return proj * Inverse(ToMatrix4(transform));
+        return proj;
+    }
+
+    Matrix4 CalculateViewMatrix(const Transform& transform)
+    {
+        return Inverse(ToMatrix4(transform));
     }
 
     void SerializeText(const Text* text, YAML::Emitter& emitter)

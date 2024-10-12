@@ -1,7 +1,9 @@
 #include "imgui_renderer.h"
 
+
 #ifdef NIT_IMGUI_ENABLED
 
+#include <ImGuizmo.h>
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
@@ -43,6 +45,7 @@ namespace Nit
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+        ImGuizmo::BeginFrame();
 
         if (im_gui_renderer->is_dockspace_enabled)
         {

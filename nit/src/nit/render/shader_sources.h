@@ -7,7 +7,7 @@ namespace Nit
             
             layout(location = 0) in vec4 a_Position;
             layout(location = 1) in vec4 a_Tint;
-            layout(location = 4) in int  a_EntityID;
+            layout(location = 2) in int  a_EntityID;
 
             uniform mat4 u_ProjectionView;        
             

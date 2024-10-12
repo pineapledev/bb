@@ -31,6 +31,8 @@ namespace Nit
     void RegisterCameraComponent();
     
     Matrix4 CalculateProjectionViewMatrix(const Camera& camera, const Transform& transform= { {0.f, 0.f, 3.f} });
+    Matrix4 CalculateProjectionMatrix(const Camera& camera);
+    Matrix4 CalculateViewMatrix(const Transform& transform);
 
     struct Font;
     
