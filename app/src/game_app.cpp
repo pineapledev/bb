@@ -25,21 +25,6 @@ void OnApplicationRun()
     SetSystemCallback(DrawImGUI,   Stage::DrawImGUI);
 }
 
-Transform& GetCameraTransform()
-{
-    auto& camera_group = GetEntityGroup<Camera, Transform>();
-
-    if (camera_group.entities.empty())
-    {
-        static Transform def;
-        return def;
-    }
-
-    Entity main_camera = *camera_group.entities.begin();
-    auto& camera_transform = GetComponent<Transform>(main_camera);
-    return camera_transform;
-}
-
 void GameStart()
 {
     ID test_scene_id = FindAssetByName("test_scene");
@@ -48,18 +33,33 @@ void GameStart()
 
 void GameUpdate()
 {
-    // Move camera back
-    //GetCameraTransform().position += V3_FRONT * 3.f * app->delta_seconds;
 }
 
 void DrawImGUI()
 {
 #ifdef NIT_IMGUI_ENABLED
-    ImGui::Begin("Camera");
-    auto& camera_transform = GetCameraTransform();
-    ImGui::DragFloat3("Position", &camera_transform.position.x, .1f);
-    ImGui::DragFloat3("Rotation", &camera_transform.rotation.x);
-    //ImGui::DragFloat("Cat Alpha", &GetComponent<Sprite>(cat_entity).tint.w, 0.001f);
-    ImGui::End();
+ 
+    auto& camera_group = GetEntityGroup<Camera, Transform>();
+    
+    if (!camera_group.entities.empty())
+    {
+        ImGui::Begin("Camera");
+        
+        Entity main_camera = *camera_group.entities.begin();
+        
+        auto& camera_transform = GetComponent<Transform>(main_camera);
+        auto& camera_data      = GetComponent<Camera>(main_camera);
+        
+        ImGui::DragFloat3("Position", &camera_transform.position.x, .1f);
+        ImGui::DragFloat3("Rotation", &camera_transform.rotation.x);
+        
+        static bool ortho = camera_data.projection == CameraProjection::Orthographic;
+        if (ImGui::Checkbox("Otho", &ortho))
+        {
+            camera_data.projection = ortho ? CameraProjection::Orthographic : CameraProjection::Perspective;
+        }
+    
+        ImGui::End();
+    }
 #endif
 }

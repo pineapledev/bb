@@ -157,7 +157,8 @@ namespace Nit
 
                             if (!isnan(*gizmo_matrix_ptr))
                             {
-                                transform.position = {matrix_translation[0], matrix_translation[1], transform.position.z};
+                                const float z_pos =  camera_data.projection == CameraProjection::Orthographic ? transform.position.z : matrix_translation[2];
+                                transform.position = {matrix_translation[0], matrix_translation[1], z_pos};
                                 transform.rotation = {matrix_rotation[0], matrix_rotation[1], matrix_rotation[2]};
                                 transform.scale = {matrix_scale[0], matrix_scale[1], matrix_scale[2]};
                             }
