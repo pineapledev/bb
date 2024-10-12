@@ -145,14 +145,18 @@ namespace Nit
 
                         Transform& transform = GetComponent<Transform>(selected_entity);
                         
-                        Matrix4 gizmo_matrix;
+                        Matrix4 gizmo_matrix = ToMatrix4(transform);
                         ImGuizmo::RecomposeMatrixFromComponents(&transform.position.x, &transform.rotation.x, &transform.scale.x, &gizmo_matrix.m[0][0]);
                         
                         ImGuizmo::Manipulate(view, projection, operation, mode, &gizmo_matrix.m[0][0], nullptr, snap_enabled ? &snap : nullptr);
 
                         if (ImGuizmo::IsUsing())
                         {
-                            Decompose(gizmo_matrix, transform.position, transform.rotation, transform.scale);
+                            Vector3 position, rotation, scale;
+                            Decompose(gizmo_matrix, position, rotation, scale);
+                            transform.position = position;
+                            transform.rotation += rotation - transform.rotation;
+                            transform.scale = scale;
                         }
                     }
                 }
