@@ -6,7 +6,7 @@ namespace Nit
 {
     struct ImGuiRenderer
     {
-        bool use_dockspace = true;
+        bool use_dockspace = false;
         bool show_demo_window = false;
 
         // Internal stuff

@@ -8,7 +8,7 @@ namespace Nit
 {
     struct Editor
     {
-        bool        enabled         = true;
+        bool        enabled         = false;
         Entity      selected_entity = 0;
         bool        show_viewport   = true;
         FrameBuffer frame_buffer    = {};

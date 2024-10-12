@@ -60,7 +60,6 @@ void DrawImGUI()
     ImGui::DragFloat3("Position", &camera_transform.position.x, .1f);
     ImGui::DragFloat3("Rotation", &camera_transform.rotation.x);
     //ImGui::DragFloat("Cat Alpha", &GetComponent<Sprite>(cat_entity).tint.w, 0.001f);
-    ImGui::Checkbox("Use dock space", &app->im_gui_renderer.use_dockspace);
     ImGui::End();
 #endif
 }
