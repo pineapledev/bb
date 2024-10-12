@@ -45,19 +45,19 @@ void DrawImGUI()
     {
         ImGui::Begin("Camera");
         
-        Entity main_camera = 1;
+        Entity main_camera = *camera_group.entities.begin();
         
         auto& camera_transform = GetComponent<Transform>(main_camera);
-        //auto& camera_data      = GetComponent<Camera>(main_camera);
+        auto& camera_data      = GetComponent<Camera>(main_camera);
         
         ImGui::DragFloat3("Position", &camera_transform.position.x, .1f);
         ImGui::DragFloat3("Rotation", &camera_transform.rotation.x);
         
-        // static bool ortho = camera_data.projection == CameraProjection::Orthographic;
-        // if (ImGui::Checkbox("Otho", &ortho))
-        // {
-        //     camera_data.projection = ortho ? CameraProjection::Orthographic : CameraProjection::Perspective;
-        // }
+        static bool ortho = camera_data.projection == CameraProjection::Orthographic;
+        if (ImGui::Checkbox("Otho", &ortho))
+        {
+            camera_data.projection = ortho ? CameraProjection::Orthographic : CameraProjection::Perspective;
+        }
     
         ImGui::End();
     }
