@@ -126,14 +126,29 @@ namespace Nit
         {
             return;
         }
-
+        
         Entity main_camera = *camera_group.entities.begin();
         Camera& camera = GetComponent<Camera>(main_camera);
-        
+
         i32 width, height;
         RetrieveWindowSize(&width, &height);
+        
+#ifdef NIT_EDITOR_ENABLED
+        if (app->editor.enabled && app->editor.show_viewport)
+        {
+            width  = app->editor.frame_buffer.width;
+            height = app->editor.frame_buffer.height;
+        }
+#endif
+
         SetViewport(0, 0, width, height);
-        camera.aspect = (f32) width / (f32) height;
+        
+        camera.aspect = (f32) width / (f32) height;   
+        
+        if (isnan(camera.aspect))
+        {
+            return;
+        }
         
         BeginScene2D(CalculateProjectionViewMatrix(camera, GetComponent<Transform>(main_camera)));
         {

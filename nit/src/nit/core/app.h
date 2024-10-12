@@ -5,6 +5,10 @@
 #include "nit/render/imgui_renderer.h"
 #include "nit/logic/entity.h"
 
+#ifdef NIT_EDITOR_ENABLED
+#include "nit/editor/editor.h"
+#endif
+
 #define NIT_CHECK_APP_CREATED NIT_CHECK_MSG(app, "Forget to call SetAppInstance!");
 
 namespace Nit
@@ -25,6 +29,9 @@ namespace Nit
 
 #ifdef NIT_IMGUI_ENABLED
         ImGuiRenderer  im_gui_renderer;
+#endif
+#ifdef NIT_EDITOR_ENABLED
+        Editor editor;
 #endif
         
         f32 delta_seconds    = 0;

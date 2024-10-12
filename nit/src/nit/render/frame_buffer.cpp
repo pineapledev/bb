@@ -65,12 +65,12 @@ namespace Nit
         glFramebufferTexture2D(GL_FRAMEBUFFER, attachment_type, TextureTarget(multisampled), id, 0);
     }
 
-    GLenum FbTextureFormatToGL(FramebufferTextureFormat format)
+    GLenum FbTextureFormatToGL(FrameBufferTextureFormat format)
     {
         switch (format)
         {
-        case FramebufferTextureFormat::RGBA8: return GL_RGBA8;
-        case FramebufferTextureFormat::RED_INTEGER: return GL_RED_INTEGER;
+        case FrameBufferTextureFormat::RGBA8: return GL_RGBA8;
+        case FrameBufferTextureFormat::RED_INTEGER: return GL_RED_INTEGER;
         }
 
         NIT_CHECK_MSG(false, "Invalid format!");
@@ -106,11 +106,11 @@ namespace Nit
                 BindTexture(multisample, framebuffer->color_attachment_ids[i]);
                 switch (framebuffer->color_attachments[i])
                 {
-                case FramebufferTextureFormat::RGBA8:
+                case FrameBufferTextureFormat::RGBA8:
                     AttachColorTexture(framebuffer->color_attachment_ids[i], framebuffer->samples, GL_RGBA8, GL_RGBA,
                                        framebuffer->width, framebuffer->height, (i32)i);
                     break;
-                case FramebufferTextureFormat::RED_INTEGER:
+                case FrameBufferTextureFormat::RED_INTEGER:
                     AttachColorTexture(framebuffer->color_attachment_ids[i], framebuffer->samples, GL_R32I, GL_RED_INTEGER,
                                        framebuffer->width, framebuffer->height, (i32)i);
                     break;
@@ -118,13 +118,13 @@ namespace Nit
             }
         }
 
-        if (framebuffer->depth_attachment != FramebufferTextureFormat::None)
+        if (framebuffer->depth_attachment != FrameBufferTextureFormat::None)
         {
             CreateTextures(multisample, &framebuffer->depth_attachment_id, 1);
             BindTexture(multisample, framebuffer->depth_attachment_id);
             switch (framebuffer->depth_attachment)
             {
-            case FramebufferTextureFormat::DEPTH24STENCIL8:
+            case FrameBufferTextureFormat::DEPTH24STENCIL8:
                 AttachDepthTexture(framebuffer->depth_attachment_id, framebuffer->samples, GL_DEPTH24_STENCIL8,
                                    GL_DEPTH_STENCIL_ATTACHMENT, framebuffer->width, framebuffer->height);
                 break;
@@ -159,7 +159,7 @@ namespace Nit
         
         framebuffer->frame_buffer_id = 0;
         framebuffer->color_attachments.clear();
-        framebuffer->depth_attachment = FramebufferTextureFormat::None;
+        framebuffer->depth_attachment = FrameBufferTextureFormat::None;
         framebuffer->color_attachment_ids.clear();
         framebuffer->depth_attachment_id = 0;
     }

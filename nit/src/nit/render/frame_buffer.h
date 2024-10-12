@@ -2,7 +2,7 @@
 
 namespace Nit
 {
-    enum class FramebufferTextureFormat : u8
+    enum class FrameBufferTextureFormat : u8
     {
         None = 0,
 
@@ -23,8 +23,8 @@ namespace Nit
         u32                             height               = 0;
         u32                             samples              = 1;
         u32                             frame_buffer_id      = 0;
-        Array<FramebufferTextureFormat> color_attachments    = {};
-        FramebufferTextureFormat        depth_attachment     = FramebufferTextureFormat::None;
+        Array<FrameBufferTextureFormat> color_attachments    = {};
+        FrameBufferTextureFormat        depth_attachment     = FrameBufferTextureFormat::None;
         Array<u32>                      color_attachment_ids = {};
         u32                             depth_attachment_id  = 0;
     };

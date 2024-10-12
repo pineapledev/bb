@@ -4,6 +4,7 @@
 #include "logic/components.h"
 #include "logic/scene.h"
 #include "logic/systems.h"
+#include "render/render_api.h"
 
 namespace Nit
 {
@@ -39,6 +40,7 @@ namespace Nit
         CreateDrawSystem();
         
         SetAssetRegistryInstance(&app->asset_registry);
+        
         RegisterTexture2DAsset();
         RegisterFontAsset();
         RegisterSceneAsset();
@@ -56,6 +58,11 @@ namespace Nit
 #ifdef NIT_IMGUI_ENABLED
         SetImGuiRendererInstance(&app->im_gui_renderer);
         InitImGui(app->window.handler);
+#endif
+
+#ifdef NIT_EDITOR_ENABLED
+        SetEditorInstance(&app->editor);
+        InitEditor();
 #endif
         
         // Init time
@@ -85,13 +92,22 @@ namespace Nit
                 InvokeSystemCallbacks(Stage::FixedUpdate);
                 app->acc_fixed_delta -= app->fixed_delta_seconds;
             }
+
+            ClearScreen();
             
+#ifdef NIT_IMGUI_ENABLED
+            BeginImGui();
+#endif
+            //InvokeSystemCallbacks(Stage::DrawImGUI);
+            
+#ifdef NIT_EDITOR_ENABLED
+            BeginDrawEditor();
+#endif
             InvokeSystemCallbacks(Stage::Draw);
 
 #ifdef NIT_IMGUI_ENABLED
-            BeginImGui();
-            InvokeSystemCallbacks(Stage::DrawImGUI);
-            auto [window_width, window_height] = GetWindowSize(); 
+            EndDrawEditor();
+            auto [window_width, window_height] = GetWindowSize();
             EndImGui(window_width, window_height);
 #endif
             
@@ -100,7 +116,7 @@ namespace Nit
 
         InvokeSystemCallbacks(Stage::End, true);
     }
-
+    
     void PlayApp()  
     {
         NIT_CHECK_APP_CREATED
