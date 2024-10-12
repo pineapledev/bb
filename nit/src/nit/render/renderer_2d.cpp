@@ -266,7 +266,6 @@ namespace Nit
 
         SetBlendingEnabled(true);
         SetBlendingMode(BlendingMode::Alpha);
-        SetDepthTestEnabled(false);
 
         StartBatch();
     }

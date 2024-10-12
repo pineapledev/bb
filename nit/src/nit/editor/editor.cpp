@@ -34,6 +34,10 @@ namespace Nit
             FrameBufferTextureFormat::RED_INTEGER
         };
 
+        editor->frame_buffer.depth_attachment = {
+            FrameBufferTextureFormat::Depth
+        };
+
         LoadFrameBuffer(&editor->frame_buffer);
     }
 
@@ -140,20 +144,20 @@ namespace Nit
                         if (ImGui::IsKeyPressed(ImGuiKey_E)) operation = ImGuizmo::ROTATE;
                         if (ImGui::IsKeyPressed(ImGuiKey_R)) operation = ImGuizmo::SCALE;
 
-                        const float* view = &CalculateViewMatrix(camera_transform).m[0][0];
-                        const float* projection = &CalculateProjectionMatrix(camera_data).m[0][0];
+                        const float* view = &CalculateViewMatrix(camera_transform).n[0];
+                        const float* projection = &CalculateProjectionMatrix(camera_data).n[0];
 
                         Transform& transform = GetComponent<Transform>(selected_entity);
                         
                         Matrix4 gizmo_matrix;
-                        ImGuizmo::RecomposeMatrixFromComponents(&transform.position.x, &transform.rotation.x, &transform.scale.x, &gizmo_matrix.m[0][0]);
+                        ImGuizmo::RecomposeMatrixFromComponents(&transform.position.x, &transform.rotation.x, &transform.scale.x, &gizmo_matrix.n[0]);
                         
-                        ImGuizmo::Manipulate(view, projection, operation, mode, &gizmo_matrix.m[0][0], nullptr, snap_enabled ? &snap : nullptr);
+                        ImGuizmo::Manipulate(view, projection, operation, mode, &gizmo_matrix.n[0], nullptr, snap_enabled ? &snap : nullptr);
 
                         if (ImGuizmo::IsUsing())
                         {
                             Vector3 position, rotation, scale;
-                            Decompose(gizmo_matrix, position, rotation, scale);
+                            ImGuizmo::DecomposeMatrixToComponents(&gizmo_matrix.n[0], &position.x, &rotation.x, &scale.x);
                             transform.position = position;
                             transform.rotation += rotation - transform.rotation;
                             transform.scale = scale;

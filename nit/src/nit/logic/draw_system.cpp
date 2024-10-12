@@ -149,7 +149,9 @@ namespace Nit
         {
             return;
         }
-        
+
+        SetDepthTestEnabled(camera.projection == CameraProjection::Perspective);
+
         BeginScene2D(CalculateProjectionViewMatrix(camera, GetComponent<Transform>(main_camera)));
         {
             for (Entity entity : GetEntityGroup<Sprite, Transform>().entities)
