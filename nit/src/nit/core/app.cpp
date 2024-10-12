@@ -98,15 +98,17 @@ namespace Nit
 #ifdef NIT_IMGUI_ENABLED
             BeginImGui();
 #endif
-            //InvokeSystemCallbacks(Stage::DrawImGUI);
             
 #ifdef NIT_EDITOR_ENABLED
             BeginDrawEditor();
 #endif
             InvokeSystemCallbacks(Stage::Draw);
 
-#ifdef NIT_IMGUI_ENABLED
+#ifdef NIT_EDITOR_ENABLED
             EndDrawEditor();
+#endif
+#ifdef NIT_IMGUI_ENABLED
+            InvokeSystemCallbacks(Stage::DrawImGUI);
             auto [window_width, window_height] = GetWindowSize();
             EndImGui(window_width, window_height);
 #endif

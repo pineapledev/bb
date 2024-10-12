@@ -41,13 +41,10 @@ namespace Nit
 
         if (!editor->enabled)
         {
-            app->im_gui_renderer.use_dockspace = false;
             return;
         }
-
-        app->im_gui_renderer.use_dockspace = true;
         
-        if (ImGui::BeginMenuBar())
+        if (app->im_gui_renderer.is_dockspace_enabled && ImGui::BeginMenuBar())
         {
             if (ImGui::BeginMenu("Windows"))
             {
@@ -56,7 +53,7 @@ namespace Nit
             }
             ImGui::EndMenuBar();
         }
-
+        
         if (editor->show_viewport)
         {
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0, 0});
@@ -177,18 +174,15 @@ namespace Nit
                 //         }
                 //         bWasUsingGizmo = false;
                 //     }
+                ImGui::End();
+                ImGui::PopStyleVar();
             }
         }
     }
 
     void EndDrawEditor()
     {
-        if (editor->enabled && editor->show_viewport)
-        {
-            UnbindFrameBuffer();
-            ImGui::End();
-            ImGui::PopStyleVar();
-        }
+        UnbindFrameBuffer();
     }
 }
 
