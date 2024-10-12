@@ -66,8 +66,8 @@ namespace Nit
         }
         
         Type* type = GetType<T>();
-        SetLoadFunction(type, args.fn_load);
-        SetFreeFunction(type, args.fn_free);
+        SetInvokeLoadFunction(type, args.fn_load);
+        SetInvokeFreeFunction(type, args.fn_free);
         SetSerializeFunction(type, args.fn_serialize);
         SetDeserializeFunction(type, args.fn_deserialize);
         

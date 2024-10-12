@@ -31,40 +31,40 @@ namespace Nit
     void LoadRawData(const Type* type, void* data)
     {
         NIT_CHECK(type);
-        if (type->fn_load)
+        if (type->fn_invoke_load)
         {
-            NIT_CHECK(type->fn_invoke_load_free && data);
-            type->fn_invoke_load_free(type->fn_load, data);    
+            NIT_CHECK(data);
+            type->fn_invoke_load(data);    
         }
     }
 
     void FreeRawData(const Type* type, void* data)
     {
         NIT_CHECK(type);
-        if (type->fn_free)
+        if (type->fn_invoke_free)
         {
-            NIT_CHECK(type->fn_invoke_load_free && data);
-            type->fn_invoke_load_free(type->fn_free, data);    
+            NIT_CHECK(data);
+            type->fn_invoke_free(data);    
         }
     }
 
     void SerializeRawData(const Type* type, void* data, YAML::Emitter& emitter)
     {
         NIT_CHECK(type);
-        if (type->fn_serialize)
+        if (type->fn_invoke_serialize)
         {
-            NIT_CHECK(type->fn_invoke_serialize && data);
-            type->fn_invoke_serialize(type->fn_serialize, data, emitter);
+            NIT_CHECK(data);
+            type->fn_invoke_serialize(data, emitter);
         }
     }
 
     void DeserializeRawData(const Type* type, void* data, const YAML::Node& node)
     {
         NIT_CHECK(type);
-        if (type->fn_deserialize)
+        if (type->fn_invoke_deserialize)
         {
-            NIT_CHECK(type->fn_invoke_deserialize && data);
-            type->fn_invoke_deserialize(type->fn_deserialize, data, node);
+            NIT_CHECK(data);
+            type->fn_invoke_deserialize(data, node);
         }
     }
 

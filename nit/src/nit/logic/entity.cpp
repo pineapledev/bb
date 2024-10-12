@@ -151,8 +151,8 @@ namespace Nit
             auto& component_pool = entity_registry->component_pool[i];
             auto& data_pool = component_pool.data_pool;
             
-            if (!data_pool.type->fn_deserialize
-                || !data_pool.type->fn_serialize
+            if (!data_pool.type->fn_invoke_deserialize
+                || !data_pool.type->fn_invoke_serialize
                 || !Invoke(component_pool.fn_is_in_entity, entity))
             {
                 continue;

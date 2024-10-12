@@ -8,105 +8,85 @@ namespace Nit
     {
         using FnSetData           = void  (*) (void*, u32, void*);
         using FnGetData           = void* (*) (void*, u32);
-        using FnInvokeLoadFree    = void  (*) (void*, void*);
-        using FnInvokeSerialize   = void  (*) (void*, void*, YAML::Emitter& emitter);
-        using FnInvokeDeserialize = void  (*) (void*, void*, const YAML::Node& node);
+        using FnInvokeLoad        = Function<void(void*)>;
+        using FnInvokeFree        = Function<void(void*)>;
+        using FnInvokeSerialize   = Function<void(void*, YAML::Emitter& emitter)>;
+        using FnInvokeDeserialize = Function<void(void*, const YAML::Node& node)>;
 
         String              name;
         u64                 hash                  = 0;
         FnSetData           fn_set_data           = nullptr;
         FnGetData           fn_get_data           = nullptr;
-        void*               fn_load               = nullptr;
-        void*               fn_free               = nullptr;
-        FnInvokeLoadFree    fn_invoke_load_free   = nullptr;
-        void*               fn_serialize          = nullptr;
-        void*               fn_deserialize        = nullptr;
+        FnInvokeLoad        fn_invoke_load        = nullptr;
+        FnInvokeFree        fn_invoke_free        = nullptr;
         FnInvokeSerialize   fn_invoke_serialize   = nullptr;
         FnInvokeDeserialize fn_invoke_deserialize = nullptr;
     };
 
     template<typename T>
     using FnLoad = void (*) (T*);
-
-    template<typename T>
-    void SetInvokeLoadFreeFunction(Type* type)
-    {
-        NIT_CHECK(type);
-        
-        type->fn_invoke_load_free = [] (void* fn, void* data) {
-            FnLoad<T> casted_fn = static_cast<FnLoad<T>>(fn);
-            T* casted_data = static_cast<T*>(data);
-            casted_fn(casted_data);
-        };
-    }
     
     template<typename T>
-    void SetLoadFunction(Type* type, FnLoad<T> fn_load)
+    void SetInvokeLoadFunction(Type* type, FnLoad<T> fn_load)
     {
         NIT_CHECK(type);
-        type->fn_load = fn_load;
-        if (fn_load && !type->fn_invoke_load_free)
+        if (fn_load && !type->fn_invoke_load)
         {
-            SetInvokeLoadFreeFunction<T>(type);
+            type->fn_invoke_load = [fn_load] (void* data) {
+                T* casted_data = static_cast<T*>(data);
+                fn_load(casted_data);
+            };
         }
     }
 
     template<typename T>
     using FnFree = FnLoad<T>;
-    
+
     template<typename T>
-    void SetFreeFunction(Type* type, FnFree<T> fn_free)
+    void SetInvokeFreeFunction(Type* type, FnFree<T> fn_free)
     {
         NIT_CHECK(type);
-        type->fn_free = fn_free;
-        if (fn_free && !type->fn_invoke_load_free)
+        if (fn_free && !type->fn_invoke_free)
         {
-            SetInvokeLoadFreeFunction<T>(type);
+            type->fn_invoke_free = [fn_free] (void* data) {
+                T* casted_data = static_cast<T*>(data);
+                fn_free(casted_data);
+            };
         }
     }
     
     template<typename T>
-    using FnSerialize   = void  (*) (const T*, YAML::Emitter& emitter);
+    using FnSerialize = void (*) (const T*, YAML::Emitter& emitter);
 
     template<typename T>
     void SetSerializeFunction(Type* type, FnSerialize<T> fn_serialize)
     {
         NIT_CHECK(type);
         
-        type->fn_serialize = fn_serialize;
-
-        if (!fn_serialize)
+        if (fn_serialize)
         {
-            return;
+            type->fn_invoke_serialize = [fn_serialize] (void* data, YAML::Emitter& emitter) {
+                const T* casted_data = static_cast<const T*>(data);
+                fn_serialize(casted_data, emitter);
+            };
         }
-        
-        type->fn_invoke_serialize = [] (void* fn, void* data, YAML::Emitter& emitter) {
-            FnSerialize<T> casted_fn = static_cast<FnSerialize<T>>(fn);
-            const T* casted_data = static_cast<const T*>(data);
-            casted_fn(casted_data, emitter);
-        };
     }
 
     template<typename T>
-    using FnDeserialize = void  (*) (T*, const YAML::Node& node);
+    using FnDeserialize = void (*) (T*, const YAML::Node& node);
 
     template<typename T>
     void SetDeserializeFunction(Type* type, FnDeserialize<T> fn_deserialize)
     {
         NIT_CHECK(type);
-
-        type->fn_deserialize = fn_deserialize;
-
-        if (!fn_deserialize)
-        {
-            return;
-        }
         
-        type->fn_invoke_deserialize = [] (void* fn, void* data, const YAML::Node& node) {
-            FnDeserialize<T> casted_fn = static_cast<FnDeserialize<T>>(fn);
-            T* casted_data = static_cast<T*>(data);
-            casted_fn(casted_data, node);
-        };
+        if (fn_deserialize)
+        {
+            type->fn_invoke_deserialize = [fn_deserialize] (void* data, const YAML::Node& node) {
+                T* casted_data = static_cast<T*>(data);
+                fn_deserialize(casted_data, node);
+            };
+        }
     }
     
     template<typename T>
@@ -163,12 +143,12 @@ namespace Nit
 
         if (auto fn_load = args.fn_load)
         {
-            SetLoadFunction(&type, fn_load);
+            SetInvokeLoadFunction(&type, fn_load);
         }
 
         if (auto fn_free = args.fn_free)
         {
-            SetFreeFunction(&type, fn_free);
+            SetInvokeFreeFunction(&type, fn_free);
         }
     }
 
