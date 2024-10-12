@@ -6,6 +6,7 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
+#include "nit/core/asset.h"
 
 namespace Nit
 {

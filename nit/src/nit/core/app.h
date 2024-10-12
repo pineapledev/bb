@@ -1,6 +1,7 @@
 #pragma once
 #include "nit/core/window.h"
 #include "nit/core/system.h"
+#include "nit/core/asset.h"
 #include "nit/render/renderer_2d.h"
 #include "nit/render/imgui_renderer.h"
 #include "nit/logic/entity.h"

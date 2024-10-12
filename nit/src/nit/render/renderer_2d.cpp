@@ -7,6 +7,7 @@
 #include "font.h"
 #include "shader.h"
 #include "primitives_2d.h"
+#include "nit/core/asset.h"
 
 #define NIT_CHECK_RENDERER_2D_CREATED NIT_CHECK_MSG(renderer_2d, "Forget to call SetRenderer2DInstance!");
 

@@ -2,6 +2,7 @@
 #include "entity.h"
 #include "render/font.h"
 #include "render/texture.h"
+#include "nit/core/asset.h"
 
 namespace Nit
 {

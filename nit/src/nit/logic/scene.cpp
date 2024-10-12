@@ -1,6 +1,6 @@
 ﻿#include "scene.h"
-
 #include "core/app.h"
+#include "nit/core/asset.h"
 
 namespace Nit
 {

@@ -28,7 +28,6 @@
 #include "nit/core/event.h"
 #include "nit/core/type.h"
 #include "nit/core/pool.h"
-#include "nit/core/asset.h"
 
 #ifdef NIT_PLATFORM_LINUX
 #include <linux/string.h>
