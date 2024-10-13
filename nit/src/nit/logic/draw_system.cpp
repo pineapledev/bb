@@ -186,7 +186,7 @@ namespace Nit
                 }
                 
                 FillVertexColors(vertex_colors, sprite.tint);
-                DrawQuad(sprite.texture, vertex_positions, vertex_uvs, vertex_colors, entity);
+                DrawQuad(sprite.texture, vertex_positions, vertex_uvs, vertex_colors, (i32) entity);
             }
 
             for (Entity entity : GetEntityGroup<Circle, Transform>().entities)
@@ -202,7 +202,7 @@ namespace Nit
                 FillCircleVertexPositions(vertex_positions, circle.radius);
                 TransformVertexPositions(vertex_positions, ToMatrix4(transform));
                 FillVertexColors(vertex_colors, circle.tint);
-                DrawCircle(vertex_positions, vertex_colors, circle.thickness, circle.fade, entity);
+                DrawCircle(vertex_positions, vertex_colors, circle.thickness, circle.fade, (i32) entity);
             }
 
             for (Entity entity : GetEntityGroup<Line2D, Transform>().entities)
@@ -218,7 +218,7 @@ namespace Nit
                 FillLine2DVertexPositions(vertex_positions, line.start, line.end, line.thickness);
                 TransformVertexPositions(vertex_positions, ToMatrix4(transform));
                 FillVertexColors(vertex_colors, line.tint);
-                DrawLine2D(vertex_positions, vertex_colors, entity);
+                DrawLine2D(vertex_positions, vertex_colors, (i32) entity);
             }
 
             for (Entity entity : GetEntityGroup<Text, Transform>().entities)
@@ -238,7 +238,7 @@ namespace Nit
                     , text.tint
                     , text.spacing
                     , text.size
-                    , entity
+                    , (i32) entity
                 );
             }
         }

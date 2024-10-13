@@ -109,6 +109,7 @@ namespace Nit
                         ->viewport_size.y)
                     {
                         i32 entity_id = ReadFrameBufferPixel(&editor->frame_buffer, 1, mouse_x, mouse_y);
+                        NIT_LOG_TRACE("%i", entity_id);
                         Entity selected = (Entity) entity_id;
                         if ((editor->is_entity_selected = IsEntityValid(selected)))
                         {
