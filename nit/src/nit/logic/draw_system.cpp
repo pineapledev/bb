@@ -190,22 +190,6 @@ namespace Nit
                 DrawQuad(sprite.texture, vertex_positions, vertex_uvs, vertex_colors, (i32) entity);
             }
 
-            for (Entity entity : GetEntityGroup<Circle, Transform>().entities)
-            {
-                auto& transform = GetComponent<Transform>(entity);
-                auto& circle = GetComponent<Circle>(entity);
-
-                if (!circle.visible || circle.tint.w <= F32_EPSILON)
-                {
-                    continue;
-                }
-                
-                FillCircleVertexPositions(vertex_positions, circle.radius);
-                TransformVertexPositions(vertex_positions, ToMatrix4(transform));
-                FillVertexColors(vertex_colors, circle.tint);
-                DrawCircle(vertex_positions, vertex_colors, circle.thickness, circle.fade, (i32) entity);
-            }
-
             for (Entity entity : GetEntityGroup<Line2D, Transform>().entities)
             {
                 auto& transform = GetComponent<Transform>(entity);
@@ -241,6 +225,22 @@ namespace Nit
                     , text.size
                     , (i32) entity
                 );
+            }
+
+            for (Entity entity : GetEntityGroup<Circle, Transform>().entities)
+            {
+                auto& transform = GetComponent<Transform>(entity);
+                auto& circle = GetComponent<Circle>(entity);
+
+                if (!circle.visible || circle.tint.w <= F32_EPSILON)
+                {
+                    continue;
+                }
+                
+                FillCircleVertexPositions(vertex_positions, circle.radius);
+                TransformVertexPositions(vertex_positions, ToMatrix4(transform));
+                FillVertexColors(vertex_colors, circle.tint);
+                DrawCircle(vertex_positions, vertex_colors, circle.thickness, circle.fade, (i32) entity);
             }
         }
         EndScene2D();
