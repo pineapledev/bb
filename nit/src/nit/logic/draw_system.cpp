@@ -136,6 +136,7 @@ namespace Nit
 #ifdef NIT_EDITOR_ENABLED
         if (app->editor.enabled && app->editor.show_viewport)
         {
+            ClearAttachment(&app->editor.frame_buffer, 1, -1);
             width  = app->editor.frame_buffer.width;
             height = app->editor.frame_buffer.height;
         }

@@ -6,13 +6,18 @@ namespace Nit
 {
     struct ImGuiRenderer
     {
+#ifdef NIT_EDITOR_ENABLED
+        bool use_dockspace = true;
+        bool is_dockspace_enabled = true;
+#else
         bool use_dockspace = false;
+        bool is_dockspace_enabled = false;
+#endif
+        
         bool show_demo_window = false;
 
-        // Internal stuff
         const char* dockspace_window_name = "Evi DockSpace";
         const char* dockspace_id = "Evi DockSpace";
-        bool is_dockspace_enabled = false;
     };
 
     void SetImGuiRendererInstance(ImGuiRenderer* im_gui_renderer_instance);

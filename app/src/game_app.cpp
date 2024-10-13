@@ -37,8 +37,13 @@ void GameUpdate()
 
 void DrawImGUI()
 {
-#ifdef NIT_IMGUI_ENABLED
- 
+#if defined(NIT_IMGUI_ENABLED) && defined(NIT_EDITOR_ENABLED)
+
+    if (!app->editor.enabled)
+    {
+        return;
+    }
+    
     auto& camera_group = GetEntityGroup<Camera, Transform>();
     
     if (!camera_group.entities.empty())
@@ -65,7 +70,7 @@ void DrawImGUI()
         {
             Entity entity = app->editor.selected_entity;
             
-            if (IsEntityValid(entity))
+            if (app->editor.is_entity_selected && IsEntityValid(entity))
             {
                 auto& camera_transform = GetComponent<Transform>(entity);
         

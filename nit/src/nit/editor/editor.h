@@ -8,7 +8,7 @@ namespace Nit
 {
     struct Editor
     {
-        bool        enabled            = false;
+        bool        enabled            = true;
         Entity      selected_entity    = 0;
         bool        is_entity_selected = false;
         bool        show_viewport      = true;
