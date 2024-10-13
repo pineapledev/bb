@@ -44,21 +44,37 @@ void DrawImGUI()
     if (!camera_group.entities.empty())
     {
         ImGui::Begin("Camera");
-        
-        Entity main_camera = *camera_group.entities.begin();
-        
-        auto& camera_transform = GetComponent<Transform>(main_camera);
-        auto& camera_data      = GetComponent<Camera>(main_camera);
-        
-        ImGui::DragFloat3("Position", &camera_transform.position.x, .1f);
-        ImGui::DragFloat3("Rotation", &camera_transform.rotation.x);
-        
-        static bool ortho = camera_data.projection == CameraProjection::Orthographic;
-        if (ImGui::Checkbox("Otho", &ortho))
         {
-            camera_data.projection = ortho ? CameraProjection::Orthographic : CameraProjection::Perspective;
+            Entity main_camera = *camera_group.entities.begin();
+        
+            auto& camera_transform = GetComponent<Transform>(main_camera);
+            auto& camera_data      = GetComponent<Camera>(main_camera);
+        
+            ImGui::DragFloat3("Position", &camera_transform.position.x, .1f);
+            ImGui::DragFloat3("Rotation", &camera_transform.rotation.x);
+        
+            static bool ortho = camera_data.projection == CameraProjection::Orthographic;
+            if (ImGui::Checkbox("Otho", &ortho))
+            {
+                camera_data.projection = ortho ? CameraProjection::Orthographic : CameraProjection::Perspective;
+            }
         }
-    
+        ImGui::End();
+
+        ImGui::Begin("Entity");
+        {
+            Entity entity = app->editor.selected_entity;
+            
+            if (IsEntityValid(entity))
+            {
+                auto& camera_transform = GetComponent<Transform>(entity);
+        
+                ImGui::DragFloat3("Position", &camera_transform.position.x, .1f);
+                ImGui::DragFloat3("Rotation", &camera_transform.rotation.x, .1f);
+                ImGui::DragFloat3("Scale",    &camera_transform.scale.x, .1f);
+            }
+            
+        }
         ImGui::End();
     }
 #endif

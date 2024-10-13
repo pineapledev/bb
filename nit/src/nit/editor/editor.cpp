@@ -109,9 +109,10 @@ namespace Nit
                         ->viewport_size.y)
                     {
                         i32 entity_id = ReadFrameBufferPixel(&editor->frame_buffer, 1, mouse_x, mouse_y);
-                        if ((editor->is_entity_selected = entity_id >= 0))
+                        Entity selected = (Entity) entity_id;
+                        if ((editor->is_entity_selected = IsEntityValid(selected)))
                         {
-                            editor->selected_entity = (Entity) entity_id;
+                            editor->selected_entity = selected;
                         }
                     }
                 }
@@ -149,17 +150,18 @@ namespace Nit
 
                         Transform& transform = GetComponent<Transform>(selected_entity);
                         
-                        Matrix4 gizmo_matrix;
-                        ImGuizmo::RecomposeMatrixFromComponents(&transform.position.x, &transform.rotation.x, &transform.scale.x, &gizmo_matrix.n[0]);
+                        Matrix4 gizmo_matrix = CreateTransform(transform.position, transform.rotation, transform.scale);
                         
                         ImGuizmo::Manipulate(view, projection, operation, mode, &gizmo_matrix.n[0], nullptr, snap_enabled ? &snap : nullptr);
 
                         if (ImGuizmo::IsUsing())
                         {
                             Vector3 position, rotation, scale;
-                            ImGuizmo::DecomposeMatrixToComponents(&gizmo_matrix.n[0], &position.x, &rotation.x, &scale.x);
+                            Decompose(gizmo_matrix, position, rotation, scale);
+                            Vector3 delta_rotation = rotation - transform.rotation; 
+                            
                             transform.position = position;
-                            transform.rotation += rotation - transform.rotation;
+                            transform.rotation += delta_rotation;
                             transform.scale = scale;
                         }
                     }

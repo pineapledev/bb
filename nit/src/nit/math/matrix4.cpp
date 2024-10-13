@@ -77,17 +77,11 @@ namespace Nit
 
     Matrix4 CreateTransform(const Vector3& position, const Vector3& rotation /*= V3_ZERO*/, const Vector3& scale /*= V3_ONE*/)
     {
-        static const Matrix4 IDENTITY;
-        
-        if (rotation != V3_ZERO)
-        {
-            return Translate(IDENTITY, position)
-            * Rotate(IDENTITY, ToRadians(rotation))
-            * Scale(IDENTITY, scale);
-        }
-        
-        return Translate(IDENTITY, position)
-            * Scale(IDENTITY, scale);
+        const Matrix4 identity;
+        Matrix4 rotation_matrix = (rotation != V3_ZERO) ? Rotate(identity, ToRadians(rotation)) : identity;
+        Matrix4 translation = Translate(rotation_matrix, position);
+        Matrix4 scale_matrix = Scale(translation, scale);
+        return scale_matrix;
     }
 
     Matrix4 Translate(const Matrix4& matrix, const Vector3& translation)
@@ -96,7 +90,7 @@ namespace Nit
         translate_matrix.m[3][0] = translation.x;
         translate_matrix.m[3][1] = translation.y;
         translate_matrix.m[3][2] = translation.z;
-        return matrix * translate_matrix;
+        return translate_matrix * matrix;
     }
 
     Matrix4 RotateX(const Matrix4& matrix, f32 x)
@@ -106,7 +100,7 @@ namespace Nit
         rotate_matrix.n[9] = -sinf(x);
         rotate_matrix.n[6] =  sinf(x);
         rotate_matrix.n[10] = cosf(x);
-        return matrix * rotate_matrix;
+        return rotate_matrix * matrix;
     }
 
     Matrix4 RotateY(const Matrix4& matrix, f32 y)
@@ -116,7 +110,7 @@ namespace Nit
         rotate_matrix.n[8] =  sinf(y);
         rotate_matrix.n[2] = -sinf(y);
         rotate_matrix.n[10] = cosf(y);
-        return matrix * rotate_matrix;
+        return rotate_matrix * matrix;
     }
 
     Matrix4 RotateZ(const Matrix4& matrix, f32 z)
@@ -126,7 +120,7 @@ namespace Nit
         rotate_matrix.n[4] = -sinf(z);
         rotate_matrix.n[1] =  sinf(z);
         rotate_matrix.n[5] =  cosf(z);
-        return matrix * rotate_matrix;
+        return rotate_matrix * matrix;
     }
 
     Matrix4 Rotate(const Matrix4& matrix, const Vector3& rotation)
