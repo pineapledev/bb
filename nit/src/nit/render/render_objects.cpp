@@ -85,6 +85,48 @@ namespace Nit
         glBindVertexArray(0);
     }
 
+    void EnableVertexAttribute(const BufferElement& element, u32 index, u32 stride)
+    {
+        glEnableVertexAttribArray(index);
+        switch (element.type)
+        {
+        case ShaderDataType::None:
+        case ShaderDataType::Float:
+        case ShaderDataType::Float2:
+        case ShaderDataType::Float3:
+        case ShaderDataType::Float4:
+        case ShaderDataType::Mat3:
+        case ShaderDataType::Mat4:
+        case ShaderDataType::Sampler2D:
+            {
+                glVertexAttribPointer(
+                    index,
+                    GetComponentCountFromShaderDataType(element.type),
+                    ShaderDataTypeToOpenGL(element.type),
+                    element.normalized ? GL_TRUE : GL_FALSE,
+                    stride,
+                    reinterpret_cast<void*>(static_cast<intptr_t>(element.offset))
+                );
+            }
+            break;
+        case ShaderDataType::Int:
+        case ShaderDataType::Int2:
+        case ShaderDataType::Int3:
+        case ShaderDataType::Int4:
+        case ShaderDataType::Bool:
+            {
+                glVertexAttribIPointer(
+                    index,
+                    GetComponentCountFromShaderDataType(element.type),
+                    ShaderDataTypeToOpenGL(element.type),
+                    stride,
+                    reinterpret_cast<void*>(static_cast<intptr_t>(element.offset))
+                );
+            }
+            break;
+        }
+    }
+    
     void VertexArray::AddVertexBuffer(const SharedPtr<VertexBuffer>& vertex_buffer)
     {
         NIT_CHECK_MSG(!vertex_buffer->layout.elements.empty(), "Vertex buffer has no layout!");
@@ -95,15 +137,7 @@ namespace Nit
         const BufferLayout& buffer_layout = vertex_buffer->layout;
         for (const auto& element : buffer_layout)
         {
-            glEnableVertexAttribArray(index);
-            glVertexAttribPointer(
-                index,
-                GetComponentCountFromShaderDataType(element.type),
-                ShaderDataTypeToOpenGL(element.type),
-                element.normalized ? GL_TRUE : GL_FALSE,
-                buffer_layout.stride,
-                reinterpret_cast<void*>(static_cast<intptr_t>(element.offset))
-            );
+            EnableVertexAttribute(element, index, buffer_layout.stride);
             index++;
         }
         vertex_buffers.push_back(vertex_buffer);
