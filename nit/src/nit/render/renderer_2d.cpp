@@ -51,25 +51,25 @@ namespace Nit
 
                 offset += 4;
             }
-            renderer_2d->ibo = CreateSharedPtr<IndexBuffer>(indices, max_indices);
+            renderer_2d->ibo = CreateIndexBuffer(indices, max_indices);
             delete[] indices;
         }
 
         // QUAD VO
         {
             constexpr u32 num_of_vertices = MAX_PRIMITIVES * VERTICES_PER_PRIMITIVE;
-            renderer_2d->quad_vao = CreateSharedPtr<VertexArray>();
-            renderer_2d->quad_vbo = CreateSharedPtr<VertexBuffer>(num_of_vertices * static_cast<u32>(sizeof(QuadVertex)));
-            renderer_2d->quad_vbo->layout = {
+            renderer_2d->quad_vao = CreateVertexArray();
+            renderer_2d->quad_vbo = CreateVertexBuffer(num_of_vertices * sizeof(QuadVertex));
+            GetVertexBufferData(renderer_2d->quad_vbo).layout = {
                 {ShaderDataType::Float4, "a_Position"},
                 {ShaderDataType::Float4, "a_Tint"},
                 {ShaderDataType::Float2, "a_UV"},
                 {ShaderDataType::Int, "a_Texture"},
                 {ShaderDataType::Int, "a_EntityID"}
             };
-            renderer_2d->quad_vao->AddVertexBuffer(renderer_2d->quad_vbo);
+            AddVertexBuffer(renderer_2d->quad_vao, renderer_2d->quad_vbo);
             renderer_2d->quad_batch = new QuadVertex[num_of_vertices];
-            renderer_2d->quad_vao->SetIndexBuffer(renderer_2d->ibo);
+            AddIndexBuffer(renderer_2d->quad_vao, renderer_2d->ibo);
         }
 
         //Texture stuff
@@ -100,9 +100,9 @@ namespace Nit
         // CIRCLE VO
         {
             constexpr u32 num_of_vertices = MAX_PRIMITIVES * VERTICES_PER_PRIMITIVE;
-            renderer_2d->circle_vao = CreateSharedPtr<VertexArray>();
-            renderer_2d->circle_vbo = CreateSharedPtr<VertexBuffer>(num_of_vertices * sizeof(CircleVertex));
-            renderer_2d->circle_vbo->layout = {
+            renderer_2d->circle_vao = CreateVertexArray();
+            renderer_2d->circle_vbo = CreateVertexBuffer(num_of_vertices * sizeof(CircleVertex));
+            GetVertexBufferData(renderer_2d->circle_vbo).layout = {
                 {ShaderDataType::Float4, "a_Position"},
                 {ShaderDataType::Float4, "a_LocalPosition"},
                 {ShaderDataType::Float4, "a_Tint"},
@@ -110,9 +110,9 @@ namespace Nit
                 {ShaderDataType::Float, "a_Fade"},
                 {ShaderDataType::Int, "a_EntityID"}
             };
-            renderer_2d->circle_vao->AddVertexBuffer(renderer_2d->circle_vbo);
+            AddVertexBuffer(renderer_2d->circle_vao, renderer_2d->circle_vbo);
             renderer_2d->circle_batch = new CircleVertex[num_of_vertices];
-            renderer_2d->circle_vao->SetIndexBuffer(renderer_2d->ibo);
+            AddIndexBuffer(renderer_2d->circle_vao, renderer_2d->ibo);
         }
 
         // Circle Material
@@ -125,16 +125,16 @@ namespace Nit
         // LINE VO
         {
             constexpr u32 num_of_vertices = MAX_PRIMITIVES * VERTICES_PER_PRIMITIVE;
-            renderer_2d->line_vao = CreateSharedPtr<VertexArray>();
-            renderer_2d->line_vbo = CreateSharedPtr<VertexBuffer>(num_of_vertices * sizeof(LineVertex));
-            renderer_2d->line_vbo->layout = {
+            renderer_2d->line_vao = CreateVertexArray();
+            renderer_2d->line_vbo = CreateVertexBuffer(num_of_vertices * sizeof(LineVertex));
+            GetVertexBufferData(renderer_2d->line_vbo).layout = {
                 {ShaderDataType::Float4, "a_Position"},
                 {ShaderDataType::Float4, "a_Tint"},
                 {ShaderDataType::Int, "a_EntityID"}
             };
-            renderer_2d->line_vao->AddVertexBuffer(renderer_2d->line_vbo);
+            AddVertexBuffer(renderer_2d->line_vao, renderer_2d->line_vbo);
             renderer_2d->line_batch = new LineVertex[num_of_vertices];
-            renderer_2d->line_vao->SetIndexBuffer(renderer_2d->ibo);
+            AddIndexBuffer(renderer_2d->line_vao, renderer_2d->ibo);
         }
 
         // Line Material
@@ -147,18 +147,18 @@ namespace Nit
         // CHAR VO
         {
             constexpr u32 num_of_vertices = MAX_PRIMITIVES * VERTICES_PER_PRIMITIVE;
-            renderer_2d->char_vao = CreateSharedPtr<VertexArray>();
-            renderer_2d->char_vbo = CreateSharedPtr<VertexBuffer>(num_of_vertices * sizeof(CharVertex));
-            renderer_2d->char_vbo->layout = {
+            renderer_2d->char_vao = CreateVertexArray();
+            renderer_2d->char_vbo = CreateVertexBuffer(num_of_vertices * sizeof(CharVertex));
+            GetVertexBufferData(renderer_2d->char_vbo).layout = {
                 {ShaderDataType::Float4, "a_Position"},
                 {ShaderDataType::Float4, "a_Tint"},
                 {ShaderDataType::Float2, "a_UV"},
                 {ShaderDataType::Int, "a_Texture"},
                 {ShaderDataType::Int, "a_EntityID"}
             };
-            renderer_2d->char_vao->AddVertexBuffer(renderer_2d->char_vbo);
+            AddVertexBuffer(renderer_2d->char_vao, renderer_2d->char_vbo);
             renderer_2d->char_batch = new CharVertex[num_of_vertices];
-            renderer_2d->char_vao->SetIndexBuffer(renderer_2d->ibo);
+            AddIndexBuffer(renderer_2d->char_vao, renderer_2d->ibo);
         }
 
         // Char Material
@@ -210,7 +210,7 @@ namespace Nit
             renderer_2d->default_material->SetConstantMat4("u_ProjectionView", renderer_2d->projection_view);
             renderer_2d->default_material->SubmitConstants();
 
-            renderer_2d->quad_vbo->SetData(renderer_2d->quad_batch, quad_vertex_data_size);
+            SetVertexBufferData(renderer_2d->quad_vbo, renderer_2d->quad_batch, quad_vertex_data_size);
             DrawElements(renderer_2d->quad_vao, renderer_2d->quad_index_count);
         }
 
@@ -220,7 +220,7 @@ namespace Nit
             renderer_2d->default_material->SetConstantMat4("u_ProjectionView", renderer_2d->projection_view);
             renderer_2d->default_material->SubmitConstants();
 
-            renderer_2d->circle_vbo->SetData(renderer_2d->circle_batch, circle_vertex_data_size);
+            SetVertexBufferData(renderer_2d->circle_vbo, renderer_2d->circle_batch, circle_vertex_data_size);
             DrawElements(renderer_2d->circle_vao, renderer_2d->circle_index_count);
         }
 
@@ -230,7 +230,7 @@ namespace Nit
             renderer_2d->default_material->SetConstantMat4("u_ProjectionView", renderer_2d->projection_view);
             renderer_2d->default_material->SubmitConstants();
 
-            renderer_2d->line_vbo->SetData(renderer_2d->line_batch, line_vertex_data_size);
+            SetVertexBufferData(renderer_2d->line_vbo, renderer_2d->line_batch, line_vertex_data_size);
             DrawElements(renderer_2d->line_vao, renderer_2d->line_index_count);
         }
         else if (const u64 char_vertex_data_size = (renderer_2d->last_char_vertex - renderer_2d->char_batch) * sizeof(QuadVertex))
@@ -246,7 +246,7 @@ namespace Nit
             renderer_2d->default_material->SetConstantMat4("u_ProjectionView", renderer_2d->projection_view);
             renderer_2d->default_material->SubmitConstants();
 
-            renderer_2d->char_vbo->SetData(renderer_2d->char_batch, char_vertex_data_size);
+            SetVertexBufferData(renderer_2d->char_vbo, renderer_2d->char_batch, char_vertex_data_size);
             DrawElements(renderer_2d->char_vao, renderer_2d->char_index_count);
         }
 

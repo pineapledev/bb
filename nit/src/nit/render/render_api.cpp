@@ -3,13 +3,11 @@
 
 #ifdef NIT_GRAPHICS_API_OPENGL
 #include <glad/glad.h>
-#endif
 
 namespace Nit
 {
     ShaderDataType ShaderDataTypeFromOpenGL(i32 type)
     {
-#ifdef NIT_GRAPHICS_API_OPENGL
         switch (type)
         {
         case GL_FLOAT: return ShaderDataType::Float;
@@ -26,14 +24,10 @@ namespace Nit
         case GL_BOOL: return ShaderDataType::Bool;
         default: return ShaderDataType::None;
         }
-#else
-        return ShaderDataType::None;
-#endif
     }
 
     i32 ShaderDataTypeToOpenGL(ShaderDataType type)
     {
-#ifdef NIT_GRAPHICS_API_OPENGL
         switch (type)
         {
         case ShaderDataType::None: return 0;
@@ -51,9 +45,6 @@ namespace Nit
         case ShaderDataType::Sampler2D: return GL_SAMPLER_2D;
         default: return 0;
         }
-#else
-        return 0;
-#endif
     }
 
     u32 GetSizeOfShaderDataType(ShaderDataType type)
@@ -122,38 +113,28 @@ namespace Nit
     
     void SetViewport(u32 x, u32 y, u32 width, u32 height)
     {
-#ifdef NIT_GRAPHICS_API_OPENGL
         glViewport(x, y, width, height);
-#endif
     }
 
     void SetClearColor(const Vector4& clear_color)
     {
-#ifdef NIT_GRAPHICS_API_OPENGL
         glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
-#endif
     }
 
     void ClearScreen()
     {
-#ifdef NIT_GRAPHICS_API_OPENGL
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-#endif
     }
 
     void SetBlendingEnabled(bool enabled)
     {
         if (enabled)
         {
-#ifdef NIT_GRAPHICS_API_OPENGL
             glEnable(GL_BLEND);
-#endif
         }
         else
         {
-#ifdef NIT_GRAPHICS_API_OPENGL
             glDisable(GL_BLEND);
-#endif
         }
     }
 
@@ -162,59 +143,44 @@ namespace Nit
         switch (blending_mode)
         {
         case BlendingMode::Solid:
-#ifdef NIT_GRAPHICS_API_OPENGL
             glBlendFunc(GL_ONE, GL_ZERO);
-#endif
             break;
         case BlendingMode::Alpha:
-#ifdef NIT_GRAPHICS_API_OPENGL
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-#endif
             break;
         case BlendingMode::Add:
-#ifdef NIT_GRAPHICS_API_OPENGL
             glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-#endif
             break;
         case BlendingMode::Multiply:
-#ifdef NIT_GRAPHICS_API_OPENGL
             glBlendFunc(GL_DST_COLOR, GL_ZERO);
-#endif
             break;
         }
     }
 
-    void DrawElements(const SharedPtr<VertexArray>& vao, u32 element_count)
+    void DrawElements(u32 vao, u32 element_count)
     {
-        vao->Bind();
-#ifdef NIT_GRAPHICS_API_OPENGL
+        BindVertexArray(vao);
         glDrawElements(GL_TRIANGLES, element_count, GL_UNSIGNED_INT, nullptr);
-#endif
-        vao->Unbind();
+        UnbindVertexArray();
     }
 
-    void DrawArrays(const SharedPtr<VertexArray>& vao, u32 element_count)
+    void DrawArrays(u32 vao, u32 element_count)
     {
-        vao->Bind();
-#ifdef NIT_GRAPHICS_API_OPENGL
+        BindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, element_count);
-#endif
-        vao->Unbind();
+        UnbindVertexArray();
     }
 
     void SetDepthTestEnabled(bool enabled)
     {
         if (enabled)
         {
-#ifdef NIT_GRAPHICS_API_OPENGL
             glEnable(GL_DEPTH_TEST);
-#endif
         }
         else
         {
-#ifdef NIT_GRAPHICS_API_OPENGL
             glDisable(GL_DEPTH_TEST);
-#endif
         }
     }
 }
+#endif

@@ -51,6 +51,9 @@ namespace Nit
         }
         
         InitAssetRegistry();
+
+        SetRenderObjectsInstance(&app->render_objects);
+        InitRenderObjects();
         
         SetRenderer2DInstance(&app->renderer_2d);
         InitRenderer2D();

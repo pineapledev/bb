@@ -3,6 +3,17 @@
 
 namespace Nit
 {
+    struct RenderObjects
+    {
+        FastPool vertex_arrays;
+        FastPool vertex_buffers;
+        FastPool index_buffers;
+    };
+
+    void SetRenderObjectsInstance(RenderObjects* render_objects_instance);
+    RenderObjects* GetRenderObjectsInstance();
+    void InitRenderObjects();
+        
     struct BufferElement
     {
         ShaderDataType type = ShaderDataType::None;
@@ -52,43 +63,39 @@ namespace Nit
 
     struct VertexBuffer
     {
-        VertexBuffer(const void* vertices, u64 size);
-        VertexBuffer(u64 size);
-        ~VertexBuffer();
-
-        void Bind() const;
-        void Unbind() const;
-        void SetData(const void* data, u64 size) const;
-
         u32 buffer_id;
         BufferLayout layout;
     };
 
+    VertexBuffer& GetVertexBufferData(u32 vertex_buffer);
+    void BindVertexBuffer(u32 vertex_buffer);
+    void UnbindVertexBuffer();
+    void SetVertexBufferData(u32 vertex_buffer, const void* data, u64 size);
+    u32  CreateVertexBuffer(const void* vertices, u64 size);
+    u32  CreateVertexBuffer(u64 size);
+    void DestroyVertexBuffer(u32 vertex_buffer);
+    
     struct IndexBuffer
     {
-        IndexBuffer(const u32* indices, u64 count);
-        ~IndexBuffer();
-
-        void Bind() const;
-        void Unbind() const;
-
-        u32 buffer_id;
-        u64 count;
+        u32 buffer_id = 0;
+        u64 count = 0;
     };
+
+    void BindIndexBuffer(u32 index_buffer);
+    void UnbindIndexBuffer();
+    u32  CreateIndexBuffer(const u32* indices, u64 count);
+    void DestroyIndexBuffer(u32 index_buffer);
 
     struct VertexArray
     {
-        VertexArray();
-        ~VertexArray();
-
-        void Bind() const;
-        void Unbind() const;
-
-        void AddVertexBuffer(const SharedPtr<VertexBuffer>& vertex_buffer);
-        void SetIndexBuffer(const SharedPtr<IndexBuffer>& in_index_buffer);
-
-        u32 id;
-        Array<SharedPtr<VertexBuffer>> vertex_buffers;
-        SharedPtr<IndexBuffer> index_buffer;
+        u32 id = 0;
     };
+
+    void BindVertexArray(u32 vertex_array);
+    void UnbindVertexArray();
+    
+    u32  CreateVertexArray();
+    void DestroyVertexArray(u32 vertex_array);
+    void AddIndexBuffer(u32 vertex_array, u32 index_buffer);
+    void AddVertexBuffer(u32 vertex_array, u32 vertex_buffer);
 }

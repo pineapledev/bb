@@ -5,6 +5,7 @@
 #include "nit/render/renderer_2d.h"
 #include "nit/render/imgui_renderer.h"
 #include "nit/logic/entity.h"
+#include "nit/render/render_objects.h"
 
 #ifdef NIT_EDITOR_ENABLED
 #include "nit/editor/editor.h"
@@ -25,6 +26,7 @@ namespace Nit
         AssetRegistry  asset_registry;
         SystemStack    system_stack;
         EntityRegistry entity_registry;
+        RenderObjects  render_objects;
         Renderer2D     renderer_2d;
         Window         window;
 

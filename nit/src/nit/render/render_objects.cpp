@@ -3,151 +3,199 @@
 #ifdef NIT_GRAPHICS_API_OPENGL
 #include <glad/glad.h>
 
+#define NIT_CHECK_RENDER_OBJECTS_CREATED NIT_CHECK_MSG(render_objects, "Forget to call SetRenderObjectsInstance!");
+
 namespace Nit
 {
-    VertexBuffer::VertexBuffer(const void* vertices, u64 size)
+    RenderObjects* render_objects = nullptr;
+    
+    void SetRenderObjectsInstance(RenderObjects* render_objects_instance)
     {
-        glCreateBuffers(1, &buffer_id);
-        glBindBuffer(GL_ARRAY_BUFFER, buffer_id);
-        glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
+        NIT_CHECK(render_objects_instance);
+        render_objects = render_objects_instance;
     }
 
-    VertexBuffer::VertexBuffer(const u64 size)
+    RenderObjects* GetRenderObjectsInstance()
     {
-        glCreateBuffers(1, &buffer_id);
-        glBindBuffer(GL_ARRAY_BUFFER, buffer_id);
-        glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
+        NIT_CHECK_RENDER_OBJECTS_CREATED
+        return render_objects;
     }
 
-    VertexBuffer::~VertexBuffer()
+    void InitRenderObjects()
     {
-        glDeleteBuffers(1, &buffer_id);
+        NIT_CHECK_RENDER_OBJECTS_CREATED
+        InitPool<VertexArray> (&render_objects->vertex_arrays);
+        InitPool<VertexBuffer>(&render_objects->vertex_buffers);
+        InitPool<IndexBuffer> (&render_objects->index_buffers);
     }
 
-    void VertexBuffer::Bind() const
+    VertexBuffer& GetVertexBufferData(u32 vertex_buffer)
     {
-        glBindBuffer(GL_ARRAY_BUFFER, buffer_id);
+        return GetPoolElement<VertexBuffer>(&render_objects->vertex_buffers, vertex_buffer);
     }
 
-    void VertexBuffer::Unbind() const
+    void BindVertexBuffer(u32 vertex_buffer)
+    {
+        auto& vertex_buffer_data = GetPoolElement<VertexBuffer>(&render_objects->vertex_buffers, vertex_buffer);
+        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_data.buffer_id);
+    }
+
+    void UnbindVertexBuffer()
     {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
-    void VertexBuffer::SetData(const void* data, const u64 size) const
+    void SetVertexBufferData(u32 vertex_buffer, const void* data, u64 size)
     {
-        glBindBuffer(GL_ARRAY_BUFFER, buffer_id);
+        auto& vertex_buffer_data = GetPoolElement<VertexBuffer>(&render_objects->vertex_buffers, vertex_buffer);
+        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_data.buffer_id);
         glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
     }
 
-    IndexBuffer::IndexBuffer(const u32* indices, u64 count)
-        : buffer_id(0)
-          , count(count)
+    u32 CreateVertexBuffer(const void* vertices, u64 size)
     {
-        glCreateBuffers(1, &buffer_id);
-        Bind();
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(u32), indices, GL_STATIC_DRAW);
+        NIT_CHECK_RENDER_OBJECTS_CREATED
+        u32 id;
+        auto& vertex_buffer_data = InsertPoolElement<VertexBuffer>(&render_objects->vertex_buffers, id);
+        glCreateBuffers(1, &vertex_buffer_data.buffer_id);
+        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_data.buffer_id);
+        glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
+        return id;
     }
 
-    IndexBuffer::~IndexBuffer()
+    u32 CreateVertexBuffer(u64 size)
     {
-        glDeleteBuffers(1, &buffer_id);
+        NIT_CHECK_RENDER_OBJECTS_CREATED
+        u32 id;
+        auto& vertex_buffer_data = InsertPoolElement<VertexBuffer>(&render_objects->vertex_buffers, id);
+        glCreateBuffers(1, &vertex_buffer_data.buffer_id);
+        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_data.buffer_id);
+        glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
+        return id;
     }
 
-    void IndexBuffer::Bind() const
+    void DestroyVertexBuffer(u32 vertex_buffer)
     {
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer_id);
+        auto& vertex_buffer_data = GetPoolElement<VertexBuffer>(&render_objects->vertex_buffers, vertex_buffer);
+        glDeleteBuffers(1, &vertex_buffer_data.buffer_id);
+        RemovePoolElement(&render_objects->vertex_buffers, vertex_buffer);
     }
 
-    void IndexBuffer::Unbind() const
+    void BindIndexBuffer(u32 index_buffer)
+    {
+        auto& index_buffer_data = GetPoolElement<IndexBuffer>(&render_objects->index_buffers, index_buffer);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_data.buffer_id);
+    }
+
+    void UnbindIndexBuffer()
     {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
-    
-    VertexArray::VertexArray()
-        : id(0)
+
+    u32 CreateIndexBuffer(const u32* indices, u64 count)
     {
-        glCreateVertexArrays(1, &id);
+        u32 id;
+        auto& index_buffer_data = InsertPoolElement<IndexBuffer>(&render_objects->index_buffers, id);
+        glCreateBuffers(1, &index_buffer_data.buffer_id);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_data.buffer_id);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(u32), indices, GL_STATIC_DRAW);
+        return id;
     }
 
-    VertexArray::~VertexArray()
+    void DestroyIndexBuffer(u32 index_buffer)
     {
-        glDeleteVertexArrays(1, &id);
+        auto& index_buffer_data = GetPoolElement<IndexBuffer>(&render_objects->index_buffers, index_buffer);
+        glDeleteBuffers(1, &index_buffer_data.buffer_id);
+        RemovePoolElement(&render_objects->vertex_buffers, index_buffer);
     }
 
-    void VertexArray::Bind() const
+    void BindVertexArray(u32 vertex_array)
     {
-        glBindVertexArray(id);
+        auto& vertex_array_data = GetPoolElement<VertexArray>(&render_objects->vertex_arrays, vertex_array);
+        glBindVertexArray(vertex_array_data.id);
     }
 
-    void VertexArray::Unbind() const
+    void UnbindVertexArray()
     {
         glBindVertexArray(0);
     }
 
-    void EnableVertexAttribute(const BufferElement& element, u32 index, u32 stride)
+    u32 CreateVertexArray()
     {
-        glEnableVertexAttribArray(index);
-        switch (element.type)
-        {
-        case ShaderDataType::None:
-        case ShaderDataType::Float:
-        case ShaderDataType::Float2:
-        case ShaderDataType::Float3:
-        case ShaderDataType::Float4:
-        case ShaderDataType::Mat3:
-        case ShaderDataType::Mat4:
-        case ShaderDataType::Sampler2D:
-            {
-                glVertexAttribPointer(
-                    index,
-                    GetComponentCountFromShaderDataType(element.type),
-                    ShaderDataTypeToOpenGL(element.type),
-                    element.normalized ? GL_TRUE : GL_FALSE,
-                    stride,
-                    reinterpret_cast<void*>(static_cast<intptr_t>(element.offset))
-                );
-            }
-            break;
-        case ShaderDataType::Int:
-        case ShaderDataType::Int2:
-        case ShaderDataType::Int3:
-        case ShaderDataType::Int4:
-        case ShaderDataType::Bool:
-            {
-                glVertexAttribIPointer(
-                    index,
-                    GetComponentCountFromShaderDataType(element.type),
-                    ShaderDataTypeToOpenGL(element.type),
-                    stride,
-                    reinterpret_cast<void*>(static_cast<intptr_t>(element.offset))
-                );
-            }
-            break;
-        }
+        u32 id;
+        auto& vertex_array_data = InsertPoolElement<VertexArray>(&render_objects->vertex_arrays, id);
+        glCreateVertexArrays(1, &vertex_array_data.id);
+        return id;
     }
     
-    void VertexArray::AddVertexBuffer(const SharedPtr<VertexBuffer>& vertex_buffer)
+    void DestroyVertexArray(u32 vertex_array)
     {
-        NIT_CHECK_MSG(!vertex_buffer->layout.elements.empty(), "Vertex buffer has no layout!");
-
-        glBindVertexArray(id);
-        vertex_buffer->Bind();
-        u32 index = 0;
-        const BufferLayout& buffer_layout = vertex_buffer->layout;
-        for (const auto& element : buffer_layout)
-        {
-            EnableVertexAttribute(element, index, buffer_layout.stride);
-            index++;
-        }
-        vertex_buffers.push_back(vertex_buffer);
+        auto& vertex_array_data = GetPoolElement<VertexArray>(&render_objects->vertex_arrays, vertex_array);
+        glDeleteVertexArrays(1, &vertex_array_data.id);
+        RemovePoolElement(&render_objects->vertex_arrays, vertex_array);
     }
 
-    void VertexArray::SetIndexBuffer(const SharedPtr<IndexBuffer>& in_index_buffer)
+    void AddIndexBuffer(u32 vertex_array, u32 index_buffer)
     {
-        glBindVertexArray(id);
-        in_index_buffer->Bind();
-        index_buffer = in_index_buffer;
+        auto& vertex_array_data = GetPoolElement<VertexArray>(&render_objects->vertex_arrays, vertex_array);
+        glBindVertexArray(vertex_array_data.id);
+        auto& index_buffer_data = GetPoolElement<IndexBuffer>(&render_objects->index_buffers, index_buffer);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_data.buffer_id);
+    }
+
+    void AddVertexBuffer(u32 vertex_array, u32 vertex_buffer)
+    {
+        auto& vertex_buffer_data = GetPoolElement<VertexBuffer>(&render_objects->vertex_buffers, vertex_buffer);
+        
+        NIT_CHECK_MSG(!vertex_buffer_data.layout.elements.empty(), "Vertex buffer has no layout!");
+
+        auto& vertex_array_data = GetPoolElement<VertexArray>(&render_objects->vertex_arrays, vertex_array);
+        glBindVertexArray(vertex_array_data.id);
+        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_data.buffer_id);
+        u32 index = 0;
+        const BufferLayout& buffer_layout = vertex_buffer_data.layout;
+        for (const auto& element : buffer_layout)
+        {
+            glEnableVertexAttribArray(index);
+            switch (element.type)
+            {
+            case ShaderDataType::None:
+            case ShaderDataType::Float:
+            case ShaderDataType::Float2:
+            case ShaderDataType::Float3:
+            case ShaderDataType::Float4:
+            case ShaderDataType::Mat3:
+            case ShaderDataType::Mat4:
+            case ShaderDataType::Sampler2D:
+                {
+                    glVertexAttribPointer(
+                        index,
+                        GetComponentCountFromShaderDataType(element.type),
+                        ShaderDataTypeToOpenGL(element.type),
+                        element.normalized ? GL_TRUE : GL_FALSE,
+                        buffer_layout.stride,
+                        reinterpret_cast<void*>(static_cast<intptr_t>(element.offset))
+                    );
+                }
+                break;
+            case ShaderDataType::Int:
+            case ShaderDataType::Int2:
+            case ShaderDataType::Int3:
+            case ShaderDataType::Int4:
+            case ShaderDataType::Bool:
+                {
+                    glVertexAttribIPointer(
+                        index,
+                        GetComponentCountFromShaderDataType(element.type),
+                        ShaderDataTypeToOpenGL(element.type),
+                        buffer_layout.stride,
+                        reinterpret_cast<void*>(static_cast<intptr_t>(element.offset))
+                    );
+                }
+                break;
+            }
+            index++;
+        }
     }
 }
 
