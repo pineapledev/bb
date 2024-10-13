@@ -283,84 +283,101 @@ project "glad"
 
 project "openal"
     
-    kind          "StaticLib"
-    language      "C++"
-    cppdialect    "C++20"
-    location      "3rd/openal"
-    staticruntime "off"
-    
-    targetdir (binariesdir)
-	objdir    (intermediatesdir)
-
-    disablewarnings 
-    { 
-        "5030",
-        "4065",
-        "4834"
-    }
-    
-    includedirs
-    {
-        "3rd/openal/src",
-        "3rd/openal/src/alc",
-        "3rd/openal/src/common",
-        "3rd/openal/include",
-        "3rd/openal/include/AL"
-    }
-    
-    files
-    {
-        "3rd/openal/src/**.h",
-        "3rd/openal/src/**.cpp"
-    }
-    
-    excludes
-    {
-        "3rd/openal/src/alc/mixer/mixer_neon.cpp"
-    }
-    
-    defines
-    {
-        "AL_LIBTYPE_STATIC"
-    }
+        kind          "StaticLib"
+        language      "C++"
+        cppdialect    "C++20"
+        location      "3rd/openal"
+        staticruntime "off"
         
-    filter "system:windows"
-        systemversion "latest"
+        targetdir (binariesdir)
+        objdir    (intermediatesdir)
     
+        disablewarnings 
+        { 
+            "5030",
+            "4065",
+            "4834"
+        }
+        
+        includedirs
+        {
+            "3rd/openal/src",
+            "3rd/openal/src/alc",
+            "3rd/openal/src/common",
+            "3rd/openal/include",
+            "3rd/openal/include/AL"
+        }
+        
+        files
+        {
+            "3rd/openal/src/**.h",
+            "3rd/openal/src/**.cpp"
+        }
+        
+        excludes
+        {
+            "3rd/openal/src/alc/mixer/mixer_neon.cpp"
+        }
+        
         defines
         {
-            "WIN32",
-            "_WINDOWS",
-            "AL_BUILD_LIBRARY",
-            "AL_ALEXT_PROTOTYPES",
-            "_WIN32",
-            "_WIN32_WINNT=0x0502",
-            "_CRT_SECURE_NO_WARNINGS",
-            "NOMINMAX",
-            "CMAKE_INTDIR=\"Debug\"",
-            "OpenAL_EXPORTS",
-            "_SILENCE_NODISCARD_LOCK_WARNINGS"
+            "AL_LIBTYPE_STATIC"
         }
     
-        links
-        {
-            "winmm"
-        }
-
+        filter "system:windows"
+            systemversion "latest"
+        
+            defines
+            {
+                "WIN32",
+                "_WINDOWS",
+                "AL_BUILD_LIBRARY",
+                "AL_ALEXT_PROTOTYPES",
+                "_WIN32",
+                "_WIN32_WINNT=0x0502",
+                "_CRT_SECURE_NO_WARNINGS",
+                "NOMINMAX",
+                "CMAKE_INTDIR=\"Debug\"",
+                "OpenAL_EXPORTS",
+                "_SILENCE_NODISCARD_LOCK_WARNINGS"
+            }
+        
+            links
+            {
+                "winmm"
+            }
+    
+        filter "system:linux"
+            defines
+            {
+                "AL_BUILD_LIBRARY",
+                "AL_ALEXT_PROTOTYPES",
+                "LINUX",
+            }
+        
+            links
+            {
+                "pthread",    -- Necesario para concurrencia en Linux
+                "dl",         -- Biblioteca para la carga dinámica de objetos
+                "m",          -- Matemáticas
+                "pulse",      -- PulseAudio
+                "pulse-simple" -- Dependencia adicional para PulseAudio
+            }
+    
         filter "configurations:Debug"
-        symbols "On"
-        runtime "Debug"
-        defines "NIT_DEBUG"
-
-    filter "configurations:Release"
-        optimize "On"
-        runtime "Release"
-        defines "NIT_RELEASE"
-
-    filter "configurations:Dist"
-		runtime "Release"
-		optimize "On"
-        defines "NIT_DIST"
+            symbols "On"
+            runtime "Debug"
+            defines "NIT_DEBUG"
+    
+        filter "configurations:Release"
+            optimize "On"
+            runtime "Release"
+            defines "NIT_RELEASE"
+    
+        filter "configurations:Dist"
+            runtime "Release"
+            optimize "On"
+            defines "NIT_DIST"
 
 project "yaml"
 
