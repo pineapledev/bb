@@ -64,8 +64,8 @@ namespace Nit
                 {ShaderDataType::Float4, "a_Position"},
                 {ShaderDataType::Float4, "a_Tint"},
                 {ShaderDataType::Float2, "a_UV"},
-                {ShaderDataType::Float, "a_Texture"},
-                {ShaderDataType::Float, "a_EntityID"}
+                {ShaderDataType::Int, "a_Texture"},
+                {ShaderDataType::Int, "a_EntityID"}
             };
             renderer_2d->quad_vao->AddVertexBuffer(renderer_2d->quad_vbo);
             renderer_2d->quad_batch = new QuadVertex[num_of_vertices];
@@ -108,7 +108,7 @@ namespace Nit
                 {ShaderDataType::Float4, "a_Tint"},
                 {ShaderDataType::Float, "a_Thickness"},
                 {ShaderDataType::Float, "a_Fade"},
-                {ShaderDataType::Float, "a_EntityID"}
+                {ShaderDataType::Int, "a_EntityID"}
             };
             renderer_2d->circle_vao->AddVertexBuffer(renderer_2d->circle_vbo);
             renderer_2d->circle_batch = new CircleVertex[num_of_vertices];
@@ -130,7 +130,7 @@ namespace Nit
             renderer_2d->line_vbo->layout = {
                 {ShaderDataType::Float4, "a_Position"},
                 {ShaderDataType::Float4, "a_Tint"},
-                {ShaderDataType::Float, "a_EntityID"}
+                {ShaderDataType::Int, "a_EntityID"}
             };
             renderer_2d->line_vao->AddVertexBuffer(renderer_2d->line_vbo);
             renderer_2d->line_batch = new LineVertex[num_of_vertices];
@@ -153,8 +153,8 @@ namespace Nit
                 {ShaderDataType::Float4, "a_Position"},
                 {ShaderDataType::Float4, "a_Tint"},
                 {ShaderDataType::Float2, "a_UV"},
-                {ShaderDataType::Float, "a_Texture"},
-                {ShaderDataType::Float, "a_EntityID"}
+                {ShaderDataType::Int, "a_Texture"},
+                {ShaderDataType::Int, "a_EntityID"}
             };
             renderer_2d->char_vao->AddVertexBuffer(renderer_2d->char_vbo);
             renderer_2d->char_batch = new CharVertex[num_of_vertices];
