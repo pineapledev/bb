@@ -47,6 +47,37 @@ namespace Nit
             glTextureParameteri(texture_id, coord, GL_CLAMP_TO_EDGE);
         }
     }
+    
+    void InitSubTexture2DCoordinates(
+          Vector2&       top_right
+        , Vector2&       bottom_left
+        , const Vector2& texture_size
+        , const Vector2& sub_texture_size
+        , const Vector2& location_in_atlas
+    )
+    {
+        top_right.x = (location_in_atlas.x + sub_texture_size.x) * (1 / texture_size.x);
+        top_right.y = 1 - (location_in_atlas.y / sub_texture_size.y);
+
+        bottom_left.x = location_in_atlas.x * (1 / texture_size.x);
+        bottom_left.y = 1 - ((location_in_atlas.y + sub_texture_size.y) / sub_texture_size.y);
+    }
+    
+    void DeserializeSubTexture2D(SubTexture2D* sub_texture, const YAML::Node& node)
+    {
+        NIT_CHECK(sub_texture);
+        sub_texture->name        = node["name"].as<String>();
+        sub_texture->top_right   = node["top_right"].as<Vector2>();
+        sub_texture->bottom_left = node["bottom_left"].as<Vector2>();
+    }
+
+    void SerializeSubTexture2D(const SubTexture2D* sub_texture, YAML::Emitter& emitter)
+    {
+        NIT_CHECK(sub_texture);
+        emitter << YAML::Key << "name"        << YAML::Value << sub_texture->name;
+        emitter << YAML::Key << "top_right"   << YAML::Value << sub_texture->top_right;
+        emitter << YAML::Key << "bottom_left" << YAML::Value << sub_texture->bottom_left;
+    }
 
     void RegisterTexture2DAsset()
     {
@@ -74,26 +105,68 @@ namespace Nit
         });
     }
 
+    i32 FindIndexOfSubTexture2D(const Texture2D* texture, const String& sub_texture_name)
+    {
+        NIT_CHECK(texture);
+        for (u32 i = 0; i < texture->sub_texture_count; ++i)
+        {
+            if (texture->sub_textures[i].name == sub_texture_name)
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     void SerializeTexture2D(const Texture2D* texture, YAML::Emitter& emitter)
     {
         using namespace YAML;
         
-        emitter << Key << "image_path"       << Value << texture->image_path;
-        emitter << Key << "is_white_texture" << Value << texture->is_white_texture;
-        emitter << Key << "mag_filter"       << Value << GetStringFromEnumValue<MagFilter> (texture->mag_filter);
-        emitter << Key << "min_filter"       << Value << GetStringFromEnumValue<MinFilter> (texture->min_filter);
-        emitter << Key << "wrap_mode_u"      << Value << GetStringFromEnumValue<WrapMode>  (texture->wrap_mode_u);
-        emitter << Key << "wrap_mode_u"      << Value << GetStringFromEnumValue<WrapMode>  (texture->wrap_mode_v);
+        emitter << Key << "image_path"        << Value << texture->image_path;
+        emitter << Key << "is_white_texture"  << Value << texture->is_white_texture;
+        emitter << Key << "mag_filter"        << Value << GetStringFromEnumValue<MagFilter> (texture->mag_filter);
+        emitter << Key << "min_filter"        << Value << GetStringFromEnumValue<MinFilter> (texture->min_filter);
+        emitter << Key << "wrap_mode_u"       << Value << GetStringFromEnumValue<WrapMode>  (texture->wrap_mode_u);
+        emitter << Key << "wrap_mode_u"       << Value << GetStringFromEnumValue<WrapMode>  (texture->wrap_mode_v);
+        emitter << Key << "sub_texture_count" << Value << texture->sub_texture_count;
+        
+        if (texture->sub_textures)
+        {
+            emitter << Key << "sub_textures" << Value << BeginMap;
+            for (u32 i = 0; i < texture->sub_texture_count; ++i)
+            {
+                SubTexture2D* sub_texture = &texture->sub_textures[i];
+                emitter << Key << "sub_texture" << Value << BeginMap;
+                SerializeSubTexture2D(sub_texture, emitter);
+                emitter << EndMap;
+            }
+            emitter << EndMap;
+        }
     }
 
     void DeserializeTexture2D(Texture2D* texture, const YAML::Node& node)
     {
-        texture->image_path       = node["image_path"]                                     .as<String>();
-        texture->is_white_texture = node["is_white_texture"]                               .as<bool>();
-        texture->mag_filter       = GetEnumValueFromString<MagFilter> (node["mag_filter"]  .as<String>());
-        texture->min_filter       = GetEnumValueFromString<MinFilter> (node["min_filter"]  .as<String>());
-        texture->wrap_mode_u      = GetEnumValueFromString<WrapMode>  (node["wrap_mode_u"] .as<String>());
-        texture->wrap_mode_u      = GetEnumValueFromString<WrapMode>  (node["wrap_mode_u"] .as<String>());
+        texture->image_path        = node["image_path"]                                     .as<String>();
+        texture->is_white_texture  = node["is_white_texture"]                               .as<bool>();
+        texture->mag_filter        = GetEnumValueFromString<MagFilter> (node["mag_filter"]  .as<String>());
+        texture->min_filter        = GetEnumValueFromString<MinFilter> (node["min_filter"]  .as<String>());
+        texture->wrap_mode_u       = GetEnumValueFromString<WrapMode>  (node["wrap_mode_u"] .as<String>());
+        texture->wrap_mode_u       = GetEnumValueFromString<WrapMode>  (node["wrap_mode_u"] .as<String>());
+        texture->sub_texture_count = node["sub_texture_count"]                              .as<u32>();
+        
+        const YAML::Node& sub_textures_node = node["sub_textures"];
+        if (sub_textures_node && texture->sub_texture_count > 0)
+        {
+            texture->sub_textures = new SubTexture2D[texture->sub_texture_count];
+            u32 sub_texture_index = 0;
+            for (const auto& sub_texture_node_child : sub_textures_node)
+            {
+                const YAML::Node& sub_texture_node = sub_texture_node_child.second;
+                SubTexture2D* sub_texture = &texture->sub_textures[sub_texture_index]; 
+                DeserializeSubTexture2D(sub_texture, sub_texture_node);
+                ++sub_texture_index;
+            }
+        }
     }
 
     void FreeTextureImage(Texture2D* texture)
@@ -181,6 +254,7 @@ namespace Nit
         glDeleteTextures(1, &texture->id);
         texture->id = 0;
         FreeTextureImage(texture);
+        delete[] texture->sub_textures;
     }
 
     bool IsTexture2DValid(const Texture2D* texture)

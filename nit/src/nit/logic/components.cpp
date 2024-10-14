@@ -170,26 +170,28 @@ namespace Nit
 
     void SerializeSprite(const Sprite* sprite, YAML::Emitter& emitter)
     {                                         
-        emitter << YAML::Key << "visible"       << YAML::Value << sprite->visible;
-        emitter << YAML::Key << "texture_id"    << YAML::Value << sprite->texture_id;
-        emitter << YAML::Key << "tint"          << YAML::Value << sprite->tint;
-        emitter << YAML::Key << "size"          << YAML::Value << sprite->size;
-        emitter << YAML::Key << "flip_x"        << YAML::Value << sprite->flip_x;
-        emitter << YAML::Key << "flip_y"        << YAML::Value << sprite->flip_y;
-        emitter << YAML::Key << "tiling_factor" << YAML::Value << sprite->tiling_factor;
-        emitter << YAML::Key << "keep_aspect"   << YAML::Value << sprite->keep_aspect;
+        emitter << YAML::Key << "visible"          << YAML::Value << sprite->visible;
+        emitter << YAML::Key << "texture_id"       << YAML::Value << sprite->texture_id;
+        emitter << YAML::Key << "sub_texture_name" << YAML::Value << sprite->sub_texture_name;
+        emitter << YAML::Key << "tint"             << YAML::Value << sprite->tint;
+        emitter << YAML::Key << "size"             << YAML::Value << sprite->size;
+        emitter << YAML::Key << "flip_x"           << YAML::Value << sprite->flip_x;
+        emitter << YAML::Key << "flip_y"           << YAML::Value << sprite->flip_y;
+        emitter << YAML::Key << "tiling_factor"    << YAML::Value << sprite->tiling_factor;
+        emitter << YAML::Key << "keep_aspect"      << YAML::Value << sprite->keep_aspect;
     }
     
     void DeserializeSprite(Sprite* sprite, const YAML::Node& node)
     {
-        sprite->visible       = node["visible"]       .as<bool>();
-        sprite->texture_id    = node["texture_id"]    .as<ID>();
-        sprite->tint          = node["tint"]          .as<Vector4>();
-        sprite->size          = node["size"]          .as<Vector2>();
-        sprite->flip_x        = node["flip_x"]        .as<bool>();
-        sprite->flip_y        = node["flip_y"]        .as<bool>();
-        sprite->tiling_factor = node["tiling_factor"] .as<Vector2>();
-        sprite->keep_aspect   = node["keep_aspect"]   .as<bool>();
+        sprite->visible             = node["visible"]          .as<bool>();
+        sprite->texture_id          = node["texture_id"]       .as<ID>();
+        sprite->sub_texture_name    = node["sub_texture_name"] .as<String>();
+        sprite->tint                = node["tint"]             .as<Vector4>();
+        sprite->size                = node["size"]             .as<Vector2>();
+        sprite->flip_x              = node["flip_x"]           .as<bool>();
+        sprite->flip_y              = node["flip_y"]           .as<bool>();
+        sprite->tiling_factor       = node["tiling_factor"]    .as<Vector2>();
+        sprite->keep_aspect         = node["keep_aspect"]      .as<bool>();
     }
 
     void RegisterSpriteComponent()
@@ -201,6 +203,26 @@ namespace Nit
         RegisterComponentType<Sprite>();
     }
 
+    void SetSpriteSubTexture2D(Sprite& sprite, const String& sub_texture_name)
+    {
+        sprite.sub_texture_name = sub_texture_name;
+        
+        if (!sprite.texture)
+        {
+            sprite.sub_texture_index = -1;
+            return;
+        }
+
+        i32 index = FindIndexOfSubTexture2D(sprite.texture, sub_texture_name);
+        sprite.sub_texture_index = index;
+    }
+
+    void ResetSpriteSubTexture2D(Sprite& sprite)
+    {
+        sprite.sub_texture_name = "";
+        sprite.sub_texture_index = -1;
+    }
+
     void AddTextureToSprite(Sprite& sprite, ID texture_id)
     {
         RemoveTextureFromSprite(sprite);
@@ -209,6 +231,7 @@ namespace Nit
         {
             sprite.texture_id = texture_id;
             sprite.texture = GetAssetDataPtr<Texture2D>(sprite.texture_id);
+            SetSpriteSubTexture2D(sprite, sprite.sub_texture_name);
             RetainAsset(sprite.texture_id);
         }
     }
@@ -218,6 +241,7 @@ namespace Nit
         if (IsAssetValid(sprite.texture_id))
         {
             sprite.texture = nullptr;
+            ResetSpriteSubTexture2D(sprite);
             ReleaseAsset(sprite.texture_id);
         }
     }

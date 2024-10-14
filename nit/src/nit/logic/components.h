@@ -56,19 +56,23 @@ namespace Nit
     
     struct Sprite
     {
-        bool                  visible          = true;
-        Texture2D*            texture          = nullptr;
-        ID                    texture_id       = 0;
-        Vector4               tint             = V4_ONE;
-        Vector2               size             = V2_ONE;
-        bool                  flip_x           = false;
-        bool                  flip_y           = false;
-        Vector2               tiling_factor    = V2_ONE;
-        bool                  keep_aspect      = true;
+        bool                  visible            = true;
+        Texture2D*            texture            = nullptr;
+        ID                    texture_id         = 0;
+        String                sub_texture_name;
+        i32                   sub_texture_index  = -1;
+        Vector4               tint               = V4_ONE;
+        Vector2               size               = V2_ONE;
+        bool                  flip_x             = false;
+        bool                  flip_y             = false;
+        Vector2               tiling_factor      = V2_ONE;
+        bool                  keep_aspect        = true;
     };
 
     void RegisterSpriteComponent();
-
+    
+    void SetSpriteSubTexture2D(Sprite& sprite, const String& sub_texture_name);
+    void ResetSpriteSubTexture2D(Sprite& sprite);
     void AddTextureToSprite(Sprite& sprite, ID texture_id);
     void RemoveTextureFromSprite(Sprite& sprite);
 

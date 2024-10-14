@@ -11,3 +11,4 @@ Texture2D:
   min_filter: Linear
   wrap_mode_u: Repeat
   wrap_mode_u: Repeat
+  sub_texture_count: 0

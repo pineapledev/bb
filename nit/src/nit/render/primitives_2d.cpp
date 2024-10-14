@@ -22,26 +22,23 @@ namespace Nit
         vertex_positions[3] = transform * vertex_positions[3];
     }
 
-    void FillQuadVertexPositions(V4Verts2D& vertex_positions, const Texture2D* texture, const Vector2& size, bool keep_aspect)
+    void FillQuadVertexPositions(const Vector2& size, V4Verts2D& vertex_positions)
     {
-        if (keep_aspect && texture)
+        if (Abs(size.x - size.y) <= F32_EPSILON)
         {
-            static Vector2 vertex_mag = V2_ONE / 2.f;
-            Vector2 pos = vertex_mag;
-
-            const Vector2 texture_size = texture->size;
-
-            if (Abs(texture_size.x - texture_size.y) > 0.0001f)
-                pos = Normalize(texture_size) / 2.f;
-
-            vertex_positions[0] = {-pos.x * size.x, -pos.y * size.y, 0.f, 1.f};
-            vertex_positions[1] = { pos.x * size.x, -pos.y * size.y, 0.f, 1.f};
-            vertex_positions[2] = { pos.x * size.x,  pos.y * size.y, 0.f, 1.f};
-            vertex_positions[3] = {-pos.x * size.x,  pos.y * size.y, 0.f, 1.f};
+            vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
+            return;
         }
+        
+        Vector2 pos = Normalize(size) / 2;;
+        
+        vertex_positions[0] = { -pos.x, -pos.y, 0.f, 1.f };
+        vertex_positions[1] = {  pos.x, -pos.y, 0.f, 1.f };
+        vertex_positions[2] = {  pos.x,  pos.y, 0.f, 1.f };
+        vertex_positions[3] = { -pos.x,  pos.y, 0.f, 1.f };
     }
 
-    void FillQuadVertexUVs(V2Verts2D& vertex_uvs, bool flip_x, bool flip_y, const Vector2& tiling_factor)
+    void FlipQuadVertexUVs(V2Verts2D& vertex_uvs, bool flip_x, bool flip_y)
     {
         if (flip_x || flip_y)
         {
@@ -69,12 +66,33 @@ namespace Nit
                 vertex_uvs[3] = uv[1];
             }
         }
+    }
+    
+    void FillQuadVertexUVs(V2Verts2D& vertex_uvs, bool flip_x, bool flip_y, const Vector2& tiling_factor)
+    {
+        FlipQuadVertexUVs(vertex_uvs, flip_x, flip_y);
 
         for (i32 i = 0; i < 4; ++i)
         {
             vertex_uvs[i].x *= tiling_factor.x;
             vertex_uvs[i].y *= tiling_factor.y;
         }
+    }
+
+    void FillQuadVertexUVs(
+          V2Verts2D&     vertex_uvs
+        , const Vector2& top_right
+        , const Vector2& bottom_left
+        , bool           flip_x
+        , bool           flip_y
+        , const Vector2& tiling_factor)
+    {
+        vertex_uvs[0] = { bottom_left.x, bottom_left.y }; // bottom-left
+        vertex_uvs[1] = { top_right.x,   bottom_left.y }; // bottom-right
+        vertex_uvs[2] = { top_right.x,   top_right.y }; // top-right
+        vertex_uvs[3] = { bottom_left.x, top_right.y }; // top-left
+
+        FillQuadVertexUVs(vertex_uvs, flip_x, flip_y, tiling_factor);
     }
 
     void FillCircleVertexPositions(V4Verts2D& vertex_positions, f32 radius)

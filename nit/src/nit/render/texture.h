@@ -21,26 +21,47 @@ namespace Nit
     {
         U, V
     };
+
+    struct SubTexture2D
+    {
+        String  name;
+        Vector2 bottom_left;
+        Vector2 top_right;
+    };
+
+    void InitSubTexture2DCoordinates(
+          Vector2&       top_right
+        , Vector2&       bottom_left
+        , const Vector2& texture_size
+        , const Vector2& sub_texture_size
+        , const Vector2& location_in_atlas
+    );
+    
+    void DeserializeSubTexture2D(SubTexture2D* sub_texture, const YAML::Node& node);
+    void SerializeSubTexture2D(const SubTexture2D* sub_texture, YAML::Emitter& emitter);
     
     struct Texture2D
     {
-        u32          id                = 0;
-        bool         loaded_from_image = false;
-        bool         keep_pixel_data   = false;
-        bool         is_white_texture  = false;
-        u8*          pixel_data        = nullptr;
-        Vector2      size              = V2_ZERO;
-        u32          width             = 0;
-        u32          height            = 0;
-        u32          channels          = 0;
-        String       image_path;       
-        MagFilter    mag_filter        = MagFilter::Linear;
-        MinFilter    min_filter        = MinFilter::Linear;
-        WrapMode     wrap_mode_u       = WrapMode::Repeat;
-        WrapMode     wrap_mode_v       = WrapMode::Repeat;
+        u32           id                = 0;
+        bool          loaded_from_image = false;
+        bool          keep_pixel_data   = false;
+        bool          is_white_texture  = false;
+        u8*           pixel_data        = nullptr;
+        Vector2       size              = V2_ZERO;
+        u32           width             = 0;
+        u32           height            = 0;
+        u32           channels          = 0;
+        String        image_path;       
+        MagFilter     mag_filter        = MagFilter::Linear;
+        MinFilter     min_filter        = MinFilter::Linear;
+        WrapMode      wrap_mode_u       = WrapMode::Repeat;
+        WrapMode      wrap_mode_v       = WrapMode::Repeat;
+        u32           sub_texture_count = 0;
+        SubTexture2D* sub_textures      = nullptr;
     };
 
     void RegisterTexture2DAsset();
+    i32  FindIndexOfSubTexture2D(const Texture2D* texture, const String& sub_texture_name);
     void SerializeTexture2D(const Texture2D* texture, YAML::Emitter& emitter);
     void DeserializeTexture2D(Texture2D* texture, const YAML::Node& node);
     void LoadTexture2D(Texture2D* texture);

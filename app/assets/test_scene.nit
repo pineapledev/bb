@@ -26,6 +26,7 @@ Scene:
       Sprite:
         visible: true
         texture_id: 3831492576437513736
+        sub_texture_name:
         tint: [1, 1, 1, 1]
         size: [1, 1]
         flip_x: false
@@ -40,6 +41,7 @@ Scene:
       Sprite:
         visible: true
         texture_id: 0
+        sub_texture_name:
         tint: [1, 0.300000012, 0.300000012, 1]
         size: [1, 1]
         flip_x: false

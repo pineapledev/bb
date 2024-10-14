@@ -45,19 +45,26 @@ namespace Nit
     );
     
     void TransformVertexPositions(
-          V4Verts2D&    vertex_positions
+          V4Verts2D&     vertex_positions
         , const Matrix4& transform
     );
 
     void FillQuadVertexPositions(
-          V4Verts2D&       vertex_positions
-        , const Texture2D* texture
-        , const Vector2&   size
-        , bool             keep_aspect
+          const Vector2& size
+        , V4Verts2D&     vertex_positions
     );
     
     void FillQuadVertexUVs(
           V2Verts2D&     vertex_uvs
+        , bool           flip_x
+        , bool           flip_y
+        , const Vector2& tiling_factor
+    );
+
+    void FillQuadVertexUVs(
+          V2Verts2D&     vertex_uvs
+        , const Vector2& top_right
+        , const Vector2& bottom_left
         , bool           flip_x
         , bool           flip_y
         , const Vector2& tiling_factor

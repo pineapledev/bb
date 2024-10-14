@@ -152,7 +152,7 @@ namespace Nit
         }
 
         SetDepthTestEnabled(camera.projection == CameraProjection::Perspective);
-
+        
         BeginScene2D(CalculateProjectionViewMatrix(camera, GetComponent<Transform>(main_camera)));
         {
             for (Entity entity : GetEntityGroup<Sprite, Transform>().entities)
@@ -167,16 +167,37 @@ namespace Nit
                 
                 if (sprite.texture)
                 {
-                    FillQuadVertexPositions(
-                          vertex_positions
-                        , sprite.texture, sprite.tiling_factor
-                        , sprite.keep_aspect);
-                
-                    FillQuadVertexUVs(
+                    if (sprite.keep_aspect)
+                    {
+                        FillQuadVertexPositions(sprite.texture->size , vertex_positions);
+                    }
+                    else
+                    {
+                        vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
+                    }
+
+                    if (sprite.texture->sub_textures
+                        && sprite.sub_texture_index >= 0
+                        && sprite.sub_texture_index < sprite.texture->sub_texture_count)
+                    {
+                        const SubTexture2D& sub_texture = sprite.texture->sub_textures[sprite.sub_texture_index];
+                        
+                        FillQuadVertexUVs(
+                              vertex_uvs
+                            , sub_texture.top_right
+                            , sub_texture.bottom_left
+                            , sprite.flip_x
+                            , sprite.flip_y
+                            , sprite.tiling_factor);
+                    }
+                    else
+                    {
+                        FillQuadVertexUVs(
                           vertex_uvs
                         , sprite.flip_x
                         , sprite.flip_y
                         , sprite.tiling_factor);
+                    }
                     
                     TransformVertexPositions(vertex_positions, ToMatrix4(transform));
                 }
