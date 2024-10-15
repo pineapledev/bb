@@ -21,21 +21,13 @@ namespace Nit
     {
         U, V
     };
-
+    
     struct SubTexture2D
     {
         String  name;
-        Vector2 bottom_left;
-        Vector2 top_right;
+        Vector2 size;
+        Vector2 location;
     };
-
-    void InitSubTexture2DCoordinates(
-          Vector2&       top_right
-        , Vector2&       bottom_left
-        , const Vector2& texture_size
-        , const Vector2& sub_texture_size
-        , const Vector2& location_in_atlas
-    );
     
     void DeserializeSubTexture2D(SubTexture2D* sub_texture, const YAML::Node& node);
     void SerializeSubTexture2D(const SubTexture2D* sub_texture, YAML::Emitter& emitter);
@@ -61,7 +53,7 @@ namespace Nit
     };
 
     void RegisterTexture2DAsset();
-    i32  FindIndexOfSubTexture2D(const Texture2D* texture, const String& sub_texture_name);
+    i32 FindIndexOfSubTexture2D(const Texture2D* texture, const String& sub_texture_name);
     void SerializeTexture2D(const Texture2D* texture, YAML::Emitter& emitter);
     void DeserializeTexture2D(Texture2D* texture, const YAML::Node& node);
     void LoadTexture2D(Texture2D* texture);

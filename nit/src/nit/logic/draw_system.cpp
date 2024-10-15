@@ -178,14 +178,15 @@ namespace Nit
 
                     if (sprite.texture->sub_textures
                         && sprite.sub_texture_index >= 0
-                        && sprite.sub_texture_index < sprite.texture->sub_texture_count)
+                        && (u32) sprite.sub_texture_index < sprite.texture->sub_texture_count)
                     {
                         const SubTexture2D& sub_texture = sprite.texture->sub_textures[sprite.sub_texture_index];
                         
                         FillQuadVertexUVs(
                               vertex_uvs
-                            , sub_texture.top_right
-                            , sub_texture.bottom_left
+                            , sprite.texture->size
+                            , sub_texture.size
+                            , sub_texture.location
                             , sprite.flip_x
                             , sprite.flip_y
                             , sprite.tiling_factor);

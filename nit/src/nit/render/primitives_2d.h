@@ -63,8 +63,9 @@ namespace Nit
 
     void FillQuadVertexUVs(
           V2Verts2D&     vertex_uvs
-        , const Vector2& top_right
-        , const Vector2& bottom_left
+        , const Vector2& texture_size
+        , const Vector2& sub_texture_size
+        , const Vector2& sub_texture_location
         , bool           flip_x
         , bool           flip_y
         , const Vector2& tiling_factor

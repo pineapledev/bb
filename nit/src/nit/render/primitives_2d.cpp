@@ -81,12 +81,22 @@ namespace Nit
 
     void FillQuadVertexUVs(
           V2Verts2D&     vertex_uvs
-        , const Vector2& top_right
-        , const Vector2& bottom_left
+        , const Vector2& texture_size
+        , const Vector2& sub_texture_size
+        , const Vector2& sub_texture_location
         , bool           flip_x
         , bool           flip_y
-        , const Vector2& tiling_factor)
+        , const Vector2& tiling_factor
+    )
     {
+        Vector2 top_right, bottom_left;
+        
+        top_right.x = (sub_texture_location.x + sub_texture_size.x) * (1 / texture_size.x);
+        top_right.y = 1 - (sub_texture_location.y / sub_texture_size.y);
+
+        bottom_left.x = sub_texture_location.x * (1 / texture_size.x);
+        bottom_left.y = 1 - ((sub_texture_location.y + sub_texture_size.y) / sub_texture_size.y);
+        
         vertex_uvs[0] = { bottom_left.x, bottom_left.y }; // bottom-left
         vertex_uvs[1] = { top_right.x,   bottom_left.y }; // bottom-right
         vertex_uvs[2] = { top_right.x,   top_right.y }; // top-right

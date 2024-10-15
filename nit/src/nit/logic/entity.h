@@ -7,7 +7,7 @@ namespace Nit
     inline constexpr u32 MAX_COMPONENTS_TYPES = 100;
     inline constexpr u32 INVALID_INDEX = U32_MAX;
     
-    using Entity        = u32;
+    using Entity = u32;
 
     // First bit of the signature would be used to know if the entity is valid or not
     using EntitySignature = Bitset<MAX_COMPONENTS_PER_ENTITY + 1>;

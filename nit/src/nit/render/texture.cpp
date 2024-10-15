@@ -48,35 +48,20 @@ namespace Nit
         }
     }
     
-    void InitSubTexture2DCoordinates(
-          Vector2&       top_right
-        , Vector2&       bottom_left
-        , const Vector2& texture_size
-        , const Vector2& sub_texture_size
-        , const Vector2& location_in_atlas
-    )
-    {
-        top_right.x = (location_in_atlas.x + sub_texture_size.x) * (1 / texture_size.x);
-        top_right.y = 1 - (location_in_atlas.y / sub_texture_size.y);
-
-        bottom_left.x = location_in_atlas.x * (1 / texture_size.x);
-        bottom_left.y = 1 - ((location_in_atlas.y + sub_texture_size.y) / sub_texture_size.y);
-    }
-    
     void DeserializeSubTexture2D(SubTexture2D* sub_texture, const YAML::Node& node)
     {
         NIT_CHECK(sub_texture);
-        sub_texture->name        = node["name"].as<String>();
-        sub_texture->top_right   = node["top_right"].as<Vector2>();
-        sub_texture->bottom_left = node["bottom_left"].as<Vector2>();
+        sub_texture->name     = node["name"].as<String>();
+        sub_texture->size     = node["size"].as<Vector2>();
+        sub_texture->location = node["location"].as<Vector2>();
     }
 
     void SerializeSubTexture2D(const SubTexture2D* sub_texture, YAML::Emitter& emitter)
     {
         NIT_CHECK(sub_texture);
-        emitter << YAML::Key << "name"        << YAML::Value << sub_texture->name;
-        emitter << YAML::Key << "top_right"   << YAML::Value << sub_texture->top_right;
-        emitter << YAML::Key << "bottom_left" << YAML::Value << sub_texture->bottom_left;
+        emitter << YAML::Key << "name"     << YAML::Value << sub_texture->name;
+        emitter << YAML::Key << "size"     << YAML::Value << sub_texture->size;
+        emitter << YAML::Key << "location" << YAML::Value << sub_texture->location;
     }
 
     void RegisterTexture2DAsset()
@@ -108,6 +93,7 @@ namespace Nit
     i32 FindIndexOfSubTexture2D(const Texture2D* texture, const String& sub_texture_name)
     {
         NIT_CHECK(texture);
+        
         for (u32 i = 0; i < texture->sub_texture_count; ++i)
         {
             if (texture->sub_textures[i].name == sub_texture_name)
