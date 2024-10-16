@@ -68,4 +68,11 @@ namespace Nit
         NIT_CHECK_MSG(false, "Not implemented!");
         return 0;
     }
+
+    inline bool HasDecimals(f32 value)
+    {
+        f64 int_part;
+        f64 frac_part = modf(value, &int_part);
+        return frac_part != 0.0;
+    }
 }

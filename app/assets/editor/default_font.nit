@@ -5,4 +5,4 @@ AssetInfo:
   id: 6758496758947967
   version: 0
 Font:
-  font_path: assets/AlbertSans-VariableFont_wght.ttf
+  font_path: assets/editor/AlbertSans-VariableFont_wght.ttf

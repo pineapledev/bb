@@ -1,4 +1,5 @@
 #include "nit.h"
+#include "nit/editor/editor_utils.h"
 
 using namespace Nit;
 
@@ -29,7 +30,6 @@ void GameStart()
 {
     ID test_scene_id = FindAssetByName("test_scene");
     LoadAsset(test_scene_id);
-    
 }
 
 void GameUpdate()
@@ -56,11 +56,11 @@ void DrawImGUI()
             auto& camera_transform = GetComponent<Transform>(main_camera);
             auto& camera_data      = GetComponent<Camera>(main_camera);
         
-            ImGui::DragFloat3("Position", &camera_transform.position.x, .1f);
-            ImGui::DragFloat3("Rotation", &camera_transform.rotation.x);
+            ImGui::DragVector3("Position", camera_transform.position);
+            ImGui::DragVector3("Rotation", camera_transform.rotation);
         
             static bool ortho = camera_data.projection == CameraProjection::Orthographic;
-            if (ImGui::Checkbox("Otho", &ortho))
+            if (ImGui::Bool("Ortho", ortho))
             {
                 camera_data.projection = ortho ? CameraProjection::Orthographic : CameraProjection::Perspective;
             }
@@ -74,10 +74,10 @@ void DrawImGUI()
             if (app->editor.is_entity_selected && IsEntityValid(entity))
             {
                 auto& camera_transform = GetComponent<Transform>(entity);
-        
-                ImGui::DragFloat3("Position", &camera_transform.position.x, .1f);
-                ImGui::DragFloat3("Rotation", &camera_transform.rotation.x, .1f);
-                ImGui::DragFloat3("Scale",    &camera_transform.scale.x, .1f);
+                
+                ImGui::DragVector3("Position", camera_transform.position);
+                ImGui::DragVector3("Rotation", camera_transform.rotation);
+                ImGui::DragVector3("Scale", camera_transform.scale);
             }
             
         }

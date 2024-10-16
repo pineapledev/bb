@@ -5,6 +5,7 @@
 
 #ifdef NIT_EDITOR_ENABLED
 #include <ImGuizmo.h>
+#include "editor_utils.h"
 
 #define NIT_CHECK_EDITOR_CREATED NIT_CHECK_MSG(editor, "Forget to call SetEditorInstance!");
 
@@ -27,6 +28,26 @@ namespace Nit
     void InitEditor()
     {
         NIT_CHECK_EDITOR_CREATED
+
+        static const char* font_location = "assets/editor/AlbertSans-VariableFont_wght.ttf";
+        static u8 font_size = 17;
+        const ImGuiIO& io = ImGui::GetIO();
+        io.Fonts->AddFontFromFileTTF(font_location, font_size);
+        
+        ImGui::StyleColorsDark();
+        ImGuiStyle& style = ImGui::GetStyle();
+        style.TabBarOverlineSize = 0.f;
+        style.FrameRounding = 9.f;
+        style.Colors[ImGuiCol_WindowBg] = { 0.192f, 0.2f, 0.219f, 1.f };
+        style.Colors[ImGuiCol_TabUnfocusedActive] = { 0.168f, 0.176f, 0.192f, 1.f };
+        style.Colors[ImGuiCol_Tab] = { 0.168f, 0.176f, 0.192f, 1.f };
+        style.Colors[ImGuiCol_TabHovered] = { 0.656f, 0.656f, 0.656f, 1.f };
+        style.Colors[ImGuiCol_TabActive] = { 0.211f, 0.215f, 0.239f, 1.f };
+        style.Colors[ImGuiCol_TitleBg] = { 0.168f, 0.176f, 0.192f, 1.f };
+        style.Colors[ImGuiCol_TitleBgActive] = { 0.1f, 0.1f, 0.1f, 1.f };
+        style.Colors[ImGuiCol_FrameBg] = { 0.1f, 0.1f, 0.1f, 1.f };
+        style.Colors[ImGuiCol_Button] = { 0.356f, 0.356f, 0.416f, 1.f };
+        
         RetrieveWindowSize((i32*)&editor->frame_buffer.width, (i32*)&editor->frame_buffer.height);
 
         editor->frame_buffer.color_attachments = {

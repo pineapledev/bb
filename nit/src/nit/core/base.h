@@ -193,6 +193,14 @@ namespace Nit
     {
         return std::filesystem::current_path();
     }
+
+    struct Window;
+    
+    String BrowseFile(const Window* window, const String& filter);
+    String SaveFile(const Window* window, const String& filter);
+    String SelectFolder(const Window* window, const String& title = "", const String& path = "");
+    String ExecuteCMD(const char* cmd);
 }
+
 
 #define NIT_GRAPHICS_API_OPENGL
