@@ -2,6 +2,7 @@
 
 #include "core/app.h"
 #include "logic/components.h"
+#include "render/texture.h"
 
 #ifdef NIT_EDITOR_ENABLED
 #include <ImGuizmo.h>
@@ -76,6 +77,7 @@ namespace Nit
             if (ImGui::BeginMenu("Windows"))
             {
                 ImGui::MenuItem("Viewport", nullptr, &editor->show_viewport);
+                ImGui::MenuItem("Sprite Packer", nullptr, &editor->show_sprite_packer);
                 ImGui::EndMenu();
             }
             ImGui::EndMenuBar();
@@ -191,6 +193,30 @@ namespace Nit
                 ImGui::End();
                 ImGui::PopStyleVar();
             }
+        }
+
+        if (editor->show_sprite_packer)
+        {
+            ImGui::Begin("Sprite Packer", &editor->show_sprite_packer);
+
+            // source
+            {
+                static String source;
+                ImGui::InputFolder(&app->window, "Source", source);
+
+                static String dest = GetWorkingDirectory().string();
+                ImGui::InputFolder(&app->window, "Destination", dest);
+
+                static String name;
+                ImGui::InputText("Asset Name", name);
+
+                if (ImGui::Button("Generate"))
+                {
+                    CreateSpriteSheetTexture(name, source, dest);
+                }
+            }
+
+            ImGui::End();
         }
     }
 

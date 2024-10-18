@@ -53,11 +53,12 @@ namespace Nit
     };
 
     void RegisterTexture2DAsset();
-    i32 FindIndexOfSubTexture2D(const Texture2D* texture, const String& sub_texture_name);
+    i32  FindIndexOfSubTexture2D(const Texture2D* texture, const String& sub_texture_name);
     void SerializeTexture2D(const Texture2D* texture, YAML::Emitter& emitter);
     void DeserializeTexture2D(Texture2D* texture, const YAML::Node& node);
     void LoadTexture2D(Texture2D* texture);
     void FreeTexture2D(Texture2D* texture);
     void BindTexture2D(const Texture2D* texture, u32 slot = 0);
     bool IsTexture2DValid(const Texture2D* texture);
+    ID   CreateSpriteSheetTexture(const String& sprite_sheet_name, const String& source_path, const String& dest_path, i32 max_width = 5034);
 }

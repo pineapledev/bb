@@ -5,6 +5,8 @@
 #include <glad/glad.h>
 
 #define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <stb/stb_image_write.h>
 #include <stb/stb_image.h>
 #include "nit/core/asset.h"
 
@@ -247,12 +249,117 @@ namespace Nit
     {
         return texture != nullptr && texture->id != 0;
     }
-
+    
     void BindTexture2D(const Texture2D* texture, u32 slot)
     {
         NIT_CHECK(IsTexture2DValid(texture));
         glBindTextureUnit(slot, texture->id);
     }
+
+struct Image
+{
+    u8* data;
+    i32 width, height, channels;
+    String filename;
+};
+
+ID CreateSpriteSheetTexture(const String& sprite_sheet_name, const String& source_path, const String& dest_path, i32 max_width)
+{
+    Array<Image> images;
+
+    for (const auto& entry : std::filesystem::directory_iterator(source_path))
+    {
+        String path = entry.path().string();
+        String filename = entry.path().filename().string();
+        i32 width, height, channels;
+        if (u8* data = stbi_load(path.c_str(), &width, &height, &channels, 4))
+        {
+            images.push_back({data, width, height, channels, filename});
+        }
+    }
+
+    if (images.empty())
+    {
+        return 0;
+    }
+
+    Array<SubTexture2D> sub_textures;
+    
+    i32 current_x_offset = 0;
+    i32 current_y_offset = 0;
+    i32 max_row_height = 0;
+
+    i32 sprite_sheet_width = max_width;
+
+    for (const auto& image : images)
+    {
+        if (current_x_offset + image.width > sprite_sheet_width)
+        {
+            current_x_offset = 0;
+            current_y_offset += max_row_height;
+            max_row_height = 0;
+        }
+
+        max_row_height = std::max(max_row_height, image.height);
+        
+        current_x_offset += image.width;
+    }
+
+    i32 sprite_sheet_height = current_y_offset + max_row_height;
+
+    Array<u8> sprite_sheet((u64) sprite_sheet_width * sprite_sheet_height * 4, 0);
+
+    current_x_offset = 0;
+    current_y_offset = 0;
+    max_row_height = 0;
+
+    for (const auto& image : images)
+    {
+        if (current_x_offset + image.width > sprite_sheet_width)
+        {
+            current_x_offset = 0;
+            current_y_offset += max_row_height;
+            max_row_height = 0;
+        }
+
+        for (i32 y = 0; y < image.height; ++y)
+        {
+            for (i32 x = 0; x < image.width; ++x)
+            {
+                i32 sprite_idx = ((y + current_y_offset) * sprite_sheet_width + (x + current_x_offset)) * 4;
+                i32 img_idx = (y * image.width + x) * 4;
+                
+                if (sprite_idx < sprite_sheet.size() && img_idx < image.width * image.height * 4)
+                {
+                    sprite_sheet[sprite_idx] = image.data[img_idx];         // R
+                    sprite_sheet[sprite_idx + 1] = image.data[img_idx + 1]; // G
+                    sprite_sheet[sprite_idx + 2] = image.data[img_idx + 2]; // B
+                    sprite_sheet[sprite_idx + 3] = image.data[img_idx + 3]; // A
+                }
+            }
+        }
+
+        SubTexture2D sub_texture_2d;
+        sub_texture_2d.name = image.filename;
+        sub_texture_2d.size = {(f32) image.width, (f32) image.height};
+        sub_texture_2d.location = {(f32) current_x_offset, (f32) current_y_offset};
+        sub_textures.push_back(sub_texture_2d);
+        
+        current_x_offset += image.width;
+        max_row_height = std::max(max_row_height, image.height);
+    }
+
+    String final_path = dest_path;
+    final_path.append("\\").append(sprite_sheet_name).append(".png");
+
+    stbi_write_png(final_path.c_str(), sprite_sheet_width, sprite_sheet_height, 4, sprite_sheet.data(),
+                   sprite_sheet_width * 4);
+
+    return 0;
+}
+
+
+
 }
 
 #endif
