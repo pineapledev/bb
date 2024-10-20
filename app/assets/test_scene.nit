@@ -25,8 +25,8 @@ Scene:
         scale: [1, 1, 1]
       Sprite:
         visible: true
-        texture_id: 3831492576437513736
-        sub_texture_name:
+        texture_id: 12761694976786155438
+        sub_texture_name: bola
         tint: [1, 1, 1, 1]
         size: [1, 1]
         flip_x: false

@@ -262,19 +262,19 @@ namespace Nit
         i32 width, height, channels;
         String filename;
     };
-
+    
     void LoadTexture2DAsSpriteSheet(Texture2D* texture, const String& sprite_sheet_name, const String& source_path, const String& dest_path, i32 max_width)
     {
         NIT_CHECK(texture);
         Array<Image> images;
 
         const Path src_path = source_path;
-        
+
         if (!exists(src_path))
         {
             return;
         }
-        
+
         for (const auto& entry : std::filesystem::directory_iterator(src_path))
         {
             String path = entry.path().string();
@@ -285,21 +285,28 @@ namespace Nit
                 images.push_back({data, width, height, channels, filename});
             }
         }
-        
+
         if (images.empty())
         {
             return;
         }
 
-        const u32 num_of_images = (u32) images.size();
+        const u32 num_of_images = (u32)images.size();
         texture->sub_textures = new SubTexture2D[num_of_images];
         texture->sub_texture_count = num_of_images;
         
+        i32 total_width = 0;
+            
+        for (const auto& image : images)
+        {
+            total_width += image.width;
+        }
+
+        i32 sprite_sheet_width = std::min(total_width, max_width);
+
         i32 current_x_offset = 0;
         i32 current_y_offset = 0;
         i32 max_row_height = 0;
-
-        i32 sprite_sheet_width = max_width;
 
         for (const auto& image : images)
         {
@@ -311,16 +318,15 @@ namespace Nit
             }
 
             max_row_height = std::max(max_row_height, image.height);
-
             current_x_offset += image.width;
         }
 
         i32 sprite_sheet_height = current_y_offset + max_row_height;
-        
+
         const u32 pixel_data_count = sprite_sheet_width * sprite_sheet_height * 4;
         texture->pixel_data = new u8[pixel_data_count];
         memset(texture->pixel_data, 0, pixel_data_count);
-        
+
         current_x_offset = 0;
         current_y_offset = 0;
         max_row_height = 0;
@@ -338,11 +344,10 @@ namespace Nit
 
             for (i32 y = 0; y < image.height; ++y)
             {
-                i32 flipped_y = image.height - 1 - y;
                 for (i32 x = 0; x < image.width; ++x)
                 {
                     i32 sprite_idx = ((y + current_y_offset) * sprite_sheet_width + (x + current_x_offset)) * 4;
-                    i32 img_idx = (flipped_y * image.width + x) * 4;
+                    i32 img_idx = (y * image.width + x) * 4;
 
                     if (sprite_idx < pixel_data_count && img_idx < image.width * image.height * 4)
                     {
@@ -362,14 +367,13 @@ namespace Nit
             current_x_offset += image.width;
             max_row_height = std::max(max_row_height, image.height);
         }
-        
+
         String final_path = dest_path;
         final_path.append("\\").append(sprite_sheet_name).append(".png");
 
-        stbi_write_png(final_path.c_str(), sprite_sheet_width, sprite_sheet_height, 4, texture->pixel_data,
-                       sprite_sheet_width * 4);
-        
-        delete [] texture->pixel_data;
+        stbi_write_png(final_path.c_str(), sprite_sheet_width, sprite_sheet_height, 4, texture->pixel_data, sprite_sheet_width * 4);
+
+        delete[] texture->pixel_data;
         texture->pixel_data = nullptr;
 
         texture->image_path = final_path;
