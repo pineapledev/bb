@@ -8,7 +8,7 @@ Scene:
   Entities:
     Entity:
       Transform:
-        position: [0, 0, 3]
+        position: [0, 0, 1.5]
         rotation: [0, 0, 0]
         scale: [1, 1, 1]
       Camera:
@@ -18,21 +18,6 @@ Scene:
         near_clip: 0.100000001
         far_clip: 1000
         size: 3
-    Entity:
-      Transform:
-        position: [2, 0, 0]
-        rotation: [0, 0, 0]
-        scale: [1, 1, 1]
-      Sprite:
-        visible: true
-        texture_id: 12761694976786155438
-        sub_texture_name: bola
-        tint: [1, 1, 1, 1]
-        size: [1, 1]
-        flip_x: false
-        flip_y: false
-        tiling_factor: [1, 1]
-        keep_aspect: true
     Entity:
       Transform:
         position: [0, 0, 0]
@@ -72,7 +57,7 @@ Scene:
         thickness: 0.0500000007
     Entity:
       Transform:
-        position: [2, 0, 0]
+        position: [0.3, 0.6, 0]
         rotation: [0, 0, 0]
         scale: [1, 1, 1]
       Text:
@@ -82,3 +67,33 @@ Scene:
         tint: [1, 0, 1, 1]
         spacing: 1
         size: 1
+    Entity:
+      Transform:
+        position: [1.03, -0.96, 0]
+        rotation: [0, 0, 0]
+        scale: [1, 1, 1]
+      Sprite:
+        visible: true
+        texture_id: 12761694976786155438
+        sub_texture_name: bola
+        tint: [1, 1, 1, 1]
+        size: [1, 1]
+        flip_x: false
+        flip_y: false
+        tiling_factor: [1, 1]
+        keep_aspect: true
+    Entity:
+      Transform:
+        position: [1, 0, 0]
+        rotation: [0, 0, 0]
+        scale: [1, 1, 1]
+      Sprite:
+        visible: true
+        texture_id: 12761694976786155438
+        sub_texture_name: cpp
+        tint: [1, 1, 1, 1]
+        size: [1, 1]
+        flip_x: false
+        flip_y: false
+        tiling_factor: [1, 1]
+        keep_aspect: true

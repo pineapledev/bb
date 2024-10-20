@@ -147,7 +147,7 @@ namespace ImGui
     bool DragF32(const char* label, f32& num, f32 speed /*= 0.1f*/)
     {
         BeginProperty(label);
-        bool changed = DragFloat("##", &num, speed, 0, 0, "%.1f");
+        bool changed = DragFloat("##", &num, speed, 0, 0, "%.3f");
         if (property_in_context)
             PopItemWidth();
         EndProperty();
@@ -190,7 +190,7 @@ namespace ImGui
 
         PopStyleColor();
         SameLine();
-        const bool changed = DragFloat("##value", &value, speed, 0, 0, "%.1f");
+        const bool changed = DragFloat("##value", &value, speed, 0, 0, "%.3f");
         
         if (reset)
             value = reset_value;
