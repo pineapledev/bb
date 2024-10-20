@@ -92,15 +92,15 @@ namespace Nit
         Vector2 top_right, bottom_left;
         
         top_right.x = (sub_texture_location.x + sub_texture_size.x) * (1 / texture_size.x);
-        top_right.y = 1 - (sub_texture_location.y / sub_texture_size.y);
+        top_right.y = 1 - ((sub_texture_location.y + sub_texture_size.y) * (1 / texture_size.y));
 
         bottom_left.x = sub_texture_location.x * (1 / texture_size.x);
-        bottom_left.y = 1 - ((sub_texture_location.y + sub_texture_size.y) / sub_texture_size.y);
-        
-        vertex_uvs[0] = { bottom_left.x, bottom_left.y }; // bottom-left
-        vertex_uvs[1] = { top_right.x,   bottom_left.y }; // bottom-right
-        vertex_uvs[2] = { top_right.x,   top_right.y }; // top-right
-        vertex_uvs[3] = { bottom_left.x, top_right.y }; // top-left
+        bottom_left.y = 1 - (sub_texture_location.y * (1 / texture_size.y));
+
+        vertex_uvs[0] = { bottom_left.x, top_right.y };   // bottom-left
+        vertex_uvs[1] = { top_right.x,   top_right.y };   // bottom-right
+        vertex_uvs[2] = { top_right.x,   bottom_left.y }; // top-right
+        vertex_uvs[3] = { bottom_left.x, bottom_left.y }; // top-left
 
         FillQuadVertexUVs(vertex_uvs, flip_x, flip_y, tiling_factor);
     }

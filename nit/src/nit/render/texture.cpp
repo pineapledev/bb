@@ -328,7 +328,7 @@ namespace Nit
         for (i32 i = 0; i < num_of_images; ++i)
         {
             auto& image = images[i];
-            
+
             if (current_x_offset + image.width > sprite_sheet_width)
             {
                 current_x_offset = 0;
@@ -338,26 +338,27 @@ namespace Nit
 
             for (i32 y = 0; y < image.height; ++y)
             {
+                i32 flipped_y = image.height - 1 - y;
                 for (i32 x = 0; x < image.width; ++x)
                 {
                     i32 sprite_idx = ((y + current_y_offset) * sprite_sheet_width + (x + current_x_offset)) * 4;
-                    i32 img_idx = (y * image.width + x) * 4;
-                    
+                    i32 img_idx = (flipped_y * image.width + x) * 4;
+
                     if (sprite_idx < pixel_data_count && img_idx < image.width * image.height * 4)
                     {
-                        texture->pixel_data[sprite_idx] = image.data[img_idx]; // R
+                        texture->pixel_data[sprite_idx] = image.data[img_idx];         // R
                         texture->pixel_data[sprite_idx + 1] = image.data[img_idx + 1]; // G
                         texture->pixel_data[sprite_idx + 2] = image.data[img_idx + 2]; // B
                         texture->pixel_data[sprite_idx + 3] = image.data[img_idx + 3]; // A
                     }
                 }
             }
-            
+
             SubTexture2D& sub_texture_2d = texture->sub_textures[i];
             sub_texture_2d.name = image.filename;
             sub_texture_2d.size = {(f32)image.width, (f32)image.height};
             sub_texture_2d.location = {(f32)current_x_offset, (f32)current_y_offset};
-            
+
             current_x_offset += image.width;
             max_row_height = std::max(max_row_height, image.height);
         }
