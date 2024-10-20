@@ -1,4 +1,5 @@
 #pragma once
+#include "texture.h"
 
 namespace Nit
 {
@@ -16,7 +17,7 @@ namespace Nit
         String     font_path;
         void*      baked_char_data = nullptr;
         ID         font_atlas_id   = 0;
-        Texture2D* atlas           = nullptr;
+        Texture2D  atlas;
     };
     
     void RegisterFontAsset();

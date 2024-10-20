@@ -134,7 +134,7 @@ namespace Nit
         glfwGetWindowSize(window->handler, width, height);
     }
 
-    std::pair<f32, f32> GetWindowSize()
+    Vector2 GetWindowSize()
     {
         i32 x, y;
         RetrieveWindowSize(&x, &y);
@@ -154,7 +154,7 @@ namespace Nit
         glfwGetCursorPos(window->handler, x, y);
     }
 
-    std::pair<f32, f32> GetCursorPosition()
+    Vector2 GetCursorPosition()
     {
         f64 x, y;
         GetCursorPosition(&x, &y);
@@ -167,10 +167,22 @@ namespace Nit
         return glfwGetMouseButton(window->handler, button);
     }
 
+    bool IsMouseButtonPressed(MouseButton button)
+    {
+        const auto state = GetMouseButton(button);
+        return state == GLFW_PRESS;
+    }
+
     i32 GetKey(i32 key)
     {
         NIT_CHECK_WINDOW_INITIALIZED
         return glfwGetKey(window->handler, key);
+    }
+
+    bool IsKeyPressed(Key key)
+    {
+        const auto state = GetKey(key);
+        return state == GLFW_PRESS;
     }
 
     const char* GetJoystickName(i32 jid)

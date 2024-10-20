@@ -79,14 +79,13 @@ namespace Nit
         }
         
         font->font_atlas_id = CreateAsset<Texture2D>("font_atlas");
-        font->atlas = GetAssetDataPtr<Texture2D>(font->font_atlas_id);
         
-        font->atlas->pixel_data = pixels_rgb;
-        font->atlas->width      = WIDTH;
-        font->atlas->height     = HEIGHT;
-        font->atlas->channels   = 4;
+        font->atlas.pixel_data = pixels_rgb;
+        font->atlas.width      = WIDTH;
+        font->atlas.height     = HEIGHT;
+        font->atlas.channels   = 4;
 
-        RetainAsset(font->font_atlas_id);
+        LoadTexture2D(&font->atlas);
         
         delete[] pixels_rgb;
         delete[] pixels_alpha;
@@ -95,12 +94,6 @@ namespace Nit
 
     void FreeFont(Font* font)
     {
-        if (IsAssetValid(font->font_atlas_id))
-        {
-            DestroyAsset(font->font_atlas_id);
-            font->atlas = nullptr;
-        }
-        
         if (font->baked_char_data)
         {
             const auto* baked_char = static_cast<stbtt_bakedchar*>(font->baked_char_data);
@@ -116,14 +109,13 @@ namespace Nit
 
     void GetChar(const Font* font, char c, CharData& char_data)
     {
-        NIT_CHECK_MSG(font->atlas, "Missing Atlas!");
         const auto* baked_char = static_cast<stbtt_bakedchar*>(font->baked_char_data);
         f32 x_pos(0), y_pos(0);
         stbtt_aligned_quad quad;
 
         stbtt_GetBakedQuad(baked_char
-            , static_cast<i32>(font->atlas->size.x)
-            , static_cast<i32>(font->atlas->size.y)
+            , static_cast<i32>(font->atlas.size.x)
+            , static_cast<i32>(font->atlas.size.y)
             , c
             , &x_pos, &y_pos, &quad, true
         );

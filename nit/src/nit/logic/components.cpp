@@ -100,9 +100,7 @@ namespace Nit
             break;
         case CameraProjection::Orthographic:
             {
-                const f32 right = camera.aspect * camera.size;
-                const f32 left = -right;
-                proj = OrthographicProjection(left, right, -camera.size, camera.size, camera.near_clip, camera.far_clip);
+                proj = OrthographicProjection(camera.aspect, camera.size, camera.near_clip, camera.far_clip);
             }
             break;
         default:

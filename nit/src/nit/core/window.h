@@ -1,4 +1,5 @@
 #pragma once
+#include "key_codes.h"
 
 struct GLFWwindow;
 
@@ -35,12 +36,14 @@ namespace Nit
 
     bool                WindowShouldClose();
     void                RetrieveWindowSize(i32* width, i32* height);
-    Pair<f32, f32>     GetWindowSize();
+    Vector2             GetWindowSize();
     float               GetWindowAspect();
     void                GetCursorPosition(f64* x, f64* y);
-    Pair<f32, f32>     GetCursorPosition();
+    Vector2             GetCursorPosition();
     i32                 GetMouseButton(i32 button);
+    bool                IsMouseButtonPressed(MouseButton button);
     i32                 GetKey(i32 key);
+    bool                IsKeyPressed(Key key);
     const char*         GetJoystickName(i32 jid);
     const u8*           GetJoystickButtons(i32 jid, i32* count);
     const f32*          GetJoystickAxes(i32 jid, i32* count);
@@ -49,7 +52,7 @@ namespace Nit
     struct Window
     {
         GLFWwindow* handler     = nullptr;
-        String     title;
+        String      title;
         bool        v_sync      = false;
         CursorMode  cursor_mode = CursorMode::Normal;
     };

@@ -470,7 +470,7 @@ namespace Nit
 
         SetCurrentShape(Shape::Char);
 
-        const i32 texture_slot = AssignTextureSlot(font->atlas);
+        const i32 texture_slot = AssignTextureSlot(const_cast<Texture2D*>(&font->atlas));
 
         for (u8 i = 0; i < VERTICES_PER_PRIMITIVE; ++i)
         {
