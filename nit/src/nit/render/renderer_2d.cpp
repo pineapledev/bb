@@ -7,7 +7,6 @@
 #include "font.h"
 #include "shader.h"
 #include "primitives_2d.h"
-#include "nit/core/asset.h"
 
 #define NIT_CHECK_RENDERER_2D_CREATED NIT_CHECK_MSG(renderer_2d, "Forget to call SetRenderer2DInstance!");
 
@@ -77,12 +76,10 @@ namespace Nit
             renderer_2d->textures_to_bind.resize(MAX_TEXTURE_SLOTS);
 
             // White texture
-            ID white_texture_id = CreateAsset<Texture2D>("white_texture");
-            renderer_2d->white_texture = GetAssetDataPtr<Texture2D>(white_texture_id); 
-            renderer_2d->white_texture->is_white_texture = true;
-            RetainAsset(white_texture_id);
+            renderer_2d->white_texture.is_white_texture = true;
+            LoadTexture2D(&renderer_2d->white_texture);
             
-            renderer_2d->textures_to_bind[0] = renderer_2d->white_texture;
+            renderer_2d->textures_to_bind[0] = &renderer_2d->white_texture;
 
             // Texture slots
             renderer_2d->texture_slots.resize(MAX_TEXTURE_SLOTS);
@@ -542,12 +539,8 @@ namespace Nit
     {
         NIT_CHECK_RENDERER_2D_CREATED
 
-        if (IsAssetValid(renderer_2d->white_texture_id))
-        {
-            DestroyAsset(renderer_2d->white_texture_id);
-            renderer_2d->white_texture = nullptr;
-        }
-        
+        FreeTexture2D(&renderer_2d->white_texture);
+        renderer_2d->white_texture = {};
         delete renderer_2d->quad_batch;
         delete renderer_2d->circle_batch;
         delete renderer_2d->line_batch;

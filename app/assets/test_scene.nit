@@ -77,7 +77,7 @@ Scene:
         scale: [1, 1, 1]
       Text:
         visible: true
-        text: UWU
+        text: jajajjaja
         font_id: 6758496758947967
         tint: [1, 0, 1, 1]
         spacing: 1

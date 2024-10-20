@@ -1,5 +1,6 @@
 #pragma once
 #include "primitives_2d.h"
+#include "texture.h"
 
 namespace Nit
 {
@@ -134,8 +135,7 @@ namespace Nit
         QuadVertex*         quad_batch         = nullptr;
         QuadVertex*         last_quad_vertex   = nullptr;
         SharedPtr<Material> quad_material      = nullptr;
-        Texture2D*          white_texture      = nullptr;
-        ID                  white_texture_id   = 0;
+        Texture2D           white_texture;
         u32                 quad_count         = 0;
         u32                 quad_index_count   = 0;
         u32                 circle_vao         = 0;
