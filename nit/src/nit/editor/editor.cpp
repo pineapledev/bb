@@ -201,9 +201,9 @@ namespace Nit
 
             // source
             {
-                static String source;
+                static String source = GetWorkingDirectory().string();
                 ImGui::InputFolder(&app->window, "Source", source);
-
+                
                 static String dest = GetWorkingDirectory().string();
                 ImGui::InputFolder(&app->window, "Destination", dest);
 
@@ -212,7 +212,21 @@ namespace Nit
 
                 if (ImGui::Button("Generate"))
                 {
-                    CreateSpriteSheetTexture(name, source, dest);
+                    Path relative_source = relative(source, GetWorkingDirectory());
+                    Path relative_dest = relative(dest, GetWorkingDirectory());
+                    
+                    ID texture = CreateAsset<Texture2D>(name, relative_dest.string());
+                    Texture2D* texture_2d = GetAssetDataPtr<Texture2D>(texture);
+                    
+                    LoadTexture2DAsSpriteSheet(texture_2d, name, relative_source.string(), relative_dest.string());
+                    if (texture_2d->sub_texture_count > 0 && !texture_2d->image_path.empty())
+                    {
+                        SerializeAssetToFile(texture);
+                    }
+                    else
+                    {
+                        DestroyAsset(texture);
+                    }
                 }
             }
 

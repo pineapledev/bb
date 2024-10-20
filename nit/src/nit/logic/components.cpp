@@ -223,8 +223,11 @@ namespace Nit
 
     void AddTextureToSprite(Sprite& sprite, ID texture_id)
     {
-        RemoveTextureFromSprite(sprite);
-
+        if (sprite.texture)
+        {
+            RemoveTextureFromSprite(sprite);
+        }
+        
         if (IsAssetValid(texture_id))
         {
             sprite.texture_id = texture_id;

@@ -167,20 +167,14 @@ namespace Nit
                 
                 if (sprite.texture)
                 {
-                    if (sprite.keep_aspect)
-                    {
-                        FillQuadVertexPositions(sprite.texture->size , vertex_positions);
-                    }
-                    else
-                    {
-                        vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
-                    }
+                    Vector2 size = sprite.texture->size;
 
                     if (sprite.texture->sub_textures
                         && sprite.sub_texture_index >= 0
                         && (u32) sprite.sub_texture_index < sprite.texture->sub_texture_count)
                     {
                         const SubTexture2D& sub_texture = sprite.texture->sub_textures[sprite.sub_texture_index];
+                        size = sub_texture.size;
                         
                         FillQuadVertexUVs(
                               vertex_uvs
@@ -198,6 +192,15 @@ namespace Nit
                         , sprite.flip_x
                         , sprite.flip_y
                         , sprite.tiling_factor);
+                    }
+
+                    if (sprite.keep_aspect)
+                    {
+                        FillQuadVertexPositions(size , vertex_positions);
+                    }
+                    else
+                    {
+                        vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
                     }
                     
                     TransformVertexPositions(vertex_positions, ToMatrix4(transform));

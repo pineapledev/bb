@@ -181,7 +181,7 @@ namespace Nit
         {
             stbi_set_flip_vertically_on_load(1);
             i32 width, height, channels;
-
+            
             texture->pixel_data = stbi_load(texture->image_path.c_str(), &width, &height, &channels, 0);
 
             texture->width    = static_cast<u32>(width);
@@ -256,110 +256,124 @@ namespace Nit
         glBindTextureUnit(slot, texture->id);
     }
 
-struct Image
-{
-    u8* data;
-    i32 width, height, channels;
-    String filename;
-};
-
-ID CreateSpriteSheetTexture(const String& sprite_sheet_name, const String& source_path, const String& dest_path, i32 max_width)
-{
-    Array<Image> images;
-
-    for (const auto& entry : std::filesystem::directory_iterator(source_path))
+    struct Image
     {
-        String path = entry.path().string();
-        String filename = entry.path().filename().string();
+        u8* data;
         i32 width, height, channels;
-        if (u8* data = stbi_load(path.c_str(), &width, &height, &channels, 4))
-        {
-            images.push_back({data, width, height, channels, filename});
-        }
-    }
+        String filename;
+    };
 
-    if (images.empty())
+    void LoadTexture2DAsSpriteSheet(Texture2D* texture, const String& sprite_sheet_name, const String& source_path, const String& dest_path, i32 max_width)
     {
-        return 0;
-    }
+        NIT_CHECK(texture);
+        Array<Image> images;
 
-    Array<SubTexture2D> sub_textures;
-    
-    i32 current_x_offset = 0;
-    i32 current_y_offset = 0;
-    i32 max_row_height = 0;
-
-    i32 sprite_sheet_width = max_width;
-
-    for (const auto& image : images)
-    {
-        if (current_x_offset + image.width > sprite_sheet_width)
-        {
-            current_x_offset = 0;
-            current_y_offset += max_row_height;
-            max_row_height = 0;
-        }
-
-        max_row_height = std::max(max_row_height, image.height);
+        const Path src_path = source_path;
         
-        current_x_offset += image.width;
-    }
-
-    i32 sprite_sheet_height = current_y_offset + max_row_height;
-
-    Array<u8> sprite_sheet((u64) sprite_sheet_width * sprite_sheet_height * 4, 0);
-
-    current_x_offset = 0;
-    current_y_offset = 0;
-    max_row_height = 0;
-
-    for (const auto& image : images)
-    {
-        if (current_x_offset + image.width > sprite_sheet_width)
+        if (!exists(src_path))
         {
-            current_x_offset = 0;
-            current_y_offset += max_row_height;
-            max_row_height = 0;
+            return;
         }
-
-        for (i32 y = 0; y < image.height; ++y)
+        
+        for (const auto& entry : std::filesystem::directory_iterator(src_path))
         {
-            for (i32 x = 0; x < image.width; ++x)
+            String path = entry.path().string();
+            String filename = entry.path().filename().stem().string();
+            i32 width, height, channels;
+            if (u8* data = stbi_load(path.c_str(), &width, &height, &channels, 4))
             {
-                i32 sprite_idx = ((y + current_y_offset) * sprite_sheet_width + (x + current_x_offset)) * 4;
-                i32 img_idx = (y * image.width + x) * 4;
-                
-                if (sprite_idx < sprite_sheet.size() && img_idx < image.width * image.height * 4)
-                {
-                    sprite_sheet[sprite_idx] = image.data[img_idx];         // R
-                    sprite_sheet[sprite_idx + 1] = image.data[img_idx + 1]; // G
-                    sprite_sheet[sprite_idx + 2] = image.data[img_idx + 2]; // B
-                    sprite_sheet[sprite_idx + 3] = image.data[img_idx + 3]; // A
-                }
+                images.push_back({data, width, height, channels, filename});
             }
         }
-
-        SubTexture2D sub_texture_2d;
-        sub_texture_2d.name = image.filename;
-        sub_texture_2d.size = {(f32) image.width, (f32) image.height};
-        sub_texture_2d.location = {(f32) current_x_offset, (f32) current_y_offset};
-        sub_textures.push_back(sub_texture_2d);
         
-        current_x_offset += image.width;
-        max_row_height = std::max(max_row_height, image.height);
+        if (images.empty())
+        {
+            return;
+        }
+
+        const u32 num_of_images = (u32) images.size();
+        texture->sub_textures = new SubTexture2D[num_of_images];
+        texture->sub_texture_count = num_of_images;
+        
+        i32 current_x_offset = 0;
+        i32 current_y_offset = 0;
+        i32 max_row_height = 0;
+
+        i32 sprite_sheet_width = max_width;
+
+        for (const auto& image : images)
+        {
+            if (current_x_offset + image.width > sprite_sheet_width)
+            {
+                current_x_offset = 0;
+                current_y_offset += max_row_height;
+                max_row_height = 0;
+            }
+
+            max_row_height = std::max(max_row_height, image.height);
+
+            current_x_offset += image.width;
+        }
+
+        i32 sprite_sheet_height = current_y_offset + max_row_height;
+        
+        const u32 pixel_data_count = sprite_sheet_width * sprite_sheet_height * 4;
+        texture->pixel_data = new u8[pixel_data_count];
+        memset(texture->pixel_data, 0, pixel_data_count);
+        
+        current_x_offset = 0;
+        current_y_offset = 0;
+        max_row_height = 0;
+
+        for (i32 i = 0; i < num_of_images; ++i)
+        {
+            auto& image = images[i];
+            
+            if (current_x_offset + image.width > sprite_sheet_width)
+            {
+                current_x_offset = 0;
+                current_y_offset += max_row_height;
+                max_row_height = 0;
+            }
+
+            for (i32 y = 0; y < image.height; ++y)
+            {
+                for (i32 x = 0; x < image.width; ++x)
+                {
+                    i32 sprite_idx = ((y + current_y_offset) * sprite_sheet_width + (x + current_x_offset)) * 4;
+                    i32 img_idx = (y * image.width + x) * 4;
+                    
+                    if (sprite_idx < pixel_data_count && img_idx < image.width * image.height * 4)
+                    {
+                        texture->pixel_data[sprite_idx] = image.data[img_idx]; // R
+                        texture->pixel_data[sprite_idx + 1] = image.data[img_idx + 1]; // G
+                        texture->pixel_data[sprite_idx + 2] = image.data[img_idx + 2]; // B
+                        texture->pixel_data[sprite_idx + 3] = image.data[img_idx + 3]; // A
+                    }
+                }
+            }
+            
+            SubTexture2D& sub_texture_2d = texture->sub_textures[i];
+            sub_texture_2d.name = image.filename;
+            sub_texture_2d.size = {(f32)image.width, (f32)image.height};
+            sub_texture_2d.location = {(f32)current_x_offset, (f32)current_y_offset};
+            
+            current_x_offset += image.width;
+            max_row_height = std::max(max_row_height, image.height);
+        }
+        
+        String final_path = dest_path;
+        final_path.append("\\").append(sprite_sheet_name).append(".png");
+
+        stbi_write_png(final_path.c_str(), sprite_sheet_width, sprite_sheet_height, 4, texture->pixel_data,
+                       sprite_sheet_width * 4);
+        
+        delete [] texture->pixel_data;
+        texture->pixel_data = nullptr;
+
+        texture->image_path = final_path;
+        LoadTexture2D(texture);
     }
-
-    String final_path = dest_path;
-    final_path.append("\\").append(sprite_sheet_name).append(".png");
-
-    stbi_write_png(final_path.c_str(), sprite_sheet_width, sprite_sheet_height, 4, sprite_sheet.data(),
-                   sprite_sheet_width * 4);
-
-    return 0;
-}
-
-
-
 }
 
 #endif

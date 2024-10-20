@@ -60,5 +60,5 @@ namespace Nit
     void FreeTexture2D(Texture2D* texture);
     void BindTexture2D(const Texture2D* texture, u32 slot = 0);
     bool IsTexture2DValid(const Texture2D* texture);
-    ID   CreateSpriteSheetTexture(const String& sprite_sheet_name, const String& source_path, const String& dest_path, i32 max_width = 5034);
+    void LoadTexture2DAsSpriteSheet(Texture2D* texture, const String& sprite_sheet_name, const String& source_path, const String& dest_path, i32 max_width = 5034);
 }
