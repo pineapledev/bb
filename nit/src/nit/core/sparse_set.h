@@ -13,6 +13,7 @@ namespace Nit
     };
     
     //TODO: Resize
+    bool IsLoaded(SparseSet* sparse_set);
     bool IsValid(SparseSet* sparse_set);
     bool IsEmpty(SparseSet* sparse_set);
     bool IsFull(SparseSet* sparse_set);

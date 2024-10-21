@@ -2,9 +2,15 @@
 
 namespace Nit
 {
+    bool IsLoaded(SparseSet* sparse_set)
+    {
+        NIT_CHECK(sparse_set);
+        return sparse_set->max != 0;
+    }
+
     bool IsValid(SparseSet* sparse_set)
     {
-        return sparse_set && sparse_set->max != 0;
+        return sparse_set && IsLoaded(sparse_set);
     }
 
     bool IsEmpty(SparseSet* sparse_set)
@@ -21,7 +27,7 @@ namespace Nit
 
     void Load(SparseSet* sparse_set, u32 max)
     {
-        NIT_CHECK(sparse_set && !IsValid(sparse_set) && max < SparseSet::INVALID_INDEX);
+        NIT_CHECK(sparse_set && !IsLoaded(sparse_set) && max < SparseSet::INVALID_INDEX);
         sparse_set->max = max;
         sparse_set->sparse = new u32[max];
         sparse_set->dense  = new u32[max];
