@@ -96,8 +96,6 @@ namespace Nit
     // Quicker access to elements, more memory usage, can not be used in serialization coz the incremental ids.
     struct FastPool
     {
-        static constexpr u32 INVALID_INDEX = U32_MAX;
-
         Type*          type                = nullptr;
         void*          elements            = nullptr;
         SparseSet      sparse_set          = {};
