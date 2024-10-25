@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "sparse_set.h"
 
 namespace Nit
 {
@@ -60,12 +61,12 @@ namespace Nit
     
     void RemovePoolElement(Pool* pool, ID element_id);
 
-    bool IsPoolElementValid(const Pool* pool, ID element_id);
+    bool IsPoolElementValid(Pool* pool, ID element_id);
 
-    void* GetPoolElementRawPtr(const Pool* pool, ID element_id);
+    void* GetPoolElementRawPtr(Pool* pool, ID element_id);
 
     template<typename T>
-    T* GetPoolElementPtr(const Pool* pool, ID element_id)
+    T* GetPoolElementPtr(Pool* pool, ID element_id)
     {
         NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");
         // Sanity checks
@@ -79,7 +80,7 @@ namespace Nit
     }
     
     template<typename T>
-    T& GetPoolElement(const Pool* pool, ID element_id)
+    T& GetPoolElement(Pool* pool, ID element_id)
     {
         NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");
         // Sanity checks
@@ -99,10 +100,7 @@ namespace Nit
 
         Type*          type                = nullptr;
         void*          elements            = nullptr;
-        u32*           element_id_to_index = nullptr;
-        u32*           index_to_element_id = nullptr;
-        u32            count               = 0;
-        u32            max                 = 0;
+        SparseSet      sparse_set          = {};
         Queue<u32>     available_ids       = {};
         bool           self_id_management  = false;
     };
@@ -114,17 +112,11 @@ namespace Nit
         {
             RegisterType<T>();
         }
-
+        
         pool->type = GetType<T>();
         pool->elements  = new T[max_element_count];
         
-        pool->element_id_to_index = new u32[max_element_count];
-        pool->index_to_element_id = new u32[max_element_count];
-        
-        FillRaw(pool->element_id_to_index, max_element_count, FastPool::INVALID_INDEX);
-        FillRaw(pool->index_to_element_id, max_element_count, 0);
-
-        pool->max = max_element_count;
+        Load(&pool->sparse_set, DEFAULT_POOL_ELEMENT_COUNT);
         
         if (self_id_management)
         {
@@ -139,24 +131,18 @@ namespace Nit
 
     void FinishPool(FastPool* pool);
     
-    void InsertPoolElementRawWithID(FastPool* pool, u32 element_id, void* data);
+    bool  IsPoolElementValid(FastPool* pool, u32 element_id);
+    
+    void  InsertPoolElementRawWithID(FastPool* pool, u32 element_id, void* data);
+    void  RemovePoolElement(FastPool* pool, u32 element_id);
+    void* GetPoolElementRawPtr(FastPool* pool, u32 element_id);
     
     template<typename T>
     T& InsertPoolElementWithID(FastPool* pool, u32 element_id, const T& data)
     {
         NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");
-        
         NIT_CHECK_MSG(pool, "Invalid pool!");
-
-        u32 next_element = pool->count; 
-        NIT_CHECK_MSG(next_element < pool->max, "Max pool capacity reached!");
-
-        // "Create" the new element
-        pool->element_id_to_index[element_id]   = next_element;
-        pool->index_to_element_id[next_element] = element_id;
-        ++pool->count;
-
-        return SetData(pool->elements, next_element, data);
+        return SetData(pool->elements, Insert(&pool->sparse_set, element_id), data);
     }
 
     template<typename T>
@@ -168,33 +154,26 @@ namespace Nit
         return InsertPoolElementWithID(pool, out_id, data);
     }
     
-    void RemovePoolElement(FastPool* pool, u32 element_id);
-
-    bool IsPoolElementValid(const FastPool* pool, u32 element_id);
-    
-    void* GetPoolElementRawPtr(const FastPool* pool, u32 element_id);
-    
     template<typename T>
-    T& GetPoolElement(const FastPool* pool, u32 element_id)
+    T* GetPoolElementPtr(FastPool* pool, u32 element_id)
     {
         NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");
         NIT_CHECK_MSG(pool, "Invalid pool!");
         NIT_CHECK_MSG(IsPoolElementValid(pool, element_id), "Trying to get non-existent element!");
         
-        // Retrieve the element data
-        u32 element_index = pool->element_id_to_index[element_id];
-        return GetData<T>(pool->elements, element_index);
+        u32 element_index = Search(&pool->sparse_set, element_id);
+
+        if (element_index == SparseSet::INVALID_INDEX)
+        {
+            return nullptr;
+        }
+        
+        return GetDataPtr<T>(pool->elements, element_index);
     }
 
     template<typename T>
-    T* GetPoolElementPtr(const FastPool* pool, u32 element_id)
+    T& GetPoolElement(FastPool* pool, u32 element_id)
     {
-        NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");
-        NIT_CHECK_MSG(pool, "Invalid pool!");
-        NIT_CHECK_MSG(IsPoolElementValid(pool, element_id), "Trying to get non-existent element!");
-        
-        // Retrieve the element data
-        u32 element_index = pool->element_id_to_index[element_id];
-        return GetDataPtr<T>(pool->elements, element_index);
+        return *GetPoolElementPtr<T>(pool, element_id);
     }
 }

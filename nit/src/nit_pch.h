@@ -27,6 +27,7 @@
 #endif
 #include "nit/core/event.h"
 #include "nit/core/type.h"
+#include "nit/core/sparse_set.h"
 #include "nit/core/pool.h"
 
 #ifdef NIT_PLATFORM_LINUX

@@ -17,7 +17,7 @@ namespace Nit
     bool IsEmpty(SparseSet* sparse_set);
     bool IsFull(SparseSet* sparse_set);
     void Load(SparseSet* sparse_set, u32 max);
-    void Insert(SparseSet* sparse_set, u32 element);
+    u32  Insert(SparseSet* sparse_set, u32 element);
     bool Test(SparseSet* sparse_set, u32 element);
     u32  Search(SparseSet* sparse_set, u32 element);
     void Delete(SparseSet* sparse_set, u32 element);
