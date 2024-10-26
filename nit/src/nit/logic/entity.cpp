@@ -161,7 +161,7 @@ namespace Nit
             emitter << YAML::Key << data_pool.type->name << YAML::Value << YAML::BeginMap;
                 
             void* raw_data = GetDataRaw(&data_pool, entity);
-            SerializeRawData(data_pool.type, raw_data, emitter);
+            Serialize(data_pool.type, raw_data, emitter);
                 
             emitter << YAML::EndMap;
         }
@@ -184,7 +184,7 @@ namespace Nit
             auto& data_pool = component_pool->data_pool;
             Invoke(component_pool->fn_add_to_entity, entity);
             void* component_data = Invoke(component_pool->fn_get_from_entity, entity);
-            DeserializeRawData(data_pool.type, component_data, component_node);
+            Deserialize(data_pool.type, component_data, component_node);
             ComponentAddedArgs args;
             args.entity = entity;
             args.type = component_pool->data_pool.type;

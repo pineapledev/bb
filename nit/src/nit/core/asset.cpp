@@ -88,7 +88,7 @@ namespace Nit
                 }
                 
                 void* data = GetDataRaw(&pool, asset_info.id);
-                DeserializeRawData(pool.type, data, asset_node);
+                Deserialize(pool.type, data, asset_node);
                 result_id = asset_info.id;
 
                 if (created)
@@ -144,7 +144,7 @@ namespace Nit
         emitter << YAML::EndMap;
         
         emitter << YAML::Key << info.type_name << YAML::Value << YAML::BeginMap;
-        SerializeRawData(pool.type, GetDataRaw(&pool, id), emitter);
+        Serialize(pool.type, GetDataRaw(&pool, id), emitter);
         emitter << YAML::EndMap;
 
         result = emitter.c_str();
@@ -300,7 +300,7 @@ namespace Nit
         
         info.loaded = true;
         PoolMap& pool = GetAssetPool(info.type_name);
-        LoadRawData(pool.type, GetDataRaw(&pool, id));
+        Load(pool.type, GetDataRaw(&pool, id));
     }
 
     void FreeAsset(ID id)
@@ -316,7 +316,7 @@ namespace Nit
 
         info.reference_count = 0;
         PoolMap& pool = GetAssetPool(info.type_name);
-        FreeRawData(pool.type, GetDataRaw(&pool, id));
+        Free(pool.type, GetDataRaw(&pool, id));
     }
 
     void RetainAsset(ID id)

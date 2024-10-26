@@ -16,19 +16,19 @@ namespace Nit
         return type_registry;
     }
     
-    void SetRawData(const Type* type, void* array, u32 index, void* data)
+    void SetData(const Type* type, void* array, u32 index, void* data)
     {
         NIT_CHECK(type && type->fn_set_data && array);
         type->fn_set_data(array, index, data);
     }
 
-    void* GetRawData(const Type* type, void* array, u32 index)
+    void* GetData(const Type* type, void* array, u32 index)
     {
         NIT_CHECK(type && type->fn_get_data && array);
         return type->fn_get_data(array, index);
     }
 
-    void LoadRawData(const Type* type, void* data)
+    void Load(const Type* type, void* data)
     {
         NIT_CHECK(type);
         if (type->fn_invoke_load)
@@ -38,7 +38,7 @@ namespace Nit
         }
     }
 
-    void FreeRawData(const Type* type, void* data)
+    void Free(const Type* type, void* data)
     {
         NIT_CHECK(type);
         if (type->fn_invoke_free)
@@ -48,7 +48,7 @@ namespace Nit
         }
     }
 
-    void SerializeRawData(const Type* type, void* data, YAML::Emitter& emitter)
+    void Serialize(const Type* type, void* data, YAML::Emitter& emitter)
     {
         NIT_CHECK(type);
         if (type->fn_invoke_serialize)
@@ -58,7 +58,7 @@ namespace Nit
         }
     }
 
-    void DeserializeRawData(const Type* type, void* data, const YAML::Node& node)
+    void Deserialize(const Type* type, void* data, const YAML::Node& node)
     {
         NIT_CHECK(type);
         if (type->fn_invoke_deserialize)

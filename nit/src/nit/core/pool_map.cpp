@@ -21,20 +21,20 @@ namespace Nit
     void InsertDataWithID(PoolMap* pool, ID element_id, void* data)
     {
         NIT_CHECK_MSG(pool, "Invalid pool!");
-        return SetRawData(pool->type, pool->elements, Insert(&pool->sparse_set, element_id), data);
+        return SetData(pool->type, pool->elements, Insert(&pool->sparse_set, element_id), data);
     }
 
     void DeleteData(PoolMap* pool, ID element_id)
     {
         NIT_CHECK_MSG(pool, "Invalid pool!");
         SparseSetDeletion deletion = Delete(&pool->sparse_set, element_id);
-        void* last_element_data = GetRawData(pool->type, pool->elements, deletion.last_slot);
-        SetRawData(pool->type, pool->elements, deletion.deleted_slot, last_element_data);
+        void* last_element_data = GetData(pool->type, pool->elements, deletion.last_slot);
+        SetData(pool->type, pool->elements, deletion.deleted_slot, last_element_data);
     }
 
     void* GetDataRaw(PoolMap* pool, ID element_id)
     {
         NIT_CHECK_MSG(pool, "Invalid pool!");
-        return GetRawData(pool->type, pool->elements, Search(&pool->sparse_set, element_id));
+        return GetData(pool->type, pool->elements, Search(&pool->sparse_set, element_id));
     }
 }

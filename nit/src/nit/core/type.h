@@ -152,12 +152,12 @@ namespace Nit
         }
     }
 
-    void  SetRawData(const Type* type, void* array, u32 index, void* data);
-    void* GetRawData(const Type* type, void* array, u32 index);
-    void  LoadRawData(const Type* type, void* data);
-    void  FreeRawData(const Type* type, void* data);
-    void  SerializeRawData(const Type* type, void* data, YAML::Emitter& emitter);
-    void  DeserializeRawData(const Type* type, void* data, const YAML::Node& node);
+    void  SetData(const Type* type, void* array, u32 index, void* data);
+    void* GetData(const Type* type, void* array, u32 index);
+    void  Load(const Type* type, void* data);
+    void  Free(const Type* type, void* data);
+    void  Serialize(const Type* type, void* data, YAML::Emitter& emitter);
+    void  Deserialize(const Type* type, void* data, const YAML::Node& node);
 
     template<typename T>
     T& SetData(void* array, u32 index, const T& data)
