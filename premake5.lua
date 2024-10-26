@@ -56,7 +56,7 @@ project "nit"
         "imgui"
     }
 
-    files { "nit/src/**.h", "nit/src/**.cpp" }
+    files { "nit/src/**.h", "nit/src/**.cpp", "nit/src/**.inl" }
 
     filter "system:windows"
         links
