@@ -331,7 +331,7 @@ namespace Nit
         current_y_offset = 0;
         max_row_height = 0;
 
-        for (i32 i = 0; i < num_of_images; ++i)
+        for (u32 i = 0; i < num_of_images; ++i)
         {
             auto& image = images[i];
 
@@ -346,7 +346,7 @@ namespace Nit
             {
                 for (i32 x = 0; x < image.width; ++x)
                 {
-                    i32 sprite_idx = ((y + current_y_offset) * sprite_sheet_width + (x + current_x_offset)) * 4;
+                    u32 sprite_idx = (u32) ((y + current_y_offset) * sprite_sheet_width + (x + current_x_offset)) * 4;
                     i32 img_idx = (y * image.width + x) * 4;
 
                     if (sprite_idx < pixel_data_count && img_idx < image.width * image.height * 4)

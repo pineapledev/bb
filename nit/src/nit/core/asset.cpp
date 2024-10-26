@@ -83,7 +83,7 @@ namespace Nit
         AssetPool* pool = GetAssetPool(type);
         if (!pool)
         {
-            NIT_CHECK(false, "Trying to get the asset info from non registered asset type");
+            NIT_CHECK_MSG(false, "Trying to get the asset info from non registered asset type");
             return nullptr;
         }
 
@@ -274,7 +274,7 @@ namespace Nit
 
         for (AssetPool& asset_pool : asset_registry->asset_pools)
         {
-            for (i32 i = 0; i < asset_pool.data_pool.sparse_set.count; ++i)
+            for (u32 i = 0; i < asset_pool.data_pool.sparse_set.count; ++i)
             {
                 AssetInfo* asset_info = &asset_pool.asset_infos[i];
                 if (asset_info->name == name)
@@ -291,7 +291,7 @@ namespace Nit
 
         for (AssetPool& asset_pool : asset_registry->asset_pools)
         {
-            for (i32 i = 0; i < asset_pool.data_pool.sparse_set.count; ++i)
+            for (u32 i = 0; i < asset_pool.data_pool.sparse_set.count; ++i)
             {
                 AssetInfo* asset_info = &asset_pool.asset_infos[i];
                 if (asset_info->name == name)
