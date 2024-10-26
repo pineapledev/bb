@@ -9,15 +9,13 @@ namespace Nit
         
         Type*          type                = nullptr;
         void*          elements            = nullptr;
-        Map<ID,  u32>  element_id_to_index = {};
-        Map<u32, ID>   index_to_element_id = {};
-        u32            count               = 0;
+        MapSparseSet   sparse_set;
         u32            max                 = 0;
     };
-
+    
     template<typename T>
     void Load(MappedPool* pool, u32 max_element_count = MappedPool::DEFAULT_MAX);
-
+    
     void Free(MappedPool* pool);
 
     bool IsValid(MappedPool* pool, ID element_id);

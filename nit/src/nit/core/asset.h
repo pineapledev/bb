@@ -40,7 +40,7 @@ namespace Nit
     
     struct AssetRegistry
     {
-        Map<u64, MappedPool>          pools;
+        Map<u64, MappedPool>    pools;
         Map<u64, u32>           hash_to_version;
         Map<ID, AssetInfo>      id_to_info;
         String                  extension = ".nit";

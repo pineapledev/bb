@@ -86,8 +86,8 @@ namespace Nit
                     PushAssetInfo(asset_info, false);
                     InsertDataWithID(&pool, asset_info.id);
                 }
-
-                void* data = GetRawData(pool.type, pool.elements, pool.element_id_to_index[asset_info.id]);
+                
+                void* data = GetDataRaw(&pool, asset_info.id);
                 DeserializeRawData(pool.type, data, asset_node);
                 result_id = asset_info.id;
 
