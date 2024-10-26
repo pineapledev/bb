@@ -79,6 +79,7 @@ namespace Nit
             {
                 ImGui::MenuItem("Viewport", nullptr, &editor->show_viewport);
                 ImGui::MenuItem("Sprite Packer", nullptr, &editor->show_sprite_packer);
+                ImGui::MenuItem("Scene Entities", nullptr, &editor->show_scene_entities);
                 ImGui::EndMenu();
             }
             ImGui::EndMenuBar();
@@ -213,21 +214,21 @@ namespace Nit
 
                 if (ImGui::Button("Generate"))
                 {
-                    // Path relative_source = relative(source, GetWorkingDirectory());
-                    // Path relative_dest = relative(dest, GetWorkingDirectory());
-                    //
-                    // ID texture = CreateAsset<Texture2D>(name, relative_dest.string());
-                    // Texture2D* texture_2d = GetAssetDataPtr<Texture2D>(texture);
-                    //
-                    // LoadTexture2DAsSpriteSheet(texture_2d, name, relative_source.string(), relative_dest.string());
-                    // if (texture_2d->sub_texture_count > 0 && !texture_2d->image_path.empty())
-                    // {
-                    //     SerializeAssetToFile(texture);
-                    // }
-                    // else
-                    // {
-                    //     DestroyAsset(texture);
-                    // }
+                    Path relative_source = relative(source, GetWorkingDirectory());
+                    Path relative_dest = relative(dest, GetWorkingDirectory());
+                    
+                    ID texture = CreateAsset<Texture2D>(name, relative_dest.string());
+                    Texture2D* texture_2d = GetAssetDataPtr<Texture2D>(texture);
+                    
+                    LoadTexture2DAsSpriteSheet(texture_2d, name, relative_source.string(), relative_dest.string());
+                    if (texture_2d->sub_texture_count > 0 && !texture_2d->image_path.empty())
+                    {
+                        SerializeAssetToFile(GetType<Texture2D>(), texture);
+                    }
+                    else
+                    {
+                        DestroyAsset(GetType<Texture2D>(), texture);
+                    }
                 }
             }
 
@@ -241,21 +242,23 @@ namespace Nit
             AssetPool* pool = GetAssetPool<Scene>();
             u32 num_of_scenes = pool->data_pool.sparse_set.count;
             Scene* scenes = static_cast<Scene*>(pool->data_pool.elements);
-
+            
             for (u32 i = 0; i < num_of_scenes; ++i)
             {
                 Scene* scene = &scenes[i];
+                AssetInfo* info = &pool->asset_infos[i];
                 
-                if (!scene->loaded)
+                if (!info->loaded)
                 {
                     continue;
                 }
+
+                NIT_LOG_TRACE("%s", info->name.c_str());
                 
                 u32 num_of_entities = (u32) scene->entities.size();
                 for (u32 j = 0; j < num_of_entities; ++j)
                 {
                     Entity entity = scene->entities[i];
-                    
                 }
             }
 
