@@ -3,7 +3,7 @@
 namespace Nit
 {
     template<typename T>
-    void Load(MappedPool* pool, u32 max_element_count)
+    void Load(PoolMap* pool, u32 max_element_count)
     {
         if (!IsTypeRegistered<T>())
         {
@@ -19,7 +19,7 @@ namespace Nit
     }
 
     template<typename T>
-    T& InsertDataWithID(MappedPool* pool, ID element_id, const T& data)
+    T& InsertDataWithID(PoolMap* pool, ID element_id, const T& data)
     {
         NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");
         NIT_CHECK_MSG(pool, "Invalid pool!");
@@ -28,14 +28,14 @@ namespace Nit
     }
 
     template<typename T>
-    T& InsertData(MappedPool* pool, ID& out_id, const T& data)
+    T& InsertData(PoolMap* pool, ID& out_id, const T& data)
     {
         out_id = GenerateID();
         return InsertDataWithID(pool, out_id, data);
     }
     
     template<typename T>
-    T* GetDataPtr(MappedPool* pool, ID element_id)
+    T* GetDataPtr(PoolMap* pool, ID element_id)
     {
         NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");
         // Sanity checks
@@ -46,7 +46,7 @@ namespace Nit
     }
     
     template<typename T>
-    T& GetData(MappedPool* pool, ID element_id)
+    T& GetData(PoolMap* pool, ID element_id)
     {
         return *GetDataPtr<T>(pool->elements, element_id);
     }

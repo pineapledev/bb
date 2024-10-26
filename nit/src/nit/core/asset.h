@@ -20,7 +20,7 @@ namespace Nit
         FnFree<T>        fn_free        = nullptr;
         FnSerialize<T>   fn_serialize   = nullptr;
         FnDeserialize<T> fn_deserialize = nullptr;
-        u32              max_elements   = MappedPool::DEFAULT_MAX;
+        u32              max_elements   = PoolMap::DEFAULT_MAX;
     };
 
     struct AssetCreatedArgs
@@ -40,7 +40,7 @@ namespace Nit
     
     struct AssetRegistry
     {
-        Map<u64, MappedPool>    pools;
+        Map<u64, PoolMap>    pools;
         Map<u64, u32>           hash_to_version;
         Map<ID, AssetInfo>      id_to_info;
         String                  extension = ".nit";
@@ -98,9 +98,9 @@ namespace Nit
     
     void InitAssetRegistry();
     
-    MappedPool& GetAssetPool(u64 type_hash);
+    PoolMap& GetAssetPool(u64 type_hash);
     
-    MappedPool& GetAssetPool(const String& type_name);
+    PoolMap& GetAssetPool(const String& type_name);
 
     u32 GetLastAssetVersion(u64 type_hash);
     
@@ -113,7 +113,7 @@ namespace Nit
     }
     
     template<typename T>
-    MappedPool& GetAssetPool()
+    PoolMap& GetAssetPool()
     {
         return GetAssetPool(GetTypeHash<T>());
     }
@@ -125,14 +125,14 @@ namespace Nit
     template<typename T>
     T& GetAssetData(ID id)
     {
-        MappedPool& pool = GetAssetPool<T>();
+        PoolMap& pool = GetAssetPool<T>();
         return GetData<T>(&pool, id);
     }
 
     template<typename T>
     T* GetAssetDataPtr(ID id)
     {
-        MappedPool& pool = GetAssetPool<T>();
+        PoolMap& pool = GetAssetPool<T>();
         return GetDataPtr<T>(&pool, id);
     }
 
@@ -143,7 +143,7 @@ namespace Nit
     template<typename T>
     ID CreateAsset(const String& name, const String& path = "", const T& data = {})
     {
-        MappedPool& pool = GetAssetPool<T>();
+        PoolMap& pool = GetAssetPool<T>();
         ID id; InsertData(&pool, id, data);
         AssetInfo info { pool.type->name, name, path, id, GetLastAssetVersion<T>(), };
         PushAssetInfo(info, true);

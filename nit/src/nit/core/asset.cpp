@@ -77,7 +77,7 @@ namespace Nit
             
             if (YAML::Node asset_node = node[asset_info.type_name])
             {
-                MappedPool& pool = GetAssetPool(asset_info.type_name);
+                PoolMap& pool = GetAssetPool(asset_info.type_name);
 
                 const bool created = asset_registry->id_to_info.count(asset_info.id) == 0; 
                 
@@ -130,7 +130,7 @@ namespace Nit
         NIT_CHECK_ASSET_REGISTRY_CREATED
         NIT_CHECK_MSG(asset_registry->id_to_info.count(id) != 0, "Id not registered!");
         AssetInfo& info = asset_registry->id_to_info[id];
-        MappedPool& pool = GetAssetPool(info.type_name);
+        PoolMap& pool = GetAssetPool(info.type_name);
 
         YAML::Emitter emitter;
             
@@ -186,15 +186,15 @@ namespace Nit
         }
     }
 
-    MappedPool& GetAssetPool(u64 type_hash)
+    PoolMap& GetAssetPool(u64 type_hash)
     {
         NIT_CHECK_ASSET_REGISTRY_CREATED
         NIT_CHECK_MSG(asset_registry->pools.count(type_hash), "Asset type not registered!");
-        MappedPool& pool = asset_registry->pools[type_hash];
+        PoolMap& pool = asset_registry->pools[type_hash];
         return pool;
     }
 
-    MappedPool& GetAssetPool(const String& type_name)
+    PoolMap& GetAssetPool(const String& type_name)
     {
         NIT_CHECK_ASSET_REGISTRY_CREATED
         Type* type = GetType(type_name);
@@ -266,7 +266,7 @@ namespace Nit
 
         FreeAsset(id);
 
-        MappedPool& pool = GetAssetPool(info.type_name);
+        PoolMap& pool = GetAssetPool(info.type_name);
         
         AssetDestroyedArgs args;
         args.id   = info.id;
@@ -299,7 +299,7 @@ namespace Nit
         }
         
         info.loaded = true;
-        MappedPool& pool = GetAssetPool(info.type_name);
+        PoolMap& pool = GetAssetPool(info.type_name);
         LoadRawData(pool.type, GetDataRaw(&pool, id));
     }
 
@@ -315,7 +315,7 @@ namespace Nit
         }
 
         info.reference_count = 0;
-        MappedPool& pool = GetAssetPool(info.type_name);
+        PoolMap& pool = GetAssetPool(info.type_name);
         FreeRawData(pool.type, GetDataRaw(&pool, id));
     }
 

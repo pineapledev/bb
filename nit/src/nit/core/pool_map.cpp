@@ -1,8 +1,8 @@
-﻿#include "mapped_pool.h"
+﻿#include "pool_map.h"
 
 namespace Nit
 {
-    void Free(MappedPool* pool)
+    void Free(PoolMap* pool)
     {
         NIT_CHECK_MSG(pool, "Invalid pool!");
         pool->type = nullptr;
@@ -12,19 +12,19 @@ namespace Nit
         pool->max = 0;
     }
 
-    bool IsValid(MappedPool* pool, ID element_id)
+    bool IsValid(PoolMap* pool, ID element_id)
     {
         NIT_CHECK_MSG(pool, "Invalid pool!");
         return Test(&pool->sparse_set, element_id);
     }
     
-    void InsertDataWithID(MappedPool* pool, ID element_id, void* data)
+    void InsertDataWithID(PoolMap* pool, ID element_id, void* data)
     {
         NIT_CHECK_MSG(pool, "Invalid pool!");
         return SetRawData(pool->type, pool->elements, Insert(&pool->sparse_set, element_id), data);
     }
 
-    void DeleteData(MappedPool* pool, ID element_id)
+    void DeleteData(PoolMap* pool, ID element_id)
     {
         NIT_CHECK_MSG(pool, "Invalid pool!");
         SparseSetDeletion deletion = Delete(&pool->sparse_set, element_id);
@@ -32,7 +32,7 @@ namespace Nit
         SetRawData(pool->type, pool->elements, deletion.deleted_slot, last_element_data);
     }
 
-    void* GetDataRaw(MappedPool* pool, ID element_id)
+    void* GetDataRaw(PoolMap* pool, ID element_id)
     {
         NIT_CHECK_MSG(pool, "Invalid pool!");
         return GetRawData(pool->type, pool->elements, Search(&pool->sparse_set, element_id));
