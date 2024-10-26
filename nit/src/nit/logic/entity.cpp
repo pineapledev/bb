@@ -47,7 +47,7 @@ namespace Nit
         for (u32 i = 0; i < entity_registry->next_component_type_index; ++i)
         {
             ComponentPool& data = entity_registry->component_pool[i];
-            FinishPool(&data.data_pool);
+            Free(&data.data_pool);
         }
     }
 
@@ -72,7 +72,7 @@ namespace Nit
         for (u32 i = 0; i < entity_registry->next_component_type_index; ++i)
         {
             ComponentPool& component_pool = entity_registry->component_pool[i];
-            RemovePoolElement(&component_pool.data_pool, entity);
+            DeleteData(&component_pool.data_pool, entity);
         }
         
         --entity_registry->entity_count;
@@ -160,7 +160,7 @@ namespace Nit
 
             emitter << YAML::Key << data_pool.type->name << YAML::Value << YAML::BeginMap;
                 
-            void* raw_data = GetPoolElementRawPtr(&data_pool, entity);
+            void* raw_data = GetDataRaw(&data_pool, entity);
             SerializeRawData(data_pool.type, raw_data, emitter);
                 
             emitter << YAML::EndMap;

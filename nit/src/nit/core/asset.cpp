@@ -77,14 +77,14 @@ namespace Nit
             
             if (YAML::Node asset_node = node[asset_info.type_name])
             {
-                Pool& pool = GetAssetPool(asset_info.type_name);
+                MappedPool& pool = GetAssetPool(asset_info.type_name);
 
                 const bool created = asset_registry->id_to_info.count(asset_info.id) == 0; 
                 
                 if (created)
                 {
                     PushAssetInfo(asset_info, false);
-                    InsertPoolElementRawWithID(&pool, asset_info.id);
+                    InsertDataWithID(&pool, asset_info.id);
                 }
 
                 void* data = GetRawData(pool.type, pool.elements, pool.element_id_to_index[asset_info.id]);
@@ -130,7 +130,7 @@ namespace Nit
         NIT_CHECK_ASSET_REGISTRY_CREATED
         NIT_CHECK_MSG(asset_registry->id_to_info.count(id) != 0, "Id not registered!");
         AssetInfo& info = asset_registry->id_to_info[id];
-        Pool& pool = GetAssetPool(info.type_name);
+        MappedPool& pool = GetAssetPool(info.type_name);
 
         YAML::Emitter emitter;
             
@@ -144,7 +144,7 @@ namespace Nit
         emitter << YAML::EndMap;
         
         emitter << YAML::Key << info.type_name << YAML::Value << YAML::BeginMap;
-        SerializeRawData(pool.type, GetPoolElementRawPtr(&pool, id), emitter);
+        SerializeRawData(pool.type, GetDataRaw(&pool, id), emitter);
         emitter << YAML::EndMap;
 
         result = emitter.c_str();
@@ -186,15 +186,15 @@ namespace Nit
         }
     }
 
-    Pool& GetAssetPool(u64 type_hash)
+    MappedPool& GetAssetPool(u64 type_hash)
     {
         NIT_CHECK_ASSET_REGISTRY_CREATED
         NIT_CHECK_MSG(asset_registry->pools.count(type_hash), "Asset type not registered!");
-        Pool& pool = asset_registry->pools[type_hash];
+        MappedPool& pool = asset_registry->pools[type_hash];
         return pool;
     }
 
-    Pool& GetAssetPool(const String& type_name)
+    MappedPool& GetAssetPool(const String& type_name)
     {
         NIT_CHECK_ASSET_REGISTRY_CREATED
         Type* type = GetType(type_name);
@@ -266,14 +266,14 @@ namespace Nit
 
         FreeAsset(id);
 
-        Pool& pool = GetAssetPool(info.type_name);
+        MappedPool& pool = GetAssetPool(info.type_name);
         
         AssetDestroyedArgs args;
         args.id   = info.id;
         args.type = pool.type;
         Broadcast<const AssetDestroyedArgs&>(GetAssetRegistryInstance()->asset_destroyed_event, args);
         
-        RemovePoolElement(&pool, id);
+        DeleteData(&pool, id);
         EraseAssetInfo(id);
     }
 
@@ -299,8 +299,8 @@ namespace Nit
         }
         
         info.loaded = true;
-        Pool& pool = GetAssetPool(info.type_name);
-        LoadRawData(pool.type, GetPoolElementRawPtr(&pool, id));
+        MappedPool& pool = GetAssetPool(info.type_name);
+        LoadRawData(pool.type, GetDataRaw(&pool, id));
     }
 
     void FreeAsset(ID id)
@@ -315,8 +315,8 @@ namespace Nit
         }
 
         info.reference_count = 0;
-        Pool& pool = GetAssetPool(info.type_name);
-        FreeRawData(pool.type, GetPoolElementRawPtr(&pool, id));
+        MappedPool& pool = GetAssetPool(info.type_name);
+        FreeRawData(pool.type, GetDataRaw(&pool, id));
     }
 
     void RetainAsset(ID id)

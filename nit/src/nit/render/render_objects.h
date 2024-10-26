@@ -5,9 +5,9 @@ namespace Nit
 {
     struct RenderObjects
     {
-        FastPool vertex_arrays;
-        FastPool vertex_buffers;
-        FastPool index_buffers;
+        Pool vertex_arrays;
+        Pool vertex_buffers;
+        Pool index_buffers;
     };
 
     void SetRenderObjectsInstance(RenderObjects* render_objects_instance);

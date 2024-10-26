@@ -37,6 +37,7 @@ namespace Nit
     u32 Insert(SparseSet* sparse_set, u32 element)
     {
         NIT_CHECK(IsValid(sparse_set) && !IsFull(sparse_set));
+        NIT_CHECK(element != SparseSet::INVALID_INDEX)
         NIT_CHECK(!Test(sparse_set, element));
         
         u32 next_slot = sparse_set->count;
@@ -71,7 +72,7 @@ namespace Nit
         return dense_index;
     }
     
-    void Delete(SparseSet* sparse_set, u32 element)
+    SparseSetDeletion Delete(SparseSet* sparse_set, u32 element)
     {
         NIT_CHECK(IsValid(sparse_set) && sparse_set->count > 0);
         NIT_CHECK(Test(sparse_set, element));
@@ -86,6 +87,7 @@ namespace Nit
         sparse_set->dense[deleted_slot] = last_element;
         
         sparse_set->sparse[last_element] = deleted_slot;
+        return { deleted_slot, last_slot };
     }
 
     void Resize(SparseSet* sparse_set, u32 new_max)

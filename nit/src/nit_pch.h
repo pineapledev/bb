@@ -28,7 +28,9 @@
 #include "nit/core/event.h"
 #include "nit/core/type.h"
 #include "nit/core/sparse_set.h"
+#include "nit/core/map_sparse_set.h"
 #include "nit/core/pool.h"
+#include "nit/core/mapped_pool.h"
 
 #ifdef NIT_PLATFORM_LINUX
 #include <linux/string.h>

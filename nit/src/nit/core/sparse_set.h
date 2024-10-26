@@ -12,6 +12,12 @@ namespace Nit
         u32  max    = 0;
     };
     
+    struct SparseSetDeletion
+    {
+        u32 deleted_slot = 0;
+        u32 last_slot    = 0;
+    };
+    
     bool IsLoaded(SparseSet* sparse_set);
     bool IsValid(SparseSet* sparse_set);
     bool IsEmpty(SparseSet* sparse_set);
@@ -20,7 +26,7 @@ namespace Nit
     u32  Insert(SparseSet* sparse_set, u32 element);
     bool Test(SparseSet* sparse_set, u32 element);
     u32  Search(SparseSet* sparse_set, u32 element);
-    void Delete(SparseSet* sparse_set, u32 element);
+    SparseSetDeletion Delete(SparseSet* sparse_set, u32 element);
     void Resize(SparseSet* sparse_set, u32 new_max);
     void Free(SparseSet* sparse_set);
 }

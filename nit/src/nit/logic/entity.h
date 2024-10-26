@@ -15,7 +15,7 @@ namespace Nit
     struct ComponentPool
     {
         u8                      type_index  = 0;
-        FastPool                data_pool;
+        Pool                data_pool;
         Delegate<void(Entity)>  fn_add_to_entity;
         Delegate<void(Entity)>  fn_remove_from_entity;
         Delegate<bool(Entity)>  fn_is_in_entity;
@@ -115,7 +115,7 @@ namespace Nit
         Bind(component_pool.fn_is_in_entity, fn_is_in_entity);
         Bind(component_pool.fn_get_from_entity, fn_get_from_entity);
         
-        InitPool<T>(&component_pool.data_pool, MAX_COMPONENTS_TYPES, false);
+        Load<T>(&component_pool.data_pool, MAX_COMPONENTS_TYPES, false);
         ++entity_registry->next_component_type_index;
     }
 
@@ -142,7 +142,7 @@ namespace Nit
         NIT_CHECK_MSG(GetEntityRegistryInstance()->signatures[entity].size() <= MAX_COMPONENTS_PER_ENTITY + 1, "Components per entity out of range!");
         ComponentPool* component_pool = FindComponentPool<T>();
         NIT_CHECK_MSG(component_pool, "Invalid component type!");
-        T& element = InsertPoolElementWithID(&component_pool->data_pool, entity, data);
+        T& element = InsertDataWithID(&component_pool->data_pool, entity, data);
         EntitySignature& signature = GetEntityRegistryInstance()->signatures[entity]; 
         signature.set(GetComponentTypeIndex<T>(), true);
         EntitySignatureChanged(entity, signature);
@@ -156,7 +156,7 @@ namespace Nit
         NIT_CHECK_MSG(GetEntityRegistryInstance()->signatures[entity].size() <= MAX_COMPONENTS_PER_ENTITY + 1, "Components per entity out of range!");
         ComponentPool* component_pool = FindComponentPool<T>();
         NIT_CHECK_MSG(component_pool, "Invalid component type!");
-        T& element = InsertPoolElementWithID(&component_pool->data_pool, entity, data);
+        T& element = InsertDataWithID(&component_pool->data_pool, entity, data);
         EntitySignature& signature = GetEntityRegistryInstance()->signatures[entity]; 
         signature.set(GetComponentTypeIndex<T>(), true);
         EntitySignatureChanged(entity, signature);
@@ -180,7 +180,7 @@ namespace Nit
         args.type = component_pool->data_pool.type;
         Broadcast<const ComponentRemovedArgs&>(GetEntityRegistryInstance()->component_removed_event, args);
         
-        RemovePoolElement(&component_pool->data_pool, entity);
+        DeleteData(&component_pool->data_pool, entity);
         EntitySignature& signature = GetEntityRegistryInstance()->signatures[entity]; 
         signature.set(GetComponentTypeIndex<T>(), false);
         EntitySignatureChanged(entity, signature);
@@ -192,7 +192,7 @@ namespace Nit
         NIT_CHECK_MSG(IsEntityValid(entity), "Invalid entity!");
         ComponentPool* component_pool = FindComponentPool<T>();
         NIT_CHECK_MSG(component_pool, "Invalid component type!");
-        return GetPoolElement<T>(&component_pool->data_pool, entity);
+        return GetData<T>(&component_pool->data_pool, entity);
     }
     
     template<typename T>
@@ -201,7 +201,7 @@ namespace Nit
         NIT_CHECK_MSG(IsEntityValid(entity), "Invalid entity!");
         ComponentPool* component_pool = FindComponentPool<T>();
         NIT_CHECK_MSG(component_pool, "Invalid component type!");
-        return GetPoolElementPtr<T>(&component_pool->data_pool, entity);
+        return GetDataPtr<T>(&component_pool->data_pool, entity);
     }
 
     template<typename T>
