@@ -56,7 +56,7 @@ namespace Nit
             {
                 auto& sprite = GetComponent<Sprite>(entity);
             
-                if (!IsAssetValid(sprite.texture_id))
+                if (!IsAssetValid(GetType<Texture2D>(), sprite.texture_id))
                 {
                     sprite.texture_id = 0;
                     sprite.texture = nullptr;
@@ -72,7 +72,7 @@ namespace Nit
             {
                 auto& text = GetComponent<Text>(entity);
             
-                if (!IsAssetValid(text.font_id))
+                if (!IsAssetValid(GetType<Font>(), text.font_id))
                 {
                     text.font_id = 0;
                     text.font = nullptr;

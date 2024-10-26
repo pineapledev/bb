@@ -5,6 +5,7 @@ namespace Nit
 {
     struct Scene
     {
+        bool loaded = false;
         String cached_scene;
         Array<Entity> entities;
     };

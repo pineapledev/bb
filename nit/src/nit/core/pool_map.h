@@ -28,6 +28,8 @@ namespace Nit
     template<typename T>
     T& InsertData(PoolMap* pool, ID& out_id, const T& data = {});
 
+    u32 IndexOf(PoolMap* pool, ID element_id);
+    
     void* GetDataRaw(PoolMap* pool, ID element_id);
     
     template<typename T>
@@ -35,8 +37,8 @@ namespace Nit
 
     template<typename T>
     T& GetData(PoolMap* pool, ID element_id);
-
-    void DeleteData(PoolMap* pool, ID element_id);
+    
+    SparseSetDeletion DeleteData(PoolMap* pool, ID element_id);
 }
 
 #include "nit/core/pool_map.inl"

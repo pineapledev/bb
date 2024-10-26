@@ -24,12 +24,18 @@ namespace Nit
         return SetData(pool->type, pool->elements, Insert(&pool->sparse_set, element_id), data);
     }
 
-    void DeleteData(PoolMap* pool, ID element_id)
+    SparseSetDeletion DeleteData(PoolMap* pool, ID element_id)
     {
         NIT_CHECK_MSG(pool, "Invalid pool!");
         SparseSetDeletion deletion = Delete(&pool->sparse_set, element_id);
         void* last_element_data = GetData(pool->type, pool->elements, deletion.last_slot);
         SetData(pool->type, pool->elements, deletion.deleted_slot, last_element_data);
+        return deletion;
+    }
+
+    u32 IndexOf(PoolMap* pool, ID element_id)
+    {
+        return Search(&pool->sparse_set, element_id);
     }
 
     void* GetDataRaw(PoolMap* pool, ID element_id)

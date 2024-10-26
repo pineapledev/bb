@@ -8,11 +8,12 @@ namespace Nit
 {
     struct Editor
     {
-        bool        enabled            = true;
-        Entity      selected_entity    = 0;
-        bool        is_entity_selected = false;
-        bool        show_viewport      = true;
-        bool        show_sprite_packer = false;
+        bool        enabled              = true;
+        Entity      selected_entity      = 0;
+        bool        is_entity_selected   = false;
+        bool        show_viewport        = true;
+        bool        show_sprite_packer   = false;
+        bool        show_scene_entities  = false;
         
         FrameBuffer frame_buffer       = {};
         Vector2     viewport_size;

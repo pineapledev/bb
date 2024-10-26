@@ -2,6 +2,7 @@
 
 #include "core/app.h"
 #include "logic/components.h"
+#include "logic/scene.h"
 #include "render/texture.h"
 
 #ifdef NIT_EDITOR_ENABLED
@@ -212,21 +213,49 @@ namespace Nit
 
                 if (ImGui::Button("Generate"))
                 {
-                    Path relative_source = relative(source, GetWorkingDirectory());
-                    Path relative_dest = relative(dest, GetWorkingDirectory());
+                    // Path relative_source = relative(source, GetWorkingDirectory());
+                    // Path relative_dest = relative(dest, GetWorkingDirectory());
+                    //
+                    // ID texture = CreateAsset<Texture2D>(name, relative_dest.string());
+                    // Texture2D* texture_2d = GetAssetDataPtr<Texture2D>(texture);
+                    //
+                    // LoadTexture2DAsSpriteSheet(texture_2d, name, relative_source.string(), relative_dest.string());
+                    // if (texture_2d->sub_texture_count > 0 && !texture_2d->image_path.empty())
+                    // {
+                    //     SerializeAssetToFile(texture);
+                    // }
+                    // else
+                    // {
+                    //     DestroyAsset(texture);
+                    // }
+                }
+            }
+
+            ImGui::End();
+        }
+
+        if (editor->show_scene_entities)
+        {
+            ImGui::Begin("Scene Entities", &editor->show_scene_entities);
+            
+            AssetPool* pool = GetAssetPool<Scene>();
+            u32 num_of_scenes = pool->data_pool.sparse_set.count;
+            Scene* scenes = static_cast<Scene*>(pool->data_pool.elements);
+
+            for (u32 i = 0; i < num_of_scenes; ++i)
+            {
+                Scene* scene = &scenes[i];
+                
+                if (!scene->loaded)
+                {
+                    continue;
+                }
+                
+                u32 num_of_entities = (u32) scene->entities.size();
+                for (u32 j = 0; j < num_of_entities; ++j)
+                {
+                    Entity entity = scene->entities[i];
                     
-                    ID texture = CreateAsset<Texture2D>(name, relative_dest.string());
-                    Texture2D* texture_2d = GetAssetDataPtr<Texture2D>(texture);
-                    
-                    LoadTexture2DAsSpriteSheet(texture_2d, name, relative_source.string(), relative_dest.string());
-                    if (texture_2d->sub_texture_count > 0 && !texture_2d->image_path.empty())
-                    {
-                        SerializeAssetToFile(texture);
-                    }
-                    else
-                    {
-                        DestroyAsset(texture);
-                    }
                 }
             }
 

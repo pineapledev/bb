@@ -40,11 +40,13 @@ namespace Nit
     void LoadScene(Scene* scene)
     {
         LoadSceneEntities(scene);
+        scene->loaded = true;
     }
 
     void FreeScene(Scene* scene)
     {
         FreeSceneEntities(scene);
+        scene->loaded = false;
     }
 
     bool AreSceneEntitiesLoaded(const Scene* scene)

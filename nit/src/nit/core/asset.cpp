@@ -18,10 +18,27 @@ namespace Nit
         return asset_registry;
     }
 
-    bool IsAssetTypeRegistered(u64 type_hash)
+    AssetPool* GetAssetPool(Type* type)
     {
         NIT_CHECK_ASSET_REGISTRY_CREATED
-        return asset_registry->pools.count(type_hash) != 0;
+        
+        Array<AssetPool>* assets = &asset_registry->asset_pools;
+        
+        auto it = std::ranges::find_if(*assets, [&type](AssetPool& asset){
+            return asset.data_pool.type == type;
+        });
+        
+        if (it == assets->end())
+        {
+            return nullptr;
+        }
+        
+        return &(*it);
+    }
+
+    bool IsAssetTypeRegistered(Type* type)
+    {
+        return GetAssetPool(type) != nullptr;
     }
 
     void BuildAssetPath(const String& name, String& path)
@@ -34,24 +51,48 @@ namespace Nit
         path.append(name).append(asset_registry->extension);
     }
 
-    void PushAssetInfo(AssetInfo& asset_info, bool build_path)
+    void PushAssetInfo(AssetInfo& asset_info, u32 index, bool build_path)
     {
         NIT_CHECK_ASSET_REGISTRY_CREATED
         NIT_CHECK(asset_info.id != 0);
-        NIT_CHECK_MSG(asset_registry->id_to_info.count(asset_info.id) == 0, "Id already taken!");
+        
+        AssetPool* pool = GetAssetPool(GetType(asset_info.type_name));
+        NIT_CHECK(pool);
+        
         if (build_path)
         {
             BuildAssetPath(asset_info.name, asset_info.path);
         }
-        asset_registry->id_to_info[asset_info.id] = asset_info;
+        
+        pool->asset_infos[index] = asset_info;
     }
     
-    void EraseAssetInfo(ID id)
+    void EraseAssetInfo(AssetInfo& asset_info, SparseSetDeletion deletion)
+    {
+        NIT_CHECK_ASSET_REGISTRY_CREATED
+        NIT_CHECK(asset_info.id != 0);
+        AssetPool* pool = GetAssetPool(GetType(asset_info.type_name));
+        NIT_CHECK(pool);
+        pool->asset_infos[deletion.deleted_slot] = pool->asset_infos[deletion.last_slot];
+    }
+
+    AssetInfo* GetAssetInfo(Type* type, ID id)
     {
         NIT_CHECK_ASSET_REGISTRY_CREATED
         NIT_CHECK(id != 0);
-        NIT_CHECK_MSG(asset_registry->id_to_info.count(id) != 0, "Id not registered!");
-        asset_registry->id_to_info.erase(id);
+        AssetPool* pool = GetAssetPool(type);
+        if (!pool)
+        {
+            NIT_CHECK(false, "Trying to get the asset info from non registered asset type");
+            return nullptr;
+        }
+
+        if (!IsValid(&pool->data_pool, id))
+        {
+            return nullptr;
+        }
+        
+        return &pool->asset_infos[IndexOf(&pool->data_pool, id)];
     }
 
     ID DeserializeAssetFromString(const String& asset_str)
@@ -77,31 +118,33 @@ namespace Nit
             
             if (YAML::Node asset_node = node[asset_info.type_name])
             {
-                PoolMap& pool = GetAssetPool(asset_info.type_name);
-
-                const bool created = asset_registry->id_to_info.count(asset_info.id) == 0; 
+                AssetPool* pool = GetAssetPool(GetType(asset_info.type_name));
                 
-                if (created)
+                NIT_CHECK_MSG(pool, "Trying to deserialize an unregistered type of asset!");
+                
+                const bool created = IsValid(&pool->data_pool, asset_info.id);
+                
+                if (!created)
                 {
-                    PushAssetInfo(asset_info, false);
-                    InsertDataWithID(&pool, asset_info.id);
+                    InsertDataWithID(&pool->data_pool, asset_info.id);
+                    PushAssetInfo(asset_info, IndexOf(&pool->data_pool, asset_info.id), false);
                 }
                 
-                void* data = GetDataRaw(&pool, asset_info.id);
-                Deserialize(pool.type, data, asset_node);
+                void* data = GetDataRaw(&pool->data_pool, asset_info.id);
+                Deserialize(pool->data_pool.type, data, asset_node);
                 result_id = asset_info.id;
 
                 if (created)
                 {
                     AssetCreatedArgs args;
                     args.id   = asset_info.id;
-                    args.type = pool.type;
+                    args.type = pool->data_pool.type;
                     Broadcast<const AssetCreatedArgs&>(GetAssetRegistryInstance()->asset_created_event, args);
                 }
                 
-                if (IsAssetLoaded(asset_info.id))
+                if (IsAssetLoaded(pool->data_pool.type, asset_info.id))
                 {
-                    LoadAsset(result_id, true);
+                    LoadAsset(pool->data_pool.type, result_id, true);
                 }
             }
         }
@@ -125,42 +168,63 @@ namespace Nit
         return 0;
     }
 
-    void SerializeAssetToString(ID id, String& result)
+    void SerializeAssetToString(Type* type, ID id, String& result)
     {
         NIT_CHECK_ASSET_REGISTRY_CREATED
-        NIT_CHECK_MSG(asset_registry->id_to_info.count(id) != 0, "Id not registered!");
-        AssetInfo& info = asset_registry->id_to_info[id];
-        PoolMap& pool = GetAssetPool(info.type_name);
+        AssetPool* pool = GetAssetPool(type);
 
+        if (!pool)
+        {
+            NIT_CHECK_MSG(false, "Trying to serialize an unregistered type of asset!");
+            return;
+        }
+        
+        const AssetInfo* info = GetAssetInfo(type, id);
+
+        if (!info)
+        {
+            NIT_CHECK_MSG(false, "Trying to serialize an invalid asset");
+            return;
+        }
+        
         YAML::Emitter emitter;
             
         emitter << YAML::BeginMap;
         emitter << YAML::Key << "AssetInfo" << YAML::Value << YAML::BeginMap;
-        emitter << YAML::Key << "type_name" << YAML::Value << info.type_name;
-        emitter << YAML::Key << "name"      << YAML::Value << info.name;
-        emitter << YAML::Key << "path"      << YAML::Value << info.path;
-        emitter << YAML::Key << "id"        << YAML::Value << info.id;
-        emitter << YAML::Key << "version"   << YAML::Value << info.version;
+        emitter << YAML::Key << "type_name" << YAML::Value << info->type_name;
+        emitter << YAML::Key << "name"      << YAML::Value << info->name;
+        emitter << YAML::Key << "path"      << YAML::Value << info->path;
+        emitter << YAML::Key << "id"        << YAML::Value << info->id;
+        emitter << YAML::Key << "version"   << YAML::Value << info->version;
         emitter << YAML::EndMap;
         
-        emitter << YAML::Key << info.type_name << YAML::Value << YAML::BeginMap;
-        Serialize(pool.type, GetDataRaw(&pool, id), emitter);
+        emitter << YAML::Key << info->type_name << YAML::Value << YAML::BeginMap;
+        
+        Serialize(pool->data_pool.type, GetDataRaw(&pool->data_pool, id), emitter);
+
         emitter << YAML::EndMap;
 
         result = emitter.c_str();
     }
 
-    void SerializeAssetToFile(ID id)
+    void SerializeAssetToFile(Type* type, ID id)
     {
         NIT_CHECK_ASSET_REGISTRY_CREATED
-        NIT_CHECK_MSG(asset_registry->id_to_info.count(id) != 0, "Id not registered!");
-        AssetInfo& info = asset_registry->id_to_info[id];
-        OutputFile file(info.path);
+
+        const AssetInfo* info = GetAssetInfo(type, id);
+
+        if (!info)
+        {
+            NIT_CHECK_MSG(false, "Trying to serialize an invalid asset");
+            return;
+        }
+        
+        OutputFile file(info->path);
         
         if (file.is_open())
         {
             String asset_string;
-            SerializeAssetToString(id, asset_string);
+            SerializeAssetToString(type, id, asset_string);
             file << asset_string;
             file.flush();
             file.close();
@@ -186,43 +250,37 @@ namespace Nit
         }
     }
 
-    PoolMap& GetAssetPool(u64 type_hash)
+    u32 GetLastAssetVersion(Type* type)
     {
-        NIT_CHECK_ASSET_REGISTRY_CREATED
-        NIT_CHECK_MSG(asset_registry->pools.count(type_hash), "Asset type not registered!");
-        PoolMap& pool = asset_registry->pools[type_hash];
-        return pool;
-    }
+        AssetPool* pool = GetAssetPool(type);
 
-    PoolMap& GetAssetPool(const String& type_name)
-    {
-        NIT_CHECK_ASSET_REGISTRY_CREATED
-        Type* type = GetType(type_name);
-        u64 hash = type->hash;
-        NIT_CHECK(type && asset_registry->pools.count(hash));
-        return asset_registry->pools[hash];
-    }
+        if (!pool)
+        {
+            NIT_CHECK(false);
+            return 0;
+        }
 
-    u32 GetLastAssetVersion(u64 type_hash)
-    {
-        NIT_CHECK_ASSET_REGISTRY_CREATED
-        return asset_registry->hash_to_version.at(type_hash);
+        return pool->version;
     }
 
     u32 GetLastAssetVersion(const String& type_name)
     {
-        NIT_CHECK_ASSET_REGISTRY_CREATED
-        return GetLastAssetVersion(GetType(type_name)->hash);
+        return GetLastAssetVersion(GetType(type_name));
     }
 
     void FindAssetsByName(const String& name, Array<ID>& asset_ids)
     {
         NIT_CHECK_ASSET_REGISTRY_CREATED
-        for (const auto& [id, info] : asset_registry->id_to_info)
+
+        for (AssetPool& asset_pool : asset_registry->asset_pools)
         {
-            if (info.name == name)
+            for (i32 i = 0; i < asset_pool.data_pool.sparse_set.count; ++i)
             {
-                asset_ids.push_back(id);
+                AssetInfo* asset_info = &asset_pool.asset_infos[i];
+                if (asset_info->name == name)
+                {
+                    asset_ids.push_back(asset_info->id);
+                }
             }
         }
     }
@@ -230,67 +288,106 @@ namespace Nit
     ID FindAssetByName(const String& name)
     {
         NIT_CHECK_ASSET_REGISTRY_CREATED
-        for (const auto& [id, info] : asset_registry->id_to_info)
+
+        for (AssetPool& asset_pool : asset_registry->asset_pools)
         {
-            if (info.name == name)
+            for (i32 i = 0; i < asset_pool.data_pool.sparse_set.count; ++i)
             {
-                return id;
+                AssetInfo* asset_info = &asset_pool.asset_infos[i];
+                if (asset_info->name == name)
+                {
+                    return asset_info->id;
+                }
             }
         }
+        
         return 0;
     }
 
-    bool IsAssetValid(ID id)
+    bool IsAssetValid(Type* type, ID id)
     {
         NIT_CHECK_ASSET_REGISTRY_CREATED
-        return id != 0 && asset_registry->id_to_info.count(id) != 0;
+
+        AssetPool* pool = GetAssetPool(type);
+
+        if (!pool)
+        {
+            NIT_CHECK(false);
+            return false;
+        }
+        
+        return IsValid(&pool->data_pool, id);
     }
     
-    bool IsAssetLoaded(ID id)
+    bool IsAssetLoaded(Type* type, ID id)
     {
         NIT_CHECK_ASSET_REGISTRY_CREATED
-        if (!IsAssetValid(id))
+
+        if (!IsAssetValid(type, id))
         {
             return false;
         }
-        AssetInfo& info = asset_registry->id_to_info[id];
-        return info.loaded;
+        
+        const AssetInfo* info = GetAssetInfo(type, id);
+
+        if (!info)
+        {
+            NIT_CHECK_MSG(false, "Invalid asset");
+            return false;
+        }
+        
+        return info->loaded;
     }
 
-    void DestroyAsset(ID id)
+    void DestroyAsset(Type* type, ID id)
     {
         NIT_CHECK_ASSET_REGISTRY_CREATED
         //TODO: Delete file?
-        NIT_CHECK_MSG(asset_registry->id_to_info.count(id) != 0, "Id not registered!");
-        AssetInfo& info = asset_registry->id_to_info[id];
+        
+        AssetInfo* info = GetAssetInfo(type, id);
 
-        FreeAsset(id);
+        if (!info)
+        {
+            NIT_CHECK_MSG(false, "Trying to serialize an invalid asset");
+            return;
+        }
+        
+        FreeAsset(type, id);
 
-        PoolMap& pool = GetAssetPool(info.type_name);
+        AssetPool* pool = GetAssetPool(type);
+
+        if (!pool)
+        {
+            NIT_CHECK(false);
+            return;
+        }
         
         AssetDestroyedArgs args;
-        args.id   = info.id;
-        args.type = pool.type;
+        args.id   = info->id;
+        args.type = type;
         Broadcast<const AssetDestroyedArgs&>(GetAssetRegistryInstance()->asset_destroyed_event, args);
         
-        DeleteData(&pool, id);
-        EraseAssetInfo(id);
+        EraseAssetInfo(*info, DeleteData(&pool->data_pool, id));
     }
 
-    void LoadAsset(ID id, bool force_reload)
+    void LoadAsset(Type* type, ID id, bool force_reload)
     {
-        NIT_CHECK_ASSET_REGISTRY_CREATED
-        NIT_CHECK_MSG(asset_registry->id_to_info.count(id) != 0, "Id not registered!");
-        AssetInfo& info = asset_registry->id_to_info[id];
+        AssetInfo* info = GetAssetInfo(type, id);
+
+        if (!info)
+        {
+            NIT_CHECK_MSG(false, "Trying to serialize an invalid asset");
+            return;
+        }
         
-        if (info.loaded)
+        if (info->loaded)
         {
             if (force_reload)
             {
                 // In this case we should keep the reference count.
-                u32 reference_count = info.reference_count;
-                FreeAsset(id);
-                info.reference_count = reference_count;
+                u32 reference_count = info->reference_count;
+                FreeAsset(type, info->id);
+                info->reference_count = reference_count;
             }
             else
             {
@@ -298,70 +395,104 @@ namespace Nit
             }
         }
         
-        info.loaded = true;
-        PoolMap& pool = GetAssetPool(info.type_name);
-        Load(pool.type, GetDataRaw(&pool, id));
+        info->loaded = true;
+
+        AssetPool* pool = GetAssetPool(type);
+
+        if (!pool)
+        {
+            NIT_CHECK(false);
+            return;
+        }
+        
+        Load(type, GetDataRaw(&pool->data_pool, id));
     }
 
-    void FreeAsset(ID id)
+    void FreeAsset(Type* type, ID id)
     {
         NIT_CHECK_ASSET_REGISTRY_CREATED
-        NIT_CHECK_MSG(asset_registry->id_to_info.count(id) != 0, "Id not registered!");
-        AssetInfo& info = asset_registry->id_to_info[id];
+
+        AssetInfo* info = GetAssetInfo(type, id);
+
+        if (!info)
+        {
+            NIT_CHECK_MSG(false, "Trying to serialize an invalid asset");
+            return;
+        }
         
-        if (!info.loaded)
+        if (!info->loaded)
         {
             return;
         }
 
-        info.reference_count = 0;
-        PoolMap& pool = GetAssetPool(info.type_name);
-        Free(pool.type, GetDataRaw(&pool, id));
+        info->reference_count = 0;
+
+        AssetPool* pool = GetAssetPool(type);
+
+        if (!pool)
+        {
+            NIT_CHECK(false);
+            return;
+        }
+        
+        Free(type, GetDataRaw(&pool->data_pool, id));
     }
 
-    void RetainAsset(ID id)
+    void RetainAsset(Type* type, ID id)
     {
         NIT_CHECK_ASSET_REGISTRY_CREATED
 
-        if (!IsAssetValid(id))
+        if (!IsAssetValid(type, id))
         {
             return;
         }
         
-        AssetInfo& info = asset_registry->id_to_info[id];
+        AssetInfo* info = GetAssetInfo(type, id);
 
-        if (!info.loaded)
+        if (!info)
         {
-            LoadAsset(id);
+            NIT_CHECK_MSG(false, "Trying to serialize an invalid asset");
+            return;
         }
 
-        ++info.reference_count;
+        if (!info->loaded)
+        {
+            LoadAsset(type, id);
+        }
+
+        ++info->reference_count;
     }
 
-    void ReleaseAsset(ID id, bool force_free)
+    void ReleaseAsset(Type* type, ID id, bool force_free)
     {
         NIT_CHECK_ASSET_REGISTRY_CREATED
 
-        if (!IsAssetValid(id))
+        if (!IsAssetValid(type, id))
         {
             return;
         }
         
-        AssetInfo& info = asset_registry->id_to_info[id];
+        AssetInfo* info = GetAssetInfo(type, id);
 
-        if (!info.loaded)
+        if (!info)
+        {
+            NIT_CHECK_MSG(false, "Trying to serialize an invalid asset");
+            return;
+        }
+
+        if (!info->loaded)
         {
             return;
         }
 
         // A loaded asset with reference_count of 0 is a valid case.
-        if (force_free || info.reference_count <= 1)
+        if (force_free || info->reference_count <= 1)
         {
-            FreeAsset(id);
-            info.reference_count = 0;
+            FreeAsset(type, id);
+            info->reference_count = 0;
             return;
         }
         
-        --info.reference_count;
+        --info->reference_count;
     }
 }

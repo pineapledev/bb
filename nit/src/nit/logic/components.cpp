@@ -149,20 +149,20 @@ namespace Nit
     {
         RemoveFontFromText(text);
 
-        if (IsAssetValid(font_id))
+        if (IsAssetValid(GetType<Font>(), font_id))
         {
             text.font_id = font_id;
             text.font = GetAssetDataPtr<Font>(text.font_id);
-            RetainAsset(text.font_id);
+            RetainAsset(GetType<Font>(), text.font_id);
         }
     }
 
     void RemoveFontFromText(Text& text)
     {
-        if (IsAssetValid(text.font_id))
+        if (IsAssetValid(GetType<Font>(), text.font_id))
         {
             text.font = nullptr;
-            ReleaseAsset(text.font_id);
+            ReleaseAsset(GetType<Font>(), text.font_id);
         }
     }
 
@@ -228,22 +228,22 @@ namespace Nit
             RemoveTextureFromSprite(sprite);
         }
         
-        if (IsAssetValid(texture_id))
+        if (IsAssetValid(GetType<Texture2D>(), texture_id))
         {
             sprite.texture_id = texture_id;
             sprite.texture = GetAssetDataPtr<Texture2D>(sprite.texture_id);
             SetSpriteSubTexture2D(sprite, sprite.sub_texture_name);
-            RetainAsset(sprite.texture_id);
+            RetainAsset(GetType<Texture2D>(), sprite.texture_id);
         }
     }
 
     void RemoveTextureFromSprite(Sprite& sprite)
     {
-        if (IsAssetValid(sprite.texture_id))
+        if (IsAssetValid(GetType<Texture2D>(), sprite.texture_id))
         {
             sprite.texture = nullptr;
             ResetSpriteSubTexture2D(sprite);
-            ReleaseAsset(sprite.texture_id);
+            ReleaseAsset(GetType<Texture2D>(), sprite.texture_id);
         }
     }
 

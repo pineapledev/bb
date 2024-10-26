@@ -29,7 +29,7 @@ void OnApplicationRun()
 void GameStart()
 {
     ID test_scene_id = FindAssetByName("test_scene");
-    LoadAsset(test_scene_id);
+    LoadAsset(GetType<Scene>(), test_scene_id);
 }
 
 void GameUpdate()

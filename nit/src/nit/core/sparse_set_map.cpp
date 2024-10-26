@@ -16,7 +16,7 @@ namespace Nit
     u32 Insert(SparseSetMap* sparse_set, ID element)
     {
         NIT_CHECK(IsValid(sparse_set));
-        NIT_CHECK(element != SparseSetMap::INVALID_INDEX)
+        NIT_CHECK(element != SparseSetMap::INVALID_ID)
         NIT_CHECK(!Test(sparse_set, element));
         
         u32 next_slot = sparse_set->count;
@@ -36,7 +36,7 @@ namespace Nit
     u32 Search(SparseSetMap* sparse_set, ID element)
     {
         NIT_CHECK(IsValid(sparse_set));
-
+        
         if (!Test(sparse_set, element))
         {
             return SparseSetMap::INVALID_INDEX;

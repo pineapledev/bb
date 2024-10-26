@@ -4,7 +4,8 @@ namespace Nit
 {
     struct SparseSetMap
     {
-        static constexpr u32 INVALID_INDEX = 0;
+        static constexpr u32 INVALID_ID    = 0;
+        static constexpr u32 INVALID_INDEX = U32_MAX;
         
         Map<ID, u32> sparse;
         Map<u32, ID> dense;
