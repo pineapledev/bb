@@ -205,6 +205,6 @@ struct YAML::convert<Nit::AssetHandle>
 inline YAML::Emitter& operator<<(YAML::Emitter& out, const Nit::AssetHandle& h)
 {
     out << YAML::Flow;
-    out << YAML::BeginSeq << h.name << h.type->name << h.id << YAML::EndSeq;
+    out << YAML::BeginSeq << h.name << (h.type ? h.type->name : "") << h.id << YAML::EndSeq;
     return out;
 }

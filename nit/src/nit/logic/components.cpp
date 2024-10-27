@@ -223,7 +223,7 @@ namespace Nit
 
     void RemoveFontFromText(Text& text)
     {
-        if (IsAssetValid(text.font))
+        if (text.font_data && IsAssetValid(text.font))
         {
             text.font_data = nullptr;
             ReleaseAsset(text.font);
@@ -309,10 +309,7 @@ namespace Nit
 
     void AddTextureToSprite(Sprite& sprite, AssetHandle& asset)
     {
-        if (sprite.texture_data)
-        {
-            RemoveTextureFromSprite(sprite);
-        }
+        RemoveTextureFromSprite(sprite);
         
         if (IsAssetValid(asset))
         {
@@ -325,7 +322,7 @@ namespace Nit
 
     void RemoveTextureFromSprite(Sprite& sprite)
     {
-        if (IsAssetValid(sprite.texture))
+        if (sprite.texture_data && IsAssetValid(sprite.texture))
         {
             sprite.texture_data = nullptr;
             ResetSpriteSubTexture2D(sprite);

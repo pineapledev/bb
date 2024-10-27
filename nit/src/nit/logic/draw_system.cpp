@@ -38,13 +38,15 @@ namespace Nit
     
     void Start()
     {
-        app->asset_registry.asset_destroyed_event  += Listener<const AssetDestroyedArgs&>::Create(OnAssetDestroyed);
-        app->entity_registry.component_added_event += Listener<const ComponentAddedArgs&>::Create(OnComponentAdded);
+        app->asset_registry.asset_destroyed_event    += Listener<const AssetDestroyedArgs&>::Create(OnAssetDestroyed);
+        app->entity_registry.component_added_event   += Listener<const ComponentAddedArgs&>::Create(OnComponentAdded);
+        app->entity_registry.component_removed_event += Listener<const ComponentRemovedArgs&>::Create(OnComponentRemoved);
     }
 
     void End()
     {
         app->asset_registry.asset_destroyed_event    -= Listener<const AssetDestroyedArgs&>::Create(OnAssetDestroyed);
+        app->entity_registry.component_added_event   -= Listener<const ComponentAddedArgs&>::Create(OnComponentAdded);
         app->entity_registry.component_removed_event -= Listener<const ComponentRemovedArgs&>::Create(OnComponentRemoved);
     }
     

@@ -94,7 +94,7 @@ namespace Nit
 
     i32 FindIndexOfSubTexture2D(const Texture2D* texture, const String& sub_texture_name)
     {
-        NIT_CHECK(texture);
+        NIT_CHECK(texture && texture->sub_textures);
         
         for (u32 i = 0; i < texture->sub_texture_count; ++i)
         {
@@ -242,7 +242,8 @@ namespace Nit
         glDeleteTextures(1, &texture->id);
         texture->id = 0;
         FreeTextureImage(texture);
-        delete[] texture->sub_textures;
+        //delete[] texture->sub_textures;
+        //texture->sub_textures = nullptr;
     }
 
     bool IsTexture2DValid(const Texture2D* texture)

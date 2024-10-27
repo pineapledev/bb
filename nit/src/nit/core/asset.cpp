@@ -373,8 +373,8 @@ namespace Nit
         AssetPool* pool = GetAssetPoolSafe(asset);
         AssetInfo* info = GetAssetInfoSafe(asset);
         info->reference_count = 0;
+        info->loaded = false;
         Free(asset.type, GetDataRaw(&pool->data_pool, asset.id));
-        asset = {};
     }
 
     void RetainAsset(AssetHandle& asset)

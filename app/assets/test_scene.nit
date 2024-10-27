@@ -13,19 +13,19 @@ Scene:
         scale: [1, 1, 1]
       Camera:
         projection: Perspective
-        aspect: 1.77777779
+        aspect: 1.23887241
         fov: 100
         near_clip: 0.100000001
         far_clip: 1000
         size: 3
     Entity:
       Transform:
-        position: [0, 0, 0]
+        position: [-1.06095123, 0.959213257, 0]
         rotation: [0, 0, 0]
         scale: [1, 1, 1]
       Sprite:
-        texture: [null, null, 0]
-        sub_texture:
+        texture: ["", "", 0]
+        sub_texture: "null"
         visible: true
         tint: [1, 0.300000012, 0.300000012, 1]
         size: [1, 1]
@@ -35,15 +35,15 @@ Scene:
         keep_aspect: true
     Entity:
       Transform:
-        position: [0, -1, 0]
+        position: [-0.0318238884, -0.656334341, -6.10351562e-05]
         rotation: [0, 0, 0]
         scale: [1, 1, 1]
       Circle:
         visible: true
         tint: [0.300000012, 1, 0.300000012, 1]
         radius: 0.5
-        thickness: 0.0500000007
-        fade: 0.00999999978
+        thickness: 0.400000006
+        fade: 0.230000004
     Entity:
       Transform:
         position: [-1, 0, 0]
@@ -57,7 +57,7 @@ Scene:
         thickness: 0.0500000007
     Entity:
       Transform:
-        position: [0.3, 0.6, 0]
+        position: [0.300000012, 0.600000024, 0]
         rotation: [0, 0, 0]
         scale: [1, 1, 1]
       Text:
@@ -69,7 +69,7 @@ Scene:
         size: 1
     Entity:
       Transform:
-        position: [1.03, -0.96, 0]
+        position: [1.02999997, -0.959999979, 0]
         rotation: [0, 0, 0]
         scale: [1, 1, 1]
       Sprite:
@@ -85,8 +85,8 @@ Scene:
     Entity:
       Transform:
         position: [1, 0, 0]
-        rotation: [0, 0, 0]
-        scale: [1, 1, 1]
+        rotation: [0, 0, 30.8121243]
+        scale: [0.999999762, 3.08929014, 1]
       Sprite:
         texture: [test_sheet, Texture2D, 12761694976786155438]
         sub_texture: cpp

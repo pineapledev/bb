@@ -75,7 +75,8 @@ namespace Nit
             {
                 continue;
             }
-            
+
+            Broadcast<const ComponentRemovedArgs&>(entity_registry->component_removed_event, {entity, component_pool.data_pool.type});
             DeleteData(&component_pool.data_pool, entity);
         }
 
@@ -172,6 +173,8 @@ namespace Nit
                 
             emitter << YAML::EndMap;
         }
+
+        emitter << YAML::EndMap;
     }
 
     Entity DeserializeEntity(const YAML::Node& node)

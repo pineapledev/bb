@@ -75,7 +75,7 @@ namespace Nit
 
         if (app->im_gui_renderer.is_dockspace_enabled && ImGui::BeginMenuBar())
         {
-            if (ImGui::BeginMenu("Windows"))
+            if (ImGui::BeginMenu("Window"))
             {
                 ImGui::MenuItem("Viewport", nullptr, &editor->show_viewport);
                 ImGui::MenuItem("Sprite Packer", nullptr, &editor->show_sprite_packer);
@@ -247,6 +247,7 @@ namespace Nit
             {
                 Scene* scene = &scenes[i];
                 AssetInfo* info = &pool->asset_infos[i];
+                AssetHandle scene_asset{ info->name, GetType(info->type_name), info->id };
                 
                 if (!info->loaded)
                 {
@@ -254,16 +255,34 @@ namespace Nit
                 }
                 
                 const bool is_scene_expanded = ImGui::TreeNodeEx(info->name.c_str(), ImGuiTreeNodeFlags_DefaultOpen);
+
+                ImGui::PushID(i);
                 
                 if (ImGui::BeginPopupContextItem())
                 {
-                    if (ImGui::MenuItem("Create Empty Entity"))
+                    if (ImGui::MenuItem("Create Entity"))
                     {
                         Entity entity = CreateEntity();
                         scene->entities.push_back(entity);
                     }
+                    if (ImGui::MenuItem("Save"))
+                    {
+                        SerializeAssetToFile(scene_asset);
+                    }
+                    if (ImGui::MenuItem("Reload"))
+                    {
+                        DeserializeAssetFromFile(info->path);
+                        editor->selection = Editor::Selection::None;
+                    }
+                    if (ImGui::MenuItem("Close"))
+                    {
+                        FreeAsset(scene_asset);
+                        editor->selection = Editor::Selection::None;
+                    }
                     ImGui::EndPopup();
                 }
+
+                ImGui::PopID();
 
                 if (!is_scene_expanded)
                 {
