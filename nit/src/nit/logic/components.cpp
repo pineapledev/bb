@@ -356,7 +356,7 @@ namespace Nit
     {
         ImGui::Bool("visible", circle->visible);
         ImGui::ColorPalette("tint", circle->tint);
-        ImGui::DragF32("radius", circle->radius, 0.01);
+        ImGui::DragF32("radius", circle->radius, 0.01f);
         ImGui::DragF32("thickness", circle->thickness, 0.01f);
         ImGui::DragF32("fade", circle->fade, 0.01f);
     }
