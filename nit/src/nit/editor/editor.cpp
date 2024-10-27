@@ -242,6 +242,30 @@ namespace Nit
             AssetPool* pool = GetAssetPool<Scene>();
             u32 num_of_scenes = pool->data_pool.sparse_set.count;
             Scene* scenes = static_cast<Scene*>(pool->data_pool.elements);
+
+            if (ImGui::BeginPopupContextWindow())
+            {
+                if (ImGui::BeginMenu("Open"))
+                {
+                    for (u32 i = 0; i < num_of_scenes; ++i)
+                    {
+                        AssetInfo* info = &pool->asset_infos[i];
+                        AssetHandle scene_asset{ info->name, GetType(info->type_name), info->id };
+                
+                        if (info->loaded)
+                        {
+                            continue;
+                        }
+
+                        if (ImGui::MenuItem(info->name.c_str()))
+                        {
+                            LoadAsset(scene_asset);
+                        }
+                    }
+                    ImGui::EndMenu();
+                }
+                ImGui::EndPopup();
+            }
             
             for (u32 i = 0; i < num_of_scenes; ++i)
             {
