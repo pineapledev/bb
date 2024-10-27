@@ -264,6 +264,11 @@ namespace Nit
                     }
                     ImGui::EndPopup();
                 }
+
+                if (!is_scene_expanded)
+                {
+                    continue;
+                }
                 
                 u32 num_of_entities = (u32) scene->entities.size();
                 
