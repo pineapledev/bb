@@ -2,6 +2,11 @@
 
 #ifdef NIT_IMGUI_ENABLED
 
+namespace Nit
+{
+    struct AssetHandle;
+}
+
 namespace ImGui
 {
     using namespace Nit;
@@ -27,6 +32,8 @@ namespace ImGui
     bool DragVector3(const char* label, Vector3& vector, const Vector3& reset_value = V3_ZERO, f32 speed = 0.05f);
     bool DragVector4(const char* label, Vector4& vector, const Vector4& reset_value = V4_ZERO, f32 speed = 0.05f);
     bool ColorPalette(const char* label, Vector4& color);
+    void AssetCombo(const char* label, Type* type, AssetHandle* asset);
+    bool IsOtherWindowFocused();
 }
 
 #endif

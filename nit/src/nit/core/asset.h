@@ -131,6 +131,8 @@ namespace Nit
     void FindAssetsByName(const String& name, Array<AssetHandle>& assets);
     
     AssetHandle FindAssetByName(const String& name);
+
+    void GetAssetsOfType(Type* type, Array<AssetHandle>& assets);
     
     template<typename T>
     T* GetAssetData(const AssetHandle& asset)

@@ -129,7 +129,7 @@ namespace Nit
                 editor->mouse_position = {(f32)mouse_x, (f32)mouse_y};
 
                 //Entity selection 
-                if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGuizmo::IsOver())
+                if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !ImGuizmo::IsOver() && (ImGui::IsWindowFocused() || ImGui::IsWindowHovered()))
                 {
                     if (mouse_x >= 0 && mouse_y >= 0 && mouse_x < (i32)editor->viewport_size.x && mouse_y < (i32)editor
                         ->viewport_size.y)

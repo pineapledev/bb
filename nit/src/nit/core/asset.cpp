@@ -295,6 +295,17 @@ namespace Nit
         return {};
     }
 
+    void GetAssetsOfType(Type* type, Array<AssetHandle>& assets)
+    {
+        NIT_CHECK_ASSET_REGISTRY_CREATED
+        AssetPool* pool = GetAssetPoolSafe(type);
+        for (u32 i = 0; i < pool->data_pool.sparse_set.count; ++i)
+        {
+            AssetInfo* info = &pool->asset_infos[i];
+            assets.push_back({ info->name, GetType(info->type_name), info->id });
+        }
+    }
+
     bool IsAssetValid(const AssetHandle& asset)
     {
         AssetPool* pool = GetAssetPool(asset.type);

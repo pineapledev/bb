@@ -178,12 +178,33 @@ namespace Nit
         text->spacing = node["spacing"] .as<f32>();
         text->size    = node["size"]    .as<f32>();
     }
+
+#ifdef NIT_EDITOR_ENABLED
+    void DrawEditorText(Text* text)
+    {
+        ImGui::AssetCombo("font", GetType<Font>(), &text->font);
+
+        if (IsAssetValid(text->font))
+        {
+            text->font_data = GetAssetDataPtr<Font>(text->font);
+        }
+        
+        ImGui::InputText("text", text->text);
+        ImGui::Bool("visible", text->visible);
+        ImGui::ColorPalette("tint", text->tint);
+        ImGui::DragF32("spacing", text->spacing);
+        ImGui::DragF32("size", text->size);
+    }
+#endif
     
     void RegisterTextComponent()
     {
         TypeArgs<Text> args;
         args.fn_serialize   = SerializeText;
         args.fn_deserialize = DeserializeText;
+#ifdef NIT_EDITOR_ENABLED
+        args.fn_draw_editor = DrawEditorText;
+#endif
         RegisterType<Text>(args);
         RegisterComponentType<Text>();
     }
@@ -235,11 +256,33 @@ namespace Nit
         sprite->keep_aspect   = node["keep_aspect"]   .as<bool>();
     }
 
+#ifdef NIT_EDITOR_ENABLED
+    void DrawEditorSprite(Sprite* sprite)
+    {
+        ImGui::AssetCombo("texture", GetType<Texture2D>(), &sprite->texture);
+        
+        sprite->texture_data = IsAssetValid(sprite->texture) ? GetAssetDataPtr<Texture2D>(sprite->texture) : nullptr;
+        ImGui::InputText("sub_texture", sprite->sub_texture);
+        sprite->sub_texture_index = sprite->texture_data ? FindIndexOfSubTexture2D(sprite->texture_data, sprite->sub_texture) : -1;
+        
+        ImGui::Bool("visible", sprite->visible);
+        ImGui::ColorPalette("tint", sprite->tint);
+        ImGui::DragVector2("size", sprite->size);
+        ImGui::Bool("flip_x", sprite->flip_x);
+        ImGui::Bool("flip_y", sprite->flip_y);
+        ImGui::DragVector2("tiling_factor", sprite->tiling_factor);
+        ImGui::Bool("keep_aspect", sprite->keep_aspect);
+    }
+#endif
+
     void RegisterSpriteComponent()
     {
         TypeArgs<Sprite> args;
         args.fn_serialize   = SerializeSprite;
         args.fn_deserialize = DeserializeSprite;
+#ifdef NIT_EDITOR_ENABLED
+        args.fn_draw_editor = DrawEditorSprite;
+#endif
         RegisterType<Sprite>(args);
         RegisterComponentType<Sprite>();
     }
@@ -308,11 +351,25 @@ namespace Nit
         circle->fade      = node["fade"]      .as<f32>();
     }
 
+#ifdef NIT_EDITOR_ENABLED
+    void DrawEditorCircle(Circle* circle)
+    {
+        ImGui::Bool("visible", circle->visible);
+        ImGui::ColorPalette("tint", circle->tint);
+        ImGui::DragF32("radius", circle->radius, 0.01);
+        ImGui::DragF32("thickness", circle->thickness, 0.01f);
+        ImGui::DragF32("fade", circle->fade, 0.01f);
+    }
+#endif
+
     void RegisterCircleComponent()
     {
         TypeArgs<Circle> args;
         args.fn_serialize   = SerializeCircle;
         args.fn_deserialize = DeserializeCircle;
+#ifdef NIT_EDITOR_ENABLED
+        args.fn_draw_editor = DrawEditorCircle;
+#endif
         RegisterType<Circle>(args);
         RegisterComponentType<Circle>();
     }
@@ -335,11 +392,25 @@ namespace Nit
         line_2d->thickness = node["thickness"] .as<f32>();
     }
 
+#ifdef NIT_EDITOR_ENABLED
+    void DrawEditorLine(Line2D* line)
+    {
+        ImGui::Bool("visible", line->visible);
+        ImGui::ColorPalette("tint", line->tint);
+        ImGui::DragVector2("start", line->start);
+        ImGui::DragVector2("end", line->end);
+        ImGui::DragF32("thickness", line->thickness, 0.01f);
+    }
+#endif
+
     void RegisterLine2DComponent()
     {
         TypeArgs<Line2D> args;
         args.fn_serialize   = SerializeLine2D;
         args.fn_deserialize = DeserializeLine2D;
+#ifdef NIT_EDITOR_ENABLED
+        args.fn_draw_editor = DrawEditorLine;
+#endif
         RegisterType<Line2D>(args);
         RegisterComponentType<Line2D>();
     }

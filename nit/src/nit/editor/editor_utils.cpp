@@ -1,7 +1,10 @@
 #include "editor_utils.h"
 
+#include <ranges>
+
 #ifdef NIT_IMGUI_ENABLED
 #include <imgui_internal.h>
+#include "core/asset.h"
 
 namespace ImGui
 {
@@ -247,6 +250,48 @@ namespace ImGui
         color = { f32_color[0], f32_color[1], f32_color[2], f32_color[3] };
         EndProperty();
         return changed;
+    }
+
+    void AssetCombo(const char* label, Type* type, AssetHandle* asset)
+    {
+        String selected = asset->name;
+
+        Array<AssetHandle> assets;
+        GetAssetsOfType(type, assets);
+        
+        BeginProperty(label);
+
+        if (BeginCombo("##combo", selected.c_str()))
+        {
+            if (Selectable("None"))
+            {
+                selected = "";
+            }
+            
+            for (auto& option : assets)
+            {
+                const bool is_selected = selected == option.name;
+                if (Selectable(option.name.c_str()))
+                {
+                    selected = option.name;
+                }
+                if (is_selected)
+                {
+                    SetItemDefaultFocus();
+                }
+            }
+
+            EndCombo();
+        }
+        *asset = FindAssetByName(selected);
+        
+        EndProperty();
+    }
+
+    bool IsOtherWindowFocused()
+    {
+        return ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && 
+          !ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows);
     }
 }
 
