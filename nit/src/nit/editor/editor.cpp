@@ -252,13 +252,67 @@ namespace Nit
                 {
                     continue;
                 }
-
-                NIT_LOG_TRACE("%s", info->name.c_str());
+                
+                const bool is_scene_expanded = ImGui::TreeNodeEx(info->name.c_str(), ImGuiTreeNodeFlags_DefaultOpen);
+                
+                if (ImGui::BeginPopupContextItem())
+                {
+                    if (ImGui::MenuItem("Create Empty Entity"))
+                    {
+                        Entity entity = CreateEntity();
+                        scene->entities.push_back(entity);
+                    }
+                    ImGui::EndPopup();
+                }
                 
                 u32 num_of_entities = (u32) scene->entities.size();
+                
                 for (u32 j = 0; j < num_of_entities; ++j)
                 {
-                    Entity entity = scene->entities[i];
+                    Entity entity = scene->entities[j];
+
+                    Entity selected_entity = editor->selected_entity;
+
+                    const String name = std::to_string(entity);
+                    const ImGuiTreeNodeFlags flags = ((IsEntityValid(entity) && selected_entity == entity) ?
+                        ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
+
+                    const bool is_entity_expanded = ImGui::TreeNodeEx(name.c_str(), flags);
+            
+                    if (ImGui::BeginPopupContextItem())
+                    {
+                        if (ImGui::MenuItem("Destroy Entity"))
+                        {
+                            DestroyEntity(selected_entity);
+                            num_of_entities--;
+                            scene->entities.erase(std::ranges::find(scene->entities, selected_entity));
+                        }
+                        if (ImGui::MenuItem("Clone Entity"))
+                        {
+                            NIT_LOG_TRACE("Not implemented yet!");
+                        }
+                        ImGui::EndPopup();
+                    }
+                    
+                    if (ImGui::IsItemClicked())
+                    {
+                        editor->selected_entity = entity;
+                    }
+
+                    if (ImGui::IsItemClicked() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+                    {
+                        NIT_LOG_TRACE("Not implemented yet!");
+                    }
+
+                    if (is_entity_expanded)
+                    {
+                        ImGui::TreePop();
+                    }
+                }
+
+                if (is_scene_expanded)
+                {
+                    ImGui::TreePop();
                 }
             }
 

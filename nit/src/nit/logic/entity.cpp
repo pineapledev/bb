@@ -66,14 +66,21 @@ namespace Nit
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         NIT_CHECK_MSG(IsEntityValid(entity), "Entity is not valid!");
-        entity_registry->signatures[entity].reset();
-        entity_registry->available_entities.push(entity);
 
         for (u32 i = 0; i < entity_registry->next_component_type_index; ++i)
         {
             ComponentPool& component_pool = entity_registry->component_pool[i];
+
+            if (!entity_registry->signatures[entity].test(i + 1))
+            {
+                continue;
+            }
+            
             DeleteData(&component_pool.data_pool, entity);
         }
+
+        entity_registry->signatures[entity].reset();
+        entity_registry->available_entities.push(entity);
         
         --entity_registry->entity_count;
         entity_registry->signatures[entity].set(0, false);
