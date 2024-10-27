@@ -144,24 +144,24 @@ namespace Nit
         RegisterComponentType<Text>();
     }
 
-    void AddFontToText(Text& text, const AssetHandle& asset)
+    void AddFontToText(Text& text, AssetHandle& asset)
     {
         RemoveFontFromText(text);
 
-        if (IsAssetValid(asset.type, asset.id))
+        if (IsAssetValid(asset))
         {
             text.font = asset;
-            text.font_data = GetAssetDataPtr<Font>(asset.id);
-            RetainAsset(asset.type, asset.id);
+            text.font_data = GetAssetDataPtr<Font>(asset);
+            RetainAsset(asset);
         }
     }
 
     void RemoveFontFromText(Text& text)
     {
-        if (IsAssetValid(text.font.type, text.font.id))
+        if (IsAssetValid(text.font))
         {
             text.font_data = nullptr;
-            ReleaseAsset(text.font.type, text.font.id);
+            ReleaseAsset(text.font);
         }
     }
 
@@ -220,29 +220,29 @@ namespace Nit
         sprite.sub_texture_index = -1;
     }
 
-    void AddTextureToSprite(Sprite& sprite, const AssetHandle& asset)
+    void AddTextureToSprite(Sprite& sprite, AssetHandle& asset)
     {
         if (sprite.texture_data)
         {
             RemoveTextureFromSprite(sprite);
         }
         
-        if (IsAssetValid(GetType<Texture2D>(), asset.id))
+        if (IsAssetValid(asset))
         {
             sprite.texture = asset;
-            sprite.texture_data = GetAssetDataPtr<Texture2D>(asset.id);
+            sprite.texture_data = GetAssetDataPtr<Texture2D>(asset);
             SetSpriteSubTexture2D(sprite, sprite.sub_texture);
-            RetainAsset(GetType<Texture2D>(), asset.id);
+            RetainAsset(asset);
         }
     }
 
     void RemoveTextureFromSprite(Sprite& sprite)
     {
-        if (IsAssetValid(GetType<Texture2D>(), sprite.texture.id))
+        if (IsAssetValid(sprite.texture))
         {
             sprite.texture_data = nullptr;
             ResetSpriteSubTexture2D(sprite);
-            ReleaseAsset(GetType<Texture2D>(), sprite.texture.id);
+            ReleaseAsset(sprite.texture);
         }
     }
 

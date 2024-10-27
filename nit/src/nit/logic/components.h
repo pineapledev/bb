@@ -50,7 +50,7 @@ namespace Nit
 
     void RegisterTextComponent();
 
-    void AddFontToText(Text& text, const AssetHandle& asset);
+    void AddFontToText(Text& text, AssetHandle& asset);
     void RemoveFontFromText(Text& text);
 
     struct Texture2D;
@@ -74,7 +74,7 @@ namespace Nit
     
     void SetSpriteSubTexture2D(Sprite& sprite, const String& sub_texture);
     void ResetSpriteSubTexture2D(Sprite& sprite);
-    void AddTextureToSprite(Sprite& sprite, const AssetHandle& asset);
+    void AddTextureToSprite(Sprite& sprite, AssetHandle& asset);
     void RemoveTextureFromSprite(Sprite& sprite);
 
     struct Circle

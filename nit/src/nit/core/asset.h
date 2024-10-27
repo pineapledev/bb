@@ -84,6 +84,8 @@ namespace Nit
     }
 
     AssetPool* GetAssetPool(Type* type);
+    AssetPool* GetAssetPoolSafe(const AssetHandle& asset);
+    AssetPool* GetAssetPoolSafe(Type* type);
     
     template<typename T>
     AssetPool* GetAssetPool()
@@ -104,15 +106,15 @@ namespace Nit
     void PushAssetInfo(AssetInfo& asset_info, u32 index, bool build_path);
     void EraseAssetInfo(AssetInfo& asset_info, SparseSetDeletion deletion);
     
-    AssetInfo* GetAssetInfo(Type* type, ID id);
+    AssetInfo* GetAssetInfo(const AssetHandle& asset);
     
-    ID DeserializeAssetFromString(const String& asset_str);
+    AssetHandle DeserializeAssetFromString(const String& asset_str);
     
-    ID DeserializeAssetFromFile(const String& file_path);
+    AssetHandle DeserializeAssetFromFile(const String& file_path);
     
-    void SerializeAssetToString(Type* type, ID id, String& result);
+    void SerializeAssetToString(const AssetHandle& asset, String& result);
     
-    void SerializeAssetToFile(Type* type, ID id);
+    void SerializeAssetToFile(const AssetHandle& asset);
     
     void InitAssetRegistry();
     
@@ -125,39 +127,33 @@ namespace Nit
     {
         return GetLastAssetVersion(GetType<T>());
     }
-
-    void FindAssetsByName(const String& name, Array<ID>& asset_ids);
     
-    ID FindAssetByName(const String& name);
+    void FindAssetsByName(const String& name, Array<AssetHandle>& assets);
+    
+    AssetHandle FindAssetByName(const String& name);
     
     template<typename T>
-    T& GetAssetData(ID id)
+    T* GetAssetData(const AssetHandle& asset)
     {
-        PoolMap& pool = GetAssetPool<T>();
-        return GetData<T>(&pool, id);
+        AssetPool* pool = GetAssetPoolSafe(GetType<T>());
+        return GetData<T>(&pool->data_pool, asset.id);
     }
 
     template<typename T>
-    T* GetAssetDataPtr(ID id)
+    T* GetAssetDataPtr(const AssetHandle& asset)
     {
-        AssetPool* pool = GetAssetPool<T>();
-        return GetDataPtr<T>(&pool->data_pool, id);
+        AssetPool* pool = GetAssetPoolSafe(GetType<T>());
+        return GetDataPtr<T>(&pool->data_pool, asset.id);
     }
 
-    bool IsAssetValid(Type* type, ID id);
+    bool IsAssetValid(const AssetHandle& asset);
 
-    bool IsAssetLoaded(Type* type, ID id);
+    bool IsAssetLoaded(const AssetHandle& asset);
     
     template<typename T>
     AssetHandle CreateAsset(const String& name, const String& path = "", const T& data = {})
     {
-        AssetPool* pool = GetAssetPool<T>();
-        if (!pool)
-        {
-            NIT_CHECK(false);
-            return {};
-        }
-        
+        AssetPool* pool = GetAssetPoolSafe(GetType<T>());
         PoolMap* data_pool = &pool->data_pool;
         Type* type = data_pool->type;
         ID id; InsertData(data_pool, id, data);
@@ -168,15 +164,15 @@ namespace Nit
         return asset_handle;
     }
     
-    void LoadAsset(Type* type, ID id, bool force_reload = false);
+    void LoadAsset(AssetHandle& asset, bool force_reload = false);
     
-    void FreeAsset(Type* type, ID id);
+    void FreeAsset(AssetHandle& asset);
 
-    void RetainAsset(Type* type, ID id);
+    void RetainAsset(AssetHandle& asset);
     
-    void ReleaseAsset(Type* type, ID id, bool force_free = false);
+    void ReleaseAsset(AssetHandle& asset, bool force_free = false);
     
-    void DestroyAsset(Type* type, ID id);
+    void DestroyAsset(AssetHandle& asset);
 }
 
 template<>

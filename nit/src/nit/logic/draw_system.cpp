@@ -56,14 +56,14 @@ namespace Nit
             {
                 auto& sprite = GetComponent<Sprite>(entity);
             
-                if (!IsAssetValid(GetType<Texture2D>(), sprite.texture.id))
+                if (!IsAssetValid(sprite.texture))
                 {
                     sprite.texture.id = 0;
                     sprite.texture_data = nullptr;
                     continue;
                 }
 
-                sprite.texture_data = GetAssetDataPtr<Texture2D>(sprite.texture.id);
+                sprite.texture_data = GetAssetDataPtr<Texture2D>(sprite.texture);
             }
         }
         else if (args.asset_handle.type == GetType<Font>())
@@ -72,14 +72,14 @@ namespace Nit
             {
                 auto& text = GetComponent<Text>(entity);
             
-                if (!IsAssetValid(GetType<Font>(), text.font.id))
+                if (!IsAssetValid(text.font))
                 {
                     text.font.id = 0;
                     text.font_data = nullptr;
                     continue;
                 }
 
-                text.font_data = GetAssetDataPtr<Font>(text.font.id);
+                text.font_data = GetAssetDataPtr<Font>(text.font);
             }
         }
         

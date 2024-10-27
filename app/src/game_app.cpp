@@ -28,8 +28,12 @@ void OnApplicationRun()
 
 void GameStart()
 {
-    ID test_scene_id = FindAssetByName("test_scene");
-    LoadAsset(GetType<Scene>(), test_scene_id);
+    AssetHandle test_scene = FindAssetByName("test_scene");
+
+    if (IsAssetValid(test_scene))
+    {
+        LoadAsset(test_scene);
+    }
 }
 
 void GameUpdate()
