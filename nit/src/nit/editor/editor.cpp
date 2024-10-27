@@ -151,7 +151,7 @@ namespace Nit
                     // Gizmo stuff
                     Entity selected_entity = editor->selected_entity;
                     
-                    if (editor->selection == Editor::Selection::Entity && IsEntityValid(camera_entity))
+                    if (editor->selection == Editor::Selection::Entity && IsEntityValid(camera_entity) && HasComponent<Transform>(selected_entity))
                     {
                         auto& camera_data      = GetComponent<Camera>(camera_entity);
                         auto& camera_transform = GetComponent<Transform>(camera_entity);
