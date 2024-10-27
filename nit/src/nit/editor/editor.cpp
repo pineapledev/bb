@@ -432,6 +432,29 @@ namespace Nit
                         Invoke(pool->fn_remove_from_entity, selected_entity);
                     }
                 }
+
+                if (ImGui::CenteredButton("Add Component"))
+                {
+                    ImGui::OpenPopup("Add Component");
+                }
+
+                if (ImGui::BeginPopup("Add Component"))
+                {
+                    for (u32 i = 0; i < app->entity_registry.next_component_type_index - 1; ++i)
+                    {
+                        ComponentPool* pool = &app->entity_registry.component_pool[i];
+                        if (Invoke(pool->fn_is_in_entity, selected_entity))
+                        {
+                            continue;
+                        }
+
+                        if (ImGui::MenuItem(pool->data_pool.type->name.c_str()))
+                        {
+                            Invoke(pool->fn_add_to_entity, selected_entity);
+                        }
+                    }
+                    ImGui::EndPopup();
+                }
             }
 
             ImGui::End();
