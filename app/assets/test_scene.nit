@@ -13,7 +13,7 @@ Scene:
         scale: [1, 1, 1]
       Camera:
         projection: Perspective
-        aspect: 1.23887241
+        aspect: 1.25519288
         fov: 100
         near_clip: 0.100000001
         far_clip: 1000
@@ -84,9 +84,9 @@ Scene:
         keep_aspect: true
     Entity:
       Transform:
-        position: [1, 0, 0]
-        rotation: [0, 0, 30.8121243]
-        scale: [0.999999762, 3.08929014, 1]
+        position: [1.11663783, 0.225702509, 6.10326751e-05]
+        rotation: [0, 0, 0]
+        scale: [0.999999762, 1, 1]
       Sprite:
         texture: [test_sheet, Texture2D, 12761694976786155438]
         sub_texture: cpp
