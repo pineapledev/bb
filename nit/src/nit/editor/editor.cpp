@@ -217,17 +217,17 @@ namespace Nit
                     Path relative_source = relative(source, GetWorkingDirectory());
                     Path relative_dest = relative(dest, GetWorkingDirectory());
                     
-                    ID texture = CreateAsset<Texture2D>(name, relative_dest.string());
-                    Texture2D* texture_2d = GetAssetDataPtr<Texture2D>(texture);
+                    AssetHandle texture = CreateAsset<Texture2D>(name, relative_dest.string());
+                    Texture2D* texture_2d = GetAssetDataPtr<Texture2D>(texture.id);
                     
                     LoadTexture2DAsSpriteSheet(texture_2d, name, relative_source.string(), relative_dest.string());
                     if (texture_2d->sub_texture_count > 0 && !texture_2d->image_path.empty())
                     {
-                        SerializeAssetToFile(GetType<Texture2D>(), texture);
+                        SerializeAssetToFile(GetType<Texture2D>(), texture.id);
                     }
                     else
                     {
-                        DestroyAsset(GetType<Texture2D>(), texture);
+                        DestroyAsset(GetType<Texture2D>(), texture.id);
                     }
                 }
             }

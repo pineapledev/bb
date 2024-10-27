@@ -137,8 +137,9 @@ namespace Nit
                 if (created)
                 {
                     AssetCreatedArgs args;
-                    args.id   = asset_info.id;
-                    args.type = pool->data_pool.type;
+                    args.asset_handle.id   = asset_info.id;
+                    args.asset_handle.type = pool->data_pool.type;
+                    args.asset_handle.name = asset_info.name;
                     Broadcast<const AssetCreatedArgs&>(GetAssetRegistryInstance()->asset_created_event, args);
                 }
                 
@@ -363,8 +364,9 @@ namespace Nit
         }
         
         AssetDestroyedArgs args;
-        args.id   = info->id;
-        args.type = type;
+        args.asset_handle.id   = info->id;
+        args.asset_handle.type = type;
+        args.asset_handle.name = info->name;
         Broadcast<const AssetDestroyedArgs&>(GetAssetRegistryInstance()->asset_destroyed_event, args);
         
         EraseAssetInfo(*info, DeleteData(&pool->data_pool, id));

@@ -112,6 +112,10 @@ namespace Nit
     Type* GetType(const String& name)
     {
         NIT_CHECK(type_registry && type_registry->types);
+        if (type_registry->name_to_index.count(name) == 0)
+        {
+            return nullptr;
+        }
         return &type_registry->types[type_registry->name_to_index.at(name)];
     }
 }

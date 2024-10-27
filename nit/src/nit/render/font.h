@@ -3,8 +3,6 @@
 
 namespace Nit
 {
-    struct Texture2D;
-    
     struct CharData
     {
         f32 x0, y0, s0, t0; // top-left
@@ -16,7 +14,6 @@ namespace Nit
     {
         String     font_path;
         void*      baked_char_data = nullptr;
-        ID         font_atlas_id   = 0;
         Texture2D  atlas;
     };
     

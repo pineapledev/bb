@@ -24,9 +24,9 @@ Scene:
         rotation: [0, 0, 0]
         scale: [1, 1, 1]
       Sprite:
+        texture: [null, null, 0]
+        sub_texture:
         visible: true
-        texture_id: 0
-        sub_texture_name:
         tint: [1, 0.300000012, 0.300000012, 1]
         size: [1, 1]
         flip_x: false
@@ -61,9 +61,9 @@ Scene:
         rotation: [0, 0, 0]
         scale: [1, 1, 1]
       Text:
-        visible: true
+        font: [default_font, Font, 6758496758947967]
         text: jajajjaja
-        font_id: 6758496758947967
+        visible: true
         tint: [1, 0, 1, 1]
         spacing: 1
         size: 1
@@ -73,9 +73,9 @@ Scene:
         rotation: [0, 0, 0]
         scale: [1, 1, 1]
       Sprite:
+        texture: [test_sheet, Texture2D, 12761694976786155438]
+        sub_texture: bola
         visible: true
-        texture_id: 12761694976786155438
-        sub_texture_name: bola
         tint: [1, 1, 1, 1]
         size: [1, 1]
         flip_x: false
@@ -88,9 +88,9 @@ Scene:
         rotation: [0, 0, 0]
         scale: [1, 1, 1]
       Sprite:
+        texture: [test_sheet, Texture2D, 12761694976786155438]
+        sub_texture: cpp
         visible: true
-        texture_id: 12761694976786155438
-        sub_texture_name: cpp
         tint: [1, 1, 1, 1]
         size: [1, 1]
         flip_x: false

@@ -50,36 +50,36 @@ namespace Nit
     
     ListenerAction OnAssetDestroyed(const AssetDestroyedArgs& args)
     {
-        if (args.type == GetType<Texture2D>())
+        if (args.asset_handle.type == GetType<Texture2D>())
         {
             for (Entity entity : GetEntityGroup<Sprite, Transform>().entities)
             {
                 auto& sprite = GetComponent<Sprite>(entity);
             
-                if (!IsAssetValid(GetType<Texture2D>(), sprite.texture_id))
+                if (!IsAssetValid(GetType<Texture2D>(), sprite.texture.id))
                 {
-                    sprite.texture_id = 0;
-                    sprite.texture = nullptr;
+                    sprite.texture.id = 0;
+                    sprite.texture_data = nullptr;
                     continue;
                 }
 
-                sprite.texture = GetAssetDataPtr<Texture2D>(sprite.texture_id);
+                sprite.texture_data = GetAssetDataPtr<Texture2D>(sprite.texture.id);
             }
         }
-        else if (args.type == GetType<Font>())
+        else if (args.asset_handle.type == GetType<Font>())
         {
             for (Entity entity : GetEntityGroup<Text, Transform>().entities)
             {
                 auto& text = GetComponent<Text>(entity);
             
-                if (!IsAssetValid(GetType<Font>(), text.font_id))
+                if (!IsAssetValid(GetType<Font>(), text.font.id))
                 {
-                    text.font_id = 0;
-                    text.font = nullptr;
+                    text.font.id = 0;
+                    text.font_data = nullptr;
                     continue;
                 }
 
-                text.font = GetAssetDataPtr<Font>(text.font_id);
+                text.font_data = GetAssetDataPtr<Font>(text.font.id);
             }
         }
         
@@ -91,12 +91,12 @@ namespace Nit
         if (args.type == GetType<Sprite>())
         {
             Sprite& sprite = GetComponent<Sprite>(args.entity);
-            AddTextureToSprite(sprite, sprite.texture_id);
+            AddTextureToSprite(sprite, sprite.texture);
         }
         else if (args.type == GetType<Text>())
         {
             Text& text = GetComponent<Text>(args.entity);
-            AddFontToText(text, text.font_id);
+            AddFontToText(text, text.font);
         }
         return ListenerAction::StayListening;
     }
@@ -165,20 +165,20 @@ namespace Nit
                     continue;
                 }
                 
-                if (sprite.texture)
+                if (sprite.texture_data)
                 {
-                    Vector2 size = sprite.texture->size;
+                    Vector2 size = sprite.texture_data->size;
 
-                    if (sprite.texture->sub_textures
+                    if (sprite.texture_data->sub_textures
                         && sprite.sub_texture_index >= 0
-                        && (u32) sprite.sub_texture_index < sprite.texture->sub_texture_count)
+                        && (u32) sprite.sub_texture_index < sprite.texture_data->sub_texture_count)
                     {
-                        const SubTexture2D& sub_texture = sprite.texture->sub_textures[sprite.sub_texture_index];
+                        const SubTexture2D& sub_texture = sprite.texture_data->sub_textures[sprite.sub_texture_index];
                         size = sub_texture.size;
                         
                         FillQuadVertexUVs(
                               vertex_uvs
-                            , sprite.texture->size
+                            , sprite.texture_data->size
                             , sub_texture.size
                             , sub_texture.location
                             , sprite.flip_x
@@ -212,7 +212,7 @@ namespace Nit
                 }
                 
                 FillVertexColors(vertex_colors, sprite.tint);
-                DrawQuad(sprite.texture, vertex_positions, vertex_uvs, vertex_colors, (i32) entity);
+                DrawQuad(sprite.texture_data, vertex_positions, vertex_uvs, vertex_colors, (i32) entity);
             }
 
             for (Entity entity : GetEntityGroup<Line2D, Transform>().entities)
@@ -236,13 +236,13 @@ namespace Nit
                 auto& transform = GetComponent<Transform>(entity);
                 auto& text = GetComponent<Text>(entity);
 
-                if (!text.visible || text.text.empty() || !text.font)
+                if (!text.visible || text.text.empty() || !text.font_data)
                 {
                     continue;
                 }
                 
                 DrawText(
-                      text.font
+                      text.font_data
                     , text.text
                     , ToMatrix4(transform)
                     , text.tint

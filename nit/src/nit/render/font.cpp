@@ -78,8 +78,6 @@ namespace Nit
             pixels_rgb[i] = 255;
         }
         
-        font->font_atlas_id = CreateAsset<Texture2D>("font_atlas");
-        
         font->atlas.pixel_data = pixels_rgb;
         font->atlas.width      = WIDTH;
         font->atlas.height     = HEIGHT;

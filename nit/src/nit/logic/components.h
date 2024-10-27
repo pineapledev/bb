@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "nit/core/asset.h"
 
 namespace Nit
 {
@@ -38,29 +39,29 @@ namespace Nit
     
     struct Text
     {
-        bool             visible = true;
-        String           text    = "EMPTY TEXT";
-        Font*            font    = nullptr;
-        ID               font_id = 0;
-        Vector4          tint    = V4_ONE;
-        f32              spacing = 1.f;
-        f32              size    = 1.f;
+        AssetHandle      font      = {};
+        Font*            font_data = nullptr;
+        String           text      = "EMPTY TEXT";
+        bool             visible   = true;
+        Vector4          tint      = V4_ONE;
+        f32              spacing   = 1.f;
+        f32              size      = 1.f;
     };
 
     void RegisterTextComponent();
 
-    void AddFontToText(Text& text, ID font_id);
+    void AddFontToText(Text& text, const AssetHandle& asset);
     void RemoveFontFromText(Text& text);
 
     struct Texture2D;
     
     struct Sprite
     {
-        bool                  visible            = true;
-        Texture2D*            texture            = nullptr;
-        ID                    texture_id         = 0;
-        String                sub_texture_name;
+        AssetHandle           texture            = {};
+        Texture2D*            texture_data       = nullptr;
+        String                sub_texture;
         i32                   sub_texture_index  = -1;
+        bool                  visible            = true;
         Vector4               tint               = V4_ONE;
         Vector2               size               = V2_ONE;
         bool                  flip_x             = false;
@@ -71,9 +72,9 @@ namespace Nit
 
     void RegisterSpriteComponent();
     
-    void SetSpriteSubTexture2D(Sprite& sprite, const String& sub_texture_name);
+    void SetSpriteSubTexture2D(Sprite& sprite, const String& sub_texture);
     void ResetSpriteSubTexture2D(Sprite& sprite);
-    void AddTextureToSprite(Sprite& sprite, ID texture_id);
+    void AddTextureToSprite(Sprite& sprite, const AssetHandle& asset);
     void RemoveTextureFromSprite(Sprite& sprite);
 
     struct Circle

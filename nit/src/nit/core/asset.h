@@ -23,16 +23,21 @@ namespace Nit
         u32              max_elements   = PoolMap::DEFAULT_MAX;
     };
 
+    struct AssetHandle
+    {
+        String name;
+        Type*  type;
+        ID     id;
+    };
+    
     struct AssetCreatedArgs
     {
-        ID    id    = 0;
-        Type* type  = nullptr;
+        AssetHandle asset_handle;
     };
     
     struct AssetDestroyedArgs
     {
-        ID    id    = 0;
-        Type* type  = nullptr;
+        AssetHandle asset_handle;
     };
 
     using AssetCreatedEvent = Event<const AssetCreatedArgs&>;
@@ -47,10 +52,10 @@ namespace Nit
     
     struct AssetRegistry
     {
-        Array<AssetPool>    asset_pools;
-        String              extension = ".nit";
-        AssetCreatedEvent   asset_created_event;
-        AssetRemovedEvent   asset_destroyed_event;
+        Array<AssetPool>     asset_pools;
+        String               extension = ".nit";
+        AssetCreatedEvent    asset_created_event;
+        AssetRemovedEvent    asset_destroyed_event;
     };
     
     void SetAssetRegistryInstance(AssetRegistry* asset_registry_instance);
@@ -98,7 +103,7 @@ namespace Nit
 
     void PushAssetInfo(AssetInfo& asset_info, u32 index, bool build_path);
     void EraseAssetInfo(AssetInfo& asset_info, SparseSetDeletion deletion);
-
+    
     AssetInfo* GetAssetInfo(Type* type, ID id);
     
     ID DeserializeAssetFromString(const String& asset_str);
@@ -144,17 +149,23 @@ namespace Nit
     bool IsAssetLoaded(Type* type, ID id);
     
     template<typename T>
-    ID CreateAsset(const String& name, const String& path = "", const T& data = {})
+    AssetHandle CreateAsset(const String& name, const String& path = "", const T& data = {})
     {
         AssetPool* pool = GetAssetPool<T>();
-        ID id; InsertData(&pool->data_pool, id, data);
-        AssetInfo info { pool->data_pool.type->name, name, path, id, GetLastAssetVersion<T>(), };
-        PushAssetInfo(info, IndexOf(&pool->data_pool, id), true);
-        AssetCreatedArgs args;
-        args.id   = id;
-        args.type = pool->data_pool.type;
-        Broadcast<const AssetCreatedArgs&>(GetAssetRegistryInstance()->asset_created_event, args);
-        return id;
+        if (!pool)
+        {
+            NIT_CHECK(false);
+            return {};
+        }
+        
+        PoolMap* data_pool = &pool->data_pool;
+        Type* type = data_pool->type;
+        ID id; InsertData(data_pool, id, data);
+        AssetInfo info{type->name, name, path, id, GetLastAssetVersion<T>() };
+        PushAssetInfo(info, IndexOf(data_pool, id), true);
+        AssetHandle asset_handle{ name, type, id };
+        Broadcast<const AssetCreatedArgs&>(GetAssetRegistryInstance()->asset_created_event, {asset_handle});
+        return asset_handle;
     }
     
     void LoadAsset(Type* type, ID id, bool force_reload = false);
@@ -166,4 +177,36 @@ namespace Nit
     void ReleaseAsset(Type* type, ID id, bool force_free = false);
     
     void DestroyAsset(Type* type, ID id);
+}
+
+template<>
+struct YAML::convert<Nit::AssetHandle>
+{
+    static Node encode(const Nit::AssetHandle& h)
+    {
+        Node node;
+        node.push_back(h.name);
+        node.push_back(h.type->name);
+        node.push_back(h.id);
+        node.SetStyle(EmitterStyle::Flow);
+        return node;
+    }
+    
+    static bool decode(const Node& node, Nit::AssetHandle& h)
+    {
+        if (!node.IsSequence() || node.size() != 3)
+            return false;
+        
+        h.name = node[0].as<Nit::String>();
+        h.type = Nit::GetType(node[1].as<Nit::String>());
+        h.id   = node[2].as<Nit::ID>();
+        return true;
+    }
+};
+
+inline YAML::Emitter& operator<<(YAML::Emitter& out, const Nit::AssetHandle& h)
+{
+    out << YAML::Flow;
+    out << YAML::BeginSeq << h.name << h.type->name << h.id << YAML::EndSeq;
+    return out;
 }
