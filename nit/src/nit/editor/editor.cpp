@@ -80,6 +80,7 @@ namespace Nit
                 ImGui::MenuItem("Viewport", nullptr, &editor->show_viewport);
                 ImGui::MenuItem("Sprite Packer", nullptr, &editor->show_sprite_packer);
                 ImGui::MenuItem("Scene Entities", nullptr, &editor->show_scene_entities);
+                ImGui::MenuItem("Properties", nullptr, &editor->show_properties);
                 ImGui::EndMenu();
             }
             ImGui::EndMenuBar();
@@ -135,10 +136,9 @@ namespace Nit
                     {
                         i32 entity_id = ReadFrameBufferPixel(&editor->frame_buffer, 1, mouse_x, mouse_y);
                         Entity selected = (Entity) entity_id;
-                        if ((editor->is_entity_selected = IsEntityValid(selected)))
-                        {
-                            editor->selected_entity = selected;
-                        }
+                        bool valid_entity = IsEntityValid(selected);
+                        editor->selection = valid_entity ? Editor::Selection::Entity : Editor::Selection::None;
+                        editor->selected_entity = valid_entity ? selected : U32_MAX;
                     }
                 }
 
@@ -151,7 +151,7 @@ namespace Nit
                     // Gizmo stuff
                     Entity selected_entity = editor->selected_entity;
                     
-                    if (editor->is_entity_selected && IsEntityValid(selected_entity) && IsEntityValid(camera_entity))
+                    if (editor->selection == Editor::Selection::Entity && IsEntityValid(camera_entity))
                     {
                         auto& camera_data      = GetComponent<Camera>(camera_entity);
                         auto& camera_transform = GetComponent<Transform>(camera_entity);
@@ -288,6 +288,8 @@ namespace Nit
                     {
                         if (ImGui::MenuItem("Destroy Entity"))
                         {
+                            editor->selection = Editor::Selection::None;
+                            editor->selected_entity = U32_MAX;
                             DestroyEntity(selected_entity);
                             num_of_entities--;
                             scene->entities.erase(std::ranges::find(scene->entities, selected_entity));
@@ -302,6 +304,7 @@ namespace Nit
                     if (ImGui::IsItemClicked())
                     {
                         editor->selected_entity = entity;
+                        editor->selection = Editor::Selection::Entity;
                     }
 
                     if (ImGui::IsItemClicked() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
@@ -318,6 +321,73 @@ namespace Nit
                 if (is_scene_expanded)
                 {
                     ImGui::TreePop();
+                }
+            }
+
+            ImGui::End();
+        }
+
+        if (editor->show_properties)
+        {
+            ImGui::Begin("Properties", &editor->show_properties);
+            
+            if (editor->selection == Editor::Selection::Entity)
+            {
+                Entity selected_entity = editor->selected_entity;
+
+                for (u32 i = 0; i < app->entity_registry.next_component_type_index - 1; ++i)
+                {
+                    ComponentPool* pool = &app->entity_registry.component_pool[i];
+                    if (!Invoke(pool->fn_is_in_entity, selected_entity))
+                    {
+                        continue;
+                    }
+
+                    Type* component_type = pool->data_pool.type;
+                    
+                    bool is_expanded = ImGui::TreeNodeEx(component_type->name.c_str(), ImGuiTreeNodeFlags_DefaultOpen);
+
+                    ImGui::SameLine();
+
+                    ImGui::PushID(i);
+                    if (ImGui::Button("+"))
+                    {
+                        ImGui::OpenPopup("Component Settings");
+                    }
+
+                    bool remove_component = false;
+
+                    if (ImGui::BeginPopup("Component Settings"))
+                    {
+                        if (ImGui::MenuItem("Remove Component"))
+                        {
+                            remove_component = true;
+                        }
+
+                        ImGui::EndPopup();
+                    }
+                    ImGui::PopID();
+
+                    if (is_expanded)
+                    {
+                        ImGui::Spacing();
+
+                        if (pool->data_pool.type->fn_invoke_draw_editor)
+                        {
+                            void* data = GetDataRaw(&pool->data_pool, selected_entity);
+                            NIT_CHECK(data);
+                            DrawEditor(component_type, data);
+                        }
+                        
+                        ImGui::Separator();
+                        ImGui::Spacing();
+                        ImGui::TreePop();
+                    }
+
+                    if (remove_component)
+                    {
+                        Invoke(pool->fn_remove_from_entity, selected_entity);
+                    }
                 }
             }
 

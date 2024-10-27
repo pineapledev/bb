@@ -3,6 +3,10 @@
 #include "render/font.h"
 #include "render/texture.h"
 
+#ifdef NIT_EDITOR_ENABLED
+#include "editor/editor_utils.h"
+#endif
+
 namespace Nit
 {
     Matrix4 ToMatrix4(const Transform& transform)
@@ -38,12 +42,25 @@ namespace Nit
         transform->rotation = node["rotation"].as<Vector3>();
         transform->scale    = node["scale"].as<Vector3>();
     }
+
+#ifdef NIT_EDITOR_ENABLED
+    void DrawEditorTransform(Transform* transform)
+    {
+        ImGui::DragVector3("Position", transform->position);
+        ImGui::DragVector3("Rotation", transform->rotation);
+        ImGui::DragVector3("Scale", transform->scale);
+    }
+#endif
     
     void RegisterTransformComponent()
     {
         TypeArgs<Transform> args;
         args.fn_serialize   = SerializeTransform;
         args.fn_deserialize = DeserializeTransform;
+
+#ifdef NIT_EDITOR_ENABLED
+        args.fn_draw_editor = DrawEditorTransform;
+#endif
         RegisterType<Transform>(args);
         RegisterComponentType<Transform>();
     }
@@ -67,6 +84,30 @@ namespace Nit
         camera->far_clip   = node["far_clip"]   .as<f32>();
         camera->size       = node["size"]       .as<f32>();
     }
+
+#ifdef NIT_EDITOR_ENABLED
+    void DrawEditorCamera(Camera* camera)
+    {
+        {
+            String selected = GetStringFromEnumValue<CameraProjection>(camera->projection);
+            Array<String> values;
+            auto* enum_type = GetEnumType<CameraProjection>();
+            for (auto& [name, index] : enum_type->name_to_index)
+            {
+                values.push_back(name);
+            }
+        
+            ImGui::Combo("Projection", selected, values);
+            camera->projection = GetEnumValueFromString<CameraProjection>(selected);
+        }
+        
+        ImGui::DragF32("aspect", camera->aspect);
+        ImGui::DragF32("fov",    camera->fov);
+        ImGui::DragF32("near",   camera->near_clip);
+        ImGui::DragF32("far",    camera->far_clip);
+        ImGui::DragF32("size",   camera->size);
+    }
+#endif
     
     void RegisterCameraComponent()
     {
@@ -77,6 +118,9 @@ namespace Nit
         TypeArgs<Camera> args;
         args.fn_serialize   = SerializeCamera;
         args.fn_deserialize = DeserializeCamera;
+#ifdef NIT_EDITOR_ENABLED
+        args.fn_draw_editor = DrawEditorCamera;
+#endif
         RegisterType<Camera>(args);
         RegisterComponentType<Camera>();
     }

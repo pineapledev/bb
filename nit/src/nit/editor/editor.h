@@ -8,12 +8,20 @@ namespace Nit
 {
     struct Editor
     {
+        enum class Selection : u8
+        {
+            None,
+            Entity,
+            Asset
+        };
+        
         bool        enabled              = true;
         Entity      selected_entity      = 0;
-        bool        is_entity_selected   = false;
+        Selection   selection            = Selection::None;
         bool        show_viewport        = true;
         bool        show_sprite_packer   = false;
-        bool        show_scene_entities  = false;
+        bool        show_scene_entities  = true;
+        bool        show_properties      = true;
         
         FrameBuffer frame_buffer       = {};
         Vector2     viewport_size;

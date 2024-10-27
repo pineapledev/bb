@@ -13,6 +13,10 @@ namespace Nit
         using FnInvokeSerialize   = Function<void(void*, YAML::Emitter& emitter)>;
         using FnInvokeDeserialize = Function<void(void*, const YAML::Node& node)>;
 
+#ifdef NIT_EDITOR_ENABLED
+        using FnInvokeDrawEditor  = Function<void(void*)>;
+#endif
+        
         String              name;
         u64                 hash                  = 0;
         FnSetData           fn_set_data           = nullptr;
@@ -21,6 +25,10 @@ namespace Nit
         FnInvokeFree        fn_invoke_free        = nullptr;
         FnInvokeSerialize   fn_invoke_serialize   = nullptr;
         FnInvokeDeserialize fn_invoke_deserialize = nullptr;
+
+#ifdef NIT_EDITOR_ENABLED
+        FnInvokeDrawEditor  fn_invoke_draw_editor = nullptr;
+#endif
     };
 
     template<typename T>
@@ -88,6 +96,25 @@ namespace Nit
             };
         }
     }
+
+#ifdef NIT_EDITOR_ENABLED
+    template<typename T>
+    using FnDrawEditor = void (*) (T*);
+
+    template<typename T>
+    void SetDrawEditorFunction(Type* type, FnDrawEditor<T> fn_draw_editor)
+    {
+        NIT_CHECK(type);
+        
+        if (fn_draw_editor)
+        {
+            type->fn_invoke_draw_editor = [fn_draw_editor] (void* data) {
+                T* casted_data = static_cast<T*>(data);
+                fn_draw_editor(casted_data);
+            };
+        }
+    }
+#endif
     
     template<typename T>
     struct TypeArgs
@@ -96,6 +123,9 @@ namespace Nit
         FnFree<T>        fn_free        = nullptr;
         FnSerialize<T>   fn_serialize   = nullptr;
         FnDeserialize<T> fn_deserialize = nullptr;
+#ifdef NIT_EDITOR_ENABLED
+        FnDrawEditor<T>  fn_draw_editor = nullptr;
+#endif
     };
 
     template<typename T>
@@ -150,6 +180,13 @@ namespace Nit
         {
             SetInvokeFreeFunction(&type, fn_free);
         }
+
+#ifdef NIT_EDITOR_ENABLED
+        if (auto fn_draw_editor = args.fn_draw_editor)
+        {
+            SetDrawEditorFunction(&type, fn_draw_editor);
+        }
+#endif
     }
 
     void  SetData(const Type* type, void* array, u32 index, void* data);
@@ -158,7 +195,9 @@ namespace Nit
     void  Free(const Type* type, void* data);
     void  Serialize(const Type* type, void* data, YAML::Emitter& emitter);
     void  Deserialize(const Type* type, void* data, const YAML::Node& node);
-
+#ifdef NIT_EDITOR_ENABLED
+    void  DrawEditor(const Type* type, void* data);
+#endif
     template<typename T>
     T& SetData(void* array, u32 index, const T& data)
     {

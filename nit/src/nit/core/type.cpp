@@ -68,6 +68,18 @@ namespace Nit
         }
     }
 
+#ifdef NIT_EDITOR_ENABLED
+    void DrawEditor(const Type* type, void* data)
+    {
+        NIT_CHECK(type);
+        if (type->fn_invoke_draw_editor)
+        {
+            NIT_CHECK(data);
+            type->fn_invoke_draw_editor(data);
+        }
+    }
+#endif
+
     void InitTypeRegistry(u32 max_types)
     {
         NIT_CHECK(type_registry && !type_registry->types && !type_registry->enum_types);
