@@ -250,7 +250,7 @@ namespace Nit
                     for (u32 i = 0; i < num_of_scenes; ++i)
                     {
                         AssetInfo* info = &pool->asset_infos[i];
-                        AssetHandle scene_asset{ info->name, GetType(info->type_name), info->id };
+                        AssetHandle scene_asset{ info->name, info->type, info->id };
                 
                         if (info->loaded)
                         {
@@ -271,7 +271,7 @@ namespace Nit
             {
                 Scene* scene = &scenes[i];
                 AssetInfo* info = &pool->asset_infos[i];
-                AssetHandle scene_asset{ info->name, GetType(info->type_name), info->id };
+                AssetHandle scene_asset{ info->name, info->type, info->id };
                 
                 if (!info->loaded)
                 {

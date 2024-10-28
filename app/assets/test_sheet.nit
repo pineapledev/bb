@@ -1,5 +1,5 @@
 AssetInfo:
-  type_name: Texture2D
+  type: Texture2D
   name: test_sheet
   path: assets\test_sheet.nit
   id: 12761694976786155438

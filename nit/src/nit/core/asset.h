@@ -4,7 +4,7 @@ namespace Nit
 {
     struct AssetInfo
     {
-        String type_name;
+        Type*  type;
         String name;
         String path;
         ID     id              = 0;
@@ -26,8 +26,8 @@ namespace Nit
     struct AssetHandle
     {
         String name;
-        Type*  type;
-        ID     id;
+        Type*  type = nullptr;
+        ID     id   = 0;
     };
     
     struct AssetCreatedArgs
@@ -159,7 +159,7 @@ namespace Nit
         PoolMap* data_pool = &pool->data_pool;
         Type* type = data_pool->type;
         ID id; InsertData(data_pool, id, data);
-        AssetInfo info{type->name, name, path, id, GetLastAssetVersion<T>() };
+        AssetInfo info{type, name, path, id, GetLastAssetVersion<T>() };
         PushAssetInfo(info, IndexOf(data_pool, id), true);
         AssetHandle asset_handle{ name, type, id };
         Broadcast<const AssetCreatedArgs&>(GetAssetRegistryInstance()->asset_created_event, {asset_handle});

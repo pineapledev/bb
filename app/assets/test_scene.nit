@@ -1,5 +1,5 @@
 AssetInfo:
-  type_name: Scene
+  type: Scene
   name: test_scene
   path: assets\test_scene.nit
   id: 9621028665531299668

@@ -61,7 +61,7 @@ namespace Nit
     AssetPool* GetAssetPoolSafe(const AssetInfo& info)
     {
         NIT_CHECK(info.id != 0);
-        return GetAssetPoolSafe(GetType(info.type_name));
+        return GetAssetPoolSafe(info.type);
     }
 
     bool IsAssetTypeRegistered(Type* type)
@@ -127,21 +127,21 @@ namespace Nit
         if (YAML::Node asset_info_node = node["AssetInfo"])
         {
             AssetInfo asset_info;
-            asset_info.type_name = asset_info_node["type_name"].as<String>();
-            asset_info.name = asset_info_node["name"].as<String>();
-            asset_info.path = asset_info_node["path"].as<String>();
-            asset_info.id = asset_info_node["id"].as<ID>();
+            asset_info.type    = GetType(asset_info_node["type"].as<String>());
+            asset_info.name    = asset_info_node["name"].as<String>();
+            asset_info.path    = asset_info_node["path"].as<String>();
+            asset_info.id      = asset_info_node["id"].as<ID>();
             asset_info.version = asset_info_node["version"].as<u32>();
             
-            if (asset_info.version < GetLastAssetVersion(asset_info.type_name))
+            if (asset_info.version < GetLastAssetVersion(asset_info.type))
             {
                 NIT_CHECK_MSG(false, "Trying to load an outdated asset, please upgrade the current asset version!!");
                 return result;
             }
             
-            if (YAML::Node asset_node = node[asset_info.type_name])
+            if (YAML::Node asset_node = node[asset_info.type->name])
             {
-                AssetPool* pool = GetAssetPool(GetType(asset_info.type_name));
+                AssetPool* pool = GetAssetPool(asset_info.type);
                 
                 NIT_CHECK_MSG(pool, "Trying to deserialize an unregistered type of asset!");
                 
@@ -156,7 +156,7 @@ namespace Nit
                 void* data = GetDataRaw(&pool->data_pool, asset_info.id);
                 Deserialize(pool->data_pool.type, data, asset_node);
 
-                result = { asset_info.name, GetType(asset_info.type_name), asset_info.id };
+                result = { asset_info.name, asset_info.type, asset_info.id };
                 
                 if (created)
                 {
@@ -197,14 +197,14 @@ namespace Nit
             
         emitter << YAML::BeginMap;
         emitter << YAML::Key << "AssetInfo" << YAML::Value << YAML::BeginMap;
-        emitter << YAML::Key << "type_name" << YAML::Value << info->type_name;
+        emitter << YAML::Key << "type"      << YAML::Value << info->type->name;
         emitter << YAML::Key << "name"      << YAML::Value << info->name;
         emitter << YAML::Key << "path"      << YAML::Value << info->path;
         emitter << YAML::Key << "id"        << YAML::Value << info->id;
         emitter << YAML::Key << "version"   << YAML::Value << info->version;
         emitter << YAML::EndMap;
         
-        emitter << YAML::Key << info->type_name << YAML::Value << YAML::BeginMap;
+        emitter << YAML::Key << info->type->name << YAML::Value << YAML::BeginMap;
         
         Serialize(pool->data_pool.type, GetDataRaw(&pool->data_pool, info->id), emitter);
 
@@ -270,7 +270,7 @@ namespace Nit
                 AssetInfo* asset_info = &asset_pool.asset_infos[i];
                 if (asset_info->name == name)
                 {
-                    assets.push_back({ asset_info->name, GetType(asset_info->type_name), asset_info->id });
+                    assets.push_back({ asset_info->name, asset_info->type, asset_info->id });
                 }
             }
         }
@@ -287,7 +287,7 @@ namespace Nit
                 AssetInfo* asset_info = &asset_pool.asset_infos[i];
                 if (asset_info->name == name)
                 {
-                    return { asset_info->name, GetType(asset_info->type_name), asset_info->id };
+                    return { asset_info->name, asset_info->type, asset_info->id };
                 }
             }
         }
@@ -302,7 +302,7 @@ namespace Nit
         for (u32 i = 0; i < pool->data_pool.sparse_set.count; ++i)
         {
             AssetInfo* info = &pool->asset_infos[i];
-            assets.push_back({ info->name, GetType(info->type_name), info->id });
+            assets.push_back({ info->name, info->type, info->id });
         }
     }
 
