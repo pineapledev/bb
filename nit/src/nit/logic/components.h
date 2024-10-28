@@ -40,7 +40,6 @@ namespace Nit
     struct Text
     {
         AssetHandle      font      = {};
-        Font*            font_data = nullptr;
         String           text      = "EMPTY TEXT";
         bool             visible   = true;
         Vector4          tint      = V4_ONE;
@@ -50,15 +49,11 @@ namespace Nit
 
     void RegisterTextComponent();
 
-    void AddFontToText(Text& text, AssetHandle& asset);
-    void RemoveFontFromText(Text& text);
-
     struct Texture2D;
     
     struct Sprite
     {
         AssetHandle           texture            = {};
-        Texture2D*            texture_data       = nullptr;
         String                sub_texture;
         i32                   sub_texture_index  = -1;
         bool                  visible            = true;
@@ -74,8 +69,6 @@ namespace Nit
     
     void SetSpriteSubTexture2D(Sprite& sprite, const String& sub_texture);
     void ResetSpriteSubTexture2D(Sprite& sprite);
-    void AddTextureToSprite(Sprite& sprite, AssetHandle& asset);
-    void RemoveTextureFromSprite(Sprite& sprite);
 
     struct Circle
     {

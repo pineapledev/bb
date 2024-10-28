@@ -21,14 +21,18 @@ namespace Nit
 
     bool IsValid(Pool* pool, u32 element_id);  
     
-    void InsertDataWithID(Pool* pool, u32 element_id, void* data);
+    void InsertDataWithID(Pool* pool, u32 element_id, void* data = nullptr);
 
+    void InsertData(Pool* pool, u32& element_id, void* data = nullptr);
+    
     template<typename T>
     T& InsertDataWithID(Pool* pool, u32 element_id, const T& data);
     
     template<typename T>
     T& InsertData(Pool* pool, u32& out_id, const T& data = {});
 
+    u32 IndexOf(Pool* pool, u32 element_id);
+    
     void* GetDataRaw(Pool* pool, u32 element_id);
     
     template<typename T>
@@ -37,7 +41,7 @@ namespace Nit
     template<typename T>
     T& GetData(Pool* pool, u32 element_id);
     
-    void DeleteData(Pool* pool, u32 element_id);
+    SparseSetDeletion DeleteData(Pool* pool, u32 element_id);
 }
 
 #include "nit/core/pool.inl"

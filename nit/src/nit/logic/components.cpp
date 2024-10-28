@@ -183,12 +183,6 @@ namespace Nit
     void DrawEditorText(Text* text)
     {
         ImGui::AssetCombo("font", GetType<Font>(), &text->font);
-
-        if (IsAssetValid(text->font))
-        {
-            text->font_data = GetAssetDataPtr<Font>(text->font);
-        }
-        
         ImGui::InputText("text", text->text);
         ImGui::Bool("visible", text->visible);
         ImGui::ColorPalette("tint", text->tint);
@@ -207,27 +201,6 @@ namespace Nit
 #endif
         RegisterType<Text>(args);
         RegisterComponentType<Text>();
-    }
-
-    void AddFontToText(Text& text, AssetHandle& asset)
-    {
-        RemoveFontFromText(text);
-
-        if (IsAssetValid(asset))
-        {
-            text.font = asset;
-            text.font_data = GetAssetDataPtr<Font>(asset);
-            RetainAsset(asset);
-        }
-    }
-
-    void RemoveFontFromText(Text& text)
-    {
-        if (text.font_data && IsAssetValid(text.font))
-        {
-            text.font_data = nullptr;
-            ReleaseAsset(text.font);
-        }
     }
 
     void SerializeSprite(const Sprite* sprite, YAML::Emitter& emitter)
@@ -261,9 +234,16 @@ namespace Nit
     {
         ImGui::AssetCombo("texture", GetType<Texture2D>(), &sprite->texture);
         
-        sprite->texture_data = IsAssetValid(sprite->texture) ? GetAssetDataPtr<Texture2D>(sprite->texture) : nullptr;
         ImGui::InputText("sub_texture", sprite->sub_texture);
-        sprite->sub_texture_index = sprite->texture_data ? FindIndexOfSubTexture2D(sprite->texture_data, sprite->sub_texture) : -1;
+
+        if (IsAssetValid(sprite->texture))
+        {
+            sprite->sub_texture_index = FindIndexOfSubTexture2D(GetAssetData<Texture2D>(sprite->texture), sprite->sub_texture);
+        }
+        else
+        {
+            sprite->sub_texture_index = -1;
+        }
         
         ImGui::Bool("visible", sprite->visible);
         ImGui::ColorPalette("tint", sprite->tint);
@@ -291,13 +271,13 @@ namespace Nit
     {
         sprite.sub_texture = sub_texture;
         
-        if (!sprite.texture_data)
+        if (!IsAssetValid(sprite.texture))
         {
             sprite.sub_texture_index = -1;
             return;
         }
 
-        i32 index = FindIndexOfSubTexture2D(sprite.texture_data, sub_texture);
+        i32 index = FindIndexOfSubTexture2D(GetAssetData<Texture2D>(sprite.texture), sub_texture);
         sprite.sub_texture_index = index;
     }
 
@@ -305,29 +285,6 @@ namespace Nit
     {
         sprite.sub_texture = "";
         sprite.sub_texture_index = -1;
-    }
-
-    void AddTextureToSprite(Sprite& sprite, AssetHandle& asset)
-    {
-        RemoveTextureFromSprite(sprite);
-        
-        if (IsAssetValid(asset))
-        {
-            sprite.texture = asset;
-            sprite.texture_data = GetAssetDataPtr<Texture2D>(asset);
-            SetSpriteSubTexture2D(sprite, sprite.sub_texture);
-            RetainAsset(asset);
-        }
-    }
-
-    void RemoveTextureFromSprite(Sprite& sprite)
-    {
-        if (sprite.texture_data && IsAssetValid(sprite.texture))
-        {
-            sprite.texture_data = nullptr;
-            ResetSpriteSubTexture2D(sprite);
-            ReleaseAsset(sprite.texture);
-        }
     }
 
     void SerializeCircle(const Circle* circle, YAML::Emitter& emitter)

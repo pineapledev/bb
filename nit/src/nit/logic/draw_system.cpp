@@ -54,35 +54,11 @@ namespace Nit
     {
         if (args.asset_handle.type == GetType<Texture2D>())
         {
-            for (Entity entity : GetEntityGroup<Sprite, Transform>().entities)
-            {
-                auto& sprite = GetComponent<Sprite>(entity);
             
-                if (!IsAssetValid(sprite.texture))
-                {
-                    sprite.texture.id = 0;
-                    sprite.texture_data = nullptr;
-                    continue;
-                }
-
-                sprite.texture_data = GetAssetDataPtr<Texture2D>(sprite.texture);
-            }
         }
         else if (args.asset_handle.type == GetType<Font>())
         {
-            for (Entity entity : GetEntityGroup<Text, Transform>().entities)
-            {
-                auto& text = GetComponent<Text>(entity);
             
-                if (!IsAssetValid(text.font))
-                {
-                    text.font.id = 0;
-                    text.font_data = nullptr;
-                    continue;
-                }
-
-                text.font_data = GetAssetDataPtr<Font>(text.font);
-            }
         }
         
         return ListenerAction::StayListening;
@@ -92,13 +68,35 @@ namespace Nit
     {
         if (args.type == GetType<Sprite>())
         {
-            Sprite& sprite = GetComponent<Sprite>(args.entity);
-            AddTextureToSprite(sprite, sprite.texture);
+            auto& sprite = GetComponent<Sprite>(args.entity); 
+            auto& asset = sprite.texture;
+
+            RetargetAssetHandle(asset);
+
+            bool is_valid = IsAssetValid(asset);
+            
+            if (is_valid && !IsAssetLoaded(asset))
+            {
+                RetainAsset(asset);
+            }
+
+            if (is_valid)
+            {
+                sprite.sub_texture_index = FindIndexOfSubTexture2D(GetAssetData<Texture2D>(asset), sprite.sub_texture);
+            }
+            else
+            {
+                sprite.sub_texture_index = -1;
+            }
         }
         else if (args.type == GetType<Text>())
         {
-            Text& text = GetComponent<Text>(args.entity);
-            AddFontToText(text, text.font);
+            auto& asset = GetComponent<Text>(args.entity).font;
+            RetargetAssetHandle(asset);
+            if (IsAssetValid(asset) && !IsAssetLoaded(asset))
+            {
+                RetainAsset(asset);
+            }
         }
         return ListenerAction::StayListening;
     }
@@ -107,13 +105,23 @@ namespace Nit
     {
         if (args.type == GetType<Sprite>())
         {
-            Sprite& sprite = GetComponent<Sprite>(args.entity);
-            RemoveTextureFromSprite(sprite);
+            auto& sprite = GetComponent<Sprite>(args.entity); 
+            auto& asset = sprite.texture;
+            RetargetAssetHandle(asset);
+            
+            if (IsAssetValid(asset) && IsAssetLoaded(asset))
+            {
+                ReleaseAsset(asset);
+            }
         }
         else if (args.type == GetType<Text>())
         {
-            Text& text = GetComponent<Text>(args.entity);
-            RemoveFontFromText(text);
+            auto& asset = GetComponent<Text>(args.entity).font;
+            RetargetAssetHandle(asset);
+            if (IsAssetValid(asset) && IsAssetLoaded(asset))
+            {
+                ReleaseAsset(asset);
+            }
         }
         return ListenerAction::StayListening;
     }
@@ -166,21 +174,30 @@ namespace Nit
                 {
                     continue;
                 }
-                
-                if (sprite.texture_data)
-                {
-                    Vector2 size = sprite.texture_data->size;
 
-                    if (sprite.texture_data->sub_textures
-                        && sprite.sub_texture_index >= 0
-                        && (u32) sprite.sub_texture_index < sprite.texture_data->sub_texture_count)
+                bool has_texture = IsAssetValid(sprite.texture); 
+
+                Texture2D* texture_data = has_texture ? GetAssetData<Texture2D>(sprite.texture) : nullptr; 
+                
+                if (has_texture)
+                {
+                    if (!IsAssetLoaded(sprite.texture))
                     {
-                        const SubTexture2D& sub_texture = sprite.texture_data->sub_textures[sprite.sub_texture_index];
+                        RetainAsset(sprite.texture);
+                    }
+                    
+                    Vector2 size = texture_data->size;
+
+                    if (texture_data->sub_textures
+                        && sprite.sub_texture_index >= 0
+                        && (u32) sprite.sub_texture_index < texture_data->sub_texture_count)
+                    {
+                        const SubTexture2D& sub_texture = texture_data->sub_textures[sprite.sub_texture_index];
                         size = sub_texture.size;
                         
                         FillQuadVertexUVs(
                               vertex_uvs
-                            , sprite.texture_data->size
+                            , texture_data->size
                             , sub_texture.size
                             , sub_texture.location
                             , sprite.flip_x
@@ -214,7 +231,7 @@ namespace Nit
                 }
                 
                 FillVertexColors(vertex_colors, sprite.tint);
-                DrawQuad(sprite.texture_data, vertex_positions, vertex_uvs, vertex_colors, (i32) entity);
+                DrawQuad(texture_data, vertex_positions, vertex_uvs, vertex_colors, (i32) entity);
             }
 
             for (Entity entity : GetEntityGroup<Line2D, Transform>().entities)
@@ -233,18 +250,25 @@ namespace Nit
                 DrawLine2D(vertex_positions, vertex_colors, (i32) entity);
             }
 
+            
             for (Entity entity : GetEntityGroup<Text, Transform>().entities)
             {
                 auto& transform = GetComponent<Transform>(entity);
                 auto& text = GetComponent<Text>(entity);
+                Font* font_data = IsAssetValid(text.font) ? GetAssetData<Font>(text.font) : nullptr;
 
-                if (!text.visible || text.text.empty() || !text.font_data)
+                if (font_data && !IsAssetLoaded(text.font))
+                {
+                    RetainAsset(text.font);
+                }
+                
+                if (!text.visible || text.text.empty() || !font_data)
                 {
                     continue;
                 }
                 
                 DrawText(
-                      text.font_data
+                      font_data
                     , text.text
                     , ToMatrix4(transform)
                     , text.tint

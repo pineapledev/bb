@@ -20,9 +20,10 @@ namespace Nit
             return asset_handle;
         }
 
-        asset_handle.id   = asset_info->id;
-        asset_handle.name = asset_info->name.c_str();
-        asset_handle.type = asset_info->type;
+        asset_handle.id      = asset_info->id;
+        asset_handle.name    = asset_info->name;
+        asset_handle.type    = asset_info->type;
+        asset_handle.data_id = asset_info->data_id;
         return asset_handle;
     }
 
@@ -33,6 +34,11 @@ namespace Nit
             return;
         }
 
+        if (asset_handle.data_id == SparseSet::INVALID_INDEX && asset_registry->id_to_data_id.count(asset_handle.id) != 0)
+        {
+            asset_handle.data_id = asset_registry->id_to_data_id.at(asset_handle.id);
+        }
+        
         AssetInfo* asset_info = GetAssetInfo(asset_handle);
 
         if (!asset_info)
@@ -89,7 +95,7 @@ namespace Nit
         return pool;
     }
 
-    AssetPool* GetAssetPoolSafe(const AssetHandle& asset)
+    AssetPool* GetAssetPoolSafe(AssetHandle& asset)
     {
         NIT_CHECK(asset.id != 0);
         return GetAssetPoolSafe(asset.type);
@@ -134,19 +140,19 @@ namespace Nit
         pool->asset_infos[deletion.deleted_slot] = pool->asset_infos[deletion.last_slot];
     }
 
-    AssetInfo* GetAssetInfo(const AssetHandle& asset)
+    AssetInfo* GetAssetInfo(AssetHandle& asset)
     {
         AssetPool* pool = GetAssetPoolSafe(asset);
-        
-        if (!IsValid(&pool->data_pool, asset.id))
+
+        if (!IsValid(&pool->data_pool, asset.data_id))
         {
             return nullptr;
         }
         
-        return &pool->asset_infos[IndexOf(&pool->data_pool, asset.id)];
+        return &pool->asset_infos[IndexOf(&pool->data_pool, asset.data_id)];
     }
 
-    AssetInfo* GetAssetInfoSafe(const AssetHandle& asset)
+    AssetInfo* GetAssetInfoSafe(AssetHandle& asset)
     {
         AssetInfo* info = GetAssetInfo(asset);
         if (!info)
@@ -182,18 +188,24 @@ namespace Nit
                 
                 NIT_CHECK_MSG(pool, "Trying to deserialize an unregistered type of asset!");
                 
-                const bool created = IsValid(&pool->data_pool, asset_info.id);
+                const bool created = IsValid(&pool->data_pool, asset_info.data_id);
                 
                 if (!created)
                 {
-                    InsertDataWithID(&pool->data_pool, asset_info.id);
-                    PushAssetInfo(asset_info, IndexOf(&pool->data_pool, asset_info.id), false);
+                    InsertData(&pool->data_pool, asset_info.data_id);
+                    PushAssetInfo(asset_info, IndexOf(&pool->data_pool, asset_info.data_id), false);
                 }
                 
-                void* data = GetDataRaw(&pool->data_pool, asset_info.id);
+                void* data = GetDataRaw(&pool->data_pool, asset_info.data_id);
+
+                if (!created)
+                {
+                    asset_registry->id_to_data_id.insert({asset_info.id, asset_info.data_id});
+                }
+
                 Deserialize(pool->data_pool.type, data, asset_node);
 
-                result = { asset_info.name.c_str(), asset_info.type, asset_info.id };
+                result = CreateAssetHandle(&asset_info);
                 
                 if (created)
                 {
@@ -225,7 +237,7 @@ namespace Nit
         return {};
     }
 
-    void SerializeAssetToString(const AssetHandle& asset, String& result)
+    void SerializeAssetToString(AssetHandle& asset, String& result)
     {
         AssetPool* pool = GetAssetPoolSafe(asset);
         AssetInfo* info = GetAssetInfoSafe(asset);
@@ -242,15 +254,15 @@ namespace Nit
         emitter << YAML::EndMap;
         
         emitter << YAML::Key << info->type->name << YAML::Value << YAML::BeginMap;
-        
-        Serialize(pool->data_pool.type, GetDataRaw(&pool->data_pool, info->id), emitter);
+
+        Serialize(pool->data_pool.type, GetDataRaw(&pool->data_pool, info->data_id), emitter);
 
         emitter << YAML::EndMap;
 
         result = emitter.c_str();
     }
 
-    void SerializeAssetToFile(const AssetHandle& asset)
+    void SerializeAssetToFile(AssetHandle& asset)
     {
         AssetInfo* info = GetAssetInfoSafe(asset);
         
@@ -344,17 +356,17 @@ namespace Nit
         }
     }
 
-    bool IsAssetValid(const AssetHandle& asset)
+    bool IsAssetValid(AssetHandle& asset)
     {
         AssetPool* pool = GetAssetPool(asset.type);
         if (!pool)
         {
             return false;
         }
-        return IsValid(&pool->data_pool, asset.id);
+        return IsValid(&pool->data_pool, asset.data_id);
     }
     
-    bool IsAssetLoaded(const AssetHandle& asset)
+    bool IsAssetLoaded(AssetHandle& asset)
     {
         if (!IsAssetValid(asset))
         {
@@ -368,6 +380,8 @@ namespace Nit
     {
         //TODO: Delete file?
 
+        asset_registry->id_to_data_id.erase(asset.id);
+        
         AssetPool* pool = GetAssetPoolSafe(asset);
         AssetInfo* info = GetAssetInfoSafe(asset);
         
@@ -377,7 +391,7 @@ namespace Nit
         args.asset_handle = CreateAssetHandle(info);
         Broadcast<const AssetDestroyedArgs&>(asset_registry->asset_destroyed_event, args);
         
-        EraseAssetInfo(*info, DeleteData(&pool->data_pool, info->id));
+        EraseAssetInfo(*info, DeleteData(&pool->data_pool, info->data_id));
     }
 
     void LoadAsset(AssetHandle& asset, bool force_reload)
@@ -401,7 +415,7 @@ namespace Nit
         }
         
         info->loaded = true;
-        Load(asset.type, GetDataRaw(&pool->data_pool, asset.id));
+        Load(asset.type, GetDataRaw(&pool->data_pool, asset.data_id));
     }
 
     void FreeAsset(AssetHandle& asset)
@@ -410,7 +424,7 @@ namespace Nit
         AssetInfo* info = GetAssetInfoSafe(asset);
         info->reference_count = 0;
         info->loaded = false;
-        Free(asset.type, GetDataRaw(&pool->data_pool, asset.id));
+        Free(asset.type, GetDataRaw(&pool->data_pool, asset.data_id));
     }
 
     void RetainAsset(AssetHandle& asset)

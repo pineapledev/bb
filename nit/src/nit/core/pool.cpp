@@ -23,7 +23,15 @@ namespace Nit
         return SetData(pool->type, pool->elements, Insert(&pool->sparse_set, element_id), data);
     }
 
-    void DeleteData(Pool* pool, u32 element_id)
+    void InsertData(Pool* pool, u32& element_id, void* data)
+    {
+        NIT_CHECK_MSG(pool->self_id_management, "This pool does not manage own u32s!");
+        element_id = pool->available_ids.front();
+        pool->available_ids.pop();
+        return InsertDataWithID(pool, element_id, data);
+    }
+
+    SparseSetDeletion DeleteData(Pool* pool, u32 element_id)
     {
         if (pool->self_id_management)
         {
@@ -34,6 +42,12 @@ namespace Nit
         SparseSetDeletion deletion = Delete(&pool->sparse_set, element_id);
         void* last_element_data = GetData(pool->type, pool->elements, deletion.last_slot);
         SetData(pool->type, pool->elements, deletion.deleted_slot, last_element_data);
+        return deletion;
+    }
+
+    u32 IndexOf(Pool* pool, u32 element_id)
+    {
+        return Search(&pool->sparse_set, element_id);
     }
 
     void* GetDataRaw(Pool* pool, u32 element_id)

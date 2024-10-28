@@ -218,7 +218,7 @@ namespace Nit
                     Path relative_dest = relative(dest, GetWorkingDirectory());
                     
                     AssetHandle texture = CreateAsset<Texture2D>(name, relative_dest.string());
-                    Texture2D* texture_2d = GetAssetDataPtr<Texture2D>(texture);
+                    Texture2D* texture_2d = GetAssetData<Texture2D>(texture);
                     
                     LoadTexture2DAsSpriteSheet(texture_2d, name, relative_source.string(), relative_dest.string());
                     if (texture_2d->sub_texture_count > 0 && !texture_2d->image_path.empty())
