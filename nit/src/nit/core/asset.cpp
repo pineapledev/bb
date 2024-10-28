@@ -5,7 +5,44 @@
 namespace Nit
 {
     AssetRegistry* asset_registry = nullptr;
-    
+
+    AssetHandle CreateAssetHandle(AssetInfo* asset_info)
+    {
+        AssetHandle asset_handle;
+
+        if (!asset_info)
+        {
+            return asset_handle;
+        }
+        
+        if (asset_info->id == 0 || asset_info->type == nullptr)
+        {
+            return asset_handle;
+        }
+
+        asset_handle.id   = asset_info->id;
+        asset_handle.name = asset_info->name.c_str();
+        asset_handle.type = asset_info->type;
+        return asset_handle;
+    }
+
+    void RetargetAssetHandle(AssetHandle& asset_handle)
+    {
+        if (asset_handle.id == 0 || asset_handle.type == nullptr)
+        {
+            return;
+        }
+
+        AssetInfo* asset_info = GetAssetInfo(asset_handle);
+
+        if (!asset_info)
+        {
+            return;
+        }
+
+        asset_handle = CreateAssetHandle(asset_info);
+    }
+
     void SetAssetRegistryInstance(AssetRegistry* asset_registry_instance)
     {
         NIT_CHECK(asset_registry_instance);
@@ -156,7 +193,7 @@ namespace Nit
                 void* data = GetDataRaw(&pool->data_pool, asset_info.id);
                 Deserialize(pool->data_pool.type, data, asset_node);
 
-                result = { asset_info.name, asset_info.type, asset_info.id };
+                result = { asset_info.name.c_str(), asset_info.type, asset_info.id };
                 
                 if (created)
                 {
@@ -270,7 +307,8 @@ namespace Nit
                 AssetInfo* asset_info = &asset_pool.asset_infos[i];
                 if (asset_info->name == name)
                 {
-                    assets.push_back({ asset_info->name, asset_info->type, asset_info->id });
+                    AssetHandle handle;
+                    assets.push_back(CreateAssetHandle(asset_info));
                 }
             }
         }
@@ -287,7 +325,7 @@ namespace Nit
                 AssetInfo* asset_info = &asset_pool.asset_infos[i];
                 if (asset_info->name == name)
                 {
-                    return { asset_info->name, asset_info->type, asset_info->id };
+                    return CreateAssetHandle(asset_info);
                 }
             }
         }
@@ -302,7 +340,7 @@ namespace Nit
         for (u32 i = 0; i < pool->data_pool.sparse_set.count; ++i)
         {
             AssetInfo* info = &pool->asset_infos[i];
-            assets.push_back({ info->name, info->type, info->id });
+            assets.push_back(CreateAssetHandle(info));
         }
     }
 
@@ -336,9 +374,7 @@ namespace Nit
         FreeAsset(asset);
 
         AssetDestroyedArgs args;
-        args.asset_handle.id   = info->id;
-        args.asset_handle.type = pool->data_pool.type;
-        args.asset_handle.name = info->name;
+        args.asset_handle = CreateAssetHandle(info);
         Broadcast<const AssetDestroyedArgs&>(asset_registry->asset_destroyed_event, args);
         
         EraseAssetInfo(*info, DeleteData(&pool->data_pool, info->id));

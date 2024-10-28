@@ -58,6 +58,9 @@ namespace Nit
         AssetCreatedEvent    asset_created_event;
         AssetRemovedEvent    asset_destroyed_event;
     };
+
+    AssetHandle CreateAssetHandle(AssetInfo* asset_info);
+    void RetargetAssetHandle(AssetHandle& asset_handle);
     
     void SetAssetRegistryInstance(AssetRegistry* asset_registry_instance);
     
