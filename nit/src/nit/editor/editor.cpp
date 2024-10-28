@@ -259,6 +259,7 @@ namespace Nit
 
                         if (ImGui::MenuItem(info->name.c_str()))
                         {
+                            DeserializeAssetFromFile(info->path);
                             LoadAsset(scene_asset);
                         }
                     }
@@ -295,7 +296,9 @@ namespace Nit
                     }
                     if (ImGui::MenuItem("Reload"))
                     {
+                        FreeAsset(scene_asset);
                         DeserializeAssetFromFile(info->path);
+                        LoadAsset(scene_asset);
                         editor->selection = Editor::Selection::None;
                     }
                     if (ImGui::MenuItem("Close"))

@@ -53,6 +53,7 @@ namespace Nit
     void* GetDataRaw(Pool* pool, u32 element_id)
     {
         NIT_CHECK_MSG(pool, "Invalid pool!");
+        NIT_CHECK(element_id != SparseSet::INVALID_INDEX);
         return GetData(pool->type, pool->elements, Search(&pool->sparse_set, element_id));
     }
 }

@@ -166,7 +166,7 @@ namespace Nit
     {
         AssetHandle result;
         YAML::Node node = YAML::Load(asset_str);
-
+        
         if (YAML::Node asset_info_node = node["AssetInfo"])
         {
             AssetInfo asset_info;
@@ -187,34 +187,32 @@ namespace Nit
                 AssetPool* pool = GetAssetPool(asset_info.type);
                 
                 NIT_CHECK_MSG(pool, "Trying to deserialize an unregistered type of asset!");
-                
-                const bool created = IsValid(&pool->data_pool, asset_info.data_id);
+
+                bool created = asset_registry->id_to_data_id.count(asset_info.id) != 0;
                 
                 if (!created)
                 {
                     InsertData(&pool->data_pool, asset_info.data_id);
                     PushAssetInfo(asset_info, IndexOf(&pool->data_pool, asset_info.data_id), false);
                 }
+                else
+                {
+                    asset_info.data_id = asset_registry->id_to_data_id.at(asset_info.id);
+                }
                 
-                void* data = GetDataRaw(&pool->data_pool, asset_info.data_id);
+                result = CreateAssetHandle(&asset_info);
+                void* data = GetDataRaw(&pool->data_pool, result.data_id);
 
                 if (!created)
                 {
                     asset_registry->id_to_data_id.insert({asset_info.id, asset_info.data_id});
                 }
-
+                
                 Deserialize(pool->data_pool.type, data, asset_node);
-
-                result = CreateAssetHandle(&asset_info);
                 
                 if (created)
                 {
                     Broadcast<const AssetCreatedArgs&>(GetAssetRegistryInstance()->asset_created_event, {result});
-                }
-                
-                if (IsAssetLoaded(result))
-                {
-                    LoadAsset(result, true);
                 }
             }
         }

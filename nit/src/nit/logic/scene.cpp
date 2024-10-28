@@ -76,7 +76,6 @@ namespace Nit
     void LoadSceneEntities(Scene* scene)
     {
         NIT_CHECK(scene);
-        FreeSceneEntities(scene);
         const YAML::Node node = YAML::Load(scene->cached_scene);
         const YAML::Node& entities_node = node["Entities"];
 
