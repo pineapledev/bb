@@ -2,7 +2,7 @@
 
 namespace Nit
 {
-    inline constexpr u32 MAX_ENTITIES = 3000;
+    inline constexpr u32 MAX_ENTITIES = 100000;
     inline constexpr u32 MAX_COMPONENTS_PER_ENTITY = 30;
     inline constexpr u32 MAX_COMPONENTS_TYPES = 100;
     inline constexpr u32 INVALID_INDEX = U32_MAX;
@@ -115,7 +115,7 @@ namespace Nit
         Bind(component_pool.fn_is_in_entity, fn_is_in_entity);
         Bind(component_pool.fn_get_from_entity, fn_get_from_entity);
         
-        Load<T>(&component_pool.data_pool, MAX_COMPONENTS_TYPES, false);
+        Load<T>(&component_pool.data_pool, MAX_ENTITIES, false);
         ++entity_registry->next_component_type_index;
     }
 

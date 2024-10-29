@@ -4,7 +4,7 @@
 
 namespace Nit
 {
-    inline static constexpr u32 MAX_PRIMITIVES = 3000;
+    inline static constexpr u32 MAX_PRIMITIVES = 100000;
     inline static constexpr u32 VERTICES_PER_PRIMITIVE = 4;
     inline static constexpr u32 INDICES_PER_PRIMITIVE = 6;
     inline static constexpr u32 MAX_TEXTURE_SLOTS = 32;

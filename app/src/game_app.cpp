@@ -16,7 +16,8 @@ int main(int argc, char** argv)
 
 struct Move
 {
-    
+    Vector2 velocity;
+    Vector2 destination;
 };
 
 // -----------------------------------------------------------------
@@ -27,6 +28,9 @@ void OnApplicationRun()
     CreateSystem("Game", 1);
     SetSystemCallback(GameStart,   Stage::Start);
     SetSystemCallback(GameUpdate,  Stage::Update);
+
+    RegisterComponentType<Move>();
+    CreateEntityGroup<Transform, Sprite, Move>();
 }
 
 // -----------------------------------------------------------------
