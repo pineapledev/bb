@@ -77,7 +77,7 @@ void GameStart()
 void GameUpdate()
 {
     SpawnEntity();
-
+    
     for (Entity entity : GetEntityGroup<Transform, Sprite, Move>().entities)
     {
         auto& transform = GetComponent<Transform>(entity);
