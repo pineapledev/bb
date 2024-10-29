@@ -14,6 +14,11 @@ int main(int argc, char** argv)
     RunApp(OnApplicationRun);
 }
 
+struct Move
+{
+    
+};
+
 // -----------------------------------------------------------------
 
 void OnApplicationRun()
@@ -23,6 +28,8 @@ void OnApplicationRun()
     SetSystemCallback(GameStart,   Stage::Start);
     SetSystemCallback(GameUpdate,  Stage::Update);
 }
+
+// -----------------------------------------------------------------
 
 void GameStart()
 {

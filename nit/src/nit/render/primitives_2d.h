@@ -66,9 +66,9 @@ namespace Nit
         , const Vector2& texture_size
         , const Vector2& sub_texture_size
         , const Vector2& sub_texture_location
-        , bool           flip_x
-        , bool           flip_y
-        , const Vector2& tiling_factor
+        , bool           flip_x                = false
+        , bool           flip_y                = false
+        , const Vector2& tiling_factor         = V2_ONE
     );
 
     void FillCircleVertexPositions(

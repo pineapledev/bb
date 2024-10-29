@@ -62,6 +62,8 @@ namespace Nit
         };
 
         LoadFrameBuffer(&editor->frame_buffer);
+
+        editor->icons = FindAssetByName("editor_icons");
     }
 
     void BeginDrawEditor()
@@ -81,6 +83,8 @@ namespace Nit
                 ImGui::MenuItem("Sprite Packer", nullptr, &editor->show_sprite_packer);
                 ImGui::MenuItem("Scene Entities", nullptr, &editor->show_scene_entities);
                 ImGui::MenuItem("Properties", nullptr, &editor->show_properties);
+                ImGui::MenuItem("Assets", nullptr, &editor->show_assets);
+                ImGui::MenuItem("Stats", nullptr, &editor->show_stats);
                 ImGui::EndMenu();
             }
             ImGui::EndMenuBar();
@@ -460,6 +464,43 @@ namespace Nit
                 }
             }
 
+            ImGui::End();
+        }
+
+        if (editor->show_assets)
+        {
+            ImGui::Begin("Assets", &editor->show_assets);
+            {
+                if (!IsAssetLoaded(editor->icons))
+                {
+                    RetainAsset(editor->icons);
+                }
+                
+                Texture2D* icons = GetAssetData<Texture2D>(editor->icons);
+                ImTextureID icons_id = reinterpret_cast<ImTextureID>(icons->id);
+                V2Verts2D verts_2d;
+                FillQuadVertexUVs(verts_2d, icons->size, icons->sub_textures[0].size, icons->sub_textures[0].location);
+                Vector2 bottom_left = verts_2d[0];
+                Vector2 top_right   = verts_2d[2];
+                
+                ImGui::ImageButton("test", icons_id, {84.f, 84.f}, {bottom_left.x, bottom_left.y}, {top_right.x, top_right.y});
+            }
+            ImGui::End();
+        }
+
+        if (editor->show_stats)
+        {
+            ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing;
+            ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
+
+            ImGui::Begin("Stats", &editor->show_stats, window_flags);
+            String stats_text;
+            stats_text.append("\nTime: "     + std::to_string(app->seconds));
+            stats_text.append("\nFrames: "   + std::to_string(app->frame_count));
+            stats_text.append("\nFPS: "      + std::to_string(app->frame_count / app->seconds));
+            stats_text.append("\nEntities: " + std::to_string(app->entity_registry.entity_count));
+            stats_text.append("\nDelta: "    + std::to_string(app->delta_seconds));
+            ImGui::Text(stats_text.c_str());
             ImGui::End();
         }
     }

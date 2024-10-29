@@ -150,7 +150,7 @@ namespace Nit
     }
     
     template<typename T>
-    T& AddComponent(Entity entity, const T& data)
+    T& AddComponent(Entity entity, const T& data = {})
     {
         NIT_CHECK_MSG(IsEntityValid(entity), "Invalid entity!");
         NIT_CHECK_MSG(GetEntityRegistryInstance()->signatures[entity].size() <= MAX_COMPONENTS_PER_ENTITY + 1, "Components per entity out of range!");

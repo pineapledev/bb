@@ -133,4 +133,15 @@ namespace Nit
     {
         return std::sqrtf(std::powf(a.x - b.x, 2) + std::powf(a.y - b.y, 2));
     }
+
+    template <>
+    Vector2 GetRandomValue<Vector2>(const Vector2& left, const Vector2& right)
+    {
+        return left + (right - left) * GetRandomValue(0.f, 1.f);
+    }
+
+    Vector2 ToVector2(const Vector3& value)
+    {
+        return { value.x, value.y };
+    }
 }
