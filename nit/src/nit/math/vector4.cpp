@@ -115,4 +115,14 @@ namespace Nit
         r.w = a.w / b.w;
         return r;
     }
+
+    Vector4 GetRandomColor()
+    {
+        return {
+            GetRandomValue(0.f, 1.f),
+            GetRandomValue(0.f, 1.f),
+            GetRandomValue(0.f, 1.f),
+            1.f
+        };
+    }
 }

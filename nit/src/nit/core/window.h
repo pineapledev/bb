@@ -18,7 +18,7 @@ namespace Nit
         String     title           = "Window :3";
         i32         width           = 1280;
         i32         height          = 720;
-        bool        v_sync          = true;
+        bool        v_sync          = false;
         bool        start_maximized = false;
         CursorMode  cursor_mode     = CursorMode::Normal;
         bool        render_api_logs = false;

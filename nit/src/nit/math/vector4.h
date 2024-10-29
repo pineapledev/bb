@@ -69,6 +69,8 @@ namespace Nit
 
     template<>
     Vector4 Divide(const Vector4& a, const Vector4& b);
+
+    Vector4 GetRandomColor();
 }
 
 template<>

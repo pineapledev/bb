@@ -178,10 +178,11 @@ namespace Nit
     template<typename T = f32>
     T GetRandomValue(const T& left, const T& right)
     {
-        static std::random_device random_device;
-        static std::mt19937 random_engine(random_device());
-        static std::uniform_real_distribution<> distribution(left, right);
-        return distribution(random_engine);
+        // static std::random_device random_device;
+        // static std::mt19937 random_engine(random_device());
+        // static std::uniform_real_distribution<> distribution(left, right);
+        // return distribution(random_engine);
+        return left + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(right-left)));
     }
 
     inline bool Replace(String& str, const String& from, const String& to)

@@ -12,12 +12,12 @@ Scene:
         rotation: [0, 0, 0]
         scale: [1, 1, 1]
       Camera:
-        projection: Perspective
+        projection: Orthographic
         aspect: 1.25519288
         fov: 100
         near_clip: 0.100000001
         far_clip: 1000
-        size: 3
+        size: 9
     Entity:
       Transform:
         position: [-1.06095123, 0.959213257, 0]

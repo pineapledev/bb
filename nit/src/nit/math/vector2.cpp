@@ -137,7 +137,9 @@ namespace Nit
     template <>
     Vector2 GetRandomValue<Vector2>(const Vector2& left, const Vector2& right)
     {
-        return left + (right - left) * GetRandomValue(0.f, 1.f);
+        f32 x = GetRandomValue(left.x, right.x);
+        f32 y = GetRandomValue(left.y, right.y);
+        return { x, y };
     }
 
     Vector2 ToVector2(const Vector3& value)
