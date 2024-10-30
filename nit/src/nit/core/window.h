@@ -15,11 +15,11 @@ namespace Nit
     
     struct WindowCfg
     {
-        String     title           = "Window :3";
+        String      title           = "Window :3";
         i32         width           = 1280;
         i32         height          = 720;
         bool        v_sync          = false;
-        bool        start_maximized = false;
+        bool        start_maximized = true;
         CursorMode  cursor_mode     = CursorMode::Normal;
         bool        render_api_logs = false;
     };

@@ -17,7 +17,7 @@ Scene:
         fov: 100
         near_clip: 0.100000001
         far_clip: 1000
-        size: 9
+        size: 15.000
     Entity:
       Transform:
         position: [-1.06095123, 0.959213257, 0]

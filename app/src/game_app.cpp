@@ -16,10 +16,10 @@ int main(int argc, char** argv)
 
 // -----------------------------------------------------------------
 
-constexpr Vector2 RECT_LEFT  = { -20.f, 20.f };
-constexpr Vector2 RECT_RIGHT = { 20.f, -20.f };
+constexpr Vector2 RECT_LEFT  = { -100.f, 100.f };
+constexpr Vector2 RECT_RIGHT = { 100.f, -100.f };
 constexpr float MIN_SPEED = 1.f;
-constexpr float MAX_SPEED = 3.f;
+constexpr float MAX_SPEED = 15.f;
 
 // -----------------------------------------------------------------
 
@@ -83,7 +83,7 @@ void GameUpdate()
         auto& transform = GetComponent<Transform>(entity);
         auto& move = GetComponent<Move>(entity);
 
-        if (Distance(ToVector2(transform.position), move.destination) < 0.01f)
+        if (Distance(ToVector2(transform.position), move.destination) < 0.1f)
         {
             ResetMovement(transform, move);
         }
