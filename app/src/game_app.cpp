@@ -35,7 +35,7 @@ struct Move
 void ResetMovement(Transform& transform, Move& move)
 {
     float speed      = GetRandomValue(MIN_SPEED, MAX_SPEED);
-    move.destination = GetRandomValue(RECT_LEFT, RECT_RIGHT);
+    move.destination = RandomPointInSquare(RECT_LEFT.x, RECT_RIGHT.y, RECT_RIGHT.x, RECT_LEFT.y);
     move.velocity    = Normalize(move.destination - ToVector2(transform.position)) * speed;
 }
 
@@ -44,7 +44,9 @@ void ResetMovement(Transform& transform, Move& move)
 void SpawnEntity()
 {
     Entity entity = CreateEntity();
-    AddComponent<Transform>(entity).position = ToVector3(GetRandomValue(RECT_LEFT, RECT_RIGHT));
+    Vector3 position = ToVector3(RandomPointInSquare(RECT_LEFT.x, RECT_RIGHT.y, RECT_RIGHT.x, RECT_LEFT.y)); 
+    AddComponent<Transform>(entity).position = position;
+    //AddComponent<Transform>(entity).position = V3_ZERO;
     AddComponent<Sprite>(entity).tint = GetRandomColor();
     ResetMovement(GetComponent<Transform>(entity), AddComponent<Move>(entity));
 }

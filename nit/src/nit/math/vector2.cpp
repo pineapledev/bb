@@ -134,16 +134,17 @@ namespace Nit
         return std::sqrtf(std::powf(a.x - b.x, 2) + std::powf(a.y - b.y, 2));
     }
 
-    template <>
-    Vector2 GetRandomValue<Vector2>(const Vector2& left, const Vector2& right)
-    {
-        f32 x = GetRandomValue(left.x, right.x);
-        f32 y = GetRandomValue(left.y, right.y);
-        return { x, y };
-    }
-
     Vector2 ToVector2(const Vector3& value)
     {
         return { value.x, value.y };
+    }
+
+    Vector2 RandomPointInSquare(f32 x_min, f32 y_min, f32 x_max, f32 y_max)
+    {
+        std::random_device random_device;
+        std::mt19937 random_engine(random_device());
+        std::uniform_real_distribution distribution_x(x_min, x_max);
+        std::uniform_real_distribution distribution_y(y_min, y_max);
+        return {distribution_x(random_engine), distribution_y(random_engine)};
     }
 }

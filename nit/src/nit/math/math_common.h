@@ -75,4 +75,13 @@ namespace Nit
         f64 frac_part = modf(value, &int_part);
         return frac_part != 0.0;
     }
+
+    template<typename T = f32>
+    T GetRandomValue(const T& left, const T& right)
+    {
+        std::random_device random_device;
+        std::mt19937 random_engine(random_device());
+        std::uniform_real_distribution distribution(left, right);
+        return distribution(random_engine);
+    }
 }

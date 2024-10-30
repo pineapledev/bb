@@ -175,15 +175,6 @@ namespace Nit
         return distribution(random_engine);
     }
 
-    template<typename T = f32>
-    T GetRandomValue(const T& left, const T& right)
-    {
-        std::random_device random_device;
-        std::mt19937 random_engine(random_device());
-        std::uniform_real_distribution distribution(left, right);
-        return distribution(random_engine);
-    }
-
     inline bool Replace(String& str, const String& from, const String& to)
     {
         u64 start_pos = str.find(from);

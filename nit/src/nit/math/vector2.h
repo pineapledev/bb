@@ -61,10 +61,9 @@ namespace Nit
     template<>
     f32 Distance(const Vector2& a, const Vector2& b);
 
-    template<>
-    Vector2 GetRandomValue(const Vector2& left, const Vector2& right);
-
     Vector2 ToVector2(const struct Vector3& value);
+
+    Vector2 RandomPointInSquare(f32 x_min, f32 y_min, f32 x_max, f32 y_max);
 }
 
 template<>

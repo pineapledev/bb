@@ -13,11 +13,11 @@ Scene:
         scale: [1, 1, 1]
       Camera:
         projection: Orthographic
-        aspect: 1.25519288
+        aspect: 2.1169591
         fov: 100
         near_clip: 0.100000001
         far_clip: 1000
-        size: 15.000
+        size: 1.20000005
     Entity:
       Transform:
         position: [-1.06095123, 0.959213257, 0]
@@ -57,14 +57,14 @@ Scene:
         thickness: 0.0500000007
     Entity:
       Transform:
-        position: [0.300000012, 0.600000024, 0]
+        position: [-0.131579012, 0.314851582, 0]
         rotation: [0, 0, 0]
         scale: [1, 1, 1]
       Text:
         font: [default_font, Font, 6758496758947967]
-        text: jajajjaja
+        text: BUENAS
         visible: true
-        tint: [1, 0, 1, 1]
+        tint: [0.209157124, 0.810483873, 0.795935631, 1]
         spacing: 1
         size: 1
     Entity:
