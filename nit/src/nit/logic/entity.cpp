@@ -35,7 +35,11 @@ namespace Nit
     void InitEntityRegistry()
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
-        for (u32 i = 0; i < MAX_ENTITIES; ++i)
+
+        entity_registry->signatures = new EntitySignature[entity_registry->max_entities];
+        entity_registry->component_pool = new ComponentPool[NIT_MAX_COMPONENT_TYPES];
+        
+        for (u32 i = 0; i < entity_registry->max_entities; ++i)
         {
             entity_registry->available_entities.push(i);
         }
@@ -54,7 +58,7 @@ namespace Nit
     Entity CreateEntity()
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
-        NIT_CHECK_MSG(entity_registry->entity_count < MAX_ENTITIES, "Entity limit reached!");
+        NIT_CHECK_MSG(entity_registry->entity_count < entity_registry->max_entities, "Entity limit reached!");
         Entity entity = entity_registry->available_entities.front();
         entity_registry->available_entities.pop();
         ++entity_registry->entity_count;
@@ -95,7 +99,7 @@ namespace Nit
     bool IsEntityValid(const Entity entity)
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
-        return entity < MAX_ENTITIES && entity_registry->signatures[entity].test(0);
+        return entity < entity_registry->max_entities && entity_registry->signatures[entity].test(0);
     }
 
     void EntitySignatureChanged(Entity entity, EntitySignature new_entity_signature)

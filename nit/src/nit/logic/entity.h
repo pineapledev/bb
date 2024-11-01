@@ -1,16 +1,17 @@
 ﻿#pragma once
 
+#ifndef NIT_MAX_COMPONENT_TYPES
+    #define NIT_MAX_COMPONENT_TYPES 100
+#endif
+
 namespace Nit
 {
-    inline constexpr u32 MAX_ENTITIES = 100000;
-    inline constexpr u32 MAX_COMPONENTS_PER_ENTITY = 30;
-    inline constexpr u32 MAX_COMPONENTS_TYPES = 100;
-    inline constexpr u32 INVALID_INDEX = U32_MAX;
+    inline constexpr u32 NULL_ENTITY = U32_MAX;
     
     using Entity = u32;
 
     // First bit of the signature would be used to know if the entity is valid or not
-    using EntitySignature = Bitset<MAX_COMPONENTS_PER_ENTITY + 1>;
+    using EntitySignature = Bitset<NIT_MAX_COMPONENT_TYPES + 1>;
 
     struct ComponentPool
     {
@@ -46,13 +47,14 @@ namespace Nit
     struct EntityRegistry
     {
         Queue<Entity>                     available_entities;
-        EntitySignature                   signatures[MAX_ENTITIES];
+        EntitySignature*                  signatures;
         u32                               entity_count = 0;
         Map<EntitySignature, EntityGroup> entity_groups;
-        ComponentPool                     component_pool[MAX_COMPONENTS_TYPES];
+        ComponentPool*                    component_pool;
         u8                                next_component_type_index = 1;
         ComponentAddedEvent               component_added_event;
         ComponentRemovedEvent             component_removed_event;
+        u32                               max_entities = 100000;
     };
 
     void SetEntityRegistryInstance(EntityRegistry* entity_registry_instance);
@@ -83,7 +85,7 @@ namespace Nit
     void RegisterComponentType()
     {
         EntityRegistry* entity_registry = GetEntityRegistryInstance(); 
-        NIT_CHECK_MSG(entity_registry->next_component_type_index <= MAX_COMPONENTS_TYPES, "Components out of range!");
+        NIT_CHECK_MSG(entity_registry->next_component_type_index <= NIT_MAX_COMPONENT_TYPES, "Components out of range!");
 
         if (!IsTypeRegistered<T>())
         {
@@ -115,7 +117,7 @@ namespace Nit
         Bind(component_pool.fn_is_in_entity, fn_is_in_entity);
         Bind(component_pool.fn_get_from_entity, fn_get_from_entity);
         
-        Load<T>(&component_pool.data_pool, MAX_ENTITIES, false);
+        Load<T>(&component_pool.data_pool, entity_registry->max_entities, false);
         ++entity_registry->next_component_type_index;
     }
 
@@ -139,7 +141,7 @@ namespace Nit
     T& AddComponentSilent(Entity entity, const T& data)
     {
         NIT_CHECK_MSG(IsEntityValid(entity), "Invalid entity!");
-        NIT_CHECK_MSG(GetEntityRegistryInstance()->signatures[entity].size() <= MAX_COMPONENTS_PER_ENTITY + 1, "Components per entity out of range!");
+        NIT_CHECK_MSG(GetEntityRegistryInstance()->signatures[entity].size() <= NIT_MAX_COMPONENT_TYPES + 1, "Components per entity out of range!");
         ComponentPool* component_pool = FindComponentPool<T>();
         NIT_CHECK_MSG(component_pool, "Invalid component type!");
         T* element = InsertDataWithID(&component_pool->data_pool, entity, data);
@@ -153,7 +155,7 @@ namespace Nit
     T& AddComponent(Entity entity, const T& data = {})
     {
         NIT_CHECK_MSG(IsEntityValid(entity), "Invalid entity!");
-        NIT_CHECK_MSG(GetEntityRegistryInstance()->signatures[entity].size() <= MAX_COMPONENTS_PER_ENTITY + 1, "Components per entity out of range!");
+        NIT_CHECK_MSG(GetEntityRegistryInstance()->signatures[entity].size() <= NIT_MAX_COMPONENT_TYPES + 1, "Components per entity out of range!");
         ComponentPool* component_pool = FindComponentPool<T>();
         NIT_CHECK_MSG(component_pool, "Invalid component type!");
         T* element = InsertDataWithID(&component_pool->data_pool, entity, data);
@@ -171,7 +173,7 @@ namespace Nit
     void RemoveComponent(Entity entity)
     {
         NIT_CHECK_MSG(IsEntityValid(entity), "Invalid entity!");
-        NIT_CHECK_MSG(entity < MAX_ENTITIES, "Entity out of range!");
+        NIT_CHECK_MSG(entity < GetEntityRegistryInstance()->max_entities, "Entity out of range!");
         ComponentPool* component_pool = FindComponentPool<T>();
         NIT_CHECK_MSG(component_pool, "Invalid component type!");
 
