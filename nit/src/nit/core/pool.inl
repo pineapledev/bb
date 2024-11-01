@@ -40,18 +40,14 @@ namespace Nit
             NIT_DEBUGBREAK();
             return nullptr;
         }
-        
-        NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");
 
-        u32 index = Insert(&pool->sparse_set, element_id);
-        
-        if (index == SparseSet::INVALID_INDEX)
+        if (IsFull(&pool->sparse_set))
         {
-            NIT_DEBUGBREAK();
-            return nullptr;
+            Resize(pool, pool->sparse_set.max * 2);
         }
         
-        return SetData(pool->elements, index, data);
+        NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");
+        return SetData(pool->elements, Insert(&pool->sparse_set, element_id), data);
     }
 
     template<typename T>
