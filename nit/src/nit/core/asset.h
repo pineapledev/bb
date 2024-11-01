@@ -22,7 +22,7 @@ namespace Nit
         FnSerialize<T>   fn_serialize   = nullptr;
         FnDeserialize<T> fn_deserialize = nullptr;
         FnDrawEditor<T>  fn_draw_editor = nullptr;
-        u32              max_elements   = PoolMap::DEFAULT_MAX;
+        u32              max_elements   = 100;
     };
 
     struct AssetHandle
