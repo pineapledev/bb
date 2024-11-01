@@ -45,7 +45,7 @@ namespace Nit
     
     u32 Insert(SparseSet* sparse_set, u32 element)
     {
-        if (!IsValid(sparse_set) || element == U32_MAX || Test(sparse_set, element))
+        if (!IsValid(sparse_set) || element == SparseSet::INVALID || Test(sparse_set, element))
         {
             NIT_DEBUGBREAK();
             return SparseSet::INVALID;
