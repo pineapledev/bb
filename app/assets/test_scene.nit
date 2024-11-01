@@ -13,11 +13,11 @@ Scene:
         scale: [1, 1, 1]
       Camera:
         projection: Orthographic
-        aspect: 2.1169591
+        aspect: 1.9623431
         fov: 100
         near_clip: 0.100000001
         far_clip: 1000
-        size: 1.20000005
+        size: 7
     Entity:
       Transform:
         position: [-1.06095123, 0.959213257, 0]

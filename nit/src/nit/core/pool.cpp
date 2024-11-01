@@ -92,7 +92,7 @@ namespace Nit
         if (!pool)
         {
             NIT_DEBUGBREAK();
-            return SparseSet::INVALID_INDEX;
+            return U32_MAX;
         }
         
         return Search(&pool->sparse_set, element_id);
@@ -107,6 +107,6 @@ namespace Nit
         }
         
         u32 index = Search(&pool->sparse_set, element_id);
-        return index != SparseSet::INVALID_INDEX ? GetData(pool->type, pool->elements, index) : nullptr;
+        return index != SparseSet::INVALID ? GetData(pool->type, pool->elements, index) : nullptr;
     }
 }

@@ -34,7 +34,7 @@ namespace Nit
             return;
         }
 
-        if (asset_handle.data_id == SparseSet::INVALID_INDEX && asset_registry->id_to_data_id.count(asset_handle.id) != 0)
+        if (asset_handle.data_id == SparseSet::INVALID && asset_registry->id_to_data_id.count(asset_handle.id) != 0)
         {
             asset_handle.data_id = asset_registry->id_to_data_id.at(asset_handle.id);
         }
@@ -124,7 +124,7 @@ namespace Nit
 
     void PushAssetInfo(AssetInfo& asset_info, u32 index, bool build_path)
     {
-        if (index == SparseSet::INVALID_INDEX)
+        if (index == SparseSet::INVALID)
         {
             return;
         }

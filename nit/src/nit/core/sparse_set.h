@@ -4,7 +4,7 @@ namespace Nit
 {
     struct SparseSet
     {
-        static constexpr u32 INVALID_INDEX = U32_MAX;
+        static constexpr u32 INVALID = U32_MAX;
         
         u32* sparse = nullptr;
         u32* dense  = nullptr;

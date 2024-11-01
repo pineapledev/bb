@@ -11,7 +11,7 @@ namespace Nit
         u32    version         = 0;
         bool   loaded          = false;
         u32    reference_count = 0;
-        u32    data_id         = SparseSet::INVALID_INDEX;
+        u32    data_id         = SparseSet::INVALID;
     };
     
     template<typename T>
@@ -30,7 +30,7 @@ namespace Nit
         String name;
         Type*  type    = nullptr;
         ID     id      = 0;
-        u32    data_id = SparseSet::INVALID_INDEX;
+        u32    data_id = SparseSet::INVALID;
     };
     
     struct AssetCreatedArgs

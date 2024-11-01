@@ -31,7 +31,7 @@ namespace Nit
 
     void Load(SparseSet* sparse_set, u32 max)
     {
-        if (!sparse_set || max == SparseSet::INVALID_INDEX)
+        if (!sparse_set || max == U32_MAX)
         {
             NIT_DEBUGBREAK();
             return;
@@ -40,15 +40,15 @@ namespace Nit
         sparse_set->max = max;
         sparse_set->sparse = new u32[max];
         sparse_set->dense  = new u32[max];
-        memset(sparse_set->sparse, SparseSet::INVALID_INDEX, sizeof(u32) * max);
+        memset(sparse_set->sparse, SparseSet::INVALID, sizeof(u32) * max);
     }
     
     u32 Insert(SparseSet* sparse_set, u32 element)
     {
-        if (!IsValid(sparse_set) || element == SparseSet::INVALID_INDEX || Test(sparse_set, element))
+        if (!IsValid(sparse_set) || element == U32_MAX || Test(sparse_set, element))
         {
             NIT_DEBUGBREAK();
-            return SparseSet::INVALID_INDEX;
+            return SparseSet::INVALID;
         }
         
         if (IsFull(sparse_set))
@@ -71,7 +71,7 @@ namespace Nit
             return false;
         }
         
-        return element < sparse_set->max && sparse_set->sparse[element] != SparseSet::INVALID_INDEX;
+        return element < sparse_set->max && sparse_set->sparse[element] != SparseSet::INVALID;
     }
 
     u32 Search(SparseSet* sparse_set, u32 element)
@@ -79,14 +79,14 @@ namespace Nit
         if (!IsValid(sparse_set) || element >= sparse_set->max)
         {
             NIT_DEBUGBREAK();
-            return SparseSet::INVALID_INDEX;
+            return SparseSet::INVALID;
         }
 
         u32 dense_index = sparse_set->sparse[element];
         
-        if (dense_index == SparseSet::INVALID_INDEX)
+        if (dense_index == SparseSet::INVALID)
         {
-            return SparseSet::INVALID_INDEX;
+            return SparseSet::INVALID;
         }
         
         return dense_index;
@@ -103,7 +103,7 @@ namespace Nit
         u32 deleted_slot = sparse_set->sparse[element];
         u32 last_slot = sparse_set->count - 1;
         
-        sparse_set->sparse[element] = SparseSet::INVALID_INDEX;
+        sparse_set->sparse[element] = SparseSet::INVALID;
         --sparse_set->count;
 
         u32 last_element = sparse_set->dense[last_slot];
@@ -125,7 +125,7 @@ namespace Nit
         u32* new_dense  = new u32[new_max];
     
         std::copy_n(sparse_set->sparse, sparse_set->max, new_sparse);
-        memset(new_sparse + sparse_set->max, SparseSet::INVALID_INDEX, (new_max - sparse_set->max) * sizeof(u32));
+        memset(new_sparse + sparse_set->max, SparseSet::INVALID, (new_max - sparse_set->max) * sizeof(u32));
         
         std::copy_n(sparse_set->dense, sparse_set->max, new_dense);
     

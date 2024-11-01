@@ -15,7 +15,7 @@ namespace Nit
     struct ComponentPool
     {
         u8                      type_index  = 0;
-        Pool                data_pool;
+        Pool                    data_pool;
         Delegate<void(Entity)>  fn_add_to_entity;
         Delegate<void(Entity)>  fn_remove_from_entity;
         Delegate<bool(Entity)>  fn_is_in_entity;

@@ -82,7 +82,7 @@ namespace Nit
         
         u32 element_index = Search(&pool->sparse_set, element_id);
 
-        if (element_index == SparseSet::INVALID_INDEX)
+        if (element_index == SparseSet::INVALID)
         {
             return nullptr;
         }
