@@ -2,32 +2,41 @@
 
 namespace Nit
 {
-    bool IsLoaded(SparseSet* sparse_set)
-    {
-        NIT_CHECK(sparse_set);
-        return sparse_set->max != 0;
-    }
-
     bool IsValid(SparseSet* sparse_set)
     {
-        return sparse_set && IsLoaded(sparse_set);
+        return sparse_set && sparse_set->max != 0;
     }
 
     bool IsEmpty(SparseSet* sparse_set)
     {
-        NIT_CHECK(IsValid(sparse_set));
+        if (!IsValid(sparse_set))
+        {
+            NIT_DEBUGBREAK();
+            return false;
+        }
+        
         return sparse_set->count == 0;
     }
 
     bool IsFull(SparseSet* sparse_set)
     {
-        NIT_CHECK(IsValid(sparse_set));
+        if (!IsValid(sparse_set))
+        {
+            NIT_DEBUGBREAK();
+            return false;
+        }
+        
         return sparse_set->count == sparse_set->max;
     }
 
     void Load(SparseSet* sparse_set, u32 max)
     {
-        NIT_CHECK(sparse_set && !IsLoaded(sparse_set) && max < SparseSet::INVALID_INDEX);
+        if (!sparse_set || max == SparseSet::INVALID_INDEX)
+        {
+            NIT_DEBUGBREAK();
+            return;
+        }
+
         sparse_set->max = max;
         sparse_set->sparse = new u32[max];
         sparse_set->dense  = new u32[max];
@@ -36,9 +45,16 @@ namespace Nit
     
     u32 Insert(SparseSet* sparse_set, u32 element)
     {
-        NIT_CHECK(IsValid(sparse_set) && !IsFull(sparse_set));
-        NIT_CHECK(element != SparseSet::INVALID_INDEX)
-        NIT_CHECK(!Test(sparse_set, element));
+        if (!IsValid(sparse_set) || element == SparseSet::INVALID_INDEX || Test(sparse_set, element))
+        {
+            NIT_DEBUGBREAK();
+            return SparseSet::INVALID_INDEX;
+        }
+        
+        if (IsFull(sparse_set))
+        {
+            Resize(sparse_set, sparse_set->max * 2);
+        }
         
         u32 next_slot = sparse_set->count;
         sparse_set->sparse[element] = next_slot;
@@ -49,16 +65,20 @@ namespace Nit
 
     bool Test(SparseSet* sparse_set, u32 element)
     {
-        NIT_CHECK(IsValid(sparse_set));
+        if (!IsValid(sparse_set))
+        {
+            NIT_DEBUGBREAK();
+            return false;
+        }
+        
         return element < sparse_set->max && sparse_set->sparse[element] != SparseSet::INVALID_INDEX;
     }
 
     u32 Search(SparseSet* sparse_set, u32 element)
     {
-        NIT_CHECK(IsValid(sparse_set));
-
-        if (element >= sparse_set->max)
+        if (!IsValid(sparse_set) || element >= sparse_set->max)
         {
+            NIT_DEBUGBREAK();
             return SparseSet::INVALID_INDEX;
         }
 
@@ -74,8 +94,11 @@ namespace Nit
     
     SparseSetDeletion Delete(SparseSet* sparse_set, u32 element)
     {
-        NIT_CHECK(IsValid(sparse_set) && sparse_set->count > 0);
-        NIT_CHECK(Test(sparse_set, element));
+        if (!IsValid(sparse_set) || sparse_set->count == 0 || !Test(sparse_set, element))
+        {
+            NIT_DEBUGBREAK();
+            return { false };
+        }
         
         u32 deleted_slot = sparse_set->sparse[element];
         u32 last_slot = sparse_set->count - 1;
@@ -87,12 +110,16 @@ namespace Nit
         sparse_set->dense[deleted_slot] = last_element;
         
         sparse_set->sparse[last_element] = deleted_slot;
-        return { deleted_slot, last_slot };
+        return { true, deleted_slot, last_slot };
     }
 
     void Resize(SparseSet* sparse_set, u32 new_max)
     {
-        NIT_CHECK(IsValid(sparse_set) && new_max > sparse_set->max);
+        if (!IsValid(sparse_set) || new_max > sparse_set->max)
+        {
+            NIT_DEBUGBREAK();
+            return;
+        }
         
         u32* new_sparse = new u32[new_max];
         u32* new_dense  = new u32[new_max];
@@ -112,7 +139,11 @@ namespace Nit
 
     void Free(SparseSet* sparse_set)
     {
-        NIT_CHECK(IsValid(sparse_set));
+        if (!IsValid(sparse_set))
+        {
+            NIT_DEBUGBREAK();
+            return;
+        }
         
         if (sparse_set->sparse)
         {

@@ -28,6 +28,17 @@ namespace Nit
         return type->fn_get_data(array, index);
     }
 
+    void ResizeData(const Type* type, void* array, u32 max, u32 new_max)
+    {
+        if (!type || !type->fn_resize_data || !array || new_max <= max)
+        {
+            NIT_DEBUGBREAK();
+            return;
+        }
+        
+        type->fn_resize_data(array, max, new_max);
+    }
+
     void Load(const Type* type, void* data)
     {
         NIT_CHECK(type);

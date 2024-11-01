@@ -124,6 +124,11 @@ namespace Nit
 
     void PushAssetInfo(AssetInfo& asset_info, u32 index, bool build_path)
     {
+        if (index == SparseSet::INVALID_INDEX)
+        {
+            return;
+        }
+        
         AssetPool* pool = GetAssetPoolSafe(asset_info);
         
         if (build_path)

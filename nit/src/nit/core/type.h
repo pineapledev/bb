@@ -8,6 +8,7 @@ namespace Nit
     {
         using FnSetData           = void  (*) (void*, u32, void*);
         using FnGetData           = void* (*) (void*, u32);
+        using FnResizeData        = void* (*) (void*, u32, u32);
         using FnInvokeLoad        = Function<void(void*)>;
         using FnInvokeFree        = Function<void(void*)>;
         using FnInvokeSerialize   = Function<void(void*, YAML::Emitter& emitter)>;
@@ -21,6 +22,7 @@ namespace Nit
         u64                 hash                  = 0;
         FnSetData           fn_set_data           = nullptr;
         FnGetData           fn_get_data           = nullptr;
+        FnResizeData        fn_resize_data        = nullptr;
         FnInvokeLoad        fn_invoke_load        = nullptr;
         FnInvokeFree        fn_invoke_free        = nullptr;
         FnInvokeSerialize   fn_invoke_serialize   = nullptr;
@@ -160,6 +162,14 @@ namespace Nit
             T* data = &casted_elements[element_index];
             return data;
         };
+
+        type.fn_resize_data = [](void* elements, u32 max, u32 new_max) -> void* {
+            T* casted_elements = static_cast<T*>(elements);
+            T* new_elements = new T[new_max];
+            std::copy_n(casted_elements, max, new_elements);
+            delete [] new_elements;
+            return new_elements;
+        };
         
         if (auto fn_serialize = args.fn_serialize)
         {
@@ -191,34 +201,30 @@ namespace Nit
 
     void  SetData(const Type* type, void* array, u32 index, void* data);
     void* GetData(const Type* type, void* array, u32 index);
+    void  ResizeData(const Type* type, void* array, u32 max, u32 new_max);
     void  Load(const Type* type, void* data);
     void  Free(const Type* type, void* data);
     void  Serialize(const Type* type, void* data, YAML::Emitter& emitter);
     void  Deserialize(const Type* type, void* data, const YAML::Node& node);
+    
 #ifdef NIT_EDITOR_ENABLED
     void  DrawEditor(const Type* type, void* data);
 #endif
+
     template<typename T>
-    T& SetData(void* array, u32 index, const T& data)
+    T* SetData(void* array, u32 index, const T& data)
     {
         T* casted_array = static_cast<T*>(array);
-        T& saved_data = casted_array[index];
-        saved_data = data;
+        T* saved_data = &casted_array[index];
+        *saved_data = data;
         return saved_data;
     }
 
     template<typename T>
-    T* GetDataPtr(void* array, u32 index)
+    T* GetData(void* array, u32 index)
     {
         T* casted_array = static_cast<T*>(array);
         return &casted_array[index];
-    }
-    
-    template<typename T>
-    T& GetData(void* array, u32 index)
-    {
-        T* casted_array = static_cast<T*>(array);
-        return casted_array[index];
     }
 
     struct EnumType

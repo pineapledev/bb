@@ -238,7 +238,7 @@ namespace Nit
 
         if (IsAssetValid(sprite->texture))
         {
-            sprite->sub_texture_index = FindIndexOfSubTexture2D(GetAssetData<Texture2D>(sprite->texture), sprite->sub_texture);
+            SetSpriteSubTexture2D(*sprite, sprite->sub_texture);
         }
         else
         {

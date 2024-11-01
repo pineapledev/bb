@@ -7,6 +7,13 @@
 
 namespace Nit
 {
+    struct AssetNode
+    {
+        AssetHandle      asset;
+        bool             is_dir;
+        Array<AssetNode> children;
+    };
+    
     struct Editor
     {
         enum class Selection : u8
@@ -26,12 +33,13 @@ namespace Nit
         bool        show_assets          = true;
         bool        show_stats           = false;
 
-        AssetHandle icons;
-        FrameBuffer frame_buffer       = {};
-        Vector2     viewport_size;
-        Vector2     viewport_min_bound;
-        Vector2     viewport_max_bound;
-        Vector2     mouse_position;
+        Array<AssetNode> asset_nodes;
+        AssetHandle      icons;
+        FrameBuffer      frame_buffer       = {};
+        Vector2          viewport_size;
+        Vector2          viewport_min_bound;
+        Vector2          viewport_max_bound;
+        Vector2          mouse_position;
     };
 
     void SetEditorInstance(Editor* editor_instance);

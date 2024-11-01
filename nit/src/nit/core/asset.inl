@@ -47,7 +47,7 @@ namespace Nit
     T* GetAssetData(AssetHandle& asset)
     {
         AssetPool* pool = GetAssetPoolSafe(GetType<T>());
-        return GetDataPtr<T>(&pool->data_pool, asset.data_id);
+        return GetData<T>(&pool->data_pool, asset.data_id);
     }
     
     template<typename T>

@@ -5,6 +5,12 @@ namespace Nit
     template<typename T>
     void Load(Pool* pool, u32 max_element_count, bool self_id_management)
     {
+        if (!pool)
+        {
+            NIT_DEBUGBREAK();
+            return;
+        }
+        
         if (!IsTypeRegistered<T>())
         {
             RegisterType<T>();
@@ -27,28 +33,56 @@ namespace Nit
     }
     
     template<typename T>
-    T& InsertDataWithID(Pool* pool, u32 element_id, const T& data)
+    T* InsertDataWithID(Pool* pool, u32 element_id, const T& data)
     {
+        if (!pool)
+        {
+            NIT_DEBUGBREAK();
+            return nullptr;
+        }
+        
         NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");
-        NIT_CHECK_MSG(pool, "Invalid pool!");
-        return SetData(pool->elements, Insert(&pool->sparse_set, element_id), data);
+
+        u32 index = Insert(&pool->sparse_set, element_id);
+        
+        if (index == SparseSet::INVALID_INDEX)
+        {
+            NIT_DEBUGBREAK();
+            return nullptr;
+        }
+        
+        return SetData(pool->elements, index, data);
     }
 
     template<typename T>
-    T& InsertData(Pool* pool, u32& out_id, const T& data)
+    T* InsertData(Pool* pool, u32& out_id, const T& data)
     {
-        NIT_CHECK_MSG(pool->self_id_management, "This pool does not manage own u32s!");
+        if (!pool || !pool->self_id_management)
+        {
+            NIT_DEBUGBREAK();
+            return nullptr;
+        }
+        
         out_id = pool->available_ids.front();
         pool->available_ids.pop();
         return InsertDataWithID(pool, out_id, data);
     }
     
     template<typename T>
-    T* GetDataPtr(Pool* pool, u32 element_id)
+    T* GetData(Pool* pool, u32 element_id)
     {
+        if (!pool)
+        {
+            NIT_DEBUGBREAK();
+            return nullptr;
+        }
+
         NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");
-        NIT_CHECK_MSG(pool, "Invalid pool!");
-        NIT_CHECK_MSG(IsValid(pool, element_id), "Trying to get non-existent element!");
+
+        if (!IsValid(pool, element_id))
+        {
+            return nullptr;
+        }
         
         u32 element_index = Search(&pool->sparse_set, element_id);
 
@@ -57,12 +91,6 @@ namespace Nit
             return nullptr;
         }
         
-        return GetDataPtr<T>(pool->elements, element_index);
-    }
-    
-    template<typename T>
-    T& GetData(Pool* pool, u32 element_id)
-    {
-        return *GetDataPtr<T>(pool, element_id);
+        return GetData<T>(pool->elements, element_index);
     }
 }

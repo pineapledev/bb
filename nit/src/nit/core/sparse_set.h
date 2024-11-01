@@ -14,11 +14,11 @@ namespace Nit
     
     struct SparseSetDeletion
     {
-        u32 deleted_slot = 0;
-        u32 last_slot    = 0;
+        bool succeded     = false;
+        u32  deleted_slot = 0;
+        u32  last_slot    = 0;
     };
     
-    bool IsLoaded(SparseSet* sparse_set);
     bool IsValid(SparseSet* sparse_set);
     bool IsEmpty(SparseSet* sparse_set);
     bool IsFull(SparseSet* sparse_set);

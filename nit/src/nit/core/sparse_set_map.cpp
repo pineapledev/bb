@@ -61,6 +61,6 @@ namespace Nit
         sparse_set->dense[deleted_slot] = last_element;
         sparse_set->sparse[last_element] = deleted_slot;
 
-        return { deleted_slot, last_slot };
+        return { true, deleted_slot, last_slot };
     }
 }

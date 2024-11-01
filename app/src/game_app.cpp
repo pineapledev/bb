@@ -30,6 +30,8 @@ struct Move
     Vector2 destination;
 };
 
+AssetHandle test_texture;
+
 // -----------------------------------------------------------------
 
 void ResetMovement(Transform& transform, Move& move)
@@ -48,6 +50,8 @@ void SpawnEntity()
     AddComponent<Transform>(entity).position = position;
     //AddComponent<Transform>(entity).position = V3_ZERO;
     AddComponent<Sprite>(entity).tint = GetRandomColor();
+    GetComponent<Sprite>(entity).texture = test_texture;
+    SetSpriteSubTexture2D(GetComponent<Sprite>(entity), "cpp");
     ResetMovement(GetComponent<Transform>(entity), AddComponent<Move>(entity));
 }
 
@@ -74,6 +78,8 @@ void GameStart()
     {
         LoadAsset(test_scene);
     }
+
+    test_texture = FindAssetByName("test_sheet");
 }
 
 void GameUpdate()

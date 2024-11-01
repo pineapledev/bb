@@ -142,11 +142,11 @@ namespace Nit
         NIT_CHECK_MSG(GetEntityRegistryInstance()->signatures[entity].size() <= MAX_COMPONENTS_PER_ENTITY + 1, "Components per entity out of range!");
         ComponentPool* component_pool = FindComponentPool<T>();
         NIT_CHECK_MSG(component_pool, "Invalid component type!");
-        T& element = InsertDataWithID(&component_pool->data_pool, entity, data);
+        T* element = InsertDataWithID(&component_pool->data_pool, entity, data);
         EntitySignature& signature = GetEntityRegistryInstance()->signatures[entity]; 
         signature.set(GetComponentTypeIndex<T>(), true);
         EntitySignatureChanged(entity, signature);
-        return element;
+        return *element;
     }
     
     template<typename T>
@@ -156,7 +156,7 @@ namespace Nit
         NIT_CHECK_MSG(GetEntityRegistryInstance()->signatures[entity].size() <= MAX_COMPONENTS_PER_ENTITY + 1, "Components per entity out of range!");
         ComponentPool* component_pool = FindComponentPool<T>();
         NIT_CHECK_MSG(component_pool, "Invalid component type!");
-        T& element = InsertDataWithID(&component_pool->data_pool, entity, data);
+        T* element = InsertDataWithID(&component_pool->data_pool, entity, data);
         EntitySignature& signature = GetEntityRegistryInstance()->signatures[entity]; 
         signature.set(GetComponentTypeIndex<T>(), true);
         EntitySignatureChanged(entity, signature);
@@ -164,7 +164,7 @@ namespace Nit
         args.entity = entity;
         args.type = component_pool->data_pool.type;
         Broadcast<const ComponentAddedArgs&>(GetEntityRegistryInstance()->component_added_event, args);
-        return element;
+        return *element;
     }
 
     template<typename T>
@@ -192,7 +192,7 @@ namespace Nit
         NIT_CHECK_MSG(IsEntityValid(entity), "Invalid entity!");
         ComponentPool* component_pool = FindComponentPool<T>();
         NIT_CHECK_MSG(component_pool, "Invalid component type!");
-        return GetData<T>(&component_pool->data_pool, entity);
+        return *GetData<T>(&component_pool->data_pool, entity);
     }
     
     template<typename T>
@@ -201,7 +201,7 @@ namespace Nit
         NIT_CHECK_MSG(IsEntityValid(entity), "Invalid entity!");
         ComponentPool* component_pool = FindComponentPool<T>();
         NIT_CHECK_MSG(component_pool, "Invalid component type!");
-        return GetDataPtr<T>(&component_pool->data_pool, entity);
+        return GetData<T>(&component_pool->data_pool, entity);
     }
 
     template<typename T>
