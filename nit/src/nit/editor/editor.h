@@ -9,9 +9,10 @@ namespace Nit
 {
     struct AssetNode
     {
-        AssetHandle      asset;
-        bool             is_dir;
-        Array<AssetNode> children;
+        bool             is_dir   = false;
+        u32              parent   = U32_MAX;
+        AssetHandle      asset    = {};
+        Array<u32>       children = {};
     };
     
     struct Editor
@@ -32,10 +33,11 @@ namespace Nit
         bool        show_properties      = true;
         bool        show_assets          = true;
         bool        show_stats           = false;
-
-        Array<AssetNode> asset_nodes;
+        
+        Pool             asset_nodes;
+        u32              root_node = U32_MAX;
         AssetHandle      icons;
-        FrameBuffer      frame_buffer       = {};
+        FrameBuffer      frame_buffer;
         Vector2          viewport_size;
         Vector2          viewport_min_bound;
         Vector2          viewport_max_bound;
@@ -44,7 +46,7 @@ namespace Nit
 
     void SetEditorInstance(Editor* editor_instance);
     Editor* GetEditorInstance();
-
+    
     void InitEditor();
     void BeginDrawEditor();
     void EndDrawEditor();

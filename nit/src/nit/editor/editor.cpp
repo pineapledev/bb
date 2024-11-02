@@ -27,19 +27,54 @@ namespace Nit
         return editor;
     }
 
-    
-    static ListenerAction OnAssetCreated(const AssetCreatedArgs& args)
+    void InvalidateAssetNodes()
     {
-            
-        return ListenerAction::StayListening;
-    }
-
-    static ListenerAction OnAssetDestroyed(const AssetDestroyedArgs& args)
-    {
+        if (editor->asset_nodes.elements != nullptr)
+        {
+            Free(&editor->asset_nodes);
+            editor->root_node = U32_MAX;
+        }
         
-        return ListenerAction::StayListening;
-    }
+        Load<AssetNode>(&editor->asset_nodes, 300, true);
 
+        u32 last_dir_node = U32_MAX;
+        
+        for (const auto& dir_entry : RecursiveDirectoryIterator(GetWorkingDirectory()))
+        {
+            const Path& dir_path = dir_entry.path();
+
+            if (dir_entry.is_directory())
+            {
+                u32 id; InsertData(&editor->asset_nodes, id, AssetNode{ .is_dir = true, .parent = last_dir_node });
+                
+                if (editor->root_node == U32_MAX)
+                {
+                    editor->root_node = id;
+                }
+                
+                last_dir_node = id;
+            }
+            else if (dir_path.extension().string() == app->asset_registry.extension)
+            {
+                AssetHandle handle = FindAssetByName(dir_path.filename().string());
+                
+                if (IsAssetValid(handle))
+                {
+                    continue;
+                }
+                
+                u32 id; InsertData(&editor->asset_nodes, id, AssetNode{ .is_dir = false, .parent = last_dir_node, .asset = handle });
+                AssetNode* node        = GetData<AssetNode>(&editor->asset_nodes, id);
+                AssetNode* parent_node = GetData<AssetNode>(&editor->asset_nodes, node->parent); 
+                
+                if (parent_node && parent_node->is_dir)
+                {
+                    parent_node->children.push_back(id);
+                }
+            }
+        }
+    }
+    
     void InitEditor()
     {
         NIT_CHECK_EDITOR_CREATED
@@ -78,8 +113,7 @@ namespace Nit
 
         editor->icons = FindAssetByName("editor_icons");
         
-        app->asset_registry.asset_created_event   += AssetCreatedListener::Create(OnAssetCreated);
-        app->asset_registry.asset_destroyed_event += AssetDestroyedListener::Create(OnAssetDestroyed);
+        
     }
 
     void BeginDrawEditor()
