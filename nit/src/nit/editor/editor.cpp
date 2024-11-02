@@ -32,26 +32,20 @@ namespace Nit
         if (editor->asset_nodes.elements != nullptr)
         {
             Free(&editor->asset_nodes);
-            editor->root_node = U32_MAX;
         }
         
         Load<AssetNode>(&editor->asset_nodes, 300, true);
 
-        u32 last_dir_node = U32_MAX;
+        InsertData(&editor->asset_nodes, editor->root_node, AssetNode{ .is_dir = true });
+        u32 last_dir_node = editor->root_node;
         
-        for (const auto& dir_entry : RecursiveDirectoryIterator(GetWorkingDirectory()))
+        for (const auto& dir_entry : RecursiveDirectoryIterator(GetAssetsDirectory()))
         {
             const Path& dir_path = dir_entry.path();
 
             if (dir_entry.is_directory())
             {
                 u32 id; InsertData(&editor->asset_nodes, id, AssetNode{ .is_dir = true, .parent = last_dir_node });
-                
-                if (editor->root_node == U32_MAX)
-                {
-                    editor->root_node = id;
-                }
-                
                 last_dir_node = id;
             }
             else if (dir_path.extension().string() == app->asset_registry.extension)
@@ -113,7 +107,7 @@ namespace Nit
 
         editor->icons = FindAssetByName("editor_icons");
         
-        
+        InvalidateAssetNodes();
     }
 
     void BeginDrawEditor()
@@ -380,7 +374,7 @@ namespace Nit
 
                     const String name = std::to_string(entity);
                     const ImGuiTreeNodeFlags flags = ((IsEntityValid(entity) && selected_entity == entity) ?
-                        ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
+                        ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_Leaf;
 
                     const bool is_entity_expanded = ImGui::TreeNodeEx(name.c_str(), flags);
             

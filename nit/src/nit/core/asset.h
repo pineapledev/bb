@@ -66,6 +66,8 @@ namespace Nit
 
     AssetHandle CreateAssetHandle(AssetInfo* asset_info);
     void RetargetAssetHandle(AssetHandle& asset_handle);
+
+    Path GetAssetsDirectory();
     
     void SetAssetRegistryInstance(AssetRegistry* asset_registry_instance);
     

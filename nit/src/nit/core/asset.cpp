@@ -49,6 +49,11 @@ namespace Nit
         asset_handle = CreateAssetHandle(asset_info);
     }
 
+    Path GetAssetsDirectory()
+    {
+        return GetWorkingDirectory().string().append("\\assets");
+    }
+
     void SetAssetRegistryInstance(AssetRegistry* asset_registry_instance)
     {
         NIT_CHECK(asset_registry_instance);
@@ -288,7 +293,7 @@ namespace Nit
     {
         NIT_CHECK_ASSET_REGISTRY_CREATED
         
-        for (const auto& dir_entry : RecursiveDirectoryIterator(GetWorkingDirectory()))
+        for (const auto& dir_entry : RecursiveDirectoryIterator(GetAssetsDirectory()))
         {
             const Path& dir_path = dir_entry.path();
             
