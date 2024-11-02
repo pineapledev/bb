@@ -61,6 +61,20 @@ namespace ImGui
         return Button(label);
     }
 
+    void CenteredText(const char* label, float alignment)
+    {
+        const ImGuiStyle& style = GetStyle();
+
+        const f32 size = CalcTextSize(label).x + style.FramePadding.x * 2.0f;
+        const f32 avail = GetContentRegionAvail().x;
+
+        const f32 off = (avail - size) * alignment;
+        if (off > 0.0f)
+            SetCursorPosX(GetCursorPosX() + off);
+
+        return Text(label);
+    }
+
     bool InputText(const char* label, String& text)
     {
         BeginProperty(label);

@@ -23,6 +23,12 @@ namespace Nit
             Entity,
             Asset
         };
+
+        enum class Icon : u8
+        {
+            File   = 0,
+            Folder = 1
+        };
         
         bool        enabled              = true;
         Entity      selected_entity      = 0;
@@ -36,6 +42,7 @@ namespace Nit
         
         Pool             asset_nodes;
         u32              root_node = U32_MAX;
+        u32              draw_node = U32_MAX;
         AssetHandle      icons;
         FrameBuffer      frame_buffer;
         Vector2          viewport_size;

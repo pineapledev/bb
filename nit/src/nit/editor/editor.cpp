@@ -1,5 +1,7 @@
 ﻿#include "editor.h"
 
+#include <stack>
+
 #include "core/app.h"
 #include "logic/components.h"
 #include "logic/scene.h"
@@ -27,6 +29,45 @@ namespace Nit
         return editor;
     }
 
+    void TraverseDirectory(const Path& directory, u32 parent_node, int depth = 0)
+    {
+        for (const auto& dir_entry : std::filesystem::directory_iterator(directory))
+        {
+            const Path& dir_path = dir_entry.path();
+
+            if (dir_entry.is_directory())
+            {
+                u32 id;
+                InsertData(&editor->asset_nodes, id, AssetNode{ .is_dir = true, .parent = parent_node, .asset = { .name = dir_path.stem().string() } });
+                
+                if (AssetNode* parent_node_data = GetData<AssetNode>(&editor->asset_nodes, parent_node))
+                {
+                    parent_node_data->children.push_back(id);
+                }
+
+                TraverseDirectory(dir_path, id, depth + 1);
+            }
+            else if (dir_path.extension().string() == app->asset_registry.extension)
+            {
+                AssetHandle handle = FindAssetByName(dir_path.filename().stem().string());
+
+                if (!IsAssetValid(handle))
+                {
+                    continue;
+                }
+
+                u32 id;
+                InsertData(&editor->asset_nodes, id, AssetNode{ .is_dir = false, .parent = parent_node, .asset = handle });
+                AssetNode* parent_node_data = GetData<AssetNode>(&editor->asset_nodes, parent_node);
+
+                if (parent_node_data && parent_node_data->is_dir)
+                {
+                    parent_node_data->children.push_back(id);
+                }
+            }
+        }
+    }
+
     void InvalidateAssetNodes()
     {
         if (editor->asset_nodes.elements != nullptr)
@@ -37,36 +78,9 @@ namespace Nit
         Load<AssetNode>(&editor->asset_nodes, 300, true);
 
         InsertData(&editor->asset_nodes, editor->root_node, AssetNode{ .is_dir = true });
-        u32 last_dir_node = editor->root_node;
+        editor->draw_node = editor->root_node;
         
-        for (const auto& dir_entry : RecursiveDirectoryIterator(GetAssetsDirectory()))
-        {
-            const Path& dir_path = dir_entry.path();
-
-            if (dir_entry.is_directory())
-            {
-                u32 id; InsertData(&editor->asset_nodes, id, AssetNode{ .is_dir = true, .parent = last_dir_node });
-                last_dir_node = id;
-            }
-            else if (dir_path.extension().string() == app->asset_registry.extension)
-            {
-                AssetHandle handle = FindAssetByName(dir_path.filename().string());
-                
-                if (IsAssetValid(handle))
-                {
-                    continue;
-                }
-                
-                u32 id; InsertData(&editor->asset_nodes, id, AssetNode{ .is_dir = false, .parent = last_dir_node, .asset = handle });
-                AssetNode* node        = GetData<AssetNode>(&editor->asset_nodes, id);
-                AssetNode* parent_node = GetData<AssetNode>(&editor->asset_nodes, node->parent); 
-                
-                if (parent_node && parent_node->is_dir)
-                {
-                    parent_node->children.push_back(id);
-                }
-            }
-        }
+        TraverseDirectory(GetAssetsDirectory(), editor->root_node);
     }
     
     void InitEditor()
@@ -519,15 +533,76 @@ namespace Nit
                 {
                     RetainAsset(editor->icons);
                 }
-                
-                Texture2D* icons = GetAssetData<Texture2D>(editor->icons);
-                ImTextureID icons_id = reinterpret_cast<ImTextureID>(static_cast<u64>(icons->id));
-                V2Verts2D verts_2d;
-                FillQuadVertexUVs(verts_2d, icons->size, icons->sub_textures[0].size, icons->sub_textures[0].location);
-                Vector2 bottom_left = verts_2d[0];
-                Vector2 top_right   = verts_2d[2];
-                
-                ImGui::ImageButton("test", icons_id, {84.f, 84.f}, {bottom_left.x, bottom_left.y}, {top_right.x, top_right.y});
+
+                if (!IsValid(&editor->asset_nodes, editor->draw_node))
+                {
+                    NIT_DEBUGBREAK();
+                }
+                else
+                {
+                    static auto draw_image_button = [](Editor::Icon icon, f32 size, const char* tag) -> bool
+                    {
+                        Texture2D* icons = GetAssetData<Texture2D>(editor->icons);
+                        ImTextureID icons_id = reinterpret_cast<ImTextureID>(static_cast<u64>(icons->id));
+                        V2Verts2D verts_2d;
+                        FillQuadVertexUVs(verts_2d, icons->size, icons->sub_textures[(u8) icon].size, icons->sub_textures[(u8) icon].location);
+                        Vector2 bottom_left = verts_2d[0];
+                        Vector2 top_right   = verts_2d[2];
+                        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+                        bool res = ImGui::ImageButton(tag, icons_id, {size, size}, {bottom_left.x, bottom_left.y}, {top_right.x, top_right.y});
+                        ImGui::PopStyleColor();
+                        return res;
+                    };
+
+                    AssetNode* draw_node = GetData<AssetNode>(&editor->asset_nodes, editor->draw_node);
+
+                    if (editor->draw_node != editor->root_node)
+                    {
+                        if (ImGui::Button("<-"))
+                        {
+                            editor->draw_node = draw_node->parent;
+                        }
+                    }
+
+                    static f32 padding = 16.f;
+                    static f32 thumbnail_size = 84.f;
+                    f32 cell_size = thumbnail_size + padding;
+    
+                    f32 panel_width = ImGui::GetContentRegionAvail().x;
+                    i32 column_count = static_cast<i32>(panel_width / cell_size);
+                    if (column_count < 1) column_count = 1;
+    
+                    ImGui::Columns(column_count, nullptr, false);
+                    
+                    for (u32 node_id : draw_node->children)
+                    {
+                        AssetNode* node = GetData<AssetNode>(&editor->asset_nodes, node_id);
+                        
+                        if (!node)
+                        {
+                            NIT_DEBUGBREAK();
+                            continue;
+                        }
+
+                        if (node->is_dir)
+                        {
+                            if (draw_image_button(Editor::Icon::Folder, thumbnail_size, std::to_string(node_id).c_str()))
+                            {
+                                editor->draw_node = node_id;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            if (draw_image_button(Editor::Icon::File, thumbnail_size, std::to_string(node_id).c_str()))
+                            {
+                            }
+                        }
+
+                        ImGui::CenteredText(node->asset.name.c_str());
+                        ImGui::NextColumn();
+                    }
+                }
             }
             ImGui::End();
         }

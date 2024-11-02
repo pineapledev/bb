@@ -17,6 +17,7 @@ namespace ImGui
     void Spacing(u32 spacing);
 
     bool CenteredButton(const char* label, float alignment = 0.5f);
+    void CenteredText(const char* label, float alignment = 0.7f);
 
     bool InputText(const char* label, String& text);
     bool InputFolder(const Window* window, const char* label, String& text);
