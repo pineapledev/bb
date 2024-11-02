@@ -42,7 +42,7 @@ project "nit"
         "3rd/openal/src",
         "3rd/openal/src/common",
         "3rd/yaml/include",
-        "3rd/assimp/include",
+        --"3rd/assimp/include",
         "3rd/imgui/src"
     }
     
@@ -52,7 +52,7 @@ project "nit"
         "glad",
         "openal",
         "yaml",
-        "assimp",
+        --"assimp",
         "imgui"
     }
 
@@ -420,177 +420,177 @@ project "yaml"
     filter "system:windows"
         systemversion "latest"
 
-project "assimp"
+-- project "assimp"
 
-    kind          "StaticLib"
-    language      "C++"
-    location      "3rd/assimp"
-    staticruntime "off"
+--     kind          "StaticLib"
+--     language      "C++"
+--     location      "3rd/assimp"
+--     staticruntime "off"
 
-    targetdir (binariesdir)
-    objdir    (intermediatesdir)
+--     targetdir (binariesdir)
+--     objdir    (intermediatesdir)
 
-  defines 
-  {
-      -- "SWIG",
-      "ASSIMP_BUILD_NO_OWN_ZLIB",
+--   defines 
+--   {
+--       -- "SWIG",
+--       "ASSIMP_BUILD_NO_OWN_ZLIB",
 
-      "ASSIMP_BUILD_NO_X_IMPORTER",
-      "ASSIMP_BUILD_NO_3DS_IMPORTER",
-      "ASSIMP_BUILD_NO_MD3_IMPORTER",
-      "ASSIMP_BUILD_NO_MDL_IMPORTER",
-      "ASSIMP_BUILD_NO_MD2_IMPORTER",
-      -- "ASSIMP_BUILD_NO_PLY_IMPORTER",
-      "ASSIMP_BUILD_NO_ASE_IMPORTER",
-      -- "ASSIMP_BUILD_NO_OBJ_IMPORTER",
-      "ASSIMP_BUILD_NO_AMF_IMPORTER",
-      "ASSIMP_BUILD_NO_HMP_IMPORTER",
-      "ASSIMP_BUILD_NO_SMD_IMPORTER",
-      "ASSIMP_BUILD_NO_MDC_IMPORTER",
-      "ASSIMP_BUILD_NO_MD5_IMPORTER",
-      "ASSIMP_BUILD_NO_STL_IMPORTER",
-      "ASSIMP_BUILD_NO_LWO_IMPORTER",
-      "ASSIMP_BUILD_NO_DXF_IMPORTER",
-      "ASSIMP_BUILD_NO_NFF_IMPORTER",
-      "ASSIMP_BUILD_NO_RAW_IMPORTER",
-      "ASSIMP_BUILD_NO_OFF_IMPORTER",
-      "ASSIMP_BUILD_NO_AC_IMPORTER",
-      "ASSIMP_BUILD_NO_BVH_IMPORTER",
-      "ASSIMP_BUILD_NO_IRRMESH_IMPORTER",
-      "ASSIMP_BUILD_NO_IRR_IMPORTER",
-      "ASSIMP_BUILD_NO_Q3D_IMPORTER",
-      "ASSIMP_BUILD_NO_B3D_IMPORTER",
-      -- "ASSIMP_BUILD_NO_COLLADA_IMPORTER",
-      "ASSIMP_BUILD_NO_TERRAGEN_IMPORTER",
-      "ASSIMP_BUILD_NO_CSM_IMPORTER",
-      "ASSIMP_BUILD_NO_3D_IMPORTER",
-      "ASSIMP_BUILD_NO_LWS_IMPORTER",
-      "ASSIMP_BUILD_NO_OGRE_IMPORTER",
-      "ASSIMP_BUILD_NO_OPENGEX_IMPORTER",
-      "ASSIMP_BUILD_NO_MS3D_IMPORTER",
-      "ASSIMP_BUILD_NO_COB_IMPORTER",
-      "ASSIMP_BUILD_NO_BLEND_IMPORTER",
-      "ASSIMP_BUILD_NO_Q3BSP_IMPORTER",
-      "ASSIMP_BUILD_NO_NDO_IMPORTER",
-      "ASSIMP_BUILD_NO_IFC_IMPORTER",
-      "ASSIMP_BUILD_NO_XGL_IMPORTER",
-      "ASSIMP_BUILD_NO_FBX_IMPORTER",
-      "ASSIMP_BUILD_NO_ASSBIN_IMPORTER",
-      -- "ASSIMP_BUILD_NO_GLTF_IMPORTER",
-      "ASSIMP_BUILD_NO_C4D_IMPORTER",
-      "ASSIMP_BUILD_NO_3MF_IMPORTER",
-      "ASSIMP_BUILD_NO_X3D_IMPORTER",
-      "ASSIMP_BUILD_NO_MMD_IMPORTER",
+--       "ASSIMP_BUILD_NO_X_IMPORTER",
+--       "ASSIMP_BUILD_NO_3DS_IMPORTER",
+--       "ASSIMP_BUILD_NO_MD3_IMPORTER",
+--       "ASSIMP_BUILD_NO_MDL_IMPORTER",
+--       "ASSIMP_BUILD_NO_MD2_IMPORTER",
+--       -- "ASSIMP_BUILD_NO_PLY_IMPORTER",
+--       "ASSIMP_BUILD_NO_ASE_IMPORTER",
+--       -- "ASSIMP_BUILD_NO_OBJ_IMPORTER",
+--       "ASSIMP_BUILD_NO_AMF_IMPORTER",
+--       "ASSIMP_BUILD_NO_HMP_IMPORTER",
+--       "ASSIMP_BUILD_NO_SMD_IMPORTER",
+--       "ASSIMP_BUILD_NO_MDC_IMPORTER",
+--       "ASSIMP_BUILD_NO_MD5_IMPORTER",
+--       "ASSIMP_BUILD_NO_STL_IMPORTER",
+--       "ASSIMP_BUILD_NO_LWO_IMPORTER",
+--       "ASSIMP_BUILD_NO_DXF_IMPORTER",
+--       "ASSIMP_BUILD_NO_NFF_IMPORTER",
+--       "ASSIMP_BUILD_NO_RAW_IMPORTER",
+--       "ASSIMP_BUILD_NO_OFF_IMPORTER",
+--       "ASSIMP_BUILD_NO_AC_IMPORTER",
+--       "ASSIMP_BUILD_NO_BVH_IMPORTER",
+--       "ASSIMP_BUILD_NO_IRRMESH_IMPORTER",
+--       "ASSIMP_BUILD_NO_IRR_IMPORTER",
+--       "ASSIMP_BUILD_NO_Q3D_IMPORTER",
+--       "ASSIMP_BUILD_NO_B3D_IMPORTER",
+--       -- "ASSIMP_BUILD_NO_COLLADA_IMPORTER",
+--       "ASSIMP_BUILD_NO_TERRAGEN_IMPORTER",
+--       "ASSIMP_BUILD_NO_CSM_IMPORTER",
+--       "ASSIMP_BUILD_NO_3D_IMPORTER",
+--       "ASSIMP_BUILD_NO_LWS_IMPORTER",
+--       "ASSIMP_BUILD_NO_OGRE_IMPORTER",
+--       "ASSIMP_BUILD_NO_OPENGEX_IMPORTER",
+--       "ASSIMP_BUILD_NO_MS3D_IMPORTER",
+--       "ASSIMP_BUILD_NO_COB_IMPORTER",
+--       "ASSIMP_BUILD_NO_BLEND_IMPORTER",
+--       "ASSIMP_BUILD_NO_Q3BSP_IMPORTER",
+--       "ASSIMP_BUILD_NO_NDO_IMPORTER",
+--       "ASSIMP_BUILD_NO_IFC_IMPORTER",
+--       "ASSIMP_BUILD_NO_XGL_IMPORTER",
+--       "ASSIMP_BUILD_NO_FBX_IMPORTER",
+--       "ASSIMP_BUILD_NO_ASSBIN_IMPORTER",
+--       -- "ASSIMP_BUILD_NO_GLTF_IMPORTER",
+--       "ASSIMP_BUILD_NO_C4D_IMPORTER",
+--       "ASSIMP_BUILD_NO_3MF_IMPORTER",
+--       "ASSIMP_BUILD_NO_X3D_IMPORTER",
+--       "ASSIMP_BUILD_NO_MMD_IMPORTER",
       
-      "ASSIMP_BUILD_NO_STEP_EXPORTER",
-      "ASSIMP_BUILD_NO_SIB_IMPORTER",
+--       "ASSIMP_BUILD_NO_STEP_EXPORTER",
+--       "ASSIMP_BUILD_NO_SIB_IMPORTER",
 
-      -- "ASSIMP_BUILD_NO_MAKELEFTHANDED_PROCESS",
-      -- "ASSIMP_BUILD_NO_FLIPUVS_PROCESS",
-      -- "ASSIMP_BUILD_NO_FLIPWINDINGORDER_PROCESS",
-      -- "ASSIMP_BUILD_NO_CALCTANGENTS_PROCESS",
-      "ASSIMP_BUILD_NO_JOINVERTICES_PROCESS",
-      -- "ASSIMP_BUILD_NO_TRIANGULATE_PROCESS",
-      "ASSIMP_BUILD_NO_GENFACENORMALS_PROCESS",
-      -- "ASSIMP_BUILD_NO_GENVERTEXNORMALS_PROCESS",
-      "ASSIMP_BUILD_NO_REMOVEVC_PROCESS",
-      "ASSIMP_BUILD_NO_SPLITLARGEMESHES_PROCESS",
-      "ASSIMP_BUILD_NO_PRETRANSFORMVERTICES_PROCESS",
-      "ASSIMP_BUILD_NO_LIMITBONEWEIGHTS_PROCESS",
-      -- "ASSIMP_BUILD_NO_VALIDATEDS_PROCESS",
-      "ASSIMP_BUILD_NO_IMPROVECACHELOCALITY_PROCESS",
-      "ASSIMP_BUILD_NO_FIXINFACINGNORMALS_PROCESS",
-      "ASSIMP_BUILD_NO_REMOVE_REDUNDANTMATERIALS_PROCESS",
-      "ASSIMP_BUILD_NO_FINDINVALIDDATA_PROCESS",
-      "ASSIMP_BUILD_NO_FINDDEGENERATES_PROCESS",
-      "ASSIMP_BUILD_NO_SORTBYPTYPE_PROCESS",
-      "ASSIMP_BUILD_NO_GENUVCOORDS_PROCESS",
-      "ASSIMP_BUILD_NO_TRANSFORMTEXCOORDS_PROCESS",
-      "ASSIMP_BUILD_NO_FINDINSTANCES_PROCESS",
-      "ASSIMP_BUILD_NO_OPTIMIZEMESHES_PROCESS",
-      "ASSIMP_BUILD_NO_OPTIMIZEGRAPH_PROCESS",
-      "ASSIMP_BUILD_NO_SPLITBYBONECOUNT_PROCESS",
-      "ASSIMP_BUILD_NO_DEBONE_PROCESS",
-      "ASSIMP_BUILD_NO_EMBEDTEXTURES_PROCESS",
-      "ASSIMP_BUILD_NO_GLOBALSCALE_PROCESS",
-      "_CRT_SECURE_NO_WARNINGS"
-  }
+--       -- "ASSIMP_BUILD_NO_MAKELEFTHANDED_PROCESS",
+--       -- "ASSIMP_BUILD_NO_FLIPUVS_PROCESS",
+--       -- "ASSIMP_BUILD_NO_FLIPWINDINGORDER_PROCESS",
+--       -- "ASSIMP_BUILD_NO_CALCTANGENTS_PROCESS",
+--       "ASSIMP_BUILD_NO_JOINVERTICES_PROCESS",
+--       -- "ASSIMP_BUILD_NO_TRIANGULATE_PROCESS",
+--       "ASSIMP_BUILD_NO_GENFACENORMALS_PROCESS",
+--       -- "ASSIMP_BUILD_NO_GENVERTEXNORMALS_PROCESS",
+--       "ASSIMP_BUILD_NO_REMOVEVC_PROCESS",
+--       "ASSIMP_BUILD_NO_SPLITLARGEMESHES_PROCESS",
+--       "ASSIMP_BUILD_NO_PRETRANSFORMVERTICES_PROCESS",
+--       "ASSIMP_BUILD_NO_LIMITBONEWEIGHTS_PROCESS",
+--       -- "ASSIMP_BUILD_NO_VALIDATEDS_PROCESS",
+--       "ASSIMP_BUILD_NO_IMPROVECACHELOCALITY_PROCESS",
+--       "ASSIMP_BUILD_NO_FIXINFACINGNORMALS_PROCESS",
+--       "ASSIMP_BUILD_NO_REMOVE_REDUNDANTMATERIALS_PROCESS",
+--       "ASSIMP_BUILD_NO_FINDINVALIDDATA_PROCESS",
+--       "ASSIMP_BUILD_NO_FINDDEGENERATES_PROCESS",
+--       "ASSIMP_BUILD_NO_SORTBYPTYPE_PROCESS",
+--       "ASSIMP_BUILD_NO_GENUVCOORDS_PROCESS",
+--       "ASSIMP_BUILD_NO_TRANSFORMTEXCOORDS_PROCESS",
+--       "ASSIMP_BUILD_NO_FINDINSTANCES_PROCESS",
+--       "ASSIMP_BUILD_NO_OPTIMIZEMESHES_PROCESS",
+--       "ASSIMP_BUILD_NO_OPTIMIZEGRAPH_PROCESS",
+--       "ASSIMP_BUILD_NO_SPLITBYBONECOUNT_PROCESS",
+--       "ASSIMP_BUILD_NO_DEBONE_PROCESS",
+--       "ASSIMP_BUILD_NO_EMBEDTEXTURES_PROCESS",
+--       "ASSIMP_BUILD_NO_GLOBALSCALE_PROCESS",
+--       "_CRT_SECURE_NO_WARNINGS"
+--   }
 
-    disablewarnings 
-    { 
-        "4267",
-        "4065"
-    }
+--     disablewarnings 
+--     { 
+--         "4267",
+--         "4065"
+--     }
 
-  files 
-  {
-      "3rd/assimp/include/**",
-      "3rd/assimp/code/Assimp.cpp",
-      "3rd/assimp/code/BaseImporter.cpp",
-      "3rd/assimp/code/ColladaLoader.cpp",
-      "3rd/assimp/code/ColladaParser.cpp",
-      "3rd/assimp/code/CreateAnimMesh.cpp",
-      "3rd/assimp/code/PlyParser.cpp",
-      "3rd/assimp/code/PlyLoader.cpp",
-      "3rd/assimp/code/BaseProcess.cpp",
-      "3rd/assimp/code/EmbedTexturesProcess.cpp",
-      "3rd/assimp/code/ConvertToLHProcess.cpp",
-      "3rd/assimp/code/DefaultIOStream.cpp",
-      "3rd/assimp/code/DefaultIOSystem.cpp",
-      "3rd/assimp/code/DefaultLogger.cpp",
-      "3rd/assimp/code/GenVertexNormalsProcess.cpp",
-      "3rd/assimp/code/Importer.cpp",
-      "3rd/assimp/code/ImporterRegistry.cpp",
-      "3rd/assimp/code/MaterialSystem.cpp",
-      "3rd/assimp/code/PostStepRegistry.cpp",
-      "3rd/assimp/code/ProcessHelper.cpp",
-      "3rd/assimp/code/scene.cpp",
-      "3rd/assimp/code/ScenePreprocessor.cpp",
-      "3rd/assimp/code/ScaleProcess.cpp",
-      "3rd/assimp/code/SGSpatialSort.cpp",
-      "3rd/assimp/code/SkeletonMeshBuilder.cpp",
-      "3rd/assimp/code/SpatialSort.cpp",
-      "3rd/assimp/code/TriangulateProcess.cpp",
-      "3rd/assimp/code/ValidateDataStructure.cpp",
-      "3rd/assimp/code/Version.cpp",
-      "3rd/assimp/code/VertexTriangleAdjacency.cpp",
-      "3rd/assimp/code/ObjFileImporter.cpp",
-      "3rd/assimp/code/ObjFileMtlImporter.cpp",
-      "3rd/assimp/code/ObjFileParser.cpp",
-      "3rd/assimp/code/glTFImporter.cpp",
-      "3rd/assimp/code/glTF2Importer.cpp",
-      "3rd/assimp/code/MakeVerboseFormat.cpp",
-      "3rd/assimp/code/CalcTangentsProcess.cpp",
-      "3rd/assimp/code/ScaleProcess.cpp",
-      "3rd/assimp/code/EmbedTexturesProcess.cpp",
-      "3rd/assimp/contrib/irrXML/*"
-  }
+--   files 
+--   {
+--       "3rd/assimp/include/**",
+--       "3rd/assimp/code/Assimp.cpp",
+--       "3rd/assimp/code/BaseImporter.cpp",
+--       "3rd/assimp/code/ColladaLoader.cpp",
+--       "3rd/assimp/code/ColladaParser.cpp",
+--       "3rd/assimp/code/CreateAnimMesh.cpp",
+--       "3rd/assimp/code/PlyParser.cpp",
+--       "3rd/assimp/code/PlyLoader.cpp",
+--       "3rd/assimp/code/BaseProcess.cpp",
+--       "3rd/assimp/code/EmbedTexturesProcess.cpp",
+--       "3rd/assimp/code/ConvertToLHProcess.cpp",
+--       "3rd/assimp/code/DefaultIOStream.cpp",
+--       "3rd/assimp/code/DefaultIOSystem.cpp",
+--       "3rd/assimp/code/DefaultLogger.cpp",
+--       "3rd/assimp/code/GenVertexNormalsProcess.cpp",
+--       "3rd/assimp/code/Importer.cpp",
+--       "3rd/assimp/code/ImporterRegistry.cpp",
+--       "3rd/assimp/code/MaterialSystem.cpp",
+--       "3rd/assimp/code/PostStepRegistry.cpp",
+--       "3rd/assimp/code/ProcessHelper.cpp",
+--       "3rd/assimp/code/scene.cpp",
+--       "3rd/assimp/code/ScenePreprocessor.cpp",
+--       "3rd/assimp/code/ScaleProcess.cpp",
+--       "3rd/assimp/code/SGSpatialSort.cpp",
+--       "3rd/assimp/code/SkeletonMeshBuilder.cpp",
+--       "3rd/assimp/code/SpatialSort.cpp",
+--       "3rd/assimp/code/TriangulateProcess.cpp",
+--       "3rd/assimp/code/ValidateDataStructure.cpp",
+--       "3rd/assimp/code/Version.cpp",
+--       "3rd/assimp/code/VertexTriangleAdjacency.cpp",
+--       "3rd/assimp/code/ObjFileImporter.cpp",
+--       "3rd/assimp/code/ObjFileMtlImporter.cpp",
+--       "3rd/assimp/code/ObjFileParser.cpp",
+--       "3rd/assimp/code/glTFImporter.cpp",
+--       "3rd/assimp/code/glTF2Importer.cpp",
+--       "3rd/assimp/code/MakeVerboseFormat.cpp",
+--       "3rd/assimp/code/CalcTangentsProcess.cpp",
+--       "3rd/assimp/code/ScaleProcess.cpp",
+--       "3rd/assimp/code/EmbedTexturesProcess.cpp",
+--       "3rd/assimp/contrib/irrXML/*"
+--   }
 
-  includedirs 
-  {
-      "3rd/assimp/include",
-      "3rd/assimp/contrib/irrXML",
-      "3rd/assimp/contrib/zlib",
-      "3rd/assimp/contrib/rapidjson/include"
-  }
+--   includedirs 
+--   {
+--       "3rd/assimp/include",
+--       "3rd/assimp/contrib/irrXML",
+--       "3rd/assimp/contrib/zlib",
+--       "3rd/assimp/contrib/rapidjson/include"
+--   }
 
-   filter "system:windows"
-      systemversion "latest"
+--    filter "system:windows"
+--       systemversion "latest"
 
-      filter "configurations:Debug"
-      symbols "On"
-      runtime "Debug"
-      defines "NIT_DEBUG"
+--       filter "configurations:Debug"
+--       symbols "On"
+--       runtime "Debug"
+--       defines "NIT_DEBUG"
 
-  filter "configurations:Release"
-      optimize "On"
-      runtime "Release"
-      defines "NIT_RELEASE"
+--   filter "configurations:Release"
+--       optimize "On"
+--       runtime "Release"
+--       defines "NIT_RELEASE"
 
-  filter "configurations:Dist"
-      runtime "Release"
-      optimize "On"
-      defines "NIT_DIST"
+--   filter "configurations:Dist"
+--       runtime "Release"
+--       optimize "On"
+--       defines "NIT_DIST"
 
 
 project "imgui"

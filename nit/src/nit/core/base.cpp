@@ -160,7 +160,10 @@ namespace Nit
         }
 
         std::wstring wide(l_ret_val);
-        std::string str(wide.begin(), wide.end());
+        size_t length = std::wcstombs(nullptr, wide.c_str(), 0) + 1;
+        std::string str(length, '\0');
+        std::wcstombs(str.data(), wide.c_str(), length - 1);
+        str.resize(length - 1);
 
         return str;
 #else
