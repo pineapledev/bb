@@ -50,7 +50,7 @@ void SpawnEntity()
     AddComponent<Transform>(entity).position = position;
     //AddComponent<Transform>(entity).position = V3_ZERO;
     AddComponent<Sprite>(entity).tint = GetRandomColor();
-    GetComponent<Sprite>(entity).texture = test_texture;
+    //GetComponent<Sprite>(entity).texture = test_texture;
     SetSpriteSubTexture2D(GetComponent<Sprite>(entity), "cpp");
     ResetMovement(GetComponent<Transform>(entity), AddComponent<Move>(entity));
 }

@@ -27,6 +27,19 @@ namespace Nit
         return editor;
     }
 
+    
+    static ListenerAction OnAssetCreated(const AssetCreatedArgs& args)
+    {
+            
+        return ListenerAction::StayListening;
+    }
+
+    static ListenerAction OnAssetDestroyed(const AssetDestroyedArgs& args)
+    {
+        
+        return ListenerAction::StayListening;
+    }
+
     void InitEditor()
     {
         NIT_CHECK_EDITOR_CREATED
@@ -64,6 +77,9 @@ namespace Nit
         LoadFrameBuffer(&editor->frame_buffer);
 
         editor->icons = FindAssetByName("editor_icons");
+        
+        app->asset_registry.asset_created_event   += AssetCreatedListener::Create(OnAssetCreated);
+        app->asset_registry.asset_destroyed_event += AssetDestroyedListener::Create(OnAssetDestroyed);
     }
 
     void BeginDrawEditor()
@@ -108,7 +124,7 @@ namespace Nit
                     BindFrameBuffer(&editor->frame_buffer);
                 }
 
-                const ImTextureID fb_id = reinterpret_cast<ImTextureID>(editor->frame_buffer.color_attachment_ids[0]);
+                const ImTextureID fb_id = reinterpret_cast<ImTextureID>(static_cast<u64>(editor->frame_buffer.color_attachment_ids[0]));
                 ImGui::Image(fb_id, {editor->viewport_size.x, editor->viewport_size.y}, {0, 1}, {1, 0});
 
                 ImVec2 window_size = ImGui::GetWindowSize();
@@ -477,7 +493,7 @@ namespace Nit
                 }
                 
                 Texture2D* icons = GetAssetData<Texture2D>(editor->icons);
-                ImTextureID icons_id = reinterpret_cast<ImTextureID>(icons->id);
+                ImTextureID icons_id = reinterpret_cast<ImTextureID>(static_cast<u64>(icons->id));
                 V2Verts2D verts_2d;
                 FillQuadVertexUVs(verts_2d, icons->size, icons->sub_textures[0].size, icons->sub_textures[0].location);
                 Vector2 bottom_left = verts_2d[0];

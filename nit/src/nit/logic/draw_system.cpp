@@ -18,9 +18,9 @@ namespace Nit
     void End();
     void Draw();
     
-    ListenerAction OnAssetDestroyed(const AssetDestroyedArgs& args);
-    ListenerAction OnComponentAdded(const ComponentAddedArgs& args);
-    ListenerAction OnComponentRemoved(const ComponentRemovedArgs& args);
+    static ListenerAction OnAssetDestroyed(const AssetDestroyedArgs& args);
+    static ListenerAction OnComponentAdded(const ComponentAddedArgs& args);
+    static ListenerAction OnComponentRemoved(const ComponentRemovedArgs& args);
     
     void CreateDrawSystem()
     {
@@ -38,19 +38,19 @@ namespace Nit
     
     void Start()
     {
-        app->asset_registry.asset_destroyed_event    += Listener<const AssetDestroyedArgs&>::Create(OnAssetDestroyed);
-        app->entity_registry.component_added_event   += Listener<const ComponentAddedArgs&>::Create(OnComponentAdded);
-        app->entity_registry.component_removed_event += Listener<const ComponentRemovedArgs&>::Create(OnComponentRemoved);
+        app->asset_registry.asset_destroyed_event    += AssetDestroyedListener::Create(OnAssetDestroyed);
+        app->entity_registry.component_added_event   += ComponentAddedListener::Create(OnComponentAdded);
+        app->entity_registry.component_removed_event += ComponentRemovedListener::Create(OnComponentRemoved);
     }
 
     void End()
     {
-        app->asset_registry.asset_destroyed_event    -= Listener<const AssetDestroyedArgs&>::Create(OnAssetDestroyed);
-        app->entity_registry.component_added_event   -= Listener<const ComponentAddedArgs&>::Create(OnComponentAdded);
-        app->entity_registry.component_removed_event -= Listener<const ComponentRemovedArgs&>::Create(OnComponentRemoved);
+        app->asset_registry.asset_destroyed_event    -= AssetDestroyedListener::Create(OnAssetDestroyed);
+        app->entity_registry.component_added_event   -= ComponentAddedListener::Create(OnComponentAdded);
+        app->entity_registry.component_removed_event -= ComponentRemovedListener::Create(OnComponentRemoved);
     }
     
-    ListenerAction OnAssetDestroyed(const AssetDestroyedArgs& args)
+    static ListenerAction OnAssetDestroyed(const AssetDestroyedArgs& args)
     {
         if (args.asset_handle.type == GetType<Texture2D>())
         {
@@ -64,7 +64,7 @@ namespace Nit
         return ListenerAction::StayListening;
     }
 
-    ListenerAction OnComponentAdded(const ComponentAddedArgs& args)
+    static ListenerAction OnComponentAdded(const ComponentAddedArgs& args)
     {
         if (args.type == GetType<Sprite>())
         {
@@ -101,7 +101,7 @@ namespace Nit
         return ListenerAction::StayListening;
     }
 
-    ListenerAction OnComponentRemoved(const ComponentRemovedArgs& args)
+    static ListenerAction OnComponentRemoved(const ComponentRemovedArgs& args)
     {
         if (args.type == GetType<Sprite>())
         {

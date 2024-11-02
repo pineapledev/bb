@@ -42,9 +42,11 @@ namespace Nit
     {
         AssetHandle asset_handle;
     };
-
-    using AssetCreatedEvent = Event<const AssetCreatedArgs&>;
-    using AssetRemovedEvent = Event<const AssetDestroyedArgs&>;
+    
+    using AssetCreatedEvent      = Event<const AssetCreatedArgs&>;
+    using AssetRemovedEvent      = Event<const AssetDestroyedArgs&>;
+    using AssetCreatedListener   = Listener<const AssetCreatedArgs&>;
+    using AssetDestroyedListener = Listener<const AssetDestroyedArgs&>;
 
     struct AssetPool
     {

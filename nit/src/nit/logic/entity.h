@@ -41,8 +41,10 @@ namespace Nit
         Type*  type   = nullptr;
     };
 
-    using ComponentAddedEvent   = Event<const ComponentAddedArgs&>;
-    using ComponentRemovedEvent = Event<const ComponentRemovedArgs&>;
+    using ComponentAddedListener   = Listener<const ComponentAddedArgs&>; 
+    using ComponentRemovedListener = Listener<const ComponentRemovedArgs&>; 
+    using ComponentAddedEvent      = Event<const ComponentAddedArgs&>;
+    using ComponentRemovedEvent    = Event<const ComponentRemovedArgs&>;
     
     struct EntityRegistry
     {
@@ -51,7 +53,7 @@ namespace Nit
         u32                               entity_count = 0;
         Map<EntitySignature, EntityGroup> entity_groups;
         ComponentPool*                    component_pool;
-        u8                                next_component_type_index = 1;
+        u32                               next_component_type_index = 1;
         ComponentAddedEvent               component_added_event;
         ComponentRemovedEvent             component_removed_event;
         u32                               max_entities = 100000;
