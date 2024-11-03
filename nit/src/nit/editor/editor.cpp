@@ -669,6 +669,9 @@ namespace Nit
 
                             if (ImGui::BeginPopupContextItem())
                             {
+                                editor->selection = Editor::Selection::Asset;
+                                editor->selected_asset = node->asset;
+                                
                                 if (ImGui::MenuItem("Save"))
                                 {
                                     SerializeAssetToFile(editor->selected_asset);
