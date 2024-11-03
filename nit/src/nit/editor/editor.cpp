@@ -640,8 +640,9 @@ namespace Nit
     
                     ImGui::Columns(column_count, nullptr, false);
                     
-                    for (u32 node_id : draw_node->children)
+                    for (u32 i = 0; i < draw_node->children.size(); ++i)
                     {
+                        u32 node_id = draw_node->children[i];
                         AssetNode* node = GetData<AssetNode>(&editor->asset_nodes, node_id);
                         
                         if (!node)
@@ -683,8 +684,12 @@ namespace Nit
                                 }
                                 if (ImGui::MenuItem("Delete"))
                                 {
-                                    //DestroyAsset(editor->selected_asset);
-                                    //DeleteData(&editor->asset_nodes, node_id);
+                                    draw_node->children.erase(std::ranges::find(draw_node->children, node_id));
+                                    DestroyAsset(editor->selected_asset);
+                                    DeleteData(&editor->asset_nodes, node_id);
+                                    editor->selected_asset = {};
+                                    editor->selection = Editor::Selection::None;
+                                    --i;
                                 }
                                 ImGui::EndPopup();
                             }

@@ -106,6 +106,11 @@ namespace Nit
         sparse_set->sparse[element] = SparseSet::INVALID;
         --sparse_set->count;
 
+        if (deleted_slot == last_slot)
+        {
+            return { true, deleted_slot, last_slot };
+        }
+        
         u32 last_element = sparse_set->dense[last_slot];
         sparse_set->dense[deleted_slot] = last_element;
         

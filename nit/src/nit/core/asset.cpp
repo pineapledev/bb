@@ -402,9 +402,12 @@ namespace Nit
 
     void DestroyAsset(AssetHandle& asset)
     {
-        //TODO: Delete file?
         AssetPool* pool = GetAssetPoolSafe(asset);
         AssetInfo* info = GetAssetInfoSafe(asset);
+
+        String remove_path = "assets/" + info->path;
+        i32 res = std::remove(remove_path.c_str());
+        NIT_CHECK(!res);
         
         FreeAsset(asset);
 
@@ -413,7 +416,7 @@ namespace Nit
         Broadcast<const AssetDestroyedArgs&>(asset_registry->asset_destroyed_event, args);
         
         EraseAssetInfo(*info, DeleteData(&pool->data_pool, info->data_id));
-
+        
         asset_registry->id_to_data_id.erase(asset.id);
     }
 
