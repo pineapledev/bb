@@ -10,6 +10,7 @@ namespace Nit
     struct AssetNode
     {
         bool             is_dir   = false;
+        String           path     = {};
         u32              parent   = U32_MAX;
         AssetHandle      asset    = {};
         Array<u32>       children = {};
@@ -32,7 +33,8 @@ namespace Nit
         
         bool        enabled              = true;
         Entity      selected_entity      = 0;
-        Selection   selection            = Selection::None;
+        AssetHandle selected_asset       = {};
+        Selection   selection            = Selection::Entity;
         bool        show_viewport        = true;
         bool        show_sprite_packer   = false;
         bool        show_scene_entities  = true;

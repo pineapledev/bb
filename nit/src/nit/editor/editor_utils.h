@@ -34,6 +34,38 @@ namespace ImGui
     bool DragVector4(const char* label, Vector4& vector, const Vector4& reset_value = V4_ZERO, f32 speed = 0.05f);
     bool ColorPalette(const char* label, Vector4& color);
     void AssetCombo(const char* label, Type* type, AssetHandle* asset);
+
+    template<typename T>
+    void EnumCombo(const char* label, T& enum_data)
+    {
+        EnumType* type = GetEnumType<T>();
+        String selected = GetStringFromEnumValue<T>(enum_data);
+
+        BeginProperty(label);
+
+        if (BeginCombo("##combo", selected.c_str()))
+        {
+            for (auto& [index, name] : type->index_to_name)
+            {
+                const bool is_selected = selected == name;
+                if (Selectable(name.c_str()))
+                {
+                    selected = name;
+                }
+                if (is_selected)
+                {
+                    SetItemDefaultFocus();
+                }
+            }
+
+            EndCombo();
+        }
+
+        enum_data = GetEnumValueFromString<T>(selected);
+        
+        EndProperty();
+    }
+    
     bool IsOtherWindowFocused();
 }
 

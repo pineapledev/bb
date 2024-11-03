@@ -206,6 +206,8 @@ namespace Nit
                     }
                     else
                     {
+                        vertex_uvs = DEFAULT_VERTEX_U_VS_2D;
+                        
                         FillQuadVertexUVs(
                           vertex_uvs
                         , sprite.flip_x

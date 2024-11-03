@@ -30,7 +30,7 @@ namespace Nit
     //TODO: All of this is just garbage, pending to refactor. 
     void LoadFont(Font* font)
     {
-        std::ifstream file_stream(font->font_path, std::ifstream::binary);
+        std::ifstream file_stream("assets/" + font->font_path, std::ifstream::binary);
         
         if (!file_stream)
         {

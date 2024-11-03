@@ -34,11 +34,12 @@ namespace Nit
         for (const auto& dir_entry : std::filesystem::directory_iterator(directory))
         {
             const Path& dir_path = dir_entry.path();
-
+            const String relative_path = std::filesystem::relative(dir_path, GetAssetsDirectory()).string();
+            
             if (dir_entry.is_directory())
             {
                 u32 id;
-                InsertData(&editor->asset_nodes, id, AssetNode{ .is_dir = true, .parent = parent_node, .asset = { .name = dir_path.stem().string() } });
+                InsertData(&editor->asset_nodes, id, AssetNode{ .is_dir = true, .path = relative_path, .parent = parent_node, .asset = { .name = dir_path.stem().string() } });
                 
                 if (AssetNode* parent_node_data = GetData<AssetNode>(&editor->asset_nodes, parent_node))
                 {
@@ -57,7 +58,7 @@ namespace Nit
                 }
 
                 u32 id;
-                InsertData(&editor->asset_nodes, id, AssetNode{ .is_dir = false, .parent = parent_node, .asset = handle });
+                InsertData(&editor->asset_nodes, id, AssetNode{ .is_dir = false, .path = relative_path, .parent = parent_node, .asset = handle });
                 AssetNode* parent_node_data = GetData<AssetNode>(&editor->asset_nodes, parent_node);
 
                 if (parent_node_data && parent_node_data->is_dir)
@@ -77,7 +78,7 @@ namespace Nit
         
         Load<AssetNode>(&editor->asset_nodes, 300, true);
 
-        InsertData(&editor->asset_nodes, editor->root_node, AssetNode{ .is_dir = true });
+        InsertData(&editor->asset_nodes, editor->root_node, AssetNode{ .is_dir = true, .path = "" });
         editor->draw_node = editor->root_node;
         
         TraverseDirectory(GetAssetsDirectory(), editor->root_node);
@@ -304,7 +305,7 @@ namespace Nit
             AssetPool* pool = GetAssetPool<Scene>();
             u32 num_of_scenes = pool->data_pool.sparse_set.count;
             Scene* scenes = static_cast<Scene*>(pool->data_pool.elements);
-
+            
             if (ImGui::BeginPopupContextWindow())
             {
                 if (ImGui::BeginMenu("Open"))
@@ -521,7 +522,21 @@ namespace Nit
                     ImGui::EndPopup();
                 }
             }
+            else if (editor->selection == Editor::Selection::Asset)
+            {
+                AssetPool* asset_pool = GetAssetPool(editor->selected_asset.type);
+                NIT_CHECK(asset_pool);
+                
+                if (editor->selected_asset.data_id == SparseSet::INVALID)
+                {
+                    RetargetAssetHandle(editor->selected_asset);
+                }
 
+                void* data = GetDataRaw(&asset_pool->data_pool, editor->selected_asset.data_id);
+                NIT_CHECK(data);
+                
+                DrawEditor(editor->selected_asset.type, data);
+            }
             ImGui::End();
         }
 
@@ -533,7 +548,7 @@ namespace Nit
                 {
                     RetainAsset(editor->icons);
                 }
-
+                
                 if (!IsValid(&editor->asset_nodes, editor->draw_node))
                 {
                     NIT_DEBUGBREAK();
@@ -556,6 +571,57 @@ namespace Nit
 
                     AssetNode* draw_node = GetData<AssetNode>(&editor->asset_nodes, editor->draw_node);
 
+                    static Type* create_asset_type = nullptr;
+                
+                    if (ImGui::BeginPopupContextWindow())
+                    {
+                        if (ImGui::BeginMenu("Create"))
+                        {
+                            for (u32 i = 0; i < app->asset_registry.asset_pools.size(); ++i)
+                            {
+                                AssetPool* pool = &app->asset_registry.asset_pools[i];
+                
+                                if (ImGui::MenuItem(pool->data_pool.type->name.c_str()))
+                                {
+                                    create_asset_type = pool->data_pool.type;
+                                }
+                            }
+                            ImGui::EndMenu();
+                        }
+                        ImGui::EndPopup();
+                    }
+
+                    if (create_asset_type)
+                    {
+                        ImGui::OpenPopup("Create Asset");
+                    }
+
+                    if(ImGui::BeginPopupModal("Create Asset", nullptr))
+                    {
+                        static String asset_name;
+                        ImGui::InputText("name", asset_name);
+                        ImGui::Spacing(3);
+                    
+                        if (ImGui::Button("Create"))
+                        {
+                            AssetHandle asset = CreateAsset(create_asset_type, asset_name, draw_node->path);
+                            u32 id; InsertData(&editor->asset_nodes, id, AssetNode{ .is_dir = false, .path = draw_node->path, .parent = editor->draw_node, .asset = asset});
+                            draw_node->children.push_back(id);
+                            
+                            ImGui::CloseCurrentPopup();
+                            create_asset_type = nullptr;
+                        }
+                        
+                        ImGui::SameLine();
+
+                        if (ImGui::Button("Close"))
+                        {
+                            ImGui::CloseCurrentPopup();
+                            create_asset_type = nullptr;
+                        }
+                        ImGui::EndPopup();
+                    }
+                    
                     if (editor->draw_node != editor->root_node)
                     {
                         if (ImGui::Button("<-"))
@@ -596,6 +662,31 @@ namespace Nit
                         {
                             if (draw_image_button(Editor::Icon::File, thumbnail_size, std::to_string(node_id).c_str()))
                             {
+                                editor->selection = Editor::Selection::Asset;
+                                editor->selected_asset = node->asset;
+                            }
+
+                            if (ImGui::BeginPopupContextItem())
+                            {
+                                if (ImGui::MenuItem("Save"))
+                                {
+                                    SerializeAssetToFile(editor->selected_asset);
+                                    FreeAsset(editor->selected_asset);
+                                    DeserializeAssetFromFile(GetAssetInfo(editor->selected_asset)->path);
+                                    LoadAsset(editor->selected_asset);
+                                }
+                                if (ImGui::MenuItem("Reload"))
+                                {
+                                    FreeAsset(editor->selected_asset);
+                                    DeserializeAssetFromFile(GetAssetInfo(editor->selected_asset)->path);
+                                    LoadAsset(editor->selected_asset);
+                                }
+                                if (ImGui::MenuItem("Delete"))
+                                {
+                                    //DestroyAsset(editor->selected_asset);
+                                    //DeleteData(&editor->asset_nodes, node_id);
+                                }
+                                ImGui::EndPopup();
                             }
                         }
 

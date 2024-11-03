@@ -56,6 +56,9 @@ namespace Nit
     i32  FindIndexOfSubTexture2D(const Texture2D* texture, const String& sub_texture_name);
     void SerializeTexture2D(const Texture2D* texture, YAML::Emitter& emitter);
     void DeserializeTexture2D(Texture2D* texture, const YAML::Node& node);
+#ifdef NIT_EDITOR_ENABLED
+    void DrawEditorTexture2D(Texture2D* texture);
+#endif
     void LoadTexture2D(Texture2D* texture);
     void FreeTexture2D(Texture2D* texture);
     void BindTexture2D(const Texture2D* texture, u32 slot = 0);

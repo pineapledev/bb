@@ -4,6 +4,10 @@
 
 #include <glad/glad.h>
 
+#ifdef NIT_EDITOR_ENABLED
+#include "editor/editor_utils.h"
+#endif
+
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb/stb_image_write.h>
@@ -89,12 +93,15 @@ namespace Nit
             , FreeTexture2D
             , SerializeTexture2D
             , DeserializeTexture2D
+#ifdef NIT_EDITOR_ENABLED
+            , DrawEditorTexture2D
+#endif
         });
     }
 
     i32 FindIndexOfSubTexture2D(const Texture2D* texture, const String& sub_texture_name)
     {
-        NIT_CHECK(texture && texture->sub_textures);
+        NIT_CHECK(texture);
         
         for (u32 i = 0; i < texture->sub_texture_count; ++i)
         {
@@ -157,6 +164,41 @@ namespace Nit
         }
     }
 
+#ifdef NIT_EDITOR_ENABLED
+    void DrawEditorTexture2D(Texture2D* texture)
+    {
+        ImGui::Bool("is white", texture->is_white_texture);
+        
+        if (!texture->is_white_texture)
+        {
+            ImGui::InputText("path", texture->image_path);
+        }
+        
+        ImGui::EnumCombo("mag filter", texture->mag_filter);
+        ImGui::EnumCombo("min filter", texture->min_filter);
+        ImGui::EnumCombo("wrap u", texture->wrap_mode_u);
+        ImGui::EnumCombo("wrap v", texture->wrap_mode_v);
+
+        if (texture->sub_texture_count > 0 && ImGui::TreeNodeEx("subtextures", ImGuiTreeNodeFlags_DefaultOpen))
+        {
+            bool expanded = ImGui::BeginPopupContextItem();
+
+            for (u32 i = 0; i < texture->sub_texture_count; ++i)
+            {
+                ImGui::MenuItem(texture->sub_textures[i].name.c_str());
+            }
+            
+            if (expanded)
+            {
+                ImGui::EndPopup();
+            }
+            
+            ImGui::TreePop();
+        }
+
+    }
+#endif
+
     void FreeTextureImage(Texture2D* texture)
     {
         if (!texture->pixel_data || !texture->loaded_from_image)
@@ -181,9 +223,11 @@ namespace Nit
         {
             stbi_set_flip_vertically_on_load(1);
             i32 width, height, channels;
-            
-            texture->pixel_data = stbi_load(texture->image_path.c_str(), &width, &height, &channels, 0);
 
+            String image_path = "assets/";
+            image_path.append(texture->image_path);
+            texture->pixel_data = stbi_load(image_path.c_str(), &width, &height, &channels, 0);
+            
             texture->width    = static_cast<u32>(width);
             texture->height   = static_cast<u32>(height);
             texture->channels = static_cast<u32>(channels);
@@ -242,8 +286,6 @@ namespace Nit
         glDeleteTextures(1, &texture->id);
         texture->id = 0;
         FreeTextureImage(texture);
-        //delete[] texture->sub_textures;
-        //texture->sub_textures = nullptr;
     }
 
     bool IsTexture2DValid(const Texture2D* texture)

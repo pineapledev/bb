@@ -46,9 +46,9 @@ namespace Nit
 #ifdef NIT_EDITOR_ENABLED
     void DrawEditorTransform(Transform* transform)
     {
-        ImGui::DragVector3("Position", transform->position);
-        ImGui::DragVector3("Rotation", transform->rotation);
-        ImGui::DragVector3("Scale", transform->scale);
+        ImGui::DragVector3("position", transform->position);
+        ImGui::DragVector3("rotation", transform->rotation);
+        ImGui::DragVector3("scale", transform->scale);
     }
 #endif
     
@@ -68,7 +68,6 @@ namespace Nit
     void SerializeCamera(const Camera* camera, YAML::Emitter& emitter)
     {
         emitter << YAML::Key << "projection" << YAML::Value << GetStringFromEnumValue<CameraProjection>(camera->projection);
-        emitter << YAML::Key << "aspect"     << YAML::Value << camera->aspect;
         emitter << YAML::Key << "fov"        << YAML::Value << camera->fov;
         emitter << YAML::Key << "near_clip"  << YAML::Value << camera->near_clip;
         emitter << YAML::Key << "far_clip"   << YAML::Value << camera->far_clip;
@@ -78,7 +77,6 @@ namespace Nit
     void DeserializeCamera(Camera* camera, const YAML::Node& node)
     {
         camera->projection = GetEnumValueFromString<CameraProjection>(node["projection"].as<String>());
-        camera->aspect     = node["aspect"]     .as<f32>();
         camera->fov        = node["fov"]        .as<f32>();
         camera->near_clip  = node["near_clip"]  .as<f32>();
         camera->far_clip   = node["far_clip"]   .as<f32>();
@@ -88,19 +86,7 @@ namespace Nit
 #ifdef NIT_EDITOR_ENABLED
     void DrawEditorCamera(Camera* camera)
     {
-        {
-            String selected = GetStringFromEnumValue<CameraProjection>(camera->projection);
-            Array<String> values;
-            auto* enum_type = GetEnumType<CameraProjection>();
-            for (auto& [name, index] : enum_type->name_to_index)
-            {
-                values.push_back(name);
-            }
-        
-            ImGui::Combo("Projection", selected, values);
-            camera->projection = GetEnumValueFromString<CameraProjection>(selected);
-        }
-        
+        ImGui::EnumCombo("projection", camera->projection);
         ImGui::DragF32("aspect", camera->aspect);
         ImGui::DragF32("fov",    camera->fov);
         ImGui::DragF32("near",   camera->near_clip);

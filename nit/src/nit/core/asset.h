@@ -126,6 +126,8 @@ namespace Nit
     bool IsAssetValid(AssetHandle& asset);
 
     bool IsAssetLoaded(AssetHandle& asset);
+
+    AssetHandle CreateAsset(Type* type, const String& name, const String& path, void* data = nullptr);
     
     template<typename T>
     AssetHandle CreateAsset(const String& name, const String& path = "", const T& data = {});

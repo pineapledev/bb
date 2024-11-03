@@ -1,23 +1,22 @@
 AssetInfo:
   type: Scene
   name: test_scene
-  path: assets\test_scene.nit
+  path: test_scene.nit
   id: 9621028665531299668
   version: 0
 Scene:
   Entities:
     Entity:
       Transform:
-        position: [0, 0, 1.5]
+        position: [0, 0, 2.95000005]
         rotation: [0, 0, 0]
         scale: [1, 1, 1]
       Camera:
         projection: Orthographic
-        aspect: 1.9623431
         fov: 100
         near_clip: 0.100000001
         far_clip: 1000
-        size: 7
+        size: 9.19999981
     Entity:
       Transform:
         position: [-1.06095123, 0.959213257, 0]
@@ -69,7 +68,7 @@ Scene:
         size: 1
     Entity:
       Transform:
-        position: [1.02999997, -0.959999979, 0]
+        position: [2.1666348, -1.33121252, 0]
         rotation: [0, 0, 0]
         scale: [1, 1, 1]
       Sprite:
@@ -84,7 +83,7 @@ Scene:
         keep_aspect: true
     Entity:
       Transform:
-        position: [1.11663783, 0.225702509, 6.10326751e-05]
+        position: [2.14792466, -0.447024733, 2.00006104]
         rotation: [0, 0, 0]
         scale: [0.999999762, 1, 1]
       Sprite:

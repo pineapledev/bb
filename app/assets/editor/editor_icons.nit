@@ -1,11 +1,11 @@
 AssetInfo:
   type: Texture2D
   name: editor_icons
-  path: assets\editor\editor_icons.nit
+  path: editor\editor_icons.nit
   id: 16127975179655022720
   version: 0
 Texture2D:
-  image_path: assets\editor\editor_icons.png
+  image_path: editor\editor_icons.png
   is_white_texture: false
   mag_filter: Linear
   min_filter: Linear

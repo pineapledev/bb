@@ -232,7 +232,8 @@ namespace Nit
 
     AssetHandle DeserializeAssetFromFile(const String& file_path)
     {
-        InputFile input_file(file_path);
+        String path = "assets/" + file_path;
+        InputFile input_file(path);
 
         if (input_file.is_open())
         {
@@ -273,8 +274,9 @@ namespace Nit
     void SerializeAssetToFile(AssetHandle& asset)
     {
         AssetInfo* info = GetAssetInfoSafe(asset);
+        String path = "assets/" + info->path;
         
-        OutputFile file(info->path);
+        OutputFile file(path);
         
         if (file.is_open())
         {
@@ -295,7 +297,7 @@ namespace Nit
         
         for (const auto& dir_entry : RecursiveDirectoryIterator(GetAssetsDirectory()))
         {
-            const Path& dir_path = dir_entry.path();
+            const Path& dir_path = std::filesystem::relative(dir_entry.path(), GetAssetsDirectory());
             
             if (dir_entry.is_directory() || dir_path.extension().string() != asset_registry->extension)
             {
@@ -384,12 +386,23 @@ namespace Nit
         return GetAssetInfoSafe(asset)->loaded;
     }
 
+    AssetHandle CreateAsset(Type* type, const String& name, const String& path, void* data)
+    {
+        AssetPool* pool = GetAssetPoolSafe(type);
+        Pool* data_pool = &pool->data_pool;
+        u32 data_id; InsertData(data_pool, data_id, data);
+        ID asset_id = GenerateID();
+        GetAssetRegistryInstance()->id_to_data_id.insert({asset_id, data_id});
+        AssetInfo info{type, name, path, asset_id, GetLastAssetVersion(type), false, 0, data_id };
+        PushAssetInfo(info, IndexOf(data_pool, data_id), true);
+        AssetHandle asset_handle = CreateAssetHandle(&info);
+        Broadcast<const AssetCreatedArgs&>(GetAssetRegistryInstance()->asset_created_event, {asset_handle});
+        return asset_handle;
+    }
+
     void DestroyAsset(AssetHandle& asset)
     {
         //TODO: Delete file?
-
-        asset_registry->id_to_data_id.erase(asset.id);
-        
         AssetPool* pool = GetAssetPoolSafe(asset);
         AssetInfo* info = GetAssetInfoSafe(asset);
         
@@ -400,6 +413,8 @@ namespace Nit
         Broadcast<const AssetDestroyedArgs&>(asset_registry->asset_destroyed_event, args);
         
         EraseAssetInfo(*info, DeleteData(&pool->data_pool, info->data_id));
+
+        asset_registry->id_to_data_id.erase(asset.id);
     }
 
     void LoadAsset(AssetHandle& asset, bool force_reload)
