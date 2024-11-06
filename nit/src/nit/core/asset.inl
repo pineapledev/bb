@@ -57,7 +57,7 @@ namespace Nit
         Pool* data_pool = &pool->data_pool;
         Type* type = data_pool->type;
         u32 data_id; InsertData(data_pool, data_id, data);
-        ID asset_id = GenerateID();
+        UUID asset_id = GenerateID();
         GetAssetRegistryInstance()->id_to_data_id.insert({asset_id, data_id});
         AssetInfo info{type, name, path, asset_id, GetLastAssetVersion<T>(), false, 0, data_id };
         PushAssetInfo(info, IndexOf(data_pool, data_id), true);
@@ -75,7 +75,7 @@ struct YAML::convert<Nit::AssetHandle>
         Node node;
         node.push_back(h.name);
         node.push_back(h.type->name);
-        node.push_back(h.id);
+        node.push_back((Nit::u64) h.id);
         node.SetStyle(EmitterStyle::Flow);
         return node;
     }
@@ -87,7 +87,7 @@ struct YAML::convert<Nit::AssetHandle>
 
         h.name    = node[0].as<Nit::String>();
         h.type    = Nit::GetType(node[1].as<Nit::String>());
-        h.id      = node[2].as<Nit::ID>();
+        h.id      = (Nit::UUID) node[2].as<Nit::u64>();
         return true;
     }
 };
@@ -95,6 +95,6 @@ struct YAML::convert<Nit::AssetHandle>
 inline YAML::Emitter& operator<<(YAML::Emitter& out, const Nit::AssetHandle& h)
 {
     out << YAML::Flow;
-    out << YAML::BeginSeq << h.name << (h.type ? h.type->name : "") << h.id << YAML::EndSeq;
+    out << YAML::BeginSeq << h.name << (h.type ? h.type->name : "") << (Nit::u64) h.id << YAML::EndSeq;
     return out;
 }

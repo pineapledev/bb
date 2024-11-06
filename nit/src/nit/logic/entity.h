@@ -15,7 +15,7 @@ namespace Nit
 
     struct ComponentPool
     {
-        u8                      type_index  = 0;
+        u32                      type_index  = 0;
         Pool                    data_pool;
         Delegate<void(Entity)>  fn_add_to_entity;
         Delegate<void(Entity)>  fn_remove_from_entity;
@@ -84,14 +84,14 @@ namespace Nit
     T* GetComponentPtr(Entity entity);
     
     template<typename T>
-    void RegisterComponentType()
+    void RegisterComponentType(const TypeArgs<T>& args = {})
     {
         EntityRegistry* entity_registry = GetEntityRegistryInstance(); 
         NIT_CHECK_MSG(entity_registry->next_component_type_index <= NIT_MAX_COMPONENT_TYPES, "Components out of range!");
 
         if (!IsTypeRegistered<T>())
         {
-            RegisterType<T>();
+            RegisterType<T>(args);
         }
         
         ComponentPool& component_pool  = entity_registry->component_pool[entity_registry->next_component_type_index - 1];
@@ -124,7 +124,7 @@ namespace Nit
     }
 
     template<typename T>
-    u8 GetComponentTypeIndex()
+    u32 GetComponentTypeIndex()
     {
         ComponentPool* component_pool = FindComponentPool<T>();
         NIT_CHECK_MSG(component_pool, "Component type is not registered!");

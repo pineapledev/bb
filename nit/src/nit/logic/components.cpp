@@ -1,5 +1,4 @@
 ﻿#include "components.h"
-#include "entity.h"
 #include "render/font.h"
 #include "render/texture.h"
 
@@ -54,15 +53,161 @@ namespace Nit
     
     void RegisterTransformComponent()
     {
-        TypeArgs<Transform> args;
-        args.fn_serialize   = SerializeTransform;
-        args.fn_deserialize = DeserializeTransform;
-
+        RegisterComponentType<Transform>
+        ({
+            .fn_serialize   = SerializeTransform,
+            .fn_deserialize = DeserializeTransform,
 #ifdef NIT_EDITOR_ENABLED
-        args.fn_draw_editor = DrawEditorTransform;
+            .fn_draw_editor = DrawEditorTransform
 #endif
-        RegisterType<Transform>(args);
-        RegisterComponentType<Transform>();
+        });
+    }
+
+    bool IsEmpty(const Name& name)
+    {
+        return name.data.empty();
+    }
+
+    bool operator==(const Name& a, const Name& b)
+    {
+        return a.data == b.data;
+    }
+
+    bool operator!=(const Name& a, const Name& b)
+    {
+        return !(a == b);
+    }
+
+    bool Contains(const Name& name, const String& other)
+    {
+        return name.data.find(other) != String::npos;
+    }
+
+    Entity FindEntityByName(const String& name)
+    {
+        for (Entity entity : GetEntityGroup<Name>().entities)
+        {
+            if (GetComponent<Name>(entity).data == name)
+            {
+                return entity;
+            }
+        }
+
+        return NULL_ENTITY;
+    }
+
+    void FindEntitiesByName(Array<Entity>& entities, const String& name)
+    {
+        for (Entity entity : GetEntityGroup<Name>().entities)
+        {
+            if (GetComponent<Name>(entity).data == name)
+            {
+                entities.push_back(entity);
+            }
+        }
+    }
+
+    void SerializeName(const Name* name, YAML::Emitter& emitter)
+    {
+        emitter << YAML::Key << "data" << YAML::Value << name->data;
+    }
+
+    void DeserializeName(Name* name, const YAML::Node& node)
+    {
+        name->data = node["data"].as<String>();
+    }
+    
+#ifdef NIT_EDITOR_ENABLED
+    void DrawEditorName(Name* name)
+    {
+        ImGui::InputText("data", name->data);
+        ImGui::Spacing();
+    }
+#endif
+
+    void RegisterNameComponent()
+    {
+        RegisterComponentType<Name>
+        ({
+            .fn_serialize   = SerializeName,
+            .fn_deserialize = DeserializeName,
+#ifdef NIT_EDITOR_ENABLED
+            .fn_draw_editor = DrawEditorName
+#endif
+        });
+
+        CreateEntityGroup<Name>();
+    }
+
+    bool IsValid(const UUID& uuid)
+    {
+        return uuid.data != 0;
+    }
+
+    bool operator==(const UUID& a, const UUID& b)
+    {
+        return a.data == b.data;
+    }
+
+    bool operator!=(const UUID& a, const UUID& b)
+    {
+        return !(a == b);
+    }
+
+    Entity FindEntityByUUID(UUID uuid)
+    {
+        for (Entity entity : GetEntityGroup<UUID>().entities)
+        {
+            if (GetComponent<UUID>(entity) == uuid)
+            {
+                return entity;
+            }
+        }
+
+        return NULL_ENTITY;
+    }
+
+    void FindEntitiesByUUID(Array<Entity>& entities, UUID uuid)
+    {
+        for (Entity entity : GetEntityGroup<UUID>().entities)
+        {
+            if (GetComponent<UUID>(entity) == uuid)
+            {
+                entities.push_back(entity);
+            }
+        }
+    }
+
+    void SerializeUUID(const UUID* uuid, YAML::Emitter& emitter)
+    {
+        emitter << YAML::Key << "data" << YAML::Value << uuid->data;
+    }
+
+    void DeserializeUUID(UUID* uuid, const YAML::Node& node)
+    {
+        uuid->data = node["data"].as<u64>();
+    }
+    
+#ifdef NIT_EDITOR_ENABLED
+    void DrawEditorUUID(UUID* uuid)
+    {
+        ImGui::Text("data", "%llu", uuid->data);
+        ImGui::Spacing();
+    }
+#endif
+    
+    void RegisterUUIDComponent()
+    {
+        RegisterComponentType<UUID>
+        ({
+            .fn_serialize   = SerializeUUID,
+            .fn_deserialize = DeserializeUUID,
+#ifdef NIT_EDITOR_ENABLED
+            .fn_draw_editor = DrawEditorUUID
+#endif
+        });
+
+        CreateEntityGroup<UUID>();
     }
 
     void SerializeCamera(const Camera* camera, YAML::Emitter& emitter)
@@ -89,7 +234,7 @@ namespace Nit
         ImGui::EnumCombo("projection", camera->projection);
         ImGui::DragF32("aspect", camera->aspect);
         ImGui::DragF32("fov",    camera->fov);
-        ImGui::DragF32("near",   camera->near_clip);
+        ImGui::DragF32("near", camera->near_clip);
         ImGui::DragF32("far",    camera->far_clip);
         ImGui::DragF32("size",   camera->size);
     }

@@ -124,7 +124,7 @@ namespace ImGui
         BeginProperty(label);
         va_list args;
         va_start(args, text);
-        Text(text);
+        ImGui::TextV(text, args);
         va_end(args);
         EndProperty();
     }

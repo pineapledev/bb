@@ -596,12 +596,13 @@ namespace Nit
                         ImGui::OpenPopup("Create Asset");
                     }
 
+                    ImGui::PushStyleColor(ImGuiCol_PopupBg, {0.192f, 0.2f, 0.219f, 1.f});
                     if(ImGui::BeginPopupModal("Create Asset", nullptr))
                     {
-                        static String asset_name;
-                        ImGui::InputText("name", asset_name);
+                        static char asset_name[500];
+                        ImGui::InputText("##name", asset_name, 500);
                         ImGui::Spacing(3);
-                    
+                        
                         if (ImGui::Button("Create"))
                         {
                             AssetHandle asset = CreateAsset(create_asset_type, asset_name, draw_node->path);
@@ -621,6 +622,7 @@ namespace Nit
                         }
                         ImGui::EndPopup();
                     }
+                    ImGui::PopStyleColor();
                     
                     if (editor->draw_node != editor->root_node)
                     {

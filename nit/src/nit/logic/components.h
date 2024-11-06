@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "nit/core/asset.h"
+#include "nit/logic/entity.h"
 
 namespace Nit
 {
@@ -16,6 +17,27 @@ namespace Nit
     Vector3 Front(const Transform& transform);
 
     void RegisterTransformComponent();
+    
+    struct Name
+    {
+        String data;
+    };
+
+    bool IsEmpty(const Name& name);
+    bool operator==(const Name& a, const Name& b);
+    bool operator!=(const Name& a, const Name& b);
+    bool Contains(const Name& name, const String& other);
+
+    Entity FindEntityByName(const String& name);
+    void FindEntitiesByName(Array<Entity>& entities, const String& name);
+    
+    void RegisterNameComponent();
+
+    // UUID Declared in base
+    Entity FindEntityByUUID(UUID uuid);
+    void   FindEntitiesByUUID(Array<Entity>& entities, UUID uuid);
+    
+    void RegisterUUIDComponent();
     
     enum class CameraProjection : u8 { Perspective, Orthographic };
     

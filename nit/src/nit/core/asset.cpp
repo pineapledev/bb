@@ -15,7 +15,7 @@ namespace Nit
             return asset_handle;
         }
         
-        if (asset_info->id == 0 || asset_info->type == nullptr)
+        if (!IsValid(asset_info->id) || asset_info->type == nullptr)
         {
             return asset_handle;
         }
@@ -29,7 +29,7 @@ namespace Nit
 
     void RetargetAssetHandle(AssetHandle& asset_handle)
     {
-        if (asset_handle.id == 0 || asset_handle.type == nullptr)
+        if (!IsValid(asset_handle.id) || asset_handle.type == nullptr)
         {
             return;
         }
@@ -183,7 +183,7 @@ namespace Nit
             asset_info.type    = GetType(asset_info_node["type"].as<String>());
             asset_info.name    = asset_info_node["name"].as<String>();
             asset_info.path    = asset_info_node["path"].as<String>();
-            asset_info.id      = asset_info_node["id"].as<ID>();
+            asset_info.id      = { static_cast<UUID>(asset_info_node["id"].as<Nit::u64>()) };
             asset_info.version = asset_info_node["version"].as<u32>();
             
             if (asset_info.version < GetLastAssetVersion(asset_info.type))
@@ -258,7 +258,7 @@ namespace Nit
         emitter << YAML::Key << "type"      << YAML::Value << info->type->name;
         emitter << YAML::Key << "name"      << YAML::Value << info->name;
         emitter << YAML::Key << "path"      << YAML::Value << info->path;
-        emitter << YAML::Key << "id"        << YAML::Value << info->id;
+        emitter << YAML::Key << "id"        << YAML::Value << (u64) info->id;
         emitter << YAML::Key << "version"   << YAML::Value << info->version;
         emitter << YAML::EndMap;
         
@@ -391,7 +391,7 @@ namespace Nit
         AssetPool* pool = GetAssetPoolSafe(type);
         Pool* data_pool = &pool->data_pool;
         u32 data_id; InsertData(data_pool, data_id, data);
-        ID asset_id = GenerateID();
+        UUID asset_id = GenerateID();
         GetAssetRegistryInstance()->id_to_data_id.insert({asset_id, data_id});
         AssetInfo info{type, name, path, asset_id, GetLastAssetVersion(type), false, 0, data_id };
         PushAssetInfo(info, IndexOf(data_pool, data_id), true);

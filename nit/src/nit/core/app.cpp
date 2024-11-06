@@ -30,6 +30,8 @@ namespace Nit
         SetEntityRegistryInstance(&app->entity_registry);
         InitEntityRegistry();
         
+        RegisterNameComponent();
+        RegisterUUIDComponent();
         RegisterTransformComponent();
         RegisterCameraComponent();
         RegisterTextComponent();

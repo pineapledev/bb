@@ -7,7 +7,7 @@ namespace Nit
         Type*  type;
         String name;
         String path;
-        ID     id              = 0;
+        UUID   id;
         u32    version         = 0;
         bool   loaded          = false;
         u32    reference_count = 0;
@@ -29,7 +29,7 @@ namespace Nit
     {
         String name;
         Type*  type    = nullptr;
-        ID     id      = 0;
+        UUID   id;
         u32    data_id = SparseSet::INVALID;
     };
     
@@ -61,7 +61,7 @@ namespace Nit
         String               extension = ".nit";
         AssetCreatedEvent    asset_created_event;
         AssetRemovedEvent    asset_destroyed_event;
-        Map<ID, u32>         id_to_data_id;
+        Map<UUID, u32>       id_to_data_id;
     };
 
     AssetHandle CreateAssetHandle(AssetInfo* asset_info);
