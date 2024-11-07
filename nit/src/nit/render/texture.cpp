@@ -118,7 +118,6 @@ namespace Nit
         using namespace YAML;
         
         emitter << Key << "image_path"        << Value << texture->image_path;
-        emitter << Key << "is_white_texture"  << Value << texture->is_white_texture;
         emitter << Key << "mag_filter"        << Value << GetStringFromEnumValue<MagFilter> (texture->mag_filter);
         emitter << Key << "min_filter"        << Value << GetStringFromEnumValue<MinFilter> (texture->min_filter);
         emitter << Key << "wrap_mode_u"       << Value << GetStringFromEnumValue<WrapMode>  (texture->wrap_mode_u);
@@ -142,7 +141,6 @@ namespace Nit
     void DeserializeTexture2D(Texture2D* texture, const YAML::Node& node)
     {
         texture->image_path        = node["image_path"]                                     .as<String>();
-        texture->is_white_texture  = node["is_white_texture"]                               .as<bool>();
         texture->mag_filter        = GetEnumValueFromString<MagFilter> (node["mag_filter"]  .as<String>());
         texture->min_filter        = GetEnumValueFromString<MinFilter> (node["min_filter"]  .as<String>());
         texture->wrap_mode_u       = GetEnumValueFromString<WrapMode>  (node["wrap_mode_u"] .as<String>());
@@ -167,13 +165,7 @@ namespace Nit
 #ifdef NIT_EDITOR_ENABLED
     void DrawEditorTexture2D(Texture2D* texture)
     {
-        ImGui::Bool("is white", texture->is_white_texture);
-        
-        if (!texture->is_white_texture)
-        {
-            ImGui::InputText("path", texture->image_path);
-        }
-        
+        ImGui::InputText("path", texture->image_path);
         ImGui::EnumCombo("mag filter", texture->mag_filter);
         ImGui::EnumCombo("min filter", texture->min_filter);
         ImGui::EnumCombo("wrap u", texture->wrap_mode_u);
@@ -201,40 +193,42 @@ namespace Nit
 
     void FreeTextureImage(Texture2D* texture)
     {
-        if (!texture->pixel_data || !texture->loaded_from_image)
+        if (!texture->pixel_data)
         {
             return;
         }
-        stbi_image_free(texture->pixel_data);
+        
+        free(texture->pixel_data);
         texture->pixel_data = nullptr;
     }
 
     void LoadTexture2D(Texture2D* texture)
     {
-        static constexpr u32 WHITE_TEXTURE_DATA = 0xffffffff;
-
-        if (texture->is_white_texture)
+        if (!texture->image_path.empty())
         {
-            texture->width    = 1;
-            texture->height   = 1;
-            texture->channels = 4;
-        }
-        else if (!texture->image_path.empty())
-        {
+            if (texture->pixel_data)
+            {
+                FreeTextureImage(texture);    
+            }
+            
             stbi_set_flip_vertically_on_load(1);
             i32 width, height, channels;
-
+            
             String image_path = "assets/";
             image_path.append(texture->image_path);
             texture->pixel_data = stbi_load(image_path.c_str(), &width, &height, &channels, 0);
             
-            texture->width    = static_cast<u32>(width);
-            texture->height   = static_cast<u32>(height);
+            texture->size = {(f32) width, (f32) height }; 
             texture->channels = static_cast<u32>(channels);
-
-            texture->loaded_from_image = true;
         }
 
+        UploadToGPU(texture);
+    }
+
+    void UploadToGPU(Texture2D* texture)
+    {
+        NIT_CHECK(texture->id == 0);
+        
         GLenum internal_format = 0, data_format = 0;
         
         if (texture->channels == 4)
@@ -248,16 +242,11 @@ namespace Nit
             data_format = GL_RGB;
         }
 
-        void* data_to_upload = !texture->is_white_texture ? (void*) texture->pixel_data : (void*) &WHITE_TEXTURE_DATA;
-
-        if (!data_to_upload)
-        {
-            NIT_CHECK_MSG(false, "Trying to load empty texture!");
-            return;
-        }
+        u32 width  = (u32) texture->size.x;
+        u32 height = (u32) texture->size.y;
         
         glCreateTextures(GL_TEXTURE_2D, 1, &texture->id);
-        glTextureStorage2D(texture->id, 1, internal_format, texture->width, texture->height);
+        glTextureStorage2D(texture->id, 1, internal_format, width, height);
 
         SetMinFilter(texture->id, texture->min_filter);
         SetMagFilter(texture->id, texture->mag_filter);
@@ -265,20 +254,8 @@ namespace Nit
         SetWrapMode(texture->id, TextureCoordinate::U, texture->wrap_mode_u);
         SetWrapMode(texture->id, TextureCoordinate::V, texture->wrap_mode_v);
         
-        texture->size = {static_cast<f32>(texture->width), static_cast<f32>(texture->height)};
-        
-        glTextureSubImage2D(texture->id, 0, 0, 0, texture->width, texture->height, data_format,
-            GL_UNSIGNED_BYTE, data_to_upload);
-    
-        if (!texture->keep_pixel_data)
-        {
-            texture->pixel_data = nullptr;
-            
-            if (texture->loaded_from_image)
-            {
-                FreeTextureImage(texture);
-            }
-        }
+        glTextureSubImage2D(texture->id, 0, 0, 0, width, height, data_format,
+            GL_UNSIGNED_BYTE, texture->pixel_data);
     }
 
     void FreeTexture2D(Texture2D* texture)

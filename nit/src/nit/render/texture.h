@@ -35,13 +35,8 @@ namespace Nit
     struct Texture2D
     {
         u32           id                = 0;
-        bool          loaded_from_image = false;
-        bool          keep_pixel_data   = false;
-        bool          is_white_texture  = false;
         u8*           pixel_data        = nullptr;
-        Vector2       size              = V2_ZERO;
-        u32           width             = 0;
-        u32           height            = 0;
+        Vector2       size;
         u32           channels          = 0;
         String        image_path;       
         MagFilter     mag_filter        = MagFilter::Linear;
@@ -60,6 +55,7 @@ namespace Nit
     void DrawEditorTexture2D(Texture2D* texture);
 #endif
     void LoadTexture2D(Texture2D* texture);
+    void UploadToGPU(Texture2D* texture);
     void FreeTexture2D(Texture2D* texture);
     void BindTexture2D(const Texture2D* texture, u32 slot = 0);
     bool IsTexture2DValid(const Texture2D* texture);

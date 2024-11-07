@@ -6,7 +6,6 @@ AssetInfo:
   version: 0
 Texture2D:
   image_path: test_sheet.png
-  is_white_texture: false
   mag_filter: Linear
   min_filter: Linear
   wrap_mode_u: Repeat

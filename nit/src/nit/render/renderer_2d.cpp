@@ -76,7 +76,9 @@ namespace Nit
             renderer_2d->textures_to_bind.resize(MAX_TEXTURE_SLOTS);
 
             // White texture
-            renderer_2d->white_texture.is_white_texture = true;
+            renderer_2d->white_texture.size       = V2_ONE;
+            renderer_2d->white_texture.channels   = 4;
+            renderer_2d->white_texture.pixel_data = new u8[]{ 255, 255, 255, 255 };
             LoadTexture2D(&renderer_2d->white_texture);
             
             renderer_2d->textures_to_bind[0] = &renderer_2d->white_texture;

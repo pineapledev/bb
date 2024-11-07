@@ -79,10 +79,9 @@ namespace Nit
         }
         
         font->atlas.pixel_data = pixels_rgb;
-        font->atlas.width      = WIDTH;
-        font->atlas.height     = HEIGHT;
+        font->atlas.size = { WIDTH, HEIGHT };
         font->atlas.channels   = 4;
-
+        
         LoadTexture2D(&font->atlas);
         
         delete[] pixels_rgb;
