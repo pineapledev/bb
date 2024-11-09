@@ -2,7 +2,7 @@
 
 namespace Nit
 {
-    void Free(Pool* pool)
+    void PoolProc::Free(Pool* pool)
     {
         if (!pool)
         {
@@ -16,7 +16,7 @@ namespace Nit
         SparseSetProc::Free(&pool->sparse_set);
     }
 
-    bool IsValid(Pool* pool, u32 element_id)
+    bool PoolProc::IsValid(Pool* pool, u32 element_id)
     {
         if (!pool)
         {
@@ -27,7 +27,7 @@ namespace Nit
         return SparseSetProc::Test(&pool->sparse_set, element_id);
     }
 
-    bool InsertDataWithID(Pool* pool, u32 element_id, void* data)
+    bool PoolProc::InsertDataWithID(Pool* pool, u32 element_id, void* data)
     {
         if (!pool)
         {
@@ -37,14 +37,14 @@ namespace Nit
 
         if (SparseSetProc::IsFull(&pool->sparse_set))
         {
-            Resize(pool, pool->sparse_set.max * 2);
+            PoolProc::Resize(pool, pool->sparse_set.max * 2);
         }
         
         SetRawData(pool->type, pool->elements, SparseSetProc::Insert(&pool->sparse_set, element_id), data);
         return true;
     }
 
-    bool InsertData(Pool* pool, u32& element_id, void* data)
+    bool PoolProc::InsertData(Pool* pool, u32& element_id, void* data)
     {
         if (!pool || !pool->self_id_management)
         {
@@ -54,10 +54,10 @@ namespace Nit
         
         element_id = pool->available_ids.front();
         pool->available_ids.pop();
-        return InsertDataWithID(pool, element_id, data);
+        return PoolProc::InsertDataWithID(pool, element_id, data);
     }
 
-    SparseSetDeletion DeleteData(Pool* pool, u32 element_id)
+    SparseSetDeletion PoolProc::DeleteData(Pool* pool, u32 element_id)
     {
         if (!pool)
         {
@@ -76,7 +76,7 @@ namespace Nit
         return deletion;
     }
 
-    void Resize(Pool* pool, u32 new_max)
+    void PoolProc::Resize(Pool* pool, u32 new_max)
     {
         if (!pool)
         {
@@ -87,7 +87,7 @@ namespace Nit
         SparseSetProc::Resize(&pool->sparse_set, new_max);
     }
 
-    u32 IndexOf(Pool* pool, u32 element_id)
+    u32 PoolProc::IndexOf(Pool* pool, u32 element_id)
     {
         if (!pool)
         {
@@ -98,7 +98,7 @@ namespace Nit
         return SparseSetProc::Search(&pool->sparse_set, element_id);
     }
 
-    void* GetDataRaw(Pool* pool, u32 element_id)
+    void* PoolProc::GetRawData(Pool* pool, u32 element_id)
     {
         if (!pool)
         {

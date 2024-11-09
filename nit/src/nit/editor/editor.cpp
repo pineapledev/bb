@@ -39,9 +39,9 @@ namespace Nit
             if (dir_entry.is_directory())
             {
                 u32 id;
-                InsertData(&editor->asset_nodes, id, AssetNode{ .is_dir = true, .path = relative_path, .parent = parent_node, .asset = { .name = dir_path.stem().string() } });
+                PoolProc::InsertData(&editor->asset_nodes, id, AssetNode{ .is_dir = true, .path = relative_path, .parent = parent_node, .asset = { .name = dir_path.stem().string() } });
                 
-                if (AssetNode* parent_node_data = GetData<AssetNode>(&editor->asset_nodes, parent_node))
+                if (AssetNode* parent_node_data = PoolProc::GetData<AssetNode>(&editor->asset_nodes, parent_node))
                 {
                     parent_node_data->children.push_back(id);
                 }
@@ -58,8 +58,8 @@ namespace Nit
                 }
 
                 u32 id;
-                InsertData(&editor->asset_nodes, id, AssetNode{ .is_dir = false, .path = relative_path, .parent = parent_node, .asset = handle });
-                AssetNode* parent_node_data = GetData<AssetNode>(&editor->asset_nodes, parent_node);
+                PoolProc::InsertData(&editor->asset_nodes, id, AssetNode{ .is_dir = false, .path = relative_path, .parent = parent_node, .asset = handle });
+                AssetNode* parent_node_data = PoolProc::GetData<AssetNode>(&editor->asset_nodes, parent_node);
 
                 if (parent_node_data && parent_node_data->is_dir)
                 {
@@ -73,12 +73,12 @@ namespace Nit
     {
         if (editor->asset_nodes.elements != nullptr)
         {
-            Free(&editor->asset_nodes);
+            PoolProc::Free(&editor->asset_nodes);
         }
         
-        Load<AssetNode>(&editor->asset_nodes, 300, true);
+        PoolProc::Load<AssetNode>(&editor->asset_nodes, 300, true);
 
-        InsertData(&editor->asset_nodes, editor->root_node, AssetNode{ .is_dir = true, .path = "" });
+        PoolProc::InsertData(&editor->asset_nodes, editor->root_node, AssetNode{ .is_dir = true, .path = "" });
         editor->draw_node = editor->root_node;
         
         TraverseDirectory(GetAssetsDirectory(), editor->root_node);
@@ -483,7 +483,7 @@ namespace Nit
 
                         if (pool->data_pool.type->fn_invoke_draw_editor)
                         {
-                            void* data = GetDataRaw(&pool->data_pool, selected_entity);
+                            void* data = PoolProc::GetRawData(&pool->data_pool, selected_entity);
                             NIT_CHECK(data);
                             DrawEditor(component_type, data);
                         }
@@ -532,7 +532,7 @@ namespace Nit
                     RetargetAssetHandle(editor->selected_asset);
                 }
 
-                void* data = GetDataRaw(&asset_pool->data_pool, editor->selected_asset.data_id);
+                void* data = PoolProc::GetRawData(&asset_pool->data_pool, editor->selected_asset.data_id);
                 NIT_CHECK(data);
                 
                 DrawEditor(editor->selected_asset.type, data);
@@ -549,7 +549,7 @@ namespace Nit
                     RetainAsset(editor->icons);
                 }
                 
-                if (!IsValid(&editor->asset_nodes, editor->draw_node))
+                if (!PoolProc::IsValid(&editor->asset_nodes, editor->draw_node))
                 {
                     NIT_DEBUGBREAK();
                 }
@@ -569,7 +569,7 @@ namespace Nit
                         return res;
                     };
 
-                    AssetNode* draw_node = GetData<AssetNode>(&editor->asset_nodes, editor->draw_node);
+                    AssetNode* draw_node = PoolProc::GetData<AssetNode>(&editor->asset_nodes, editor->draw_node);
 
                     static Type* create_asset_type = nullptr;
                 
@@ -606,7 +606,7 @@ namespace Nit
                         if (ImGui::Button("Create"))
                         {
                             AssetHandle asset = CreateAsset(create_asset_type, asset_name, draw_node->path);
-                            u32 id; InsertData(&editor->asset_nodes, id, AssetNode{ .is_dir = false, .path = draw_node->path, .parent = editor->draw_node, .asset = asset});
+                            u32 id; PoolProc::InsertData(&editor->asset_nodes, id, AssetNode{ .is_dir = false, .path = draw_node->path, .parent = editor->draw_node, .asset = asset});
                             draw_node->children.push_back(id);
                             
                             ImGui::CloseCurrentPopup();
@@ -645,7 +645,7 @@ namespace Nit
                     for (u32 i = 0; i < draw_node->children.size(); ++i)
                     {
                         u32 node_id = draw_node->children[i];
-                        AssetNode* node = GetData<AssetNode>(&editor->asset_nodes, node_id);
+                        AssetNode* node = PoolProc::GetData<AssetNode>(&editor->asset_nodes, node_id);
                         
                         if (!node)
                         {
@@ -691,7 +691,7 @@ namespace Nit
                                 {
                                     draw_node->children.erase(std::ranges::find(draw_node->children, node_id));
                                     DestroyAsset(editor->selected_asset);
-                                    DeleteData(&editor->asset_nodes, node_id);
+                                    PoolProc::DeleteData(&editor->asset_nodes, node_id);
                                     editor->selected_asset = {};
                                     editor->selection = Editor::Selection::None;
                                     --i;

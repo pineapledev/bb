@@ -3,7 +3,7 @@
 namespace Nit
 {
     template<typename T>
-    void Load(Pool* pool, u32 max_element_count, bool self_id_management)
+    void PoolProc::Load(Pool* pool, u32 max_element_count, bool self_id_management)
     {
         if (!pool)
         {
@@ -33,7 +33,7 @@ namespace Nit
     }
     
     template<typename T>
-    T* InsertDataWithID(Pool* pool, u32 element_id, const T& data)
+    T* PoolProc::InsertDataWithID(Pool* pool, u32 element_id, const T& data)
     {
         if (!pool)
         {
@@ -43,7 +43,7 @@ namespace Nit
 
         if (SparseSetProc::IsFull(&pool->sparse_set))
         {
-            Resize(pool, pool->sparse_set.max * 2);
+            PoolProc::Resize(pool, pool->sparse_set.max * 2);
         }
         
         NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");
@@ -51,7 +51,7 @@ namespace Nit
     }
 
     template<typename T>
-    T* InsertData(Pool* pool, u32& out_id, const T& data)
+    T* PoolProc::InsertData(Pool* pool, u32& out_id, const T& data)
     {
         if (!pool || !pool->self_id_management)
         {
@@ -65,7 +65,7 @@ namespace Nit
     }
     
     template<typename T>
-    T* GetData(Pool* pool, u32 element_id)
+    T* PoolProc::GetData(Pool* pool, u32 element_id)
     {
         if (!pool)
         {
@@ -75,7 +75,7 @@ namespace Nit
 
         NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");
 
-        if (!IsValid(pool, element_id))
+        if (!PoolProc::IsValid(pool, element_id))
         {
             return nullptr;
         }
@@ -87,6 +87,6 @@ namespace Nit
             return nullptr;
         }
         
-        return GetData<T>(pool->elements, element_index);
+        return Nit::GetData<T>(pool->elements, element_index);
     }
 }

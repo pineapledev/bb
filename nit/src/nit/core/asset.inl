@@ -21,7 +21,7 @@ namespace Nit
         SetDeserializeFunction (type,  args.fn_deserialize);
         SetDrawEditorFunction  (type,  args.fn_draw_editor);
         
-        Load<T>(&asset_pool->data_pool, args.max_elements);
+        PoolProc::Load<T>(&asset_pool->data_pool, args.max_elements);
         asset_pool->asset_infos = new AssetInfo[args.max_elements];
     }
     
@@ -47,7 +47,7 @@ namespace Nit
     T* GetAssetData(AssetHandle& asset)
     {
         AssetPool* pool = GetAssetPoolSafe(GetType<T>());
-        return GetData<T>(&pool->data_pool, asset.data_id);
+        return PoolProc::GetData<T>(&pool->data_pool, asset.data_id);
     }
     
     template<typename T>
@@ -56,11 +56,11 @@ namespace Nit
         AssetPool* pool = GetAssetPoolSafe(GetType<T>());
         Pool* data_pool = &pool->data_pool;
         Type* type = data_pool->type;
-        u32 data_id; InsertData(data_pool, data_id, data);
+        u32 data_id; PoolProc::InsertData(data_pool, data_id, data);
         UUID asset_id = GenerateID();
         GetAssetRegistryInstance()->id_to_data_id.insert({asset_id, data_id});
         AssetInfo info{type, name, path, asset_id, GetLastAssetVersion<T>(), false, 0, data_id };
-        PushAssetInfo(info, IndexOf(data_pool, data_id), true);
+        PushAssetInfo(info, PoolProc::IndexOf(data_pool, data_id), true);
         AssetHandle asset_handle = CreateAssetHandle(&info);
         Broadcast<const AssetCreatedArgs&>(GetAssetRegistryInstance()->asset_created_event, {asset_handle});
         return asset_handle;
