@@ -102,13 +102,13 @@ namespace Nit
 
     AssetPool* GetAssetPoolSafe(AssetHandle& asset)
     {
-        NIT_CHECK(asset.id != 0);
+        NIT_CHECK(asset.id.data != 0);
         return GetAssetPoolSafe(asset.type);
     }
 
     AssetPool* GetAssetPoolSafe(const AssetInfo& info)
     {
-        NIT_CHECK(info.id != 0);
+        NIT_CHECK(info.id.data != 0);
         return GetAssetPoolSafe(info.type);
     }
 
