@@ -154,12 +154,12 @@ namespace Nit
     {
         AssetPool* pool = GetAssetPoolSafe(asset);
 
-        if (!PoolProc::IsValid(&pool->data_pool, asset.data_id))
+        if (!FnPool::IsValid(&pool->data_pool, asset.data_id))
         {
             return nullptr;
         }
         
-        return &pool->asset_infos[PoolProc::IndexOf(&pool->data_pool, asset.data_id)];
+        return &pool->asset_infos[FnPool::IndexOf(&pool->data_pool, asset.data_id)];
     }
 
     AssetInfo* GetAssetInfoSafe(AssetHandle& asset)
@@ -202,8 +202,8 @@ namespace Nit
                 
                 if (!created)
                 {
-                    PoolProc::InsertData(&pool->data_pool, asset_info.data_id);
-                    PushAssetInfo(asset_info, PoolProc::IndexOf(&pool->data_pool, asset_info.data_id), false);
+                    FnPool::InsertData(&pool->data_pool, asset_info.data_id);
+                    PushAssetInfo(asset_info, FnPool::IndexOf(&pool->data_pool, asset_info.data_id), false);
                 }
                 else
                 {
@@ -211,7 +211,7 @@ namespace Nit
                 }
                 
                 result = CreateAssetHandle(&asset_info);
-                void* data = PoolProc::GetRawData(&pool->data_pool, result.data_id);
+                void* data = FnPool::GetRawData(&pool->data_pool, result.data_id);
 
                 if (!created)
                 {
@@ -264,7 +264,7 @@ namespace Nit
         
         emitter << YAML::Key << info->type->name << YAML::Value << YAML::BeginMap;
 
-        Serialize(pool->data_pool.type, PoolProc::GetRawData(&pool->data_pool, info->data_id), emitter);
+        Serialize(pool->data_pool.type, FnPool::GetRawData(&pool->data_pool, info->data_id), emitter);
 
         emitter << YAML::EndMap;
 
@@ -373,7 +373,7 @@ namespace Nit
         {
             return false;
         }
-        return PoolProc::IsValid(&pool->data_pool, asset.data_id);
+        return FnPool::IsValid(&pool->data_pool, asset.data_id);
     }
     
     bool IsAssetLoaded(AssetHandle& asset)
@@ -390,11 +390,11 @@ namespace Nit
     {
         AssetPool* pool = GetAssetPoolSafe(type);
         Pool* data_pool = &pool->data_pool;
-        u32 data_id; PoolProc::InsertData(data_pool, data_id, data);
+        u32 data_id; FnPool::InsertData(data_pool, data_id, data);
         UUID asset_id = GenerateID();
         GetAssetRegistryInstance()->id_to_data_id.insert({asset_id, data_id});
         AssetInfo info{type, name, path, asset_id, GetLastAssetVersion(type), false, 0, data_id };
-        PushAssetInfo(info, PoolProc::IndexOf(data_pool, data_id), true);
+        PushAssetInfo(info, FnPool::IndexOf(data_pool, data_id), true);
         AssetHandle asset_handle = CreateAssetHandle(&info);
         Broadcast<const AssetCreatedArgs&>(GetAssetRegistryInstance()->asset_created_event, {asset_handle});
         return asset_handle;
@@ -415,7 +415,7 @@ namespace Nit
         args.asset_handle = CreateAssetHandle(info);
         Broadcast<const AssetDestroyedArgs&>(asset_registry->asset_destroyed_event, args);
         
-        EraseAssetInfo(*info, PoolProc::DeleteData(&pool->data_pool, info->data_id));
+        EraseAssetInfo(*info, FnPool::DeleteData(&pool->data_pool, info->data_id));
         
         asset_registry->id_to_data_id.erase(asset.id);
     }
@@ -441,7 +441,7 @@ namespace Nit
         }
         
         info->loaded = true;
-        Load(asset.type, PoolProc::GetRawData(&pool->data_pool, asset.data_id));
+        Load(asset.type, FnPool::GetRawData(&pool->data_pool, asset.data_id));
     }
 
     void FreeAsset(AssetHandle& asset)
@@ -450,7 +450,7 @@ namespace Nit
         AssetInfo* info = GetAssetInfoSafe(asset);
         info->reference_count = 0;
         info->loaded = false;
-        Free(asset.type, PoolProc::GetRawData(&pool->data_pool, asset.data_id));
+        Free(asset.type, FnPool::GetRawData(&pool->data_pool, asset.data_id));
     }
 
     void RetainAsset(AssetHandle& asset)

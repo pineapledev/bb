@@ -32,7 +32,7 @@ namespace Nit
         CursorMode  cursor_mode = CursorMode::Normal;
     };
 
-    namespace WindowProc
+    namespace FnWindow
     {
         void        SetInstance(Window* window_instance);
         void        Init(const WindowCfg& cfg = {});

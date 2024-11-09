@@ -8,7 +8,7 @@
 
 #define NIT_CHECK_ENGINE_CREATED NIT_CHECK_MSG(engine, "Forget to call SetAppInstance!");
 
-namespace Nit::EngineProc
+namespace Nit::FnEngine
 {
     void SetInstance(Engine* engine_instance)
     {
@@ -21,8 +21,8 @@ namespace Nit::EngineProc
         NIT_CHECK_ENGINE_CREATED
         NIT_LOG_TRACE("Creating application...");
         
-        WindowProc::SetInstance(&engine->window);
-        WindowProc::Init();
+        FnWindow::SetInstance(&engine->window);
+        FnWindow::Init();
         
         InitSystemStack();
         
@@ -76,16 +76,16 @@ namespace Nit::EngineProc
         engine->seconds          = 0;
         engine->frame_count      = 0;
         engine->acc_fixed_delta  = 0;
-        engine->last_time = WindowProc::GetTime();
+        engine->last_time = FnWindow::GetTime();
         
         NIT_LOG_TRACE("Application created!");
         
         InvokeSystemCallbacks(Stage::Start, true);
         
-        while(!WindowProc::ShouldClose())
+        while(!FnWindow::ShouldClose())
         {
             engine->frame_count++;
-            const f64 current_time = WindowProc::GetTime();
+            const f64 current_time = FnWindow::GetTime();
             const f64 time_between_frames = current_time - engine->last_time;
             engine->last_time = current_time;
             engine->seconds += time_between_frames;
@@ -116,11 +116,11 @@ namespace Nit::EngineProc
 #endif
 #ifdef NIT_IMGUI_ENABLED
             InvokeSystemCallbacks(Stage::DrawImGUI);
-            auto [window_width, window_height] = WindowProc::GetSize();
+            auto [window_width, window_height] = FnWindow::GetSize();
             EndImGui(window_width, window_height);
 #endif
             
-            WindowProc::Update();
+            FnWindow::Update();
         }
 
         InvokeSystemCallbacks(Stage::End, true);

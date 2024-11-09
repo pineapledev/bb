@@ -12,7 +12,7 @@
 
 Nit::Window* window = nullptr;
 
-namespace Nit::WindowProc
+namespace Nit::FnWindow
 {
     void SetInstance(Window* window_instance)
     {

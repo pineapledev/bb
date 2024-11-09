@@ -2,14 +2,14 @@
 
 namespace Nit
 {
-    bool SparseSetProc::IsValid(SparseSet* sparse_set)
+    bool FnSparseSet::IsValid(SparseSet* sparse_set)
     {
         return sparse_set && sparse_set->max != 0;
     }
 
-    bool SparseSetProc::IsEmpty(SparseSet* sparse_set)
+    bool FnSparseSet::IsEmpty(SparseSet* sparse_set)
     {
-        if (!SparseSetProc::IsValid(sparse_set))
+        if (!FnSparseSet::IsValid(sparse_set))
         {
             NIT_DEBUGBREAK();
             return false;
@@ -18,9 +18,9 @@ namespace Nit
         return sparse_set->count == 0;
     }
 
-    bool SparseSetProc::IsFull(SparseSet* sparse_set)
+    bool FnSparseSet::IsFull(SparseSet* sparse_set)
     {
-        if (!SparseSetProc::IsValid(sparse_set))
+        if (!FnSparseSet::IsValid(sparse_set))
         {
             NIT_DEBUGBREAK();
             return false;
@@ -29,7 +29,7 @@ namespace Nit
         return sparse_set->count == sparse_set->max;
     }
 
-    void SparseSetProc::Load(SparseSet* sparse_set, u32 max)
+    void FnSparseSet::Load(SparseSet* sparse_set, u32 max)
     {
         if (!sparse_set || max == U32_MAX)
         {
@@ -43,17 +43,17 @@ namespace Nit
         memset(sparse_set->sparse, SparseSet::INVALID, sizeof(u32) * max);
     }
     
-    u32 SparseSetProc::Insert(SparseSet* sparse_set, u32 element)
+    u32 FnSparseSet::Insert(SparseSet* sparse_set, u32 element)
     {
-        if (!SparseSetProc::IsValid(sparse_set) || element == SparseSet::INVALID || SparseSetProc::Test(sparse_set, element))
+        if (!FnSparseSet::IsValid(sparse_set) || element == SparseSet::INVALID || FnSparseSet::Test(sparse_set, element))
         {
             NIT_DEBUGBREAK();
             return SparseSet::INVALID;
         }
         
-        if (SparseSetProc::IsFull(sparse_set))
+        if (FnSparseSet::IsFull(sparse_set))
         {
-            SparseSetProc::Resize(sparse_set, sparse_set->max * 2);
+            FnSparseSet::Resize(sparse_set, sparse_set->max * 2);
         }
         
         u32 next_slot = sparse_set->count;
@@ -63,9 +63,9 @@ namespace Nit
         return next_slot;
     }
 
-    bool SparseSetProc::Test(SparseSet* sparse_set, u32 element)
+    bool FnSparseSet::Test(SparseSet* sparse_set, u32 element)
     {
-        if (!SparseSetProc::IsValid(sparse_set))
+        if (!FnSparseSet::IsValid(sparse_set))
         {
             NIT_DEBUGBREAK();
             return false;
@@ -74,9 +74,9 @@ namespace Nit
         return element < sparse_set->max && sparse_set->sparse[element] != SparseSet::INVALID;
     }
 
-    u32 SparseSetProc::Search(SparseSet* sparse_set, u32 element)
+    u32 FnSparseSet::Search(SparseSet* sparse_set, u32 element)
     {
-        if (!SparseSetProc::IsValid(sparse_set) || element >= sparse_set->max)
+        if (!FnSparseSet::IsValid(sparse_set) || element >= sparse_set->max)
         {
             NIT_DEBUGBREAK();
             return SparseSet::INVALID;
@@ -92,9 +92,9 @@ namespace Nit
         return dense_index;
     }
     
-    SparseSetDeletion SparseSetProc::Delete(SparseSet* sparse_set, u32 element)
+    SparseSetDeletion FnSparseSet::Delete(SparseSet* sparse_set, u32 element)
     {
-        if (!SparseSetProc::IsValid(sparse_set) || sparse_set->count == 0 || !SparseSetProc::Test(sparse_set, element))
+        if (!FnSparseSet::IsValid(sparse_set) || sparse_set->count == 0 || !FnSparseSet::Test(sparse_set, element))
         {
             NIT_DEBUGBREAK();
             return { false };
@@ -118,9 +118,9 @@ namespace Nit
         return { true, deleted_slot, last_slot };
     }
 
-    void SparseSetProc::Resize(SparseSet* sparse_set, u32 new_max)
+    void FnSparseSet::Resize(SparseSet* sparse_set, u32 new_max)
     {
-        if (!SparseSetProc::IsValid(sparse_set) || new_max > sparse_set->max)
+        if (!FnSparseSet::IsValid(sparse_set) || new_max > sparse_set->max)
         {
             NIT_DEBUGBREAK();
             return;
@@ -142,9 +142,9 @@ namespace Nit
         sparse_set->max    = new_max;
     }
 
-    void SparseSetProc::Free(SparseSet* sparse_set)
+    void FnSparseSet::Free(SparseSet* sparse_set)
     {
-        if (!SparseSetProc::IsValid(sparse_set))
+        if (!FnSparseSet::IsValid(sparse_set))
         {
             NIT_DEBUGBREAK();
             return;

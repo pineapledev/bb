@@ -11,7 +11,7 @@ namespace Nit
         bool           self_id_management  = false;
     };
 
-    namespace PoolProc
+    namespace FnPool
     {
         template<typename T>
         void Load(Pool* pool, u32 max_element_count, bool self_id_management = true);

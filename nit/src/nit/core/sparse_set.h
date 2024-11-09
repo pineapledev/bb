@@ -19,7 +19,7 @@ namespace Nit
         u32  last_slot    = 0;
     };
 
-    namespace SparseSetProc
+    namespace FnSparseSet
     {
         bool IsValid(SparseSet* sparse_set);
         bool IsEmpty(SparseSet* sparse_set);

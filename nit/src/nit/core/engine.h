@@ -45,7 +45,7 @@ namespace Nit
         f64 fixed_delta_seconds = 0.0166;
     };
     
-    namespace EngineProc
+    namespace FnEngine
     {
         void SetInstance(Engine* engine_instance);
         void Run(VoidFunc run_callback = nullptr);

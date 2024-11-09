@@ -10,8 +10,8 @@ void GameUpdate();
 int main(int argc, char** argv)
 {
     Engine engine_instance;
-    EngineProc::SetInstance(&engine_instance);
-    EngineProc::Run(OnRun);
+    FnEngine::SetInstance(&engine_instance);
+    FnEngine::Run(OnRun);
 }
 
 // -----------------------------------------------------------------
