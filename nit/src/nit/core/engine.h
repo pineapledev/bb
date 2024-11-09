@@ -11,13 +11,11 @@
 #include "nit/editor/editor.h"
 #endif
 
-#define NIT_CHECK_APP_CREATED NIT_CHECK_MSG(app, "Forget to call SetAppInstance!");
-
 namespace Nit
 {
-    inline struct App* app = nullptr;
+    inline struct Engine* engine = nullptr;
 
-    struct App
+    struct Engine
     {
         bool stopped        = false;
         bool paused         = false;
@@ -47,11 +45,14 @@ namespace Nit
         f64 fixed_delta_seconds = 0.0166;
     };
     
-    void SetAppInstance(App* app_instance);
-    void RunApp(VoidFunc run_callback = nullptr);
-    void PlayApp();
-    void PauseApp();
-    void StopApp();
+    namespace EngineProc
+    {
+        void SetInstance(Engine* engine_instance);
+        void Run(VoidFunc run_callback = nullptr);
+        void Play();
+        void Pause();
+        void Stop();
+    }
     
     // System shortcuts
     void InitSystemStack();

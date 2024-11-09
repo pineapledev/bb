@@ -1,4 +1,4 @@
-#include "app.h"
+#include "engine.h"
 #include "render/font.h"
 #include "render/texture.h"
 #include "logic/components.h"
@@ -6,28 +6,30 @@
 #include "logic/systems.h"
 #include "render/render_api.h"
 
-namespace Nit
+#define NIT_CHECK_ENGINE_CREATED NIT_CHECK_MSG(engine, "Forget to call SetAppInstance!");
+
+namespace Nit::EngineProc
 {
-    void SetAppInstance(App* app_instance)
+    void SetInstance(Engine* engine_instance)
     {
-        NIT_CHECK(app_instance);
-        app = app_instance;
+        NIT_CHECK(engine_instance);
+        engine = engine_instance;
     }
     
-    void RunApp(VoidFunc run_callback)
+    void Run(VoidFunc run_callback)
     {
-        NIT_CHECK_APP_CREATED
+        NIT_CHECK_ENGINE_CREATED
         NIT_LOG_TRACE("Creating application...");
         
-        WindowProc::SetInstance(&app->window);
+        WindowProc::SetInstance(&engine->window);
         WindowProc::Init();
         
         InitSystemStack();
         
-        SetTypeRegistryInstance(&app->type_registry);
+        SetTypeRegistryInstance(&engine->type_registry);
         InitTypeRegistry();
 
-        SetEntityRegistryInstance(&app->entity_registry);
+        SetEntityRegistryInstance(&engine->entity_registry);
         InitEntityRegistry();
         
         RegisterNameComponent();
@@ -41,7 +43,7 @@ namespace Nit
 
         CreateDrawSystem();
         
-        SetAssetRegistryInstance(&app->asset_registry);
+        SetAssetRegistryInstance(&engine->asset_registry);
         
         RegisterTexture2DAsset();
         RegisterFontAsset();
@@ -54,27 +56,27 @@ namespace Nit
         
         InitAssetRegistry();
 
-        SetRenderObjectsInstance(&app->render_objects);
+        SetRenderObjectsInstance(&engine->render_objects);
         InitRenderObjects();
         
-        SetRenderer2DInstance(&app->renderer_2d);
+        SetRenderer2DInstance(&engine->renderer_2d);
         InitRenderer2D();
 
 #ifdef NIT_IMGUI_ENABLED
-        SetImGuiRendererInstance(&app->im_gui_renderer);
-        InitImGui(app->window.handler);
+        SetImGuiRendererInstance(&engine->im_gui_renderer);
+        InitImGui(engine->window.handler);
 #endif
 
 #ifdef NIT_EDITOR_ENABLED
-        SetEditorInstance(&app->editor);
+        SetEditorInstance(&engine->editor);
         InitEditor();
 #endif
         
         // Init time
-        app->seconds          = 0;
-        app->frame_count      = 0;
-        app->acc_fixed_delta  = 0;
-        app->last_time = WindowProc::GetTime();
+        engine->seconds          = 0;
+        engine->frame_count      = 0;
+        engine->acc_fixed_delta  = 0;
+        engine->last_time = WindowProc::GetTime();
         
         NIT_LOG_TRACE("Application created!");
         
@@ -82,20 +84,20 @@ namespace Nit
         
         while(!WindowProc::ShouldClose())
         {
-            app->frame_count++;
+            engine->frame_count++;
             const f64 current_time = WindowProc::GetTime();
-            const f64 time_between_frames = current_time - app->last_time;
-            app->last_time = current_time;
-            app->seconds += time_between_frames;
-            app->delta_seconds = (f32) Clamp(time_between_frames, 0., app->max_delta_time);
+            const f64 time_between_frames = current_time - engine->last_time;
+            engine->last_time = current_time;
+            engine->seconds += time_between_frames;
+            engine->delta_seconds = (f32) Clamp(time_between_frames, 0., engine->max_delta_time);
             
             InvokeSystemCallbacks(Stage::Update);
 
-            app->acc_fixed_delta += app->delta_seconds;
-            while (app->acc_fixed_delta >= app->fixed_delta_seconds)
+            engine->acc_fixed_delta += engine->delta_seconds;
+            while (engine->acc_fixed_delta >= engine->fixed_delta_seconds)
             {
                 InvokeSystemCallbacks(Stage::FixedUpdate);
-                app->acc_fixed_delta -= app->fixed_delta_seconds;
+                engine->acc_fixed_delta -= engine->fixed_delta_seconds;
             }
 
             ClearScreen();
@@ -124,57 +126,60 @@ namespace Nit
         InvokeSystemCallbacks(Stage::End, true);
     }
     
-    void PlayApp()  
+    void Play()  
     {
-        NIT_CHECK_APP_CREATED
-        app->paused = false; 
+        NIT_CHECK_ENGINE_CREATED
+        engine->paused = false; 
 
-        if (app->stopped)
+        if (engine->stopped)
         {
-            app->stopped = false;
+            engine->stopped = false;
             InvokeSystemCallbacks(Stage::Start, true);
         }
     }
 
-    void PauseApp() 
+    void Pause() 
     {
-        NIT_CHECK_APP_CREATED
-        app->paused = true;  
+        NIT_CHECK_ENGINE_CREATED
+        engine->paused = true;  
     }
 
-    void StopApp()
+    void Stop()
     {
-        NIT_CHECK_APP_CREATED
+        NIT_CHECK_ENGINE_CREATED
         InvokeSystemCallbacks(Stage::End, true);
-        app->stopped = true;
+        engine->stopped = true;
     }
+}
 
+namespace Nit
+{
     // System shortcuts
 
     void InitSystemStack()
     {
-        NIT_CHECK_APP_CREATED
-        app->system_stack = SystemStack();
+        NIT_CHECK_ENGINE_CREATED
+        engine->system_stack = SystemStack();
     }
 
     void CreateSystem(const String& name, u32 priority, ExecutionContext context, bool start_disabled)
     {
-        NIT_CHECK_APP_CREATED
-        SystemStack& stack = app->system_stack;
+        NIT_CHECK_ENGINE_CREATED
+        SystemStack& stack = engine->system_stack;
         CreateSystem(stack.systems, stack.next_system, name, priority, context, start_disabled);
     }
     
     void SetSystemCallback(VoidFunc callback, Stage stage, bool try_invoke)
     {
-        NIT_CHECK_APP_CREATED
-        SystemStack& stack = app->system_stack;
+        NIT_CHECK_ENGINE_CREATED
+        SystemStack& stack = engine->system_stack;
         SetSystemCallback(stack.systems[stack.next_system - 1], callback, stage, try_invoke);
     }
     
     void InvokeSystemCallbacks(Stage stage, bool force_enabled)
     {
-        NIT_CHECK_APP_CREATED
-        SystemStack& stack = app->system_stack;
-        InvokeSystemCallbacks(stack.systems, stack.next_system, app->paused || app->stopped, stage, force_enabled);
+        NIT_CHECK_ENGINE_CREATED
+        SystemStack& stack = engine->system_stack;
+        InvokeSystemCallbacks(stack.systems, stack.next_system, engine->paused || engine->stopped, stage, force_enabled);
     }
 }

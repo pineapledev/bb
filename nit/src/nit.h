@@ -5,7 +5,7 @@
 #include "nit/render/texture.h"
 #include "nit/render/font.h"
 
-#include "nit/core/app.h"
+#include "nit/core/engine.h"
 #include "nit/core/window.h"
 #include "nit/core/system.h"
 #include "nit/core/asset.h"

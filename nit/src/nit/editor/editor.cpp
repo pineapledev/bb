@@ -2,7 +2,7 @@
 
 #include <stack>
 
-#include "core/app.h"
+#include "core/engine.h"
 #include "logic/components.h"
 #include "logic/scene.h"
 #include "render/texture.h"
@@ -48,7 +48,7 @@ namespace Nit
 
                 TraverseDirectory(dir_path, id, depth + 1);
             }
-            else if (dir_path.extension().string() == app->asset_registry.extension)
+            else if (dir_path.extension().string() == engine->asset_registry.extension)
             {
                 AssetHandle handle = FindAssetByName(dir_path.filename().stem().string());
 
@@ -134,7 +134,7 @@ namespace Nit
             return;
         }
 
-        if (app->im_gui_renderer.is_dockspace_enabled && ImGui::BeginMenuBar())
+        if (engine->im_gui_renderer.is_dockspace_enabled && ImGui::BeginMenuBar())
         {
             if (ImGui::BeginMenu("Window"))
             {
@@ -267,10 +267,10 @@ namespace Nit
             // source
             {
                 static String source = GetWorkingDirectory().string();
-                ImGui::InputFolder(&app->window, "Source", source);
+                ImGui::InputFolder(&engine->window, "Source", source);
                 
                 static String dest = GetWorkingDirectory().string();
-                ImGui::InputFolder(&app->window, "Destination", dest);
+                ImGui::InputFolder(&engine->window, "Destination", dest);
 
                 static String name;
                 ImGui::InputText("Asset Name", name);
@@ -444,9 +444,9 @@ namespace Nit
             {
                 Entity selected_entity = editor->selected_entity;
 
-                for (u32 i = 0; i < app->entity_registry.next_component_type_index - 1; ++i)
+                for (u32 i = 0; i < engine->entity_registry.next_component_type_index - 1; ++i)
                 {
-                    ComponentPool* pool = &app->entity_registry.component_pool[i];
+                    ComponentPool* pool = &engine->entity_registry.component_pool[i];
                     if (!Invoke(pool->fn_is_in_entity, selected_entity))
                     {
                         continue;
@@ -506,9 +506,9 @@ namespace Nit
 
                 if (ImGui::BeginPopup("Add Component"))
                 {
-                    for (u32 i = 0; i < app->entity_registry.next_component_type_index - 1; ++i)
+                    for (u32 i = 0; i < engine->entity_registry.next_component_type_index - 1; ++i)
                     {
-                        ComponentPool* pool = &app->entity_registry.component_pool[i];
+                        ComponentPool* pool = &engine->entity_registry.component_pool[i];
                         if (Invoke(pool->fn_is_in_entity, selected_entity))
                         {
                             continue;
@@ -577,9 +577,9 @@ namespace Nit
                     {
                         if (ImGui::BeginMenu("Create"))
                         {
-                            for (u32 i = 0; i < app->asset_registry.asset_pools.size(); ++i)
+                            for (u32 i = 0; i < engine->asset_registry.asset_pools.size(); ++i)
                             {
-                                AssetPool* pool = &app->asset_registry.asset_pools[i];
+                                AssetPool* pool = &engine->asset_registry.asset_pools[i];
                 
                                 if (ImGui::MenuItem(pool->data_pool.type->name.c_str()))
                                 {
@@ -715,11 +715,11 @@ namespace Nit
 
             ImGui::Begin("Stats", &editor->show_stats, window_flags);
             String stats_text;
-            stats_text.append("\nTime: "     + std::to_string(app->seconds));
-            stats_text.append("\nFrames: "   + std::to_string(app->frame_count));
-            stats_text.append("\nFPS: "      + std::to_string(app->frame_count / app->seconds));
-            stats_text.append("\nEntities: " + std::to_string(app->entity_registry.entity_count));
-            stats_text.append("\nDelta: "    + std::to_string(app->delta_seconds));
+            stats_text.append("\nTime: "     + std::to_string(engine->seconds));
+            stats_text.append("\nFrames: "   + std::to_string(engine->frame_count));
+            stats_text.append("\nFPS: "      + std::to_string(engine->frame_count / engine->seconds));
+            stats_text.append("\nEntities: " + std::to_string(engine->entity_registry.entity_count));
+            stats_text.append("\nDelta: "    + std::to_string(engine->delta_seconds));
             ImGui::Text(stats_text.c_str());
             ImGui::End();
         }
@@ -743,7 +743,7 @@ namespace Nit
         if (ImGui::Button(toggle_button_name))
         {
             editor->enabled = !editor->enabled;
-            app->im_gui_renderer.use_dockspace = editor->enabled;
+            engine->im_gui_renderer.use_dockspace = editor->enabled;
         }
         ImGui::End();
     }

@@ -2,7 +2,7 @@
 #include "nit/render/renderer_2d.h"
 #include "nit/render/render_api.h"
 #include "nit/core/system.h"
-#include "nit/core/app.h"
+#include "nit/core/engine.h"
 #include "nit/logic/entity.h"
 #include "nit/logic/components.h"
 #include "nit/render/texture.h"
@@ -38,16 +38,16 @@ namespace Nit
     
     void Start()
     {
-        app->asset_registry.asset_destroyed_event    += AssetDestroyedListener::Create(OnAssetDestroyed);
-        app->entity_registry.component_added_event   += ComponentAddedListener::Create(OnComponentAdded);
-        app->entity_registry.component_removed_event += ComponentRemovedListener::Create(OnComponentRemoved);
+        engine->asset_registry.asset_destroyed_event    += AssetDestroyedListener::Create(OnAssetDestroyed);
+        engine->entity_registry.component_added_event   += ComponentAddedListener::Create(OnComponentAdded);
+        engine->entity_registry.component_removed_event += ComponentRemovedListener::Create(OnComponentRemoved);
     }
 
     void End()
     {
-        app->asset_registry.asset_destroyed_event    -= AssetDestroyedListener::Create(OnAssetDestroyed);
-        app->entity_registry.component_added_event   -= ComponentAddedListener::Create(OnComponentAdded);
-        app->entity_registry.component_removed_event -= ComponentRemovedListener::Create(OnComponentRemoved);
+        engine->asset_registry.asset_destroyed_event    -= AssetDestroyedListener::Create(OnAssetDestroyed);
+        engine->entity_registry.component_added_event   -= ComponentAddedListener::Create(OnComponentAdded);
+        engine->entity_registry.component_removed_event -= ComponentRemovedListener::Create(OnComponentRemoved);
     }
     
     static ListenerAction OnAssetDestroyed(const AssetDestroyedArgs& args)
@@ -144,11 +144,11 @@ namespace Nit
         WindowProc::RetrieveSize(&width, &height);
         
 #ifdef NIT_EDITOR_ENABLED
-        if (app->editor.enabled && app->editor.show_viewport)
+        if (engine->editor.enabled && engine->editor.show_viewport)
         {
-            ClearAttachment(&app->editor.frame_buffer, 1, -1);
-            width  = app->editor.frame_buffer.width;
-            height = app->editor.frame_buffer.height;
+            ClearAttachment(&engine->editor.frame_buffer, 1, -1);
+            width  = engine->editor.frame_buffer.width;
+            height = engine->editor.frame_buffer.height;
         }
 #endif
 

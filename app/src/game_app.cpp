@@ -3,15 +3,15 @@
 
 using namespace Nit;
 
-void OnApplicationRun();
+void OnRun();
 void GameStart();
 void GameUpdate();
 
 int main(int argc, char** argv)
 {
-    App app_instance;
-    SetAppInstance(&app_instance);
-    RunApp(OnApplicationRun);
+    Engine engine_instance;
+    EngineProc::SetInstance(&engine_instance);
+    EngineProc::Run(OnRun);
 }
 
 // -----------------------------------------------------------------
@@ -57,7 +57,7 @@ void SpawnEntity()
 
 // -----------------------------------------------------------------
 
-void OnApplicationRun()
+void OnRun()
 {
     //Create game system
     CreateSystem("Game", 1);
@@ -97,7 +97,7 @@ void GameUpdate()
         }
         else
         {
-            transform.position += ToVector3(move.velocity * app->delta_seconds);
+            transform.position += ToVector3(move.velocity * engine->delta_seconds);
         }
     }
 }
