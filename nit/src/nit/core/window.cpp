@@ -4,17 +4,17 @@
 #endif
 #include <glfw/glfw3.h>
 
-#define NIT_CHECK_WINDOW_CREATED NIT_CHECK_MSG(window, "Forget to call SetWindowInstance!");
+#define NIT_CHECK_WINDOW_CREATED NIT_CHECK_MSG(window, "Forget to call SetInstance!");
 
 #define NIT_CHECK_WINDOW_INITIALIZED \
     NIT_CHECK_WINDOW_CREATED \
-    NIT_CHECK_MSG(window->handler, "Forget to call InitWindow!");
+    NIT_CHECK_MSG(window->handler, "Forget to call Init!");
 
-namespace Nit
+Nit::Window* window = nullptr;
+
+namespace Nit::WindowProc
 {
-    Window* window = nullptr;
-
-    void SetWindowInstance(Window* window_instance)
+    void SetInstance(Window* window_instance)
     {
         NIT_CHECK(window_instance);
         window = window_instance;
@@ -26,23 +26,40 @@ namespace Nit
         NIT_LOG_TRACE("[OpenGL] %s ", message);
     }
     
-    void InitWindow(const WindowCfg& cfg)
+    void Init(const WindowCfg& cfg)
     {
         NIT_LOG_TRACE("Creating Window...");
+        NIT_CHECK_WINDOW_CREATED
         
-        FinishWindow();
+        Finish();
 
-        const bool initialized = glfwInit(); 
-        NIT_CHECK_MSG(initialized, "GLFW Window initialisation failed!");
+        const bool initialized = glfwInit();
+
+        if (!initialized)
+        {
+            NIT_CHECK_MSG(false, "GLFW Window initialisation failed!");
+            return;
+        }
 
         window->handler = glfwCreateWindow(cfg.width, cfg.height, cfg.title.c_str(), nullptr, nullptr);
-        NIT_CHECK_MSG(window->handler, "GLFW Window creation failed!");
+
+        if (!window->handler)
+        {
+            NIT_CHECK_MSG(false, "GLFW Window creation failed!");
+            return;
+        }
+        
         glfwMakeContextCurrent(window->handler);
 
         const bool gl_context = gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
-        NIT_CHECK_MSG(gl_context, "Failed to set the OpenGL context!");
-        
-#if defined NIT_GRAPHICS_API_OPENGL && NIT_DEBUG
+
+        if (!gl_context)
+        {
+            NIT_CHECK_MSG(false, "Failed to set the OpenGL context!");
+            return;
+        }
+
+#ifdef NIT_GRAPHICS_API_OPENGL
         if (cfg.render_api_logs)
         {
             glEnable(GL_DEBUG_OUTPUT);
@@ -50,8 +67,9 @@ namespace Nit
             glDebugMessageCallback(OnDebugMessageCallback, nullptr);
         }
 #endif
+        
         SetVSync(cfg.v_sync);
-        SetWindowTitle(cfg.title);
+        SetTitle(cfg.title);
         SetCursorMode(cfg.cursor_mode);
 
         if (cfg.start_maximized)
@@ -62,31 +80,31 @@ namespace Nit
         NIT_LOG_TRACE("Window created!");
     }
 
-    void FinishWindow()
+    void Finish()
     {
         NIT_CHECK_WINDOW_CREATED
         if (window->handler)
         {
-            CloseWindow();
+            Close();
             glfwDestroyWindow(window->handler);
             window->handler = nullptr;
             glfwTerminate();
         }
     }
 
-    void CloseWindow()
+    void Close()
     {
         NIT_CHECK_WINDOW_INITIALIZED
         glfwSetWindowShouldClose(window->handler, true);
     }
 
-    void UpdateWindow()
+    void Update()
     {
         glfwPollEvents();
         glfwSwapBuffers(window->handler);
     }
 
-    void SetWindowTitle(const String& new_title)
+    void SetTitle(const String& new_title)
     {
         NIT_CHECK_WINDOW_INITIALIZED
         window->title = new_title;
@@ -103,7 +121,6 @@ namespace Nit
     void SetCursorMode(const CursorMode mode)
     {
         NIT_CHECK_WINDOW_INITIALIZED
-        
         window->cursor_mode = mode;
 
         switch (mode)
@@ -122,29 +139,29 @@ namespace Nit
         }
     }
 
-    bool WindowShouldClose()
+    bool ShouldClose()
     {
         NIT_CHECK_WINDOW_INITIALIZED
         return glfwWindowShouldClose(window->handler);
     }
 
-    void RetrieveWindowSize(i32* width, i32* height)
+    void RetrieveSize(i32* width, i32* height)
     {
         NIT_CHECK_WINDOW_INITIALIZED
         glfwGetWindowSize(window->handler, width, height);
     }
 
-    Vector2 GetWindowSize()
+    Vector2 GetSize()
     {
         i32 x, y;
-        RetrieveWindowSize(&x, &y);
+        RetrieveSize(&x, &y);
         return { (f32)x, (f32) y };
     }
 
-    float GetWindowAspect()
+    float GetAspect()
     {
         i32 x, y;
-        RetrieveWindowSize(&x, &y);
+        RetrieveSize(&x, &y);
         return (f32)x / (f32)y;
     }
     

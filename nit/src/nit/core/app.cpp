@@ -19,8 +19,8 @@ namespace Nit
         NIT_CHECK_APP_CREATED
         NIT_LOG_TRACE("Creating application...");
         
-        SetWindowInstance(&app->window);
-        InitWindow();
+        WindowProc::SetInstance(&app->window);
+        WindowProc::Init();
         
         InitSystemStack();
         
@@ -74,16 +74,16 @@ namespace Nit
         app->seconds          = 0;
         app->frame_count      = 0;
         app->acc_fixed_delta  = 0;
-        app->last_time = GetTime();
+        app->last_time = WindowProc::GetTime();
         
         NIT_LOG_TRACE("Application created!");
         
         InvokeSystemCallbacks(Stage::Start, true);
         
-        while(!WindowShouldClose())
+        while(!WindowProc::ShouldClose())
         {
             app->frame_count++;
-            const f64 current_time = GetTime();
+            const f64 current_time = WindowProc::GetTime();
             const f64 time_between_frames = current_time - app->last_time;
             app->last_time = current_time;
             app->seconds += time_between_frames;
@@ -114,11 +114,11 @@ namespace Nit
 #endif
 #ifdef NIT_IMGUI_ENABLED
             InvokeSystemCallbacks(Stage::DrawImGUI);
-            auto [window_width, window_height] = GetWindowSize();
+            auto [window_width, window_height] = WindowProc::GetSize();
             EndImGui(window_width, window_height);
 #endif
             
-            UpdateWindow();
+            WindowProc::Update();
         }
 
         InvokeSystemCallbacks(Stage::End, true);

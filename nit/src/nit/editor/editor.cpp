@@ -107,8 +107,8 @@ namespace Nit
         style.Colors[ImGuiCol_FrameBg] = { 0.1f, 0.1f, 0.1f, 1.f };
         style.Colors[ImGuiCol_Button] = { 0.356f, 0.356f, 0.416f, 1.f };
         
-        RetrieveWindowSize((i32*)&editor->frame_buffer.width, (i32*)&editor->frame_buffer.height);
-
+        WindowProc::RetrieveSize((i32*)&editor->frame_buffer.width, (i32*)&editor->frame_buffer.height);
+        
         editor->frame_buffer.color_attachments = {
             FrameBufferTextureFormat::RGBA8,
             FrameBufferTextureFormat::RED_INTEGER
