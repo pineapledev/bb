@@ -19,7 +19,7 @@ namespace Nit
         pool->type = GetType<T>();
         pool->elements  = new T[max_element_count];
         
-        Load(&pool->sparse_set, max_element_count);
+        SparseSetProc::Load(&pool->sparse_set, max_element_count);
         
         if (self_id_management)
         {
@@ -41,13 +41,13 @@ namespace Nit
             return nullptr;
         }
 
-        if (IsFull(&pool->sparse_set))
+        if (SparseSetProc::IsFull(&pool->sparse_set))
         {
             Resize(pool, pool->sparse_set.max * 2);
         }
         
         NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");
-        return SetData(pool->elements, Insert(&pool->sparse_set, element_id), data);
+        return SetData(pool->elements, SparseSetProc::Insert(&pool->sparse_set, element_id), data);
     }
 
     template<typename T>
@@ -80,7 +80,7 @@ namespace Nit
             return nullptr;
         }
         
-        u32 element_index = Search(&pool->sparse_set, element_id);
+        u32 element_index = SparseSetProc::Search(&pool->sparse_set, element_id);
 
         if (element_index == SparseSet::INVALID)
         {

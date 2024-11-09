@@ -199,8 +199,8 @@ namespace Nit
 #endif
     }
 
-    void  SetData(const Type* type, void* array, u32 index, void* data);
-    void* GetData(const Type* type, void* array, u32 index);
+    void  SetRawData(const Type* type, void* array, u32 index, void* data);
+    void* GetRawData(const Type* type, void* array, u32 index);
     void  ResizeData(const Type* type, void* array, u32 max, u32 new_max);
     void  Load(const Type* type, void* data);
     void  Free(const Type* type, void* data);

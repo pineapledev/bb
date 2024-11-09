@@ -13,7 +13,7 @@ namespace Nit
         pool->type = nullptr;
         free(pool->elements);
         pool->elements = nullptr;
-        Free(&pool->sparse_set);
+        SparseSetProc::Free(&pool->sparse_set);
     }
 
     bool IsValid(Pool* pool, u32 element_id)
@@ -24,7 +24,7 @@ namespace Nit
             return false;
         }
         
-        return Test(&pool->sparse_set, element_id);
+        return SparseSetProc::Test(&pool->sparse_set, element_id);
     }
 
     bool InsertDataWithID(Pool* pool, u32 element_id, void* data)
@@ -35,12 +35,12 @@ namespace Nit
             return false;
         }
 
-        if (IsFull(&pool->sparse_set))
+        if (SparseSetProc::IsFull(&pool->sparse_set))
         {
             Resize(pool, pool->sparse_set.max * 2);
         }
         
-        SetData(pool->type, pool->elements, Insert(&pool->sparse_set, element_id), data);
+        SetRawData(pool->type, pool->elements, SparseSetProc::Insert(&pool->sparse_set, element_id), data);
         return true;
     }
 
@@ -70,9 +70,9 @@ namespace Nit
             pool->available_ids.push(element_id);
         }
         
-        SparseSetDeletion deletion = Delete(&pool->sparse_set, element_id);
-        void* last_element_data = GetData(pool->type, pool->elements, deletion.last_slot);
-        SetData(pool->type, pool->elements, deletion.deleted_slot, last_element_data);
+        SparseSetDeletion deletion = SparseSetProc::Delete(&pool->sparse_set, element_id);
+        void* last_element_data = GetRawData(pool->type, pool->elements, deletion.last_slot);
+        SetRawData(pool->type, pool->elements, deletion.deleted_slot, last_element_data);
         return deletion;
     }
 
@@ -84,7 +84,7 @@ namespace Nit
         }
 
         ResizeData(pool->type, pool->elements, pool->sparse_set.max, new_max);
-        Resize(&pool->sparse_set, new_max);
+        SparseSetProc::Resize(&pool->sparse_set, new_max);
     }
 
     u32 IndexOf(Pool* pool, u32 element_id)
@@ -95,7 +95,7 @@ namespace Nit
             return U32_MAX;
         }
         
-        return Search(&pool->sparse_set, element_id);
+        return SparseSetProc::Search(&pool->sparse_set, element_id);
     }
 
     void* GetDataRaw(Pool* pool, u32 element_id)
@@ -106,7 +106,7 @@ namespace Nit
             return nullptr;
         }
         
-        u32 index = Search(&pool->sparse_set, element_id);
-        return index != SparseSet::INVALID ? GetData(pool->type, pool->elements, index) : nullptr;
+        u32 index = SparseSetProc::Search(&pool->sparse_set, element_id);
+        return index != SparseSet::INVALID ? GetRawData(pool->type, pool->elements, index) : nullptr;
     }
 }

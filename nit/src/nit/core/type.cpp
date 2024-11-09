@@ -16,13 +16,13 @@ namespace Nit
         return type_registry;
     }
     
-    void SetData(const Type* type, void* array, u32 index, void* data)
+    void SetRawData(const Type* type, void* array, u32 index, void* data)
     {
         NIT_CHECK(type && type->fn_set_data && array);
         type->fn_set_data(array, index, data);
     }
 
-    void* GetData(const Type* type, void* array, u32 index)
+    void* GetRawData(const Type* type, void* array, u32 index)
     {
         NIT_CHECK(type && type->fn_get_data && array);
         return type->fn_get_data(array, index);
