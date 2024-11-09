@@ -16,19 +16,19 @@ namespace Nit
         return type_registry;
     }
     
-    void SetRawData(const Type* type, void* array, u32 index, void* data)
+    void SetArrayRawData(const Type* type, void* array, u32 index, void* data)
     {
         NIT_CHECK(type && type->fn_set_data && array);
         type->fn_set_data(array, index, data);
     }
 
-    void* GetRawData(const Type* type, void* array, u32 index)
+    void* GetArrayRawData(const Type* type, void* array, u32 index)
     {
         NIT_CHECK(type && type->fn_get_data && array);
         return type->fn_get_data(array, index);
     }
 
-    void ResizeData(const Type* type, void* array, u32 max, u32 new_max)
+    void ResizeArray(const Type* type, void* array, u32 max, u32 new_max)
     {
         if (!type || !type->fn_resize_data || !array || new_max <= max)
         {

@@ -199,9 +199,9 @@ namespace Nit
 #endif
     }
 
-    void  SetRawData(const Type* type, void* array, u32 index, void* data);
-    void* GetRawData(const Type* type, void* array, u32 index);
-    void  ResizeData(const Type* type, void* array, u32 max, u32 new_max);
+    void  SetArrayRawData(const Type* type, void* array, u32 index, void* data);
+    void* GetArrayRawData(const Type* type, void* array, u32 index);
+    void  ResizeArray(const Type* type, void* array, u32 max, u32 new_max);
     void  Load(const Type* type, void* data);
     void  Free(const Type* type, void* data);
     void  Serialize(const Type* type, void* data, YAML::Emitter& emitter);
@@ -212,7 +212,7 @@ namespace Nit
 #endif
 
     template<typename T>
-    T* SetData(void* array, u32 index, const T& data)
+    T* SetArrayData(void* array, u32 index, const T& data)
     {
         T* casted_array = static_cast<T*>(array);
         T* saved_data = &casted_array[index];
@@ -221,7 +221,7 @@ namespace Nit
     }
 
     template<typename T>
-    T* GetData(void* array, u32 index)
+    T* GetArrayData(void* array, u32 index)
     {
         T* casted_array = static_cast<T*>(array);
         return &casted_array[index];

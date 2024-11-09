@@ -47,7 +47,7 @@ namespace Nit
         }
         
         NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");
-        return SetData(pool->elements, SparseSetProc::Insert(&pool->sparse_set, element_id), data);
+        return SetArrayData(pool->elements, SparseSetProc::Insert(&pool->sparse_set, element_id), data);
     }
 
     template<typename T>
@@ -87,6 +87,6 @@ namespace Nit
             return nullptr;
         }
         
-        return Nit::GetData<T>(pool->elements, element_index);
+        return GetArrayData<T>(pool->elements, element_index);
     }
 }

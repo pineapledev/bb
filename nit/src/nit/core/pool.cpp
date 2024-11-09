@@ -40,7 +40,7 @@ namespace Nit
             PoolProc::Resize(pool, pool->sparse_set.max * 2);
         }
         
-        SetRawData(pool->type, pool->elements, SparseSetProc::Insert(&pool->sparse_set, element_id), data);
+        SetArrayRawData(pool->type, pool->elements, SparseSetProc::Insert(&pool->sparse_set, element_id), data);
         return true;
     }
 
@@ -71,8 +71,8 @@ namespace Nit
         }
         
         SparseSetDeletion deletion = SparseSetProc::Delete(&pool->sparse_set, element_id);
-        void* last_element_data = GetRawData(pool->type, pool->elements, deletion.last_slot);
-        SetRawData(pool->type, pool->elements, deletion.deleted_slot, last_element_data);
+        void* last_element_data = GetArrayRawData(pool->type, pool->elements, deletion.last_slot);
+        SetArrayRawData(pool->type, pool->elements, deletion.deleted_slot, last_element_data);
         return deletion;
     }
 
@@ -83,7 +83,7 @@ namespace Nit
             NIT_DEBUGBREAK();
         }
 
-        ResizeData(pool->type, pool->elements, pool->sparse_set.max, new_max);
+        ResizeArray(pool->type, pool->elements, pool->sparse_set.max, new_max);
         SparseSetProc::Resize(&pool->sparse_set, new_max);
     }
 
@@ -107,6 +107,6 @@ namespace Nit
         }
         
         u32 index = SparseSetProc::Search(&pool->sparse_set, element_id);
-        return index != SparseSet::INVALID ? GetRawData(pool->type, pool->elements, index) : nullptr;
+        return index != SparseSet::INVALID ? GetArrayRawData(pool->type, pool->elements, index) : nullptr;
     }
 }
