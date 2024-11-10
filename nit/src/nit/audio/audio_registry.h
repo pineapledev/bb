@@ -2,15 +2,16 @@
 
 namespace Nit
 {
+    struct AudioClip;
+    
     using AudioSourceHandle = u32; 
+    using AudioBuffer = u32;
     
     struct AudioRegistry
     {
         void* context = nullptr;
         void* device  = nullptr;
     };
-
-    struct AudioClip;
     
     namespace FnAudioRegistry
     {

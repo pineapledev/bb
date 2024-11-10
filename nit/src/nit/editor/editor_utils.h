@@ -34,7 +34,8 @@ namespace ImGui
     bool DragVector4(const char* label, Vector4& vector, const Vector4& reset_value = V4_ZERO, f32 speed = 0.05f);
     bool ColorPalette(const char* label, Vector4& color);
     void AssetCombo(const char* label, Type* type, AssetHandle* asset);
-
+    void ResourceCombo(const char* label, const Array<String>& extensions, String& selected);
+    
     template<typename T>
     void EnumCombo(const char* label, T& enum_data)
     {

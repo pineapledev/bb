@@ -165,7 +165,7 @@ namespace Nit
 #ifdef NIT_EDITOR_ENABLED
     void DrawEditorTexture2D(Texture2D* texture)
     {
-        ImGui::InputText("path", texture->image_path);
+        ImGui::ResourceCombo("resource", {".jpg", ".png"},  texture->image_path);
         ImGui::EnumCombo("mag filter", texture->mag_filter);
         ImGui::EnumCombo("min filter", texture->min_filter);
         ImGui::EnumCombo("wrap u", texture->wrap_mode_u);

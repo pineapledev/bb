@@ -302,6 +302,56 @@ namespace ImGui
         EndProperty();
     }
 
+    void ResourceCombo(const char* label, const Array<String>& extensions, String& selected)
+    {
+        BeginProperty(label);
+
+        Array<String> paths;
+        paths.emplace_back("None");
+        
+        for (const auto& dir_entry : std::filesystem::recursive_directory_iterator(GetAssetsDirectory()))
+        {
+            const Path& dir_path = dir_entry.path();
+            const String relative_path = std::filesystem::relative(dir_path, GetAssetsDirectory()).string();
+            
+            if (dir_entry.is_directory())
+            {
+                continue;
+            }
+
+            for (const String& extension : extensions)
+            {
+                if (dir_path.extension().string() == extension)
+                {
+                    paths.push_back(relative_path);
+                }    
+            }
+        }
+        
+        if (selected.empty())
+            selected = paths[0];
+
+        if (BeginCombo("##combo", selected.c_str()))
+        {
+            for (const String& option : paths)
+            {
+                const bool is_selected = selected == option;
+                if (Selectable(option.c_str()))
+                {
+                    selected = option;
+                }
+                if (is_selected)
+                {
+                    SetItemDefaultFocus();
+                }
+            }
+
+            EndCombo();
+        }
+        
+        EndProperty();
+    }
+
     bool IsOtherWindowFocused()
     {
         return ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && 

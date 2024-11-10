@@ -100,6 +100,13 @@ namespace Nit
     AudioSourceHandle FnAudioRegistry::CreateSource(AudioClip* clip)
     {
         if (IsAudioRegistryInvalid()) return 0;
+
+        if (!clip)
+        {
+            NIT_CHECK(false);
+            return 0;
+        }
+        
         AudioSourceHandle audio_source = 0;
         alGenSources(1, &audio_source);
         alSourcei(audio_source, AL_BUFFER, clip->buffer_id);

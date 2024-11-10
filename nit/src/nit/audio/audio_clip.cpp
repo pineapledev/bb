@@ -1,6 +1,5 @@
 ﻿#include "audio_clip.h"
 #include <AL/al.h>
-#include "audio_registry.h"
 #include "core/asset.h"
 
 #ifdef NIT_EDITOR_ENABLED
@@ -141,9 +140,19 @@ namespace Nit::FnAudioClip
         
         alGenBuffers(1, &audio_clip->buffer_id);
 
-        if (alGetError() != AL_NO_ERROR)
+        ALenum error_value = alGetError();
+        
+        if (error_value != AL_NO_ERROR)
         {
-            NIT_CHECK_MSG(false, "AL error.");
+            switch (error_value)
+            {
+                case AL_INVALID_NAME       : NIT_CHECK_MSG(false, "AL error: AL_INVALID_NAME.");      break;                     
+                case AL_INVALID_ENUM       : NIT_CHECK_MSG(false, "AL error: AL_INVALID_ENUM.");      break;                
+                case AL_INVALID_VALUE      : NIT_CHECK_MSG(false, "AL error: AL_INVALID_VALUE.");     break;                
+                case AL_INVALID_OPERATION  : NIT_CHECK_MSG(false, "AL error: AL_INVALID_OPERATION."); break;                
+                case AL_OUT_OF_MEMORY      : NIT_CHECK_MSG(false, "AL error: AL_OUT_OF_MEMORY.");     break;
+                default: NIT_CHECK_MSG(false, "AL unhandled error.");
+            };
         }
 
         alBufferData(audio_clip->buffer_id, audio_clip->format, audio_clip->data, audio_clip->size, audio_clip->frec);
@@ -177,8 +186,9 @@ namespace Nit::FnAudioClip
 
         alDeleteBuffers(1, &audio_clip->buffer_id);
         delete[] audio_clip->data;
+        
         audio_clip->data = nullptr;
-
+        audio_clip->buffer_id = 0;
         audio_clip->duration = 0.f;
     }
 
@@ -214,37 +224,37 @@ namespace Nit::FnAudioClip
         }
 
         AssetHandle this_asset = engine->editor.selected_asset;
+        ImGui::ResourceCombo("Path", {".wav"}, audio_clip->audio_path);
         
-        if (ImGui::InputText("Path", audio_clip->audio_path) || !IsAssetLoaded(this_asset))
+        if (audio_clip->prev_path != audio_clip->audio_path || !IsAssetLoaded(this_asset))
         {
             const String path = "assets/" + audio_clip->audio_path;
             std::ifstream in(path, std::ios::binary);
-        
+
+            if (audio_clip->editor_source != 0)
+            {
+                FnAudioRegistry::DestroySource(audio_clip->editor_source);
+                audio_clip->editor_source = 0;
+            }
+                
+            ReleaseAsset(this_asset);
+            
             if (in)
             {
-                ReleaseAsset(this_asset);
                 RetainAsset(this_asset);
-                audio_clip->source = FnAudioRegistry::CreateSource(audio_clip);
+                audio_clip->editor_source = FnAudioRegistry::CreateSource(audio_clip);
             }
-            else
-            {
-                ReleaseAsset(this_asset);
-                
-                if (audio_clip->source != 0)
-                {
-                    FnAudioRegistry::DestroySource(audio_clip->source);
-                    audio_clip->source = 0;
-                }
-            }
+
+            audio_clip->prev_path = audio_clip->audio_path;
         }
 
-        if (audio_clip->source != 0)
+        if (audio_clip->editor_source != 0)
         {
             ImGui::Text("Duration %f", audio_clip->duration);
 
             if (ImGui::Button("Play"))
             {
-                FnAudioRegistry::Play(audio_clip->source);
+                FnAudioRegistry::Play(audio_clip->editor_source);
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "nit/audio/audio_registry.h"
 
 namespace Nit
 {
@@ -14,8 +15,9 @@ namespace Nit
         u32    frec      = 0;
         
 #ifdef NIT_EDITOR_ENABLED
-        u32 source = 0;
-#endif
+        AudioSourceHandle editor_source = 0;
+        String prev_path;
+        #endif
     };
     
     namespace FnAudioClip
