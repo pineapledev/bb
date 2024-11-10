@@ -6,16 +6,10 @@ namespace Nit
     struct AudioClip
     {
         String audio_path;
-        f32    duration = 0.f;
-        
-        char*  data      = nullptr;
-        u32    buffer_id = 0;
-        u32    format    = 0;
-        u32    size      = 0;
-        u32    frec      = 0;
+        AudioBufferHandle buffer_handle = SparseSet::INVALID;
         
 #ifdef NIT_EDITOR_ENABLED
-        AudioSourceHandle editor_source = 0;
+        AudioSourceHandle editor_source = SparseSet::INVALID;
         String prev_path;
         #endif
     };
