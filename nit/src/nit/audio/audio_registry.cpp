@@ -145,7 +145,6 @@ namespace Nit
         FnPool::InsertData<AudioBufferData>(&audio_registry->audio_buffers, handle, {
             .buffer_id = buffer_id,
             .format    = format,
-            .data      = data,
             .size      = size,
             .frec      = frec,
             .duration  = duration
@@ -175,9 +174,6 @@ namespace Nit
         }
         
         alDeleteBuffers(1, &data->buffer_id);
-        
-        delete[] data->data;
-        data->data = nullptr;
     }
 
     void FnAudioRegistry::DestroyBuffer(AudioBufferHandle buffer_handle)

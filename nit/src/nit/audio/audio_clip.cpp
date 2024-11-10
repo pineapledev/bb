@@ -133,7 +133,17 @@ namespace Nit::FnAudioClip
         u32 size = 0;
         memcpy(&size, buffer, 4);
 
-        char* data = new char[size];
+        //TODO: Not multi-thread friendly
+        static u32 max_buffer_size = 10000;
+        static char* data = new char[max_buffer_size]; 
+        
+        if (size > max_buffer_size)
+        {
+            max_buffer_size = size;
+            data = new char[max_buffer_size];
+        }
+
+        std::fill_n(data, max_buffer_size, 0);
         
         in.read(data, size);
 

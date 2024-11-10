@@ -19,12 +19,11 @@ namespace Nit
         u32 source_id    = 0;
         u32 audio_buffer = SparseSet::INVALID;
     };
-
+    
     struct AudioBufferData
     {
         u32         buffer_id     = 0;
         AudioFormat format        = AudioFormat::None;
-        char*       data          = nullptr;
         u32         size          = 0;
         u32         frec          = 0;
         f32         duration      = 0.f;
