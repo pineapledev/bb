@@ -140,6 +140,7 @@ namespace Nit::FnAudioClip
         if (size > max_buffer_size)
         {
             max_buffer_size = size;
+            delete [] data;
             data = new char[max_buffer_size];
         }
 
