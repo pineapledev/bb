@@ -1,4 +1,6 @@
 #include "engine.h"
+
+#include "audio/audio_clip.h"
 #include "render/font.h"
 #include "render/texture.h"
 #include "logic/components.h"
@@ -32,6 +34,9 @@ namespace Nit::FnEngine
         SetEntityRegistryInstance(&engine->entity_registry);
         InitEntityRegistry();
         
+        FnAudioRegistry::SetInstance(&engine->audio_registry);
+        FnAudioRegistry::Init();
+        
         RegisterNameComponent();
         RegisterUUIDComponent();
         RegisterTransformComponent();
@@ -48,6 +53,7 @@ namespace Nit::FnEngine
         RegisterTexture2DAsset();
         RegisterFontAsset();
         RegisterSceneAsset();
+        FnAudioClip::Register();
         
         if (run_callback)
         {

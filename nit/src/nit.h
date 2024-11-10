@@ -14,3 +14,6 @@
 #include "nit/logic/systems.h"
 #include "nit/logic/components.h"
 #include "nit/logic/scene.h"
+
+#include "nit/audio/audio_clip.h"
+#include "nit/audio/audio_registry.h"

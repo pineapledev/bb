@@ -6,6 +6,7 @@
 #include "nit/render/imgui_renderer.h"
 #include "nit/logic/entity.h"
 #include "nit/render/render_objects.h"
+#include "nit/audio/audio_registry.h"
 
 #ifdef NIT_EDITOR_ENABLED
 #include "nit/editor/editor.h"
@@ -26,6 +27,7 @@ namespace Nit
         EntityRegistry entity_registry;
         RenderObjects  render_objects;
         Renderer2D     renderer_2d;
+        AudioRegistry  audio_registry;
         Window         window;
 
 #ifdef NIT_IMGUI_ENABLED

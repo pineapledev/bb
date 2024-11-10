@@ -29,6 +29,7 @@ project "nit"
 
     disablewarnings 
     {
+        5030 -- OpenAL attribute 'gnu::alloc_align' is not recognized
     }
 
     includedirs 
