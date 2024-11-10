@@ -184,6 +184,14 @@ namespace Nit::FnAudioClip
             return;
         }
 
+#ifdef NIT_EDITOR_ENABLED
+        if (audio_clip->editor_source != 0)
+        {
+            FnAudioRegistry::DestroySource(audio_clip->editor_source);
+            audio_clip->editor_source = 0;
+        }
+#endif
+        
         alDeleteBuffers(1, &audio_clip->buffer_id);
         delete[] audio_clip->data;
         
