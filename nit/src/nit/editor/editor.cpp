@@ -502,11 +502,16 @@ namespace Nit::FnEditor
                     {
                         editor->selected_entity = entity;
                         editor->selection = Editor::Selection::Entity;
-                    }
 
-                    if (ImGui::IsItemClicked() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
-                    {
-                        NIT_LOG_TRACE("Not implemented yet!");
+                        if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+                        {
+                            auto& transform = GetComponent<Transform>(entity);
+                            auto& camera_transform  = GetComponent<Transform>(editor->editor_camera_entity);
+                            auto& camera_controller = GetComponent<EditorCameraController>(editor->editor_camera_entity);
+                            auto pos = Vector3{ transform.position.x, transform.position.y, camera_transform.position.z };
+                            camera_controller.aux_position = pos;
+                            camera_transform.position      = pos;
+                        }
                     }
 
                     if (is_entity_expanded)
