@@ -6,7 +6,7 @@
 #include "nit/logic/entity.h"
 #include "nit/render/frame_buffer.h"
 
-namespace Nit
+namespace nit
 {
     struct AssetNode
     {
@@ -71,7 +71,7 @@ namespace Nit
         bool    is_right_mouse_pressed = false;
     };
 
-    namespace FnEditor
+    namespace editor
     {
         void SetInstance(Editor* editor_instance);
         Editor* GetInstance();

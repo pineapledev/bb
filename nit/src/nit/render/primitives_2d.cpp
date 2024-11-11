@@ -2,7 +2,7 @@
 #include "texture.h"
 #include "font.h"
 
-namespace Nit
+namespace nit
 {
     void FillVertexColors(V4Verts2D& vertex_colors, const Vector4& color)
     {

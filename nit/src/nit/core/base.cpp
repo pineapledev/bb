@@ -11,7 +11,7 @@
 #define P_CLOSE _pclose
 #endif
 
-namespace Nit
+namespace nit
 {
     String BrowseFile(const Window* window, const String& filter)
     {
@@ -105,7 +105,7 @@ int __stdcall BrowseCallbackProcW(HWND hwnd, UINT u_msg, LPARAM lp, LPARAM data)
 }
 #endif
 
-namespace Nit
+namespace nit
 {
     String SelectFolder(const Window* window, const String& title, const String& path)
     {

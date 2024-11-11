@@ -1,7 +1,7 @@
 #pragma once
 #include "texture.h"
 
-namespace Nit
+namespace nit
 {
     struct CharData
     {

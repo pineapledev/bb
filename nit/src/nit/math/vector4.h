@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "nit/math/math_common.h"
 
-namespace Nit
+namespace nit
 {
     struct Matrix4;
     
@@ -74,9 +74,9 @@ namespace Nit
 }
 
 template<>
-struct YAML::convert<Nit::Vector4>
+struct YAML::convert<nit::Vector4>
 {
-    static Node encode(const Nit::Vector4& v)
+    static Node encode(const nit::Vector4& v)
     {
         Node node;
         node.push_back(v.x);
@@ -87,7 +87,7 @@ struct YAML::convert<Nit::Vector4>
         return node;
     }
 
-    static bool decode(const Node& node, Nit::Vector4& v)
+    static bool decode(const Node& node, nit::Vector4& v)
     {
         if (!node.IsSequence() || node.size() != 4)
             return false;
@@ -100,7 +100,7 @@ struct YAML::convert<Nit::Vector4>
     }
 };
 
-inline YAML::Emitter& operator<<(YAML::Emitter& out, const Nit::Vector4& c)
+inline YAML::Emitter& operator<<(YAML::Emitter& out, const nit::Vector4& c)
 {
     out << YAML::Flow;
     out << YAML::BeginSeq << c.x << c.y << c.z << c.w << YAML::EndSeq;

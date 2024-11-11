@@ -2,7 +2,7 @@
 #include "shader.h"
 #include "render_api.h"
 
-namespace Nit
+namespace nit
 {
     Material::Material(const SharedPtr<Shader>& shader, const SharedPtr<MaterialData>& mat_data)
         : shader(shader)

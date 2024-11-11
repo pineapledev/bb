@@ -8,7 +8,7 @@
 #include "nit/render/texture.h"
 #include "nit/render/font.h"
 
-namespace Nit::FnDrawSystem
+namespace nit::FnDrawSystem
 {
     V4Verts2D vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
     V2Verts2D vertex_uvs       = DEFAULT_VERTEX_U_VS_2D;
@@ -33,7 +33,7 @@ namespace Nit::FnDrawSystem
 
 #ifdef NIT_EDITOR_ENABLED
 
-        if (!engine->editor.enabled)
+        if (!engine::GetInstance()->editor.enabled)
         {
             for (Entity entity : camera_group.entities)
             {
@@ -44,7 +44,7 @@ namespace Nit::FnDrawSystem
             }
         }
 
-        return engine->editor.editor_camera_entity;
+        return engine::GetInstance()->editor.editor_camera_entity;
         
 #else
         return *camera_group.entities.begin();
@@ -67,16 +67,16 @@ namespace Nit::FnDrawSystem
     
     void Start()
     {
-        engine->asset_registry.asset_destroyed_event    += AssetDestroyedListener::Create(OnAssetDestroyed);
-        engine->entity_registry.component_added_event   += ComponentAddedListener::Create(OnComponentAdded);
-        engine->entity_registry.component_removed_event += ComponentRemovedListener::Create(OnComponentRemoved);
+        engine::GetInstance()->asset_registry.asset_destroyed_event    += AssetDestroyedListener::Create(OnAssetDestroyed);
+        engine::GetInstance()->entity_registry.component_added_event   += ComponentAddedListener::Create(OnComponentAdded);
+        engine::GetInstance()->entity_registry.component_removed_event += ComponentRemovedListener::Create(OnComponentRemoved);
     }
 
     void End()
     {
-        engine->asset_registry.asset_destroyed_event    -= AssetDestroyedListener::Create(OnAssetDestroyed);
-        engine->entity_registry.component_added_event   -= ComponentAddedListener::Create(OnComponentAdded);
-        engine->entity_registry.component_removed_event -= ComponentRemovedListener::Create(OnComponentRemoved);
+        engine::GetInstance()->asset_registry.asset_destroyed_event    -= AssetDestroyedListener::Create(OnAssetDestroyed);
+        engine::GetInstance()->entity_registry.component_added_event   -= ComponentAddedListener::Create(OnComponentAdded);
+        engine::GetInstance()->entity_registry.component_removed_event -= ComponentRemovedListener::Create(OnComponentRemoved);
     }
     
     static ListenerAction OnAssetDestroyed(const AssetDestroyedArgs& args)
@@ -164,14 +164,14 @@ namespace Nit::FnDrawSystem
         Camera& camera = GetComponent<Camera>(main_camera);
 
         i32 width, height;
-        FnWindow::RetrieveSize(&width, &height);
+        window::RetrieveSize(&width, &height);
         
 #ifdef NIT_EDITOR_ENABLED
-        if (engine->editor.enabled && engine->editor.show_viewport)
+        if (engine::GetInstance()->editor.enabled && engine::GetInstance()->editor.show_viewport)
         {
-            ClearAttachment(&engine->editor.frame_buffer, 1, -1);
-            width  = engine->editor.frame_buffer.width;
-            height = engine->editor.frame_buffer.height;
+            ClearAttachment(&engine::GetInstance()->editor.frame_buffer, 1, -1);
+            width  = engine::GetInstance()->editor.frame_buffer.width;
+            height = engine::GetInstance()->editor.frame_buffer.height;
         }
 #endif
 

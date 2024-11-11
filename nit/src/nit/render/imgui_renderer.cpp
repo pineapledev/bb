@@ -11,7 +11,7 @@
 
 #define NIT_CHECK_IM_GUI_CREATED NIT_CHECK_MSG(im_gui_renderer, "ImGuiRenderer is not created!");
 
-namespace Nit
+namespace nit
 {
     ImGuiRenderer* im_gui_renderer = nullptr;
 

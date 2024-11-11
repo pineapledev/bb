@@ -1,7 +1,7 @@
 ﻿#include "matrix4.h"
 #include "vector4.h"
 
-namespace Nit
+namespace nit
 {
     bool operator==(const Matrix4& a, const Matrix4& b)
     {

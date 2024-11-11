@@ -6,16 +6,14 @@
 #include "nit/render/imgui_renderer.h"
 #include "nit/logic/entity.h"
 #include "nit/render/render_objects.h"
-#include "nit/audio/audio_registry.h"
+#include "nit/audio/audio.h"
 
 #ifdef NIT_EDITOR_ENABLED
 #include "nit/editor/editor.h"
 #endif
 
-namespace Nit
+namespace nit
 {
-    inline struct Engine* engine = nullptr;
-
     struct Engine
     {
         bool stopped        = false;
@@ -47,9 +45,11 @@ namespace Nit
         f64 fixed_delta_seconds = 0.0166;
     };
     
-    namespace FnEngine
+    namespace engine
     {
         void SetInstance(Engine* engine_instance);
+        Engine* GetInstance();
+        
         void Run(VoidFunc run_callback = nullptr);
         void Play();
         void Pause();

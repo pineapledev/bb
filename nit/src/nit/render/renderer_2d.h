@@ -2,7 +2,7 @@
 #include "primitives_2d.h"
 #include "texture.h"
 
-namespace Nit
+namespace nit
 {
     inline static constexpr u32 MAX_PRIMITIVES = 100000;
     inline static constexpr u32 VERTICES_PER_PRIMITIVE = 4;

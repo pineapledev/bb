@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-namespace Nit
+namespace nit
 {
     struct Pool
     {
@@ -11,7 +11,7 @@ namespace Nit
         bool           self_id_management  = false;
     };
 
-    namespace FnPool
+    namespace pool
     {
         template<typename T>
         void Load(Pool* pool, u32 max_element_count, bool self_id_management = true);

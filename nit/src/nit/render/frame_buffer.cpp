@@ -3,7 +3,7 @@
 
 #ifdef NIT_GRAPHICS_API_OPENGL
 
-namespace Nit
+namespace nit
 {
     static constexpr u32 MAX_FRAMEBUFFER_SIZE = 8192;
 

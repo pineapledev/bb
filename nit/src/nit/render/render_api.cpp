@@ -4,7 +4,7 @@
 #ifdef NIT_GRAPHICS_API_OPENGL
 #include <glad/glad.h>
 
-namespace Nit
+namespace nit
 {
     ShaderDataType ShaderDataTypeFromOpenGL(i32 type)
     {

@@ -1,9 +1,9 @@
 ﻿#pragma once
 
-namespace Nit
+namespace nit
 {
     template<typename T>
-    void FnPool::Load(Pool* pool, u32 max_element_count, bool self_id_management)
+    void pool::Load(Pool* pool, u32 max_element_count, bool self_id_management)
     {
         if (!pool)
         {
@@ -19,7 +19,7 @@ namespace Nit
         pool->type = GetType<T>();
         pool->elements  = new T[max_element_count];
         
-        FnSparseSet::Load(&pool->sparse_set, max_element_count);
+        sparse::Load(&pool->sparse_set, max_element_count);
         
         if (self_id_management)
         {
@@ -33,7 +33,7 @@ namespace Nit
     }
     
     template<typename T>
-    T* FnPool::InsertDataWithID(Pool* pool, u32 element_id, const T& data)
+    T* pool::InsertDataWithID(Pool* pool, u32 element_id, const T& data)
     {
         if (!pool)
         {
@@ -41,17 +41,17 @@ namespace Nit
             return nullptr;
         }
 
-        if (FnSparseSet::IsFull(&pool->sparse_set))
+        if (sparse::IsFull(&pool->sparse_set))
         {
-            FnPool::Resize(pool, pool->sparse_set.max * 2);
+            pool::Resize(pool, pool->sparse_set.max * 2);
         }
         
         NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");
-        return SetArrayData(pool->elements, FnSparseSet::Insert(&pool->sparse_set, element_id), data);
+        return SetArrayData(pool->elements, sparse::Insert(&pool->sparse_set, element_id), data);
     }
 
     template<typename T>
-    T* FnPool::InsertData(Pool* pool, u32& out_id, const T& data)
+    T* pool::InsertData(Pool* pool, u32& out_id, const T& data)
     {
         if (!pool || !pool->self_id_management)
         {
@@ -65,7 +65,7 @@ namespace Nit
     }
     
     template<typename T>
-    T* FnPool::GetData(Pool* pool, u32 element_id)
+    T* pool::GetData(Pool* pool, u32 element_id)
     {
         if (!pool)
         {
@@ -75,12 +75,12 @@ namespace Nit
 
         NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");
 
-        if (!FnPool::IsValid(pool, element_id))
+        if (!pool::IsValid(pool, element_id))
         {
             return nullptr;
         }
         
-        u32 element_index = FnSparseSet::Search(&pool->sparse_set, element_id);
+        u32 element_index = sparse::Search(&pool->sparse_set, element_id);
 
         if (element_index == SparseSet::INVALID)
         {

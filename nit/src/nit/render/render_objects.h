@@ -1,7 +1,7 @@
 #pragma once
 #include "render_api.h"
 
-namespace Nit
+namespace nit
 {
     struct RenderObjects
     {

@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-namespace Nit
+namespace nit
 {
     inline constexpr f32 DEGREES_TO_RADIANS_FACTOR = 0.0174533f;
     inline constexpr f32 RADIANS_TO_DEGREES_FACTOR = 57.2958f;

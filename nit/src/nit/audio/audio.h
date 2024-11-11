@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Nit
+namespace nit
 {
     enum class AudioFormat : u8
     {
@@ -39,7 +39,7 @@ namespace Nit
         Pool audio_sources;
     };
     
-    namespace FnAudioRegistry
+    namespace audio
     {
         void SetInstance(AudioRegistry* audio_registry_instance);
         bool HasInstance();

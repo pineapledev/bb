@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Nit
+namespace nit
 {
     struct MaterialData
     {

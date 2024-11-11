@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Nit
+namespace nit
 {
     struct SparseSet
     {
@@ -18,8 +18,8 @@ namespace Nit
         u32  deleted_slot = 0;
         u32  last_slot    = 0;
     };
-
-    namespace FnSparseSet
+    
+    namespace sparse
     {
         bool IsValid(SparseSet* sparse_set);
         bool IsEmpty(SparseSet* sparse_set);

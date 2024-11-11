@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-namespace Nit
+namespace nit
 {
     constexpr u32 DEFAULT_MAX_TYPES = 300;
 

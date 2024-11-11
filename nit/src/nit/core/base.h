@@ -78,7 +78,7 @@ if (!(_CONDITION)) {  NIT_DEBUGBREAK(); }
 #define NIT_CHECK(_CONDITION)
 #endif
 
-namespace Nit
+namespace nit
 {
     using i16 = short;
     using i32 = int;
@@ -212,11 +212,11 @@ namespace Nit
 }
 
 template <>
-struct std::hash<Nit::UUID>
+struct std::hash<nit::UUID>
 {
-    std::size_t operator()(const Nit::UUID id) const noexcept
+    std::size_t operator()(const nit::UUID id) const noexcept
     {
-        return hash<Nit::u64>()(static_cast<Nit::u64>(id));
+        return hash<nit::u64>()(static_cast<nit::u64>(id));
     }
 };
 

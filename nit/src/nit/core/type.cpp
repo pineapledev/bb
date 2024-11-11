@@ -1,6 +1,6 @@
 ﻿#include "type.h"
 
-namespace Nit
+namespace nit
 {
     TypeRegistry* type_registry = nullptr;
 

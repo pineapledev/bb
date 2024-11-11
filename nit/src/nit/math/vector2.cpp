@@ -1,6 +1,6 @@
 ﻿#include "vector2.h"
 
-namespace Nit
+namespace nit
 {
     bool operator==(const Vector2& a, const Vector2& b)
     {

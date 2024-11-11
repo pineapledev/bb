@@ -10,10 +10,11 @@
     NIT_CHECK_WINDOW_CREATED \
     NIT_CHECK_MSG(window->handler, "Forget to call Init!");
 
-Nit::Window* window = nullptr;
 
-namespace Nit::FnWindow
+namespace nit::window
 {
+    Window* window = nullptr;
+
     void SetInstance(Window* window_instance)
     {
         NIT_CHECK(window_instance);

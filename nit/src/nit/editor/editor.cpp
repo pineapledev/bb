@@ -12,7 +12,7 @@
 
 #define NIT_CHECK_EDITOR_CREATED NIT_CHECK_MSG(editor, "Forget to call SetEditorInstance!");
 
-namespace Nit::FnEditor
+namespace nit::editor
 {
     Editor* editor;
 
@@ -43,16 +43,16 @@ namespace Nit::FnEditor
             if (dir_entry.is_directory())
             {
                 u32 id;
-                FnPool::InsertData(&editor->asset_nodes, id, AssetNode{ .is_dir = true, .path = relative_path, .parent = parent_node, .asset = { .name = dir_path.stem().string() } });
+                pool::InsertData(&editor->asset_nodes, id, AssetNode{ .is_dir = true, .path = relative_path, .parent = parent_node, .asset = { .name = dir_path.stem().string() } });
                 
-                if (AssetNode* parent_node_data = FnPool::GetData<AssetNode>(&editor->asset_nodes, parent_node))
+                if (AssetNode* parent_node_data = pool::GetData<AssetNode>(&editor->asset_nodes, parent_node))
                 {
                     parent_node_data->children.push_back(id);
                 }
 
                 TraverseDirectory(dir_path, id, depth + 1);
             }
-            else if (dir_path.extension().string() == engine->asset_registry.extension)
+            else if (dir_path.extension().string() == engine::GetInstance()->asset_registry.extension)
             {
                 AssetHandle handle = FindAssetByName(dir_path.filename().stem().string());
 
@@ -62,8 +62,8 @@ namespace Nit::FnEditor
                 }
 
                 u32 id;
-                FnPool::InsertData(&editor->asset_nodes, id, AssetNode{ .is_dir = false, .path = relative_path, .parent = parent_node, .asset = handle });
-                AssetNode* parent_node_data = FnPool::GetData<AssetNode>(&editor->asset_nodes, parent_node);
+                pool::InsertData(&editor->asset_nodes, id, AssetNode{ .is_dir = false, .path = relative_path, .parent = parent_node, .asset = handle });
+                AssetNode* parent_node_data = pool::GetData<AssetNode>(&editor->asset_nodes, parent_node);
 
                 if (parent_node_data && parent_node_data->is_dir)
                 {
@@ -77,12 +77,12 @@ namespace Nit::FnEditor
     {
         if (editor->asset_nodes.elements != nullptr)
         {
-            FnPool::Free(&editor->asset_nodes);
+            pool::Free(&editor->asset_nodes);
         }
         
-        FnPool::Load<AssetNode>(&editor->asset_nodes, 300, true);
+        pool::Load<AssetNode>(&editor->asset_nodes, 300, true);
 
-        FnPool::InsertData(&editor->asset_nodes, editor->root_node, AssetNode{ .is_dir = true, .path = "" });
+        pool::InsertData(&editor->asset_nodes, editor->root_node, AssetNode{ .is_dir = true, .path = "" });
         editor->draw_node = editor->root_node;
         
         TraverseDirectory(GetAssetsDirectory(), editor->root_node);
@@ -111,7 +111,7 @@ namespace Nit::FnEditor
         style.Colors[ImGuiCol_FrameBg] = { 0.1f, 0.1f, 0.1f, 1.f };
         style.Colors[ImGuiCol_Button] = { 0.356f, 0.356f, 0.416f, 1.f };
         
-        FnWindow::RetrieveSize((i32*)&editor->frame_buffer.width, (i32*)&editor->frame_buffer.height);
+        window::RetrieveSize((i32*)&editor->frame_buffer.width, (i32*)&editor->frame_buffer.height);
         
         editor->frame_buffer.color_attachments = {
             FrameBufferTextureFormat::RGBA8,
@@ -173,14 +173,14 @@ namespace Nit::FnEditor
                 if (std::abs(controller.desired_zoom - camera.size) > .01f)
                 {
                     const float dir = camera.size < controller.desired_zoom ? 1.f : -1.f;
-                    camera.size += controller.zoom_speed * dir * engine->delta_seconds;
+                    camera.size += controller.zoom_speed * dir * engine::GetInstance()->delta_seconds;
                 }
                 else
                 {
                     camera.size = controller.desired_zoom;
                 }
                 
-                controller.time_zooming += engine->delta_seconds;
+                controller.time_zooming += engine::GetInstance()->delta_seconds;
             }
             else
             {
@@ -191,11 +191,11 @@ namespace Nit::FnEditor
             
             // Move
             const bool is_right_mouse_pressed = ImGui::IsMouseDown(ImGuiMouseButton_Right);
-            Vector2 cursor_pos = FnWindow::GetCursorPosition();
+            Vector2 cursor_pos = window::GetCursorPosition();
             
             Vector2 window_size;
-            window_size.x = (f32) engine->editor.frame_buffer.width;
-            window_size.y = (f32) engine->editor.frame_buffer.height;
+            window_size.x = (f32) engine::GetInstance()->editor.frame_buffer.width;
+            window_size.y = (f32) engine::GetInstance()->editor.frame_buffer.height;
             
             // Mouse pressed
             if (!controller.mouse_down && is_right_mouse_pressed)
@@ -222,7 +222,7 @@ namespace Nit::FnEditor
             }
         }        
 
-        if (engine->im_gui_renderer.is_dockspace_enabled && ImGui::BeginMenuBar())
+        if (engine::GetInstance()->im_gui_renderer.is_dockspace_enabled && ImGui::BeginMenuBar())
         {
             if (ImGui::BeginMenu("Window"))
             {
@@ -355,10 +355,10 @@ namespace Nit::FnEditor
             // source
             {
                 static String source = GetWorkingDirectory().string();
-                ImGui::InputFolder(&engine->window, "Source", source);
+                ImGui::InputFolder(&engine::GetInstance()->window, "Source", source);
                 
                 static String dest = GetWorkingDirectory().string();
-                ImGui::InputFolder(&engine->window, "Destination", dest);
+                ImGui::InputFolder(&engine::GetInstance()->window, "Destination", dest);
 
                 static String name;
                 ImGui::InputText("Asset Name", name);
@@ -537,9 +537,9 @@ namespace Nit::FnEditor
             {
                 Entity selected_entity = editor->selected_entity;
 
-                for (u32 i = 0; i < engine->entity_registry.next_component_type_index - 1; ++i)
+                for (u32 i = 0; i < engine::GetInstance()->entity_registry.next_component_type_index - 1; ++i)
                 {
-                    ComponentPool* pool = &engine->entity_registry.component_pool[i];
+                    ComponentPool* pool = &engine::GetInstance()->entity_registry.component_pool[i];
                     if (!Invoke(pool->fn_is_in_entity, selected_entity))
                     {
                         continue;
@@ -576,7 +576,7 @@ namespace Nit::FnEditor
 
                         if (pool->data_pool.type->fn_invoke_draw_editor)
                         {
-                            void* data = FnPool::GetRawData(&pool->data_pool, selected_entity);
+                            void* data = pool::GetRawData(&pool->data_pool, selected_entity);
                             NIT_CHECK(data);
                             DrawEditor(component_type, data);
                         }
@@ -599,9 +599,9 @@ namespace Nit::FnEditor
 
                 if (ImGui::BeginPopup("Add Component"))
                 {
-                    for (u32 i = 0; i < engine->entity_registry.next_component_type_index - 1; ++i)
+                    for (u32 i = 0; i < engine::GetInstance()->entity_registry.next_component_type_index - 1; ++i)
                     {
-                        ComponentPool* pool = &engine->entity_registry.component_pool[i];
+                        ComponentPool* pool = &engine::GetInstance()->entity_registry.component_pool[i];
                         if (Invoke(pool->fn_is_in_entity, selected_entity))
                         {
                             continue;
@@ -625,7 +625,7 @@ namespace Nit::FnEditor
                     RetargetAssetHandle(editor->selected_asset);
                 }
 
-                void* data = FnPool::GetRawData(&asset_pool->data_pool, editor->selected_asset.data_id);
+                void* data = pool::GetRawData(&asset_pool->data_pool, editor->selected_asset.data_id);
                 NIT_CHECK(data);
                 
                 DrawEditor(editor->selected_asset.type, data);
@@ -642,7 +642,7 @@ namespace Nit::FnEditor
                     RetainAsset(editor->icons);
                 }
                 
-                if (!FnPool::IsValid(&editor->asset_nodes, editor->draw_node))
+                if (!pool::IsValid(&editor->asset_nodes, editor->draw_node))
                 {
                     NIT_DEBUGBREAK();
                 }
@@ -662,7 +662,7 @@ namespace Nit::FnEditor
                         return res;
                     };
 
-                    AssetNode* draw_node = FnPool::GetData<AssetNode>(&editor->asset_nodes, editor->draw_node);
+                    AssetNode* draw_node = pool::GetData<AssetNode>(&editor->asset_nodes, editor->draw_node);
 
                     static Type* create_asset_type = nullptr;
                 
@@ -670,9 +670,9 @@ namespace Nit::FnEditor
                     {
                         if (ImGui::BeginMenu("Create"))
                         {
-                            for (u32 i = 0; i < engine->asset_registry.asset_pools.size(); ++i)
+                            for (u32 i = 0; i < engine::GetInstance()->asset_registry.asset_pools.size(); ++i)
                             {
-                                AssetPool* pool = &engine->asset_registry.asset_pools[i];
+                                AssetPool* pool = &engine::GetInstance()->asset_registry.asset_pools[i];
                 
                                 if (ImGui::MenuItem(pool->data_pool.type->name.c_str()))
                                 {
@@ -699,7 +699,7 @@ namespace Nit::FnEditor
                         if (ImGui::Button("Create"))
                         {
                             AssetHandle asset = CreateAsset(create_asset_type, asset_name, draw_node->path);
-                            u32 id; FnPool::InsertData(&editor->asset_nodes, id, AssetNode{ .is_dir = false, .path = draw_node->path, .parent = editor->draw_node, .asset = asset});
+                            u32 id; pool::InsertData(&editor->asset_nodes, id, AssetNode{ .is_dir = false, .path = draw_node->path, .parent = editor->draw_node, .asset = asset});
                             draw_node->children.push_back(id);
                             
                             ImGui::CloseCurrentPopup();
@@ -738,7 +738,7 @@ namespace Nit::FnEditor
                     for (u32 i = 0; i < draw_node->children.size(); ++i)
                     {
                         u32 node_id = draw_node->children[i];
-                        AssetNode* node = FnPool::GetData<AssetNode>(&editor->asset_nodes, node_id);
+                        AssetNode* node = pool::GetData<AssetNode>(&editor->asset_nodes, node_id);
                         
                         if (!node)
                         {
@@ -784,7 +784,7 @@ namespace Nit::FnEditor
                                 {
                                     draw_node->children.erase(std::ranges::find(draw_node->children, node_id));
                                     DestroyAsset(editor->selected_asset);
-                                    FnPool::DeleteData(&editor->asset_nodes, node_id);
+                                    pool::DeleteData(&editor->asset_nodes, node_id);
                                     editor->selected_asset = {};
                                     editor->selection = Editor::Selection::None;
                                     --i;
@@ -808,11 +808,11 @@ namespace Nit::FnEditor
 
             ImGui::Begin("Stats", &editor->show_stats, window_flags);
             String stats_text;
-            stats_text.append("\nTime: "     + std::to_string(engine->seconds));
-            stats_text.append("\nFrames: "   + std::to_string(engine->frame_count));
-            stats_text.append("\nFPS: "      + std::to_string(engine->frame_count / engine->seconds));
-            stats_text.append("\nEntities: " + std::to_string(engine->entity_registry.entity_count));
-            stats_text.append("\nDelta: "    + std::to_string(engine->delta_seconds));
+            stats_text.append("\nTime: "     + std::to_string(engine::GetInstance()->seconds));
+            stats_text.append("\nFrames: "   + std::to_string(engine::GetInstance()->frame_count));
+            stats_text.append("\nFPS: "      + std::to_string(engine::GetInstance()->frame_count / engine::GetInstance()->seconds));
+            stats_text.append("\nEntities: " + std::to_string(engine::GetInstance()->entity_registry.entity_count));
+            stats_text.append("\nDelta: "    + std::to_string(engine::GetInstance()->delta_seconds));
             ImGui::Text(stats_text.c_str());
             ImGui::End();
         }
@@ -836,7 +836,7 @@ namespace Nit::FnEditor
         if (ImGui::Button(toggle_button_name))
         {
             editor->enabled = !editor->enabled;
-            engine->im_gui_renderer.use_dockspace = editor->enabled;
+            engine::GetInstance()->im_gui_renderer.use_dockspace = editor->enabled;
         }
         ImGui::End();
     }

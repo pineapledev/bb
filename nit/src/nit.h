@@ -16,4 +16,4 @@
 #include "nit/logic/scene.h"
 
 #include "nit/audio/audio_clip.h"
-#include "nit/audio/audio_registry.h"
+#include "nit/audio/audio.h"

@@ -10,7 +10,7 @@
 
 #define NIT_CHECK_RENDERER_2D_CREATED NIT_CHECK_MSG(renderer_2d, "Forget to call SetRenderer2DInstance!");
 
-namespace Nit
+namespace nit
 {
     i32  AssignTextureSlot(Texture2D* texture);
     void TryUseDefaultMaterial(Shape shape);

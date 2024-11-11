@@ -6,7 +6,7 @@
 #include "editor/editor_utils.h"
 #endif
 
-namespace Nit
+namespace nit
 {
     Matrix4 ToMatrix4(const Transform& transform)
     {

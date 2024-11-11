@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-namespace Nit
+namespace nit
 {
     template<typename T>
     void SetInvokeLoadFunction(Type* type, FnLoad<T> fn_load)
@@ -85,7 +85,7 @@ namespace Nit
         
         static const String STRUCT_TEXT = "struct "; 
         static const String CLASS_TEXT  = "class "; 
-        static const String NAMESPACE_TEXT  = "Nit::"; 
+        static const String NAMESPACE_TEXT  = "nit::"; 
         type.name = typeid(T).name();
         Replace(type.name, STRUCT_TEXT, "");
         Replace(type.name, CLASS_TEXT , "");

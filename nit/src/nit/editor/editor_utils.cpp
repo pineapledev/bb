@@ -8,7 +8,7 @@
 
 namespace ImGui
 {
-    using namespace Nit;
+    using namespace nit;
     
     constexpr f32 COLUMN_WIDTH   = 100.f;
     constexpr Vector2 ITEM_SPACING = { 0.f, 6.f };

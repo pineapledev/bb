@@ -4,7 +4,7 @@
 #include <glad/glad.h>
 #endif
 
-namespace Nit
+namespace nit
 {
     Constant::Constant(const String& name, ShaderDataType type, i32 size)
         : data(CreateFromShaderDataType(type))

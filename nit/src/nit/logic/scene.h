@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "entity.h"
 
-namespace Nit
+namespace nit
 {
     struct Scene
     {

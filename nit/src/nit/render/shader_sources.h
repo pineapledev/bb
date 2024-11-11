@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Nit
+namespace nit
 {
     inline auto quad_flat_color_vertex_shader_source = R"(
             #version 420 core

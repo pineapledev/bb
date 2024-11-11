@@ -2,7 +2,7 @@
 
 #ifdef NIT_IMGUI_ENABLED
 
-namespace Nit
+namespace nit
 {
     struct ImGuiRenderer
     {

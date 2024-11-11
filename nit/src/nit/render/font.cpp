@@ -5,7 +5,7 @@
 #define STB_TRUETYPE_IMPLEMENTATION
 #include <stb/stb_truetype.h>
 
-namespace Nit
+namespace nit
 {
     void RegisterFontAsset()
     {

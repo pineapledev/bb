@@ -1,7 +1,7 @@
 ﻿#pragma once
-#include "nit/audio/audio_registry.h"
+#include "nit/audio/audio.h"
 
-namespace Nit
+namespace nit
 {
     struct AudioClip
     {
@@ -14,7 +14,7 @@ namespace Nit
         #endif
     };
     
-    namespace FnAudioClip
+    namespace audio::clip
     {
         void Register();
         void Load(AudioClip* audio_clip);

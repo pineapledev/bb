@@ -1,6 +1,6 @@
 ﻿#include "entity.h"
 
-namespace Nit
+namespace nit
 {
 #define NIT_CHECK_ENTITY_REGISTRY_CREATED NIT_CHECK(entity_registry)
     
@@ -51,7 +51,7 @@ namespace Nit
         for (u32 i = 0; i < entity_registry->next_component_type_index; ++i)
         {
             ComponentPool& data = entity_registry->component_pool[i];
-            FnPool::Free(&data.data_pool);
+            pool::Free(&data.data_pool);
         }
     }
 
@@ -81,7 +81,7 @@ namespace Nit
             }
 
             Broadcast<const ComponentRemovedArgs&>(entity_registry->component_removed_event, {entity, component_pool.data_pool.type});
-            FnPool::DeleteData(&component_pool.data_pool, entity);
+            pool::DeleteData(&component_pool.data_pool, entity);
         }
 
         entity_registry->signatures[entity].reset();
@@ -172,7 +172,7 @@ namespace Nit
 
             emitter << YAML::Key << data_pool.type->name << YAML::Value << YAML::BeginMap;
                 
-            void* raw_data = FnPool::GetRawData(&data_pool, entity);
+            void* raw_data = pool::GetRawData(&data_pool, entity);
             Serialize(data_pool.type, raw_data, emitter);
                 
             emitter << YAML::EndMap;

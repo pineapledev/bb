@@ -2,7 +2,7 @@
 #include "nit/core/asset.h"
 #include "nit/logic/entity.h"
 
-namespace Nit
+namespace nit
 {
     struct Transform
     {

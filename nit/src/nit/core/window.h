@@ -3,7 +3,7 @@
 
 struct GLFWwindow;
 
-namespace Nit
+namespace nit
 {
     enum class CursorMode : u8
     {
@@ -32,7 +32,7 @@ namespace Nit
         CursorMode  cursor_mode = CursorMode::Normal;
     };
 
-    namespace FnWindow
+    namespace window
     {
         void        SetInstance(Window* window_instance);
         void        Init(const WindowCfg& cfg = {});

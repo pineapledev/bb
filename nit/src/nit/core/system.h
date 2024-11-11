@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-namespace Nit
+namespace nit
 {
     inline static constexpr u32 MAX_SYSTEMS = 100;
     

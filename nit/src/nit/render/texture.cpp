@@ -14,7 +14,7 @@
 #include <stb/stb_image.h>
 #include "nit/core/asset.h"
 
-namespace Nit
+namespace nit
 {
     void SetMagFilter(const u32 texture_id, const MagFilter mag_filter)
     {

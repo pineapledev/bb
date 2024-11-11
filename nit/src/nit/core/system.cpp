@@ -1,6 +1,6 @@
 ﻿#include "system.h"
 
-namespace Nit
+namespace nit
 {
     Pair<bool, u32> FindSystemByName(System* systems, u32 count, const String& name)
     {

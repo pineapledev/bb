@@ -1,7 +1,7 @@
 #include "nit.h"
 #include "nit/editor/editor_utils.h"
 
-using namespace Nit;
+using namespace nit;
 
 void OnRun();
 void GameStart();
@@ -10,8 +10,8 @@ void GameUpdate();
 int main(int argc, char** argv)
 {
     Engine engine_instance;
-    FnEngine::SetInstance(&engine_instance);
-    FnEngine::Run(OnRun);
+    engine::SetInstance(&engine_instance);
+    engine::Run(OnRun);
 }
 
 // -----------------------------------------------------------------
@@ -97,7 +97,7 @@ void GameUpdate()
         }
         else
         {
-            transform.position += ToVector3(move.velocity * engine->delta_seconds);
+            transform.position += ToVector3(move.velocity * engine::GetInstance()->delta_seconds);
         }
     }
 }

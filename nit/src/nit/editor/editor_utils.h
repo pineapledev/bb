@@ -2,14 +2,14 @@
 
 #ifdef NIT_IMGUI_ENABLED
 
-namespace Nit
+namespace nit
 {
     struct AssetHandle;
 }
 
 namespace ImGui
 {
-    using namespace Nit;
+    using namespace nit;
     
     void BeginProperty(const char* label, u32 items = 1);
     void EndProperty();
