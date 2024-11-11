@@ -184,7 +184,7 @@ namespace nit
         args.type = component_pool->data_pool.type;
         broadcast<const ComponentRemovedArgs&>(GetEntityRegistryInstance()->component_removed_event, args);
         
-        pool::DeleteData(&component_pool->data_pool, entity);
+        pool::delete_data(&component_pool->data_pool, entity);
         EntitySignature& signature = GetEntityRegistryInstance()->signatures[entity]; 
         signature.set(GetComponentTypeIndex<T>(), false);
         EntitySignatureChanged(entity, signature);
@@ -196,7 +196,7 @@ namespace nit
         NIT_CHECK_MSG(IsEntityValid(entity), "Invalid entity!");
         ComponentPool* component_pool = FindComponentPool<T>();
         NIT_CHECK_MSG(component_pool, "Invalid component type!");
-        return *pool::GetData<T>(&component_pool->data_pool, entity);
+        return *pool::get_data<T>(&component_pool->data_pool, entity);
     }
     
     template<typename T>
@@ -205,7 +205,7 @@ namespace nit
         NIT_CHECK_MSG(IsEntityValid(entity), "Invalid entity!");
         ComponentPool* component_pool = FindComponentPool<T>();
         NIT_CHECK_MSG(component_pool, "Invalid component type!");
-        return pool::GetData<T>(&component_pool->data_pool, entity);
+        return pool::get_data<T>(&component_pool->data_pool, entity);
     }
 
     template<typename T>

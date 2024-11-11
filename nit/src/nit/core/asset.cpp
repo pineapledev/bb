@@ -159,7 +159,7 @@ namespace nit
             return nullptr;
         }
         
-        return &pool->asset_infos[pool::IndexOf(&pool->data_pool, asset.data_id)];
+        return &pool->asset_infos[ pool::index_of(&pool->data_pool, asset.data_id)];
     }
 
     AssetInfo* GetAssetInfoSafe(AssetHandle& asset)
@@ -203,7 +203,7 @@ namespace nit
                 if (!created)
                 {
                     pool::insert_data(&pool->data_pool, asset_info.data_id);
-                    push_asset_info(asset_info, pool::IndexOf(&pool->data_pool, asset_info.data_id), false);
+                    push_asset_info(asset_info,  pool::index_of(&pool->data_pool, asset_info.data_id), false);
                 }
                 else
                 {
@@ -211,7 +211,7 @@ namespace nit
                 }
                 
                 result = create_asset_handle(&asset_info);
-                void* data = pool::GetRawData(&pool->data_pool, result.data_id);
+                void* data = pool::get_raw_data(&pool->data_pool, result.data_id);
 
                 if (!created)
                 {
@@ -264,7 +264,7 @@ namespace nit
         
         emitter << YAML::Key << info->type->name << YAML::Value << YAML::BeginMap;
 
-        Serialize(pool->data_pool.type, pool::GetRawData(&pool->data_pool, info->data_id), emitter);
+        Serialize(pool->data_pool.type, pool::get_raw_data(&pool->data_pool, info->data_id), emitter);
 
         emitter << YAML::EndMap;
 
@@ -394,7 +394,7 @@ namespace nit
         UUID asset_id = GenerateID();
         get_asset_registry_instance()->id_to_data_id.insert({asset_id, data_id});
         AssetInfo info{type, name, path, asset_id, get_last_asset_version(type), false, 0, data_id };
-        push_asset_info(info, pool::IndexOf(data_pool, data_id), true);
+        push_asset_info(info,  pool::index_of(data_pool, data_id), true);
         AssetHandle asset_handle = create_asset_handle(&info);
         broadcast<const AssetCreatedArgs&>(get_asset_registry_instance()->asset_created_event, {asset_handle});
         return asset_handle;
@@ -415,7 +415,7 @@ namespace nit
         args.asset_handle = create_asset_handle(info);
         broadcast<const AssetDestroyedArgs&>(asset_registry->asset_destroyed_event, args);
         
-        erase_asset_info(*info, pool::DeleteData(&pool->data_pool, info->data_id));
+        erase_asset_info(*info, pool::delete_data(&pool->data_pool, info->data_id));
         
         asset_registry->id_to_data_id.erase(asset.id);
     }
@@ -441,7 +441,7 @@ namespace nit
         }
         
         info->loaded = true;
-        load(asset.type, pool::GetRawData(&pool->data_pool, asset.data_id));
+        load(asset.type, pool::get_raw_data(&pool->data_pool, asset.data_id));
     }
 
     void free_asset(AssetHandle& asset)
@@ -450,7 +450,7 @@ namespace nit
         AssetInfo* info = GetAssetInfoSafe(asset);
         info->reference_count = 0;
         info->loaded = false;
-        Free(asset.type, pool::GetRawData(&pool->data_pool, asset.data_id));
+        Free(asset.type, pool::get_raw_data(&pool->data_pool, asset.data_id));
     }
 
     void retain_asset(AssetHandle& asset)

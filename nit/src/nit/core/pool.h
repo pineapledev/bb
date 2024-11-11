@@ -28,18 +28,18 @@ namespace nit
         T* insert_data_with_id(Pool* pool, u32 element_id, const T& data);
     
         template<typename T>
-        T* InsertData(Pool* pool, u32& out_id, const T& data = {});
+        T* insert_data(Pool* pool, u32& out_id, const T& data = {});
 
-        u32 IndexOf(Pool* pool, u32 element_id);
+        u32 index_of(Pool* pool, u32 element_id);
     
-        void* GetRawData(Pool* pool, u32 element_id);
+        void* get_raw_data(Pool* pool, u32 element_id);
     
         template<typename T>
-        T* GetData(Pool* pool, u32 element_id);
+        T* get_data(Pool* pool, u32 element_id);
 
-        SparseSetDeletion DeleteData(Pool* pool, u32 element_id);
+        SparseSetDeletion delete_data(Pool* pool, u32 element_id);
     
-        void Resize(Pool* pool, u32 new_max);
+        void resize(Pool* pool, u32 new_max);
     }
 }
 

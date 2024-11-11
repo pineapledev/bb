@@ -81,7 +81,7 @@ namespace nit
             }
 
             broadcast<const ComponentRemovedArgs&>(entity_registry->component_removed_event, {entity, component_pool.data_pool.type});
-            pool::DeleteData(&component_pool.data_pool, entity);
+            pool::delete_data(&component_pool.data_pool, entity);
         }
 
         entity_registry->signatures[entity].reset();
@@ -172,7 +172,7 @@ namespace nit
 
             emitter << YAML::Key << data_pool.type->name << YAML::Value << YAML::BeginMap;
                 
-            void* raw_data = pool::GetRawData(&data_pool, entity);
+            void* raw_data = pool::get_raw_data(&data_pool, entity);
             Serialize(data_pool.type, raw_data, emitter);
                 
             emitter << YAML::EndMap;

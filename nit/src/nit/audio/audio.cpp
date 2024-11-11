@@ -142,7 +142,7 @@ namespace nit::audio
         
         AudioBufferHandle handle = 0;
         
-        pool::InsertData<AudioBufferData>(&audio_registry->audio_buffers, handle, {
+        pool::insert_data<AudioBufferData>(&audio_registry->audio_buffers, handle, {
             .buffer_id = buffer_id,
             .format    = format,
             .size      = size,
@@ -191,10 +191,10 @@ namespace nit::audio
 
         for (AudioSourceHandle& source_handle : data->audio_sources)
         {
-            pool::DeleteData(&audio_registry->audio_sources, source_handle);
+            pool::delete_data(&audio_registry->audio_sources, source_handle);
         }
         
-        pool::DeleteData(&audio_registry->audio_buffers, buffer_handle);
+        pool::delete_data(&audio_registry->audio_buffers, buffer_handle);
     }
 
     AudioBufferData* get_buffer_data(AudioBufferHandle buffer_handle)
@@ -207,7 +207,7 @@ namespace nit::audio
             return nullptr;
         }
 
-        return pool::GetData<AudioBufferData>(&audio_registry->audio_buffers, buffer_handle);
+        return pool::get_data<AudioBufferData>(&audio_registry->audio_buffers, buffer_handle);
     }
 
     AudioSourceHandle create_source(AudioBufferHandle buffer_handle)
@@ -228,7 +228,7 @@ namespace nit::audio
         
         AudioSourceHandle audio_source = 0;
 
-        pool::InsertData<AudioSourceData>(&audio_registry->audio_sources, audio_source, {
+        pool::insert_data<AudioSourceData>(&audio_registry->audio_sources, audio_source, {
             .source_id    = source_id,
             .audio_buffer = buffer_handle
         });
@@ -270,7 +270,7 @@ namespace nit::audio
         AudioBufferData* buffer_data = get_buffer_data(source_data->audio_buffer);
         buffer_data->audio_sources.erase(std::ranges::find(buffer_data->audio_sources, source_handle));
         
-        pool::DeleteData(&audio_registry->audio_sources, source_handle);
+        pool::delete_data(&audio_registry->audio_sources, source_handle);
     }
 
     AudioSourceData* get_source_data(AudioSourceHandle source_handle)
@@ -283,7 +283,7 @@ namespace nit::audio
             return nullptr;
         }
 
-        return pool::GetData<AudioSourceData>(&audio_registry->audio_sources, source_handle);
+        return pool::get_data<AudioSourceData>(&audio_registry->audio_sources, source_handle);
     }
 
     void play(AudioSourceHandle source_handle)

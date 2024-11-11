@@ -43,9 +43,9 @@ namespace nit::editor
             if (dir_entry.is_directory())
             {
                 u32 id;
-                pool::InsertData(&editor->asset_nodes, id, AssetNode{ .is_dir = true, .path = relative_path, .parent = parent_node, .asset = { .name = dir_path.stem().string() } });
+                pool::insert_data(&editor->asset_nodes, id, AssetNode{ .is_dir = true, .path = relative_path, .parent = parent_node, .asset = { .name = dir_path.stem().string() } });
                 
-                if (AssetNode* parent_node_data = pool::GetData<AssetNode>(&editor->asset_nodes, parent_node))
+                if (AssetNode* parent_node_data = pool::get_data<AssetNode>(&editor->asset_nodes, parent_node))
                 {
                     parent_node_data->children.push_back(id);
                 }
@@ -62,8 +62,8 @@ namespace nit::editor
                 }
 
                 u32 id;
-                pool::InsertData(&editor->asset_nodes, id, AssetNode{ .is_dir = false, .path = relative_path, .parent = parent_node, .asset = handle });
-                AssetNode* parent_node_data = pool::GetData<AssetNode>(&editor->asset_nodes, parent_node);
+                pool::insert_data(&editor->asset_nodes, id, AssetNode{ .is_dir = false, .path = relative_path, .parent = parent_node, .asset = handle });
+                AssetNode* parent_node_data = pool::get_data<AssetNode>(&editor->asset_nodes, parent_node);
 
                 if (parent_node_data && parent_node_data->is_dir)
                 {
@@ -82,7 +82,7 @@ namespace nit::editor
         
         pool::load<AssetNode>(&editor->asset_nodes, 300, true);
 
-        pool::InsertData(&editor->asset_nodes, editor->root_node, AssetNode{ .is_dir = true, .path = "" });
+        pool::insert_data(&editor->asset_nodes, editor->root_node, AssetNode{ .is_dir = true, .path = "" });
         editor->draw_node = editor->root_node;
         
         TraverseDirectory(get_assets_directory(), editor->root_node);
@@ -576,7 +576,7 @@ namespace nit::editor
 
                         if (pool->data_pool.type->fn_invoke_draw_editor)
                         {
-                            void* data = pool::GetRawData(&pool->data_pool, selected_entity);
+                            void* data = pool::get_raw_data(&pool->data_pool, selected_entity);
                             NIT_CHECK(data);
                             DrawEditor(component_type, data);
                         }
@@ -625,7 +625,7 @@ namespace nit::editor
                     retarget_asset_handle(editor->selected_asset);
                 }
 
-                void* data = pool::GetRawData(&asset_pool->data_pool, editor->selected_asset.data_id);
+                void* data = pool::get_raw_data(&asset_pool->data_pool, editor->selected_asset.data_id);
                 NIT_CHECK(data);
                 
                 DrawEditor(editor->selected_asset.type, data);
@@ -662,7 +662,7 @@ namespace nit::editor
                         return res;
                     };
 
-                    AssetNode* draw_node = pool::GetData<AssetNode>(&editor->asset_nodes, editor->draw_node);
+                    AssetNode* draw_node = pool::get_data<AssetNode>(&editor->asset_nodes, editor->draw_node);
 
                     static Type* create_asset_type = nullptr;
                 
@@ -699,7 +699,7 @@ namespace nit::editor
                         if (ImGui::Button("Create"))
                         {
                             AssetHandle asset = create_asset(create_asset_type, asset_name, draw_node->path);
-                            u32 id; pool::InsertData(&editor->asset_nodes, id, AssetNode{ .is_dir = false, .path = draw_node->path, .parent = editor->draw_node, .asset = asset});
+                            u32 id; pool::insert_data(&editor->asset_nodes, id, AssetNode{ .is_dir = false, .path = draw_node->path, .parent = editor->draw_node, .asset = asset});
                             draw_node->children.push_back(id);
                             
                             ImGui::CloseCurrentPopup();
@@ -738,7 +738,7 @@ namespace nit::editor
                     for (u32 i = 0; i < draw_node->children.size(); ++i)
                     {
                         u32 node_id = draw_node->children[i];
-                        AssetNode* node = pool::GetData<AssetNode>(&editor->asset_nodes, node_id);
+                        AssetNode* node = pool::get_data<AssetNode>(&editor->asset_nodes, node_id);
                         
                         if (!node)
                         {
@@ -784,7 +784,7 @@ namespace nit::editor
                                 {
                                     draw_node->children.erase(std::ranges::find(draw_node->children, node_id));
                                     destroy_asset(editor->selected_asset);
-                                    pool::DeleteData(&editor->asset_nodes, node_id);
+                                    pool::delete_data(&editor->asset_nodes, node_id);
                                     editor->selected_asset = {};
                                     editor->selection = Editor::Selection::None;
                                     --i;

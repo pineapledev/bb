@@ -48,7 +48,7 @@ namespace nit
     T* get_asset_data(AssetHandle& asset)
     {
         AssetPool* pool = get_asset_pool_safe(GetType<T>());
-        return pool::GetData<T>(&pool->data_pool, asset.data_id);
+        return pool::get_data<T>(&pool->data_pool, asset.data_id);
     }
     
     template<typename T>
@@ -57,11 +57,11 @@ namespace nit
         AssetPool* pool = get_asset_pool_safe(GetType<T>());
         Pool* data_pool = &pool->data_pool;
         Type* type = data_pool->type;
-        u32 data_id; pool::InsertData(data_pool, data_id, data);
+        u32 data_id; pool::insert_data(data_pool, data_id, data);
         UUID asset_id = GenerateID();
         get_asset_registry_instance()->id_to_data_id.insert({asset_id, data_id});
         AssetInfo info{type, name, path, asset_id, get_last_asset_version<T>(), false, 0, data_id };
-        push_asset_info(info, pool::IndexOf(data_pool, data_id), true);
+        push_asset_info(info,  pool::index_of(data_pool, data_id), true);
         AssetHandle asset_handle = create_asset_handle(&info);
         broadcast<const AssetCreatedArgs&>(get_asset_registry_instance()->asset_created_event, {asset_handle});
         return asset_handle;

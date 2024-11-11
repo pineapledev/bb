@@ -37,7 +37,7 @@ namespace nit
 
         if (sparse::IsFull(&pool->sparse_set))
         {
-            pool::Resize(pool, pool->sparse_set.max * 2);
+            pool::resize(pool, pool->sparse_set.max * 2);
         }
         
         SetArrayRawData(pool->type, pool->elements, sparse::Insert(&pool->sparse_set, element_id), data);
@@ -57,7 +57,7 @@ namespace nit
         return pool::insert_data_with_id(pool, element_id, data);
     }
 
-    SparseSetDeletion pool::DeleteData(Pool* pool, u32 element_id)
+    SparseSetDeletion pool::delete_data(Pool* pool, u32 element_id)
     {
         if (!pool)
         {
@@ -76,7 +76,7 @@ namespace nit
         return deletion;
     }
 
-    void pool::Resize(Pool* pool, u32 new_max)
+    void pool::resize(Pool* pool, u32 new_max)
     {
         if (!pool)
         {
@@ -87,7 +87,7 @@ namespace nit
         sparse::Resize(&pool->sparse_set, new_max);
     }
 
-    u32 pool::IndexOf(Pool* pool, u32 element_id)
+    u32 pool::index_of(Pool* pool, u32 element_id)
     {
         if (!pool)
         {
@@ -98,7 +98,7 @@ namespace nit
         return sparse::Search(&pool->sparse_set, element_id);
     }
 
-    void* pool::GetRawData(Pool* pool, u32 element_id)
+    void* pool::get_raw_data(Pool* pool, u32 element_id)
     {
         if (!pool)
         {
