@@ -19,8 +19,9 @@ namespace Nit
         SetInvokeFreeFunction  (type,  args.fn_free);
         SetSerializeFunction   (type,  args.fn_serialize);
         SetDeserializeFunction (type,  args.fn_deserialize);
+#ifdef NIT_EDITOR_ENABLED
         SetDrawEditorFunction  (type,  args.fn_draw_editor);
-        
+#endif
         FnPool::Load<T>(&asset_pool->data_pool, args.max_elements);
         asset_pool->asset_infos = new AssetInfo[args.max_elements];
     }

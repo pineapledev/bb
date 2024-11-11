@@ -21,7 +21,9 @@ namespace Nit
         FnFree<T>        fn_free        = nullptr;
         FnSerialize<T>   fn_serialize   = nullptr;
         FnDeserialize<T> fn_deserialize = nullptr;
+#ifdef NIT_EDITOR_ENABLED
         FnDrawEditor<T>  fn_draw_editor = nullptr;
+#endif
         u32              max_elements   = 100;
     };
 
