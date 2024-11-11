@@ -37,7 +37,7 @@ namespace nit::draw_system
         {
             for (Entity entity : camera_group.entities)
             {
-                if (!HasComponent<EditorCameraController>(entity))
+                if (!entity::has<EditorCameraController>(entity))
                 {
                     return entity;
                 }
@@ -97,7 +97,7 @@ namespace nit::draw_system
     {
         if (args.type == GetType<Sprite>())
         {
-            auto& sprite = get_component<Sprite>(args.entity); 
+            auto& sprite = entity::get<Sprite>(args.entity); 
             auto& asset = sprite.texture;
 
             retarget_asset_handle(asset);
@@ -120,7 +120,7 @@ namespace nit::draw_system
         }
         else if (args.type == GetType<Text>())
         {
-            auto& asset = get_component<Text>(args.entity).font;
+            auto& asset = entity::get<Text>(args.entity).font;
             retarget_asset_handle(asset);
             if (is_asset_valid(asset) && !is_asset_loaded(asset))
             {
@@ -134,7 +134,7 @@ namespace nit::draw_system
     {
         if (args.type == GetType<Sprite>())
         {
-            auto& sprite = get_component<Sprite>(args.entity); 
+            auto& sprite = entity::get<Sprite>(args.entity); 
             auto& asset = sprite.texture;
             retarget_asset_handle(asset);
             
@@ -145,7 +145,7 @@ namespace nit::draw_system
         }
         else if (args.type == GetType<Text>())
         {
-            auto& asset = get_component<Text>(args.entity).font;
+            auto& asset = entity::get<Text>(args.entity).font;
             retarget_asset_handle(asset);
             if (is_asset_valid(asset) && is_asset_loaded(asset))
             {
@@ -161,7 +161,7 @@ namespace nit::draw_system
         
         Entity main_camera = GetMainCamera();
 
-        Camera& camera = get_component<Camera>(main_camera);
+        Camera& camera = entity::get<Camera>(main_camera);
 
         i32 width, height;
         window::retrieve_size(&width, &height);
@@ -186,12 +186,12 @@ namespace nit::draw_system
 
         set_depth_test_enabled(camera.projection == CameraProjection::Perspective);
         
-        begin_scene_2d(CalculateProjectionViewMatrix(camera, get_component<Transform>(main_camera)));
+        begin_scene_2d(CalculateProjectionViewMatrix(camera, entity::get<Transform>(main_camera)));
         {
             for (Entity entity : GetEntityGroup<Sprite, Transform>().entities)
             {
-                auto& transform = get_component<Transform>(entity);
-                auto& sprite = get_component<Sprite>(entity);
+                auto& transform = entity::get<Transform>(entity);
+                auto& sprite = entity::get<Sprite>(entity);
 
                 if (!sprite.visible || sprite.tint.w <= F32_EPSILON)
                 {
@@ -261,8 +261,8 @@ namespace nit::draw_system
 
             for (Entity entity : GetEntityGroup<Line2D, Transform>().entities)
             {
-                auto& transform = get_component<Transform>(entity);
-                auto& line = get_component<Line2D>(entity);
+                auto& transform = entity::get<Transform>(entity);
+                auto& line = entity::get<Line2D>(entity);
 
                 if (!line.visible || line.tint.w <= F32_EPSILON )
                 {
@@ -278,8 +278,8 @@ namespace nit::draw_system
             
             for (Entity entity : GetEntityGroup<Text, Transform>().entities)
             {
-                auto& transform = get_component<Transform>(entity);
-                auto& text = get_component<Text>(entity);
+                auto& transform = entity::get<Transform>(entity);
+                auto& text = entity::get<Text>(entity);
                 Font* font_data = is_asset_valid(text.font) ? get_asset_data<Font>(text.font) : nullptr;
 
                 if (font_data && !is_asset_loaded(text.font))
@@ -305,8 +305,8 @@ namespace nit::draw_system
 
             for (Entity entity : GetEntityGroup<Circle, Transform>().entities)
             {
-                auto& transform = get_component<Transform>(entity);
-                auto& circle = get_component<Circle>(entity);
+                auto& transform = entity::get<Transform>(entity);
+                auto& circle = entity::get<Circle>(entity);
 
                 if (!circle.visible || circle.tint.w <= F32_EPSILON)
                 {

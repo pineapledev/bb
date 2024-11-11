@@ -50,9 +50,9 @@ void spawn_entity()
     entity::add<Transform>(entity).position = position;
     //entity::add<Transform>(entity).position = V3_ZERO;
     entity::add<Sprite>(entity).tint = GetRandomColor();
-    //get_component<Sprite>(entity).texture = test_texture;
-    SetSpriteSubTexture2D(get_component<Sprite>(entity), "cpp");
-    reset_movement(get_component<Transform>(entity), entity::add<Move>(entity));
+    //entity::get<Sprite>(entity).texture = test_texture;
+    SetSpriteSubTexture2D(entity::get<Sprite>(entity), "cpp");
+    reset_movement(entity::get<Transform>(entity), entity::add<Move>(entity));
 }
 
 // -----------------------------------------------------------------
@@ -88,8 +88,8 @@ void game_update()
     
     for (Entity entity : GetEntityGroup<Transform, Sprite, Move>().entities)
     {
-        auto& transform = get_component<Transform>(entity);
-        auto& move = get_component<Move>(entity);
+        auto& transform = entity::get<Transform>(entity);
+        auto& move = entity::get<Move>(entity);
 
         if (Distance(ToVector2(transform.position), move.destination) < 0.1f)
         {

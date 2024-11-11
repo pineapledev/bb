@@ -82,13 +82,13 @@ namespace nit
     {
         template<typename T>
         void remove(Entity entity);
-    }
-    
-    template<typename T>
-    bool HasComponent(Entity entity);
 
-    template<typename T>
-    T* get_componentPtr(Entity entity);
+        template<typename T>
+        T* get_component_ptr(Entity entity);
+        
+        template<typename T>
+        bool has(Entity entity);
+    }
     
     template<typename T>
     void RegisterComponentType(const TypeArgs<T>& args = {})
@@ -114,11 +114,11 @@ namespace nit
         };
 
         bool (*fn_is_in_entity)(Entity) = [](Entity entity){
-            return HasComponent<T>(entity);
+            return entity::has<T>(entity);
         };
 
         void* (*fn_get_from_entity)(Entity) = [](Entity entity) -> void* {
-            return get_componentPtr<T>(entity);
+            return entity::get_component_ptr<T>(entity);
         };
         
         bind(component_pool.fn_add_to_entity, fn_add_to_entity);
@@ -198,31 +198,31 @@ namespace nit
             signature.set(get_componentTypeIndex<T>(), false);
             EntitySignatureChanged(entity, signature);
         }
-    }
 
-    template<typename T>
-    T& get_component(Entity entity)
-    {
-        NIT_CHECK_MSG(IsEntityValid(entity), "Invalid entity!");
-        ComponentPool* component_pool = FindComponentPool<T>();
-        NIT_CHECK_MSG(component_pool, "Invalid component type!");
-        return *pool::get_data<T>(&component_pool->data_pool, entity);
-    }
+        template<typename T>
+        T& get(Entity entity)
+        {
+            NIT_CHECK_MSG(IsEntityValid(entity), "Invalid entity!");
+            ComponentPool* component_pool = FindComponentPool<T>();
+            NIT_CHECK_MSG(component_pool, "Invalid component type!");
+            return *pool::get_data<T>(&component_pool->data_pool, entity);
+        }
     
-    template<typename T>
-    T* get_componentPtr(Entity entity)
-    {
-        NIT_CHECK_MSG(IsEntityValid(entity), "Invalid entity!");
-        ComponentPool* component_pool = FindComponentPool<T>();
-        NIT_CHECK_MSG(component_pool, "Invalid component type!");
-        return pool::get_data<T>(&component_pool->data_pool, entity);
-    }
+        template<typename T>
+        T* get_component_ptr(Entity entity)
+        {
+            NIT_CHECK_MSG(IsEntityValid(entity), "Invalid entity!");
+            ComponentPool* component_pool = FindComponentPool<T>();
+            NIT_CHECK_MSG(component_pool, "Invalid component type!");
+            return pool::get_data<T>(&component_pool->data_pool, entity);
+        }
 
-    template<typename T>
-    bool HasComponent(Entity entity)
-    {
-        NIT_CHECK_MSG(IsEntityValid(entity), "Invalid entity!");
-        return entity::get_registry_instance()->signatures[entity].test(get_componentTypeIndex<T>());
+        template<typename T>
+        bool has(Entity entity)
+        {
+            NIT_CHECK_MSG(IsEntityValid(entity), "Invalid entity!");
+            return entity::get_registry_instance()->signatures[entity].test(get_componentTypeIndex<T>());
+        }
     }
 
     EntitySignature BuildEntitySignature(const Array<u64>& type_hashes);
