@@ -91,7 +91,7 @@ namespace nit
     }
 #endif
 
-    void init_typeRegistry(u32 max_types)
+    void init_type_registry(u32 max_types)
     {
         NIT_CHECK(type_registry && !type_registry->types && !type_registry->enum_types);
         type_registry->types          = new Type[max_types];

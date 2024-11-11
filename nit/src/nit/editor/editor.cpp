@@ -28,7 +28,7 @@ namespace nit::editor
         return editor;
     }
 
-    void Register()
+    void type_register()
     {
         RegisterComponentType<EditorCameraController>();
     }
@@ -88,7 +88,7 @@ namespace nit::editor
         TraverseDirectory(get_assets_directory(), editor->root_node);
     }
     
-    void Init()
+    void init()
     {
         NIT_CHECK_EDITOR_CREATED
 
@@ -143,7 +143,7 @@ namespace nit::editor
         };
     }
 
-    void BeginDraw()
+    void begin_draw()
     {
         NIT_CHECK_EDITOR_CREATED
 
@@ -818,7 +818,7 @@ namespace nit::editor
         }
     }
 
-    void EndDraw()
+    void end_draw()
     {
         unbind_frame_buffer();
 

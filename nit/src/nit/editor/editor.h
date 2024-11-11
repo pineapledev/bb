@@ -76,10 +76,10 @@ namespace nit
         void set_instance(Editor* editor_instance);
         Editor* get_instance();
 
-        void Register();
-        void Init();
-        void BeginDraw();
-        void EndDraw();
+        void type_register();
+        void init();
+        void begin_draw();
+        void end_draw();
     }
 }
 

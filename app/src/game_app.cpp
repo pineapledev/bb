@@ -11,7 +11,7 @@ int main(int argc, char** argv)
 {
     Engine engine_instance;
     engine::set_instance(&engine_instance);
-    engine::Run(OnRun);
+    engine::run(OnRun);
 }
 
 // -----------------------------------------------------------------

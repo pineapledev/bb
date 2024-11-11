@@ -139,7 +139,7 @@ namespace nit
     
     TypeRegistry* GetTypeRegistryInstance();
     
-    void init_typeRegistry(u32 max_types = DEFAULT_MAX_TYPES);
+    void init_type_registry(u32 max_types = DEFAULT_MAX_TYPES);
     
     template <typename T>
     void RegisterType(const TypeArgs<T>& args = {});

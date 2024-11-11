@@ -47,13 +47,13 @@ namespace nit
     
     namespace engine
     {
-        void set_instance(Engine* engine_instance);
+        void set_instance(Engine* new_engine_instance);
         Engine* get_instance();
         
-        void Run(VoidFunc run_callback = nullptr);
-        void Play();
-        void Pause();
-        void Stop();
+        void run(VoidFunc run_callback = nullptr);
+        void play();
+        void pause();
+        void stop();
     }
     
     // System shortcuts
