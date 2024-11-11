@@ -207,7 +207,7 @@ namespace nit::audio::clip
         }
 
         AssetHandle this_asset = engine::get_instance()->editor.selected_asset;
-        editor::DrawResourceCombo("Path", {".wav"}, audio_clip->audio_path);
+        editor::draw_resource_combo("Path", {".wav"}, audio_clip->audio_path);
         
         if (audio_clip->prev_path != audio_clip->audio_path || !is_asset_loaded(this_asset))
         {
