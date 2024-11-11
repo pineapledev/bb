@@ -47,12 +47,12 @@ void spawn_entity()
 {
     Entity entity = CreateEntity();
     Vector3 position = ToVector3(RandomPointInSquare(RECT_LEFT.x, RECT_RIGHT.y, RECT_RIGHT.x, RECT_LEFT.y)); 
-    add_component<Transform>(entity).position = position;
-    //add_component<Transform>(entity).position = V3_ZERO;
-    add_component<Sprite>(entity).tint = GetRandomColor();
+    entity::add<Transform>(entity).position = position;
+    //entity::add<Transform>(entity).position = V3_ZERO;
+    entity::add<Sprite>(entity).tint = GetRandomColor();
     //get_component<Sprite>(entity).texture = test_texture;
     SetSpriteSubTexture2D(get_component<Sprite>(entity), "cpp");
-    reset_movement(get_component<Transform>(entity), add_component<Move>(entity));
+    reset_movement(get_component<Transform>(entity), entity::add<Move>(entity));
 }
 
 // -----------------------------------------------------------------

@@ -130,13 +130,13 @@ namespace nit::editor
 
         editor->editor_camera_entity = CreateEntity();
 
-        auto& transform      = add_component<Transform>              (editor->editor_camera_entity);
+        auto& transform      = entity::add<Transform>              (editor->editor_camera_entity);
         transform.position.z = 3.f;
         
-        auto& camera         = add_component<Camera>                 (editor->editor_camera_entity);
+        auto& camera         = entity::add<Camera>                 (editor->editor_camera_entity);
         camera.projection    = CameraProjection::Orthographic;
         
-        auto& controller = add_component<EditorCameraController> (editor->editor_camera_entity);
+        auto& controller = entity::add<EditorCameraController> (editor->editor_camera_entity);
         
         controller = {
             .desired_zoom = camera.size,
@@ -557,13 +557,13 @@ namespace nit::editor
                         ImGui::OpenPopup("Component Settings");
                     }
 
-                    bool remove_component = false;
+                    bool remove_entity = false;
 
                     if (ImGui::BeginPopup("Component Settings"))
                     {
                         if (ImGui::MenuItem("Remove Component"))
                         {
-                            remove_component = true;
+                            remove_entity = true;
                         }
 
                         ImGui::EndPopup();
@@ -586,7 +586,7 @@ namespace nit::editor
                         ImGui::TreePop();
                     }
 
-                    if (remove_component)
+                    if (remove_entity)
                     {
                         invoke(pool->fn_remove_from_entity, selected_entity);
                     }
