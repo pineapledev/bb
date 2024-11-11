@@ -6,13 +6,13 @@ namespace nit
     
     EntityRegistry* entity_registry = nullptr;
     
-    void SetEntityRegistryInstance(EntityRegistry* entity_registry_instance)
+    void entity::set_registry_instance(EntityRegistry* entity_registry_instance)
     {
         NIT_CHECK(entity_registry_instance);
         entity_registry = entity_registry_instance;
     }
 
-    EntityRegistry* GetEntityRegistryInstance()
+    EntityRegistry* entity::get_registry_instance()
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         return entity_registry;
@@ -202,7 +202,7 @@ namespace nit
             ComponentAddedArgs args;
             args.entity = entity;
             args.type = component_pool->data_pool.type;
-            broadcast<const ComponentAddedArgs&>(GetEntityRegistryInstance()->component_added_event, args);
+            broadcast<const ComponentAddedArgs&>(entity::get_registry_instance()->component_added_event, args);
         }
         
         return entity;

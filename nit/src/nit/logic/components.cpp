@@ -87,7 +87,7 @@ namespace nit
     {
         for (Entity entity : GetEntityGroup<Name>().entities)
         {
-            if (GetComponent<Name>(entity).data == name)
+            if (get_component<Name>(entity).data == name)
             {
                 return entity;
             }
@@ -100,7 +100,7 @@ namespace nit
     {
         for (Entity entity : GetEntityGroup<Name>().entities)
         {
-            if (GetComponent<Name>(entity).data == name)
+            if (get_component<Name>(entity).data == name)
             {
                 entities.push_back(entity);
             }
@@ -158,7 +158,7 @@ namespace nit
     {
         for (Entity entity : GetEntityGroup<UUID>().entities)
         {
-            if (GetComponent<UUID>(entity) == uuid)
+            if (get_component<UUID>(entity) == uuid)
             {
                 return entity;
             }
@@ -171,7 +171,7 @@ namespace nit
     {
         for (Entity entity : GetEntityGroup<UUID>().entities)
         {
-            if (GetComponent<UUID>(entity) == uuid)
+            if (get_component<UUID>(entity) == uuid)
             {
                 entities.push_back(entity);
             }

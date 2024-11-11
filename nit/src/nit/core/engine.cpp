@@ -38,7 +38,7 @@ namespace nit::engine
         SetTypeRegistryInstance(&instance->type_registry);
         init_type_registry();
 
-        SetEntityRegistryInstance(&instance->entity_registry);
+        entity::set_registry_instance(&instance->entity_registry);
         InitEntityRegistry();
         
         audio::set_instance(&instance->audio_registry);

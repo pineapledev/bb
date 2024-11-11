@@ -130,13 +130,13 @@ namespace nit::editor
 
         editor->editor_camera_entity = CreateEntity();
 
-        auto& transform      = AddComponent<Transform>              (editor->editor_camera_entity);
+        auto& transform      = add_component<Transform>              (editor->editor_camera_entity);
         transform.position.z = 3.f;
         
-        auto& camera         = AddComponent<Camera>                 (editor->editor_camera_entity);
+        auto& camera         = add_component<Camera>                 (editor->editor_camera_entity);
         camera.projection    = CameraProjection::Orthographic;
         
-        auto& controller = AddComponent<EditorCameraController> (editor->editor_camera_entity);
+        auto& controller = add_component<EditorCameraController> (editor->editor_camera_entity);
         
         controller = {
             .desired_zoom = camera.size,
@@ -154,9 +154,9 @@ namespace nit::editor
         
         // Update editor camera 
         {
-            auto& camera     = GetComponent<Camera>(editor->editor_camera_entity); 
-            auto& controller = GetComponent<EditorCameraController>(editor->editor_camera_entity);
-            auto& transform  = GetComponent<Transform>(editor->editor_camera_entity);
+            auto& camera     = get_component<Camera>(editor->editor_camera_entity); 
+            auto& controller = get_component<EditorCameraController>(editor->editor_camera_entity);
+            auto& transform  = get_component<Transform>(editor->editor_camera_entity);
             
             // Zoom stuff
 
@@ -304,8 +304,8 @@ namespace nit::editor
                     
                     if (IsEntityValid(selected_entity) && editor->selection == Editor::Selection::Entity && IsEntityValid(camera_entity) && HasComponent<Transform>(selected_entity))
                     {
-                        auto& camera_data      = GetComponent<Camera>(camera_entity);
-                        auto& camera_transform = GetComponent<Transform>(camera_entity);
+                        auto& camera_data      = get_component<Camera>(camera_entity);
+                        auto& camera_transform = get_component<Transform>(camera_entity);
                         
                         ImGuizmo::SetOrthographic(camera_data.projection == CameraProjection::Orthographic);
                         ImGuizmo::SetDrawlist();
@@ -324,7 +324,7 @@ namespace nit::editor
                         const float* view = &CalculateViewMatrix(camera_transform).n[0];
                         const float* projection = &CalculateProjectionMatrix(camera_data).n[0];
 
-                        Transform& transform = GetComponent<Transform>(selected_entity);
+                        Transform& transform = get_component<Transform>(selected_entity);
                         
                         Matrix4 gizmo_matrix = CreateTransform(transform.position, transform.rotation, transform.scale);
                         
@@ -505,9 +505,9 @@ namespace nit::editor
 
                         if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
                         {
-                            auto& transform = GetComponent<Transform>(entity);
-                            auto& camera_transform  = GetComponent<Transform>(editor->editor_camera_entity);
-                            auto& camera_controller = GetComponent<EditorCameraController>(editor->editor_camera_entity);
+                            auto& transform = get_component<Transform>(entity);
+                            auto& camera_transform  = get_component<Transform>(editor->editor_camera_entity);
+                            auto& camera_controller = get_component<EditorCameraController>(editor->editor_camera_entity);
                             auto pos = Vector3{ transform.position.x, transform.position.y, camera_transform.position.z };
                             camera_controller.aux_position = pos;
                             camera_transform.position      = pos;
