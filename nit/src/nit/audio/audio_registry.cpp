@@ -266,6 +266,10 @@ namespace Nit
 
         AudioSourceData* source_data = GetSourceData(source_handle);
         FreeSourceData(source_data);
+
+        AudioBufferData* buffer_data = GetBufferData(source_data->audio_buffer);
+        buffer_data->audio_sources.erase(std::ranges::find(buffer_data->audio_sources, source_handle));
+        
         FnPool::DeleteData(&audio_registry->audio_sources, source_handle);
     }
 
