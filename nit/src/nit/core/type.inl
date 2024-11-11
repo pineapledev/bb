@@ -3,7 +3,7 @@
 namespace nit
 {
     template<typename T>
-    void SetInvokeLoadFunction(Type* type, FnLoad<T> fn_load)
+    void set_invoke_load_function(Type* type, FnLoad<T> fn_load)
     {
         NIT_CHECK(type);
         if (fn_load && !type->fn_invoke_load)
@@ -16,7 +16,7 @@ namespace nit
     }
 
     template<typename T>
-    void SetInvokeFreeFunction(Type* type, FnFree<T> fn_free)
+    void set_invoke_free_function(Type* type, FnFree<T> fn_free)
     {
         NIT_CHECK(type);
         if (fn_free && !type->fn_invoke_free)
@@ -29,7 +29,7 @@ namespace nit
     }
 
     template<typename T>
-    void SetSerializeFunction(Type* type, FnSerialize<T> fn_serialize)
+    void set_serialize_function(Type* type, FnSerialize<T> fn_serialize)
     {
         NIT_CHECK(type);
         
@@ -43,7 +43,7 @@ namespace nit
     }
 
     template<typename T>
-    void SetDeserializeFunction(Type* type, FnDeserialize<T> fn_deserialize)
+    void set_deserialize_function(Type* type, FnDeserialize<T> fn_deserialize)
     {
         NIT_CHECK(type);
         
@@ -58,7 +58,7 @@ namespace nit
 
 #ifdef NIT_EDITOR_ENABLED
     template<typename T>
-    void SetDrawEditorFunction(Type* type, FnDrawEditor<T> fn_draw_editor)
+    void set_draw_editor_function(Type* type, FnDrawEditor<T> fn_draw_editor)
     {
         NIT_CHECK(type);
         
@@ -73,15 +73,15 @@ namespace nit
 #endif
 
     template<typename T>
-    u64 GetTypeHash()
+    u64 get_type_hash()
     {
         return typeid(T).hash_code();
     }
     
     template<typename T>
-    void InitType(Type& type, const TypeArgs<T>& args)
+    void init_type(Type& type, const TypeArgs<T>& args)
     {
-        type.hash = GetTypeHash<T>();
+        type.hash = get_type_hash<T>();
         
         static const String STRUCT_TEXT = "struct "; 
         static const String CLASS_TEXT  = "class "; 
@@ -115,28 +115,28 @@ namespace nit
         
         if (auto fn_serialize = args.fn_serialize)
         {
-            SetSerializeFunction(&type, fn_serialize);
+            set_serialize_function(&type, fn_serialize);
         }
 
         if (auto fn_deserialize = args.fn_deserialize)
         {
-            SetDeserializeFunction(&type, fn_deserialize);
+            set_deserialize_function(&type, fn_deserialize);
         }
 
         if (auto fn_load = args.fn_load)
         {
-            SetInvokeLoadFunction(&type, fn_load);
+            set_invoke_load_function(&type, fn_load);
         }
 
         if (auto fn_free = args.fn_free)
         {
-            SetInvokeFreeFunction(&type, fn_free);
+            set_invoke_free_function(&type, fn_free);
         }
 
 #ifdef NIT_EDITOR_ENABLED
         if (auto fn_draw_editor = args.fn_draw_editor)
         {
-            SetDrawEditorFunction(&type, fn_draw_editor);
+            set_draw_editor_function(&type, fn_draw_editor);
         }
 #endif
     }
@@ -203,7 +203,7 @@ namespace nit
             return;
         }
         Type& type = type_registry->types[type_registry->count]; 
-        InitType(type, args);
+        init_type(type, args);
         NIT_CHECK(type_registry->hash_to_index.count(type.hash) == 0);
         type_registry->hash_to_index[type.hash] = type_registry->count;
         NIT_CHECK(type_registry->name_to_index.count(type.name) == 0);
@@ -231,13 +231,13 @@ namespace nit
     template <typename T>
     bool IsEnumTypeRegistered()
     {
-        return IsEnumTypeRegistered(GetTypeHash<T>());
+        return IsEnumTypeRegistered(get_type_hash<T>());
     }
 
     template <typename T>
     EnumType* GetEnumType()
     {
-        return GetEnumType(GetTypeHash<T>());
+        return GetEnumType(get_type_hash<T>());
     }
 
     template <typename EType, typename T>
@@ -264,12 +264,12 @@ namespace nit
     template <typename T>
     bool IsTypeRegistered()
     {
-        return IsTypeRegistered(GetTypeHash<T>());
+        return IsTypeRegistered(get_type_hash<T>());
     }
 
     template <typename T>
     Type* GetType()
     {
-        return GetType(GetTypeHash<T>());
+        return GetType(get_type_hash<T>());
     }
 }

@@ -218,7 +218,7 @@ namespace nit
                     asset_registry->id_to_data_id.insert({asset_info.id, asset_info.data_id});
                 }
                 
-                Deserialize(pool->data_pool.type, data, asset_node);
+                deserialize(pool->data_pool.type, data, asset_node);
                 
                 if (created)
                 {
@@ -264,7 +264,7 @@ namespace nit
         
         emitter << YAML::Key << info->type->name << YAML::Value << YAML::BeginMap;
 
-        Serialize(pool->data_pool.type, pool::get_raw_data(&pool->data_pool, info->data_id), emitter);
+        serialize(pool->data_pool.type, pool::get_raw_data(&pool->data_pool, info->data_id), emitter);
 
         emitter << YAML::EndMap;
 
@@ -450,7 +450,7 @@ namespace nit
         AssetInfo* info = GetAssetInfoSafe(asset);
         info->reference_count = 0;
         info->loaded = false;
-        Free(asset.type, pool::get_raw_data(&pool->data_pool, asset.data_id));
+        type_release(asset.type, pool::get_raw_data(&pool->data_pool, asset.data_id));
     }
 
     void retain_asset(AssetHandle& asset)

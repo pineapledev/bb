@@ -220,7 +220,7 @@ namespace nit
     template <typename... T>
     EntitySignature BuildEntitySignature()
     {
-        Array<u64> type_hashes = { GetTypeHash<T>()... };
+        Array<u64> type_hashes = { get_type_hash<T>()... };
         return BuildEntitySignature(type_hashes);
     }
     
@@ -229,7 +229,7 @@ namespace nit
     template <typename... T>
     EntitySignature CreateEntityGroup()
     {
-        Array<u64> type_hashes = { GetTypeHash<T>()... };
+        Array<u64> type_hashes = { get_type_hash<T>()... };
         return CreateEntityGroup(type_hashes);
     }
 
@@ -238,7 +238,7 @@ namespace nit
     template <typename... T>
     EntityGroup& GetEntityGroup()
     {
-        Array<u64> type_hashes = { GetTypeHash<T>()... };
+        Array<u64> type_hashes = { get_type_hash<T>()... };
         return GetEntityGroup(BuildEntitySignature(type_hashes));
     }
     

@@ -15,12 +15,12 @@ namespace nit
         
         Type* type = GetType<T>();
         
-        SetInvokeLoadFunction  (type,  args.fn_load);
-        SetInvokeFreeFunction  (type,  args.fn_free);
-        SetSerializeFunction   (type,  args.fn_serialize);
-        SetDeserializeFunction (type,  args.fn_deserialize);
+        set_invoke_load_function  (type,  args.fn_load);
+        set_invoke_free_function  (type,  args.fn_free);
+        set_serialize_function   (type,  args.fn_serialize);
+        set_deserialize_function (type,  args.fn_deserialize);
 #ifdef NIT_EDITOR_ENABLED
-        SetDrawEditorFunction  (type,  args.fn_draw_editor);
+        set_draw_editor_function  (type,  args.fn_draw_editor);
 #endif
         pool::load<T>(&asset_pool->data_pool, args.max_elements);
         asset_pool->asset_infos = new AssetInfo[args.max_elements];

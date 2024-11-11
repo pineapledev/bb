@@ -16,19 +16,19 @@ namespace nit
         return type_registry;
     }
     
-    void SetArrayRawData(const Type* type, void* array, u32 index, void* data)
+    void set_array_raw_data(const Type* type, void* array, u32 index, void* data)
     {
         NIT_CHECK(type && type->fn_set_data && array);
         type->fn_set_data(array, index, data);
     }
 
-    void* GetArrayRawData(const Type* type, void* array, u32 index)
+    void* get_array_raw_data(const Type* type, void* array, u32 index)
     {
         NIT_CHECK(type && type->fn_get_data && array);
         return type->fn_get_data(array, index);
     }
 
-    void ResizeArray(const Type* type, void* array, u32 max, u32 new_max)
+    void resize_array(const Type* type, void* array, u32 max, u32 new_max)
     {
         if (!type || !type->fn_resize_data || !array || new_max <= max)
         {
@@ -49,7 +49,7 @@ namespace nit
         }
     }
 
-    void Free(const Type* type, void* data)
+    void type_release(const Type* type, void* data)
     {
         NIT_CHECK(type);
         if (type->fn_invoke_free)
@@ -59,7 +59,7 @@ namespace nit
         }
     }
 
-    void Serialize(const Type* type, void* data, YAML::Emitter& emitter)
+    void serialize(const Type* type, void* data, YAML::Emitter& emitter)
     {
         NIT_CHECK(type);
         if (type->fn_invoke_serialize)
@@ -69,7 +69,7 @@ namespace nit
         }
     }
 
-    void Deserialize(const Type* type, void* data, const YAML::Node& node)
+    void deserialize(const Type* type, void* data, const YAML::Node& node)
     {
         NIT_CHECK(type);
         if (type->fn_invoke_deserialize)
@@ -80,7 +80,7 @@ namespace nit
     }
 
 #ifdef NIT_EDITOR_ENABLED
-    void DrawEditor(const Type* type, void* data)
+    void type_draw_editor(const Type* type, void* data)
     {
         NIT_CHECK(type);
         if (type->fn_invoke_draw_editor)
@@ -91,7 +91,7 @@ namespace nit
     }
 #endif
 
-    void InitTypeRegistry(u32 max_types)
+    void init_typeRegistry(u32 max_types)
     {
         NIT_CHECK(type_registry && !type_registry->types && !type_registry->enum_types);
         type_registry->types          = new Type[max_types];

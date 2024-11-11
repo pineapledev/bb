@@ -84,37 +84,37 @@ namespace nit
     };
     
     template<typename T>
-    void SetInvokeLoadFunction(Type* type, FnLoad<T> fn_load);
+    void set_invoke_load_function(Type* type, FnLoad<T> fn_load);
     template<typename T>
-    void SetInvokeFreeFunction(Type* type, FnFree<T> fn_free);
+    void set_invoke_free_function(Type* type, FnFree<T> fn_free);
 
     template<typename T>
-    void SetSerializeFunction(Type* type, FnSerialize<T> fn_serialize);
+    void set_serialize_function(Type* type, FnSerialize<T> fn_serialize);
 
     template<typename T>
-    void SetDeserializeFunction(Type* type, FnDeserialize<T> fn_deserialize);
+    void set_deserialize_function(Type* type, FnDeserialize<T> fn_deserialize);
 
 #ifdef NIT_EDITOR_ENABLED
     template<typename T>
-    void SetDrawEditorFunction(Type* type, FnDrawEditor<T> fn_draw_editor);
+    void set_draw_editor_function(Type* type, FnDrawEditor<T> fn_draw_editor);
 #endif
 
     template<typename T>
-    u64 GetTypeHash();
+    u64 get_type_hash();
     
     template<typename T>
-    void InitType(Type& type, const TypeArgs<T>& args);
+    void init_type(Type& type, const TypeArgs<T>& args);
 
-    void  SetArrayRawData(const Type* type, void* array, u32 index, void* data);
-    void* GetArrayRawData(const Type* type, void* array, u32 index);
-    void  ResizeArray(const Type* type, void* array, u32 max, u32 new_max);
+    void  set_array_raw_data(const Type* type, void* array, u32 index, void* data);
+    void* get_array_raw_data(const Type* type, void* array, u32 index);
+    void  resize_array(const Type* type, void* array, u32 max, u32 new_max);
     void  load(const Type* type, void* data);
-    void  Free(const Type* type, void* data);
-    void  Serialize(const Type* type, void* data, YAML::Emitter& emitter);
-    void  Deserialize(const Type* type, void* data, const YAML::Node& node);
+    void  type_release(const Type* type, void* data);
+    void  serialize(const Type* type, void* data, YAML::Emitter& emitter);
+    void  deserialize(const Type* type, void* data, const YAML::Node& node);
     
 #ifdef NIT_EDITOR_ENABLED
-    void  DrawEditor(const Type* type, void* data);
+    void  type_draw_editor(const Type* type, void* data);
 #endif
 
     template<typename T>
@@ -139,7 +139,7 @@ namespace nit
     
     TypeRegistry* GetTypeRegistryInstance();
     
-    void InitTypeRegistry(u32 max_types = DEFAULT_MAX_TYPES);
+    void init_typeRegistry(u32 max_types = DEFAULT_MAX_TYPES);
     
     template <typename T>
     void RegisterType(const TypeArgs<T>& args = {});

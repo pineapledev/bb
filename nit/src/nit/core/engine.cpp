@@ -36,7 +36,7 @@ namespace nit::engine
         InitSystemStack();
         
         SetTypeRegistryInstance(&engine::get_instance()->type_registry);
-        InitTypeRegistry();
+        init_typeRegistry();
 
         SetEntityRegistryInstance(&engine::get_instance()->entity_registry);
         InitEntityRegistry();

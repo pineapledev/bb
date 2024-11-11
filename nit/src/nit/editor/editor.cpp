@@ -578,7 +578,7 @@ namespace nit::editor
                         {
                             void* data = pool::get_raw_data(&pool->data_pool, selected_entity);
                             NIT_CHECK(data);
-                            DrawEditor(component_type, data);
+                            type_draw_editor(component_type, data);
                         }
                         
                         ImGui::Separator();
@@ -628,7 +628,7 @@ namespace nit::editor
                 void* data = pool::get_raw_data(&asset_pool->data_pool, editor->selected_asset.data_id);
                 NIT_CHECK(data);
                 
-                DrawEditor(editor->selected_asset.type, data);
+                type_draw_editor(editor->selected_asset.type, data);
             }
             ImGui::End();
         }
