@@ -41,13 +41,13 @@ namespace nit
             return nullptr;
         }
 
-        if (sparse::IsFull(&pool->sparse_set))
+        if (sparse::is_full(&pool->sparse_set))
         {
             pool::resize(pool, pool->sparse_set.max * 2);
         }
         
         NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");
-        return SetArrayData(pool->elements, sparse::Insert(&pool->sparse_set, element_id), data);
+        return SetArrayData(pool->elements, sparse::insert(&pool->sparse_set, element_id), data);
     }
 
     template<typename T>
@@ -80,7 +80,7 @@ namespace nit
             return nullptr;
         }
         
-        u32 element_index = sparse::Search(&pool->sparse_set, element_id);
+        u32 element_index = sparse::search(&pool->sparse_set, element_id);
 
         if (element_index == SparseSet::INVALID)
         {

@@ -21,15 +21,15 @@ namespace nit
     
     namespace sparse
     {
-        bool IsValid(SparseSet* sparse_set);
-        bool IsEmpty(SparseSet* sparse_set);
-        bool IsFull(SparseSet* sparse_set);
+        bool is_valid(SparseSet* sparse_set);
+        bool is_empty(SparseSet* sparse_set);
+        bool is_full(SparseSet* sparse_set);
         void load(SparseSet* sparse_set, u32 max);
-        u32  Insert(SparseSet* sparse_set, u32 element);
-        bool Test(SparseSet* sparse_set, u32 element);
-        u32  Search(SparseSet* sparse_set, u32 element);
-        SparseSetDeletion Delete(SparseSet* sparse_set, u32 element);
-        void Resize(SparseSet* sparse_set, u32 new_max);
-        void Free(SparseSet* sparse_set);
+        u32  insert(SparseSet* sparse_set, u32 element);
+        bool test(SparseSet* sparse_set, u32 element);
+        u32  search(SparseSet* sparse_set, u32 element);
+        SparseSetDeletion remove(SparseSet* sparse_set, u32 element);
+        void resize(SparseSet* sparse_set, u32 new_max);
+        void release(SparseSet* sparse_set);
     }
 }
