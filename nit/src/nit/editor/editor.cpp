@@ -355,13 +355,13 @@ namespace nit::editor
             // source
             {
                 static String source = GetWorkingDirectory().string();
-                ImGui::InputFolder(&engine::GetInstance()->window, "Source", source);
+                ImGui::DrawInputFolder(&engine::GetInstance()->window, "Source", source);
                 
                 static String dest = GetWorkingDirectory().string();
-                ImGui::InputFolder(&engine::GetInstance()->window, "Destination", dest);
+                ImGui::DrawInputFolder(&engine::GetInstance()->window, "Destination", dest);
 
                 static String name;
-                ImGui::InputText("Asset Name", name);
+                ImGui::DrawInputText("Asset Name", name);
 
                 if (ImGui::Button("Generate"))
                 {
@@ -592,7 +592,7 @@ namespace nit::editor
                     }
                 }
 
-                if (ImGui::CenteredButton("Add Component"))
+                if (ImGui::DrawCenteredButton("Add Component"))
                 {
                     ImGui::OpenPopup("Add Component");
                 }
@@ -694,7 +694,7 @@ namespace nit::editor
                     {
                         static char asset_name[500];
                         ImGui::InputText("##name", asset_name, 500);
-                        ImGui::Spacing(3);
+                        ImGui::DrawSpacing(3);
                         
                         if (ImGui::Button("Create"))
                         {
@@ -793,7 +793,7 @@ namespace nit::editor
                             }
                         }
 
-                        ImGui::CenteredText(node->asset.name.c_str());
+                        ImGui::DrawCenteredText(node->asset.name.c_str());
                         ImGui::NextColumn();
                     }
                 }

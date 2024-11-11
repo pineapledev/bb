@@ -42,12 +42,12 @@ namespace ImGui
         property_in_context = false;
     }
 
-    void Spacing(u32 spacing)
+    void DrawSpacing(u32 spacing)
     {
         for (u32 i = 0; i < spacing; i++)
             Spacing();
     }
-    bool CenteredButton(const char* label, f32 alignment)
+    bool DrawCenteredButton(const char* label, f32 alignment)
     {
         const ImGuiStyle& style = GetStyle();
 
@@ -61,7 +61,7 @@ namespace ImGui
         return Button(label);
     }
 
-    void CenteredText(const char* label, float alignment)
+    void DrawCenteredText(const char* label, float alignment)
     {
         const ImGuiStyle& style = GetStyle();
 
@@ -75,7 +75,7 @@ namespace ImGui
         return Text(label);
     }
 
-    bool InputText(const char* label, String& text)
+    bool DrawInputText(const char* label, String& text)
     {
         BeginProperty(label);
         static constexpr u32 MAX_CHARS = 300;
@@ -90,7 +90,7 @@ namespace ImGui
         return text_changed;
     }
 
-    bool InputFolder(const Window* window, const char* label, String& text)
+    bool DrawInputFolder(const Window* window, const char* label, String& text)
     {
         BeginProperty(label);
         static constexpr u32 MAX_CHARS = 300;
@@ -119,7 +119,7 @@ namespace ImGui
         return text_changed;
     }
 
-    void Text(const char* label, const char* text, ...)
+    void DrawText(const char* label, const char* text, ...)
     {
         BeginProperty(label);
         va_list args;
@@ -129,7 +129,7 @@ namespace ImGui
         EndProperty();
     }
 
-    bool Bool(const char* label, bool& enabled)
+    bool DrawBool(const char* label, bool& enabled)
     {
         BeginProperty(label);
         bool changed = Checkbox("##", &enabled);
@@ -139,7 +139,7 @@ namespace ImGui
         return changed;
     }
 
-    bool DragI32(const char* label, i32& num, f32 speed /*= 1.f*/)
+    bool DrawDragI32(const char* label, i32& num, f32 speed /*= 1.f*/)
     {
         BeginProperty(label);
         bool changed = DragInt("##", &num, speed);
@@ -149,7 +149,7 @@ namespace ImGui
         return changed;
     }
 
-    bool DragU32(const char* label, u32& num, f32 speed /*= 1.f*/)
+    bool DrawDragU32(const char* label, u32& num, f32 speed /*= 1.f*/)
     {
         BeginProperty(label);
         int i = static_cast<int>(num);
@@ -161,7 +161,7 @@ namespace ImGui
         return changed;
     }
 
-    bool DragF32(const char* label, f32& num, f32 speed /*= 0.1f*/)
+    bool DrawDragF32(const char* label, f32& num, f32 speed /*= 0.1f*/)
     {
         BeginProperty(label);
         bool changed = DragFloat("##", &num, speed, 0, 0, "%.3f");
@@ -171,7 +171,7 @@ namespace ImGui
         return changed;
     }
 
-    void Combo(const char* label, String& selected, const Array<String>& options)
+    void DrawCombo(const char* label, String& selected, const Array<String>& options)
     {
         BeginProperty(label);
         if (selected.empty())
@@ -195,7 +195,7 @@ namespace ImGui
         EndProperty();
     }
 
-    bool DragF32WithButton(const char* label, f32& value, const Vector4& reset_color, f32 reset_value, f32 speed)
+    bool DrawDragF32WithButton(const char* label, f32& value, const Vector4& reset_color, f32 reset_value, f32 speed)
     {
         PushID(label);
         const f32 line_height = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.f;
@@ -220,43 +220,43 @@ namespace ImGui
         return changed || reset;
     }
 
-    bool DragVector2(const char* label, Vector2& vector, const Vector2& reset_value, f32 speed)
+    bool DrawDragVector2(const char* label, Vector2& vector, const Vector2& reset_value, f32 speed)
     {
         BeginProperty(label, 2);
-        bool x_changed = DragF32WithButton("X", vector.x, V4_COLOR_X, reset_value.x, speed);
+        bool x_changed = DrawDragF32WithButton("X", vector.x, V4_COLOR_X, reset_value.x, speed);
         SameLine();
-        bool y_changed = DragF32WithButton("Y", vector.y, V4_COLOR_Y, reset_value.y, speed);
+        bool y_changed = DrawDragF32WithButton("Y", vector.y, V4_COLOR_Y, reset_value.y, speed);
         EndProperty();
         return x_changed || y_changed;
     }
 
-    bool DragVector3(const char* label, Vector3& vector, const Vector3& reset_value, f32 speed)
+    bool DrawDragVector3(const char* label, Vector3& vector, const Vector3& reset_value, f32 speed)
     {
         BeginProperty(label, 3);
-        bool x_changed = DragF32WithButton("X", vector.x, V4_COLOR_X, reset_value.x, speed);
+        bool x_changed = DrawDragF32WithButton("X", vector.x, V4_COLOR_X, reset_value.x, speed);
         SameLine();
-        bool y_changed = DragF32WithButton("Y", vector.y, V4_COLOR_Y, reset_value.y, speed);
+        bool y_changed = DrawDragF32WithButton("Y", vector.y, V4_COLOR_Y, reset_value.y, speed);
         SameLine();
-        bool z_changed = DragF32WithButton("Z", vector.z, V4_COLOR_Z, reset_value.z, speed);
+        bool z_changed = DrawDragF32WithButton("Z", vector.z, V4_COLOR_Z, reset_value.z, speed);
         EndProperty();
         return x_changed || y_changed || z_changed;
     }
 
-    bool DragVector4(const char* label, Vector4& vector, const Vector4& reset_value, f32 speed)
+    bool DrawDragVector4(const char* label, Vector4& vector, const Vector4& reset_value, f32 speed)
     {
         BeginProperty(label, 4);
-        bool x_changed = DragF32WithButton("X", vector.x, V4_COLOR_X, reset_value.x, speed);
+        bool x_changed = DrawDragF32WithButton("X", vector.x, V4_COLOR_X, reset_value.x, speed);
         SameLine();
-        bool y_changed = DragF32WithButton("Y", vector.y, V4_COLOR_Y, reset_value.y, speed);
+        bool y_changed = DrawDragF32WithButton("Y", vector.y, V4_COLOR_Y, reset_value.y, speed);
         SameLine();
-        bool z_changed = DragF32WithButton("Z", vector.z, V4_COLOR_Z, reset_value.z, speed);
+        bool z_changed = DrawDragF32WithButton("Z", vector.z, V4_COLOR_Z, reset_value.z, speed);
         SameLine();
-        bool w_changed = DragF32WithButton("W", vector.w, V4_COLOR_W, reset_value.w, speed);
+        bool w_changed = DrawDragF32WithButton("W", vector.w, V4_COLOR_W, reset_value.w, speed);
         EndProperty();
         return x_changed || y_changed || z_changed || w_changed;
     }
 
-    bool ColorPalette(const char* label, Vector4& color)
+    bool DrawColorPalette(const char* label, Vector4& color)
     {
         BeginProperty(label);
         f32 f32_color[] = { color.x, color.y, color.z, color.w };
@@ -266,7 +266,7 @@ namespace ImGui
         return changed;
     }
 
-    void AssetCombo(const char* label, Type* type, AssetHandle* asset)
+    void DrawAssetCombo(const char* label, Type* type, AssetHandle* asset)
     {
         String selected = asset->name;
 
@@ -302,7 +302,7 @@ namespace ImGui
         EndProperty();
     }
 
-    void ResourceCombo(const char* label, const Array<String>& extensions, String& selected)
+    void DrawResourceCombo(const char* label, const Array<String>& extensions, String& selected)
     {
         BeginProperty(label);
 
@@ -350,12 +350,6 @@ namespace ImGui
         }
         
         EndProperty();
-    }
-
-    bool IsOtherWindowFocused()
-    {
-        return ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && 
-          !ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows);
     }
 }
 

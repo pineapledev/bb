@@ -45,9 +45,9 @@ namespace nit
 #ifdef NIT_EDITOR_ENABLED
     void DrawEditorTransform(Transform* transform)
     {
-        ImGui::DragVector3("position", transform->position);
-        ImGui::DragVector3("rotation", transform->rotation);
-        ImGui::DragVector3("scale", transform->scale);
+        ImGui::DrawDragVector3("position", transform->position);
+        ImGui::DrawDragVector3("rotation", transform->rotation);
+        ImGui::DrawDragVector3("scale", transform->scale);
     }
 #endif
     
@@ -120,7 +120,7 @@ namespace nit
 #ifdef NIT_EDITOR_ENABLED
     void DrawEditorName(Name* name)
     {
-        ImGui::InputText("data", name->data);
+        ImGui::DrawInputText("data", name->data);
         ImGui::Spacing();
     }
 #endif
@@ -191,7 +191,7 @@ namespace nit
 #ifdef NIT_EDITOR_ENABLED
     void DrawEditorUUID(UUID* uuid)
     {
-        ImGui::Text("data", "%llu", uuid->data);
+        ImGui::DrawText("data", "%llu", uuid->data);
         ImGui::Spacing();
     }
 #endif
@@ -231,12 +231,12 @@ namespace nit
 #ifdef NIT_EDITOR_ENABLED
     void DrawEditorCamera(Camera* camera)
     {
-        ImGui::EnumCombo("projection", camera->projection);
-        ImGui::DragF32("aspect", camera->aspect);
-        ImGui::DragF32("fov",    camera->fov);
-        ImGui::DragF32("near", camera->near_clip);
-        ImGui::DragF32("far",    camera->far_clip);
-        ImGui::DragF32("size",   camera->size);
+        ImGui::DrawEnumCombo("projection", camera->projection);
+        ImGui::DrawDragF32("aspect", camera->aspect);
+        ImGui::DrawDragF32("fov",    camera->fov);
+        ImGui::DrawDragF32("near", camera->near_clip);
+        ImGui::DrawDragF32("far",    camera->far_clip);
+        ImGui::DrawDragF32("size",   camera->size);
     }
 #endif
     
@@ -313,12 +313,12 @@ namespace nit
 #ifdef NIT_EDITOR_ENABLED
     void DrawEditorText(Text* text)
     {
-        ImGui::AssetCombo("font", GetType<Font>(), &text->font);
-        ImGui::InputText("text", text->text);
-        ImGui::Bool("visible", text->visible);
-        ImGui::ColorPalette("tint", text->tint);
-        ImGui::DragF32("spacing", text->spacing);
-        ImGui::DragF32("size", text->size);
+        ImGui::DrawAssetCombo("font", GetType<Font>(), &text->font);
+        ImGui::DrawInputText("text", text->text);
+        ImGui::DrawBool("visible", text->visible);
+        ImGui::DrawColorPalette("tint", text->tint);
+        ImGui::DrawDragF32("spacing", text->spacing);
+        ImGui::DrawDragF32("size", text->size);
     }
 #endif
     
@@ -363,9 +363,9 @@ namespace nit
 #ifdef NIT_EDITOR_ENABLED
     void DrawEditorSprite(Sprite* sprite)
     {
-        ImGui::AssetCombo("texture", GetType<Texture2D>(), &sprite->texture);
+        ImGui::DrawAssetCombo("texture", GetType<Texture2D>(), &sprite->texture);
         
-        ImGui::InputText("sub_texture", sprite->sub_texture);
+        ImGui::DrawInputText("sub_texture", sprite->sub_texture);
 
         if (IsAssetValid(sprite->texture))
         {
@@ -376,13 +376,13 @@ namespace nit
             sprite->sub_texture_index = -1;
         }
         
-        ImGui::Bool("visible", sprite->visible);
-        ImGui::ColorPalette("tint", sprite->tint);
-        ImGui::DragVector2("size", sprite->size);
-        ImGui::Bool("flip_x", sprite->flip_x);
-        ImGui::Bool("flip_y", sprite->flip_y);
-        ImGui::DragVector2("tiling_factor", sprite->tiling_factor);
-        ImGui::Bool("keep_aspect", sprite->keep_aspect);
+        ImGui::DrawBool("visible", sprite->visible);
+        ImGui::DrawColorPalette("tint", sprite->tint);
+        ImGui::DrawDragVector2("size", sprite->size);
+        ImGui::DrawBool("flip_x", sprite->flip_x);
+        ImGui::DrawBool("flip_y", sprite->flip_y);
+        ImGui::DrawDragVector2("tiling_factor", sprite->tiling_factor);
+        ImGui::DrawBool("keep_aspect", sprite->keep_aspect);
     }
 #endif
 
@@ -439,11 +439,11 @@ namespace nit
 #ifdef NIT_EDITOR_ENABLED
     void DrawEditorCircle(Circle* circle)
     {
-        ImGui::Bool("visible", circle->visible);
-        ImGui::ColorPalette("tint", circle->tint);
-        ImGui::DragF32("radius", circle->radius, 0.01f);
-        ImGui::DragF32("thickness", circle->thickness, 0.01f);
-        ImGui::DragF32("fade", circle->fade, 0.01f);
+        ImGui::DrawBool("visible", circle->visible);
+        ImGui::DrawColorPalette("tint", circle->tint);
+        ImGui::DrawDragF32("radius", circle->radius, 0.01f);
+        ImGui::DrawDragF32("thickness", circle->thickness, 0.01f);
+        ImGui::DrawDragF32("fade", circle->fade, 0.01f);
     }
 #endif
 
@@ -480,11 +480,11 @@ namespace nit
 #ifdef NIT_EDITOR_ENABLED
     void DrawEditorLine(Line2D* line)
     {
-        ImGui::Bool("visible", line->visible);
-        ImGui::ColorPalette("tint", line->tint);
-        ImGui::DragVector2("start", line->start);
-        ImGui::DragVector2("end", line->end);
-        ImGui::DragF32("thickness", line->thickness, 0.01f);
+        ImGui::DrawBool("visible", line->visible);
+        ImGui::DrawColorPalette("tint", line->tint);
+        ImGui::DrawDragVector2("start", line->start);
+        ImGui::DrawDragVector2("end", line->end);
+        ImGui::DrawDragF32("thickness", line->thickness, 0.01f);
     }
 #endif
 
