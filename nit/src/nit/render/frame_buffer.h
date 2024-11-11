@@ -29,17 +29,17 @@ namespace nit
         u32                             depth_attachment_id  = 0;
     };
 
-    void LoadFrameBuffer(FrameBuffer* framebuffer);
+    void load_frame_buffer(FrameBuffer* framebuffer);
     
-    void FreeFrameBuffer(FrameBuffer* framebuffer);
+    void free_frame_buffer(FrameBuffer* framebuffer);
     
-    void ResizeFrameBuffer(FrameBuffer* framebuffer, u32 new_width, u32 new_height);
+    void resize_frame_buffer(FrameBuffer* framebuffer, u32 new_width, u32 new_height);
     
-    i32  ReadFrameBufferPixel(const FrameBuffer* framebuffer, u32 attachment_index, i32 x, i32 y);
+    i32  read_frame_buffer_pixel(const FrameBuffer* framebuffer, u32 attachment_index, i32 x, i32 y);
     
-    void ClearAttachment(const FrameBuffer* framebuffer, u32 attachment_index, i32 value);
+    void clear_attachment(const FrameBuffer* framebuffer, u32 attachment_index, i32 value);
     
-    void BindFrameBuffer(const FrameBuffer* framebuffer);
+    void bind_frame_buffer(const FrameBuffer* framebuffer);
     
-    void UnbindFrameBuffer();
+    void unbind_frame_buffer();
 }

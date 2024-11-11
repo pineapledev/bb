@@ -111,7 +111,7 @@ namespace nit::FnDrawSystem
 
             if (is_valid)
             {
-                sprite.sub_texture_index = FindIndexOfSubTexture2D(get_asset_data<Texture2D>(asset), sprite.sub_texture);
+                sprite.sub_texture_index = find_index_of_sub_texture_2d(get_asset_data<Texture2D>(asset), sprite.sub_texture);
             }
             else
             {
@@ -157,7 +157,7 @@ namespace nit::FnDrawSystem
     
     void Draw()
     {
-        ClearScreen();
+        clear_screen();
         
         Entity main_camera = GetMainCamera();
 
@@ -169,13 +169,13 @@ namespace nit::FnDrawSystem
 #ifdef NIT_EDITOR_ENABLED
         if (engine::get_instance()->editor.enabled && engine::get_instance()->editor.show_viewport)
         {
-            ClearAttachment(&engine::get_instance()->editor.frame_buffer, 1, -1);
+            clear_attachment(&engine::get_instance()->editor.frame_buffer, 1, -1);
             width  = engine::get_instance()->editor.frame_buffer.width;
             height = engine::get_instance()->editor.frame_buffer.height;
         }
 #endif
 
-        SetViewport(0, 0, width, height);
+        set_viewport(0, 0, width, height);
         
         camera.aspect = (f32) width / (f32) height;   
         
@@ -184,9 +184,9 @@ namespace nit::FnDrawSystem
             return;
         }
 
-        SetDepthTestEnabled(camera.projection == CameraProjection::Perspective);
+        set_depth_test_enabled(camera.projection == CameraProjection::Perspective);
         
-        BeginScene2D(CalculateProjectionViewMatrix(camera, GetComponent<Transform>(main_camera)));
+        begin_scene_2d(CalculateProjectionViewMatrix(camera, GetComponent<Transform>(main_camera)));
         {
             for (Entity entity : GetEntityGroup<Sprite, Transform>().entities)
             {
@@ -218,7 +218,7 @@ namespace nit::FnDrawSystem
                         const SubTexture2D& sub_texture = texture_data->sub_textures[sprite.sub_texture_index];
                         size = sub_texture.size;
                         
-                        FillQuadVertexUVs(
+                        fill_quad_vertex_u_vs(
                               vertex_uvs
                             , texture_data->size
                             , sub_texture.size
@@ -231,7 +231,7 @@ namespace nit::FnDrawSystem
                     {
                         vertex_uvs = DEFAULT_VERTEX_U_VS_2D;
                         
-                        FillQuadVertexUVs(
+                        fill_quad_vertex_u_vs(
                           vertex_uvs
                         , sprite.flip_x
                         , sprite.flip_y
@@ -240,23 +240,23 @@ namespace nit::FnDrawSystem
 
                     if (sprite.keep_aspect)
                     {
-                        FillQuadVertexPositions(size , vertex_positions);
+                        fill_quad_vertex_positions(size , vertex_positions);
                     }
                     else
                     {
                         vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
                     }
                     
-                    TransformVertexPositions(vertex_positions, ToMatrix4(transform));
+                    transform_vertex_positions(vertex_positions, ToMatrix4(transform));
                 }
                 else
                 {
                     vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
-                    TransformVertexPositions(vertex_positions, ToMatrix4(transform));
+                    transform_vertex_positions(vertex_positions, ToMatrix4(transform));
                 }
                 
-                FillVertexColors(vertex_colors, sprite.tint);
-                DrawQuad(texture_data, vertex_positions, vertex_uvs, vertex_colors, (i32) entity);
+                fill_vertex_colors(vertex_colors, sprite.tint);
+                draw_quad(texture_data, vertex_positions, vertex_uvs, vertex_colors, (i32) entity);
             }
 
             for (Entity entity : GetEntityGroup<Line2D, Transform>().entities)
@@ -269,10 +269,10 @@ namespace nit::FnDrawSystem
                     continue;
                 }
                 
-                FillLine2DVertexPositions(vertex_positions, line.start, line.end, line.thickness);
-                TransformVertexPositions(vertex_positions, ToMatrix4(transform));
-                FillVertexColors(vertex_colors, line.tint);
-                DrawLine2D(vertex_positions, vertex_colors, (i32) entity);
+                fill_line_2d_vertex_positions(vertex_positions, line.start, line.end, line.thickness);
+                transform_vertex_positions(vertex_positions, ToMatrix4(transform));
+                fill_vertex_colors(vertex_colors, line.tint);
+                draw_line_2d(vertex_positions, vertex_colors, (i32) entity);
             }
 
             
@@ -292,7 +292,7 @@ namespace nit::FnDrawSystem
                     continue;
                 }
                 
-                DrawText(
+                draw_text(
                       font_data
                     , text.text
                     , ToMatrix4(transform)
@@ -313,12 +313,12 @@ namespace nit::FnDrawSystem
                     continue;
                 }
                 
-                FillCircleVertexPositions(vertex_positions, circle.radius);
-                TransformVertexPositions(vertex_positions, ToMatrix4(transform));
-                FillVertexColors(vertex_colors, circle.tint);
-                DrawCircle(vertex_positions, vertex_colors, circle.thickness, circle.fade, (i32) entity);
+                fill_circle_vertex_positions(vertex_positions, circle.radius);
+                transform_vertex_positions(vertex_positions, ToMatrix4(transform));
+                fill_vertex_colors(vertex_colors, circle.tint);
+                draw_circle(vertex_positions, vertex_colors, circle.thickness, circle.fade, (i32) entity);
             }
         }
-        EndScene2D();
+        end_scene_2d();
     }
 }

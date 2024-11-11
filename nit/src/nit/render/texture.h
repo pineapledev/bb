@@ -47,17 +47,17 @@ namespace nit
         SubTexture2D* sub_textures      = nullptr;
     };
 
-    void RegisterTexture2DAsset();
-    i32  FindIndexOfSubTexture2D(const Texture2D* texture, const String& sub_texture_name);
-    void SerializeTexture2D(const Texture2D* texture, YAML::Emitter& emitter);
-    void DeserializeTexture2D(Texture2D* texture, const YAML::Node& node);
+    void register_texture_2d_asset();
+    i32  find_index_of_sub_texture_2d(const Texture2D* texture, const String& sub_texture_name);
+    void serialize_texture_2d(const Texture2D* texture, YAML::Emitter& emitter);
+    void deserialize_texture_2d(Texture2D* texture, const YAML::Node& node);
 #ifdef NIT_EDITOR_ENABLED
-    void DrawEditorTexture2D(Texture2D* texture);
+    void draw_editor_texture_2d(Texture2D* texture);
 #endif
-    void LoadTexture2D(Texture2D* texture);
-    void UploadToGPU(Texture2D* texture);
-    void FreeTexture2D(Texture2D* texture);
-    void BindTexture2D(const Texture2D* texture, u32 slot = 0);
-    bool IsTexture2DValid(const Texture2D* texture);
-    void LoadTexture2DAsSpriteSheet(Texture2D* texture, const String& sprite_sheet_name, const String& source_path, const String& dest_path, i32 max_width = 5034);
+    void load_texture_2d(Texture2D* texture);
+    void upload_to_gpu(Texture2D* texture);
+    void free_texture_2d(Texture2D* texture);
+    void bind_texture_2d(const Texture2D* texture, u32 slot = 0);
+    bool is_texture_2d_valid(const Texture2D* texture);
+    void load_texture_2d_as_sprite_sheet(Texture2D* texture, const String& sprite_sheet_name, const String& source_path, const String& dest_path, i32 max_width = 5034);
 }

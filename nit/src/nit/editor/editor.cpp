@@ -122,7 +122,7 @@ namespace nit::editor
             FrameBufferTextureFormat::Depth
         };
 
-        LoadFrameBuffer(&editor->frame_buffer);
+        load_frame_buffer(&editor->frame_buffer);
 
         editor->icons = find_asset_by_name("editor_icons");
         
@@ -242,7 +242,7 @@ namespace nit::editor
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0, 0});
             ImGui::Begin("Viewport", &editor->show_viewport);
             {
-                BindFrameBuffer(&editor->frame_buffer);
+                bind_frame_buffer(&editor->frame_buffer);
 
                 const ImVec2 viewport_offset = ImGui::GetCursorPos();
                 const ImVec2 panel_size = ImGui::GetContentRegionAvail();
@@ -251,8 +251,8 @@ namespace nit::editor
                 {
                     editor->viewport_size = viewport_size;
                     // set draw system screen size
-                    ResizeFrameBuffer(&editor->frame_buffer, (u32)viewport_size.x, (u32)viewport_size.y);
-                    BindFrameBuffer(&editor->frame_buffer);
+                    resize_frame_buffer(&editor->frame_buffer, (u32)viewport_size.x, (u32)viewport_size.y);
+                    bind_frame_buffer(&editor->frame_buffer);
                 }
 
                 const ImTextureID fb_id = reinterpret_cast<ImTextureID>(static_cast<u64>(editor->frame_buffer.color_attachment_ids[0]));
@@ -285,7 +285,7 @@ namespace nit::editor
                     if (mouse_x >= 0 && mouse_y >= 0 && mouse_x < (i32)editor->viewport_size.x && mouse_y < (i32)editor
                         ->viewport_size.y)
                     {
-                        i32 entity_id = ReadFrameBufferPixel(&editor->frame_buffer, 1, mouse_x, mouse_y);
+                        i32 entity_id = read_frame_buffer_pixel(&editor->frame_buffer, 1, mouse_x, mouse_y);
                         Entity selected = (Entity) entity_id;
                         bool valid_entity = IsEntityValid(selected);
                         editor->selection = valid_entity ? Editor::Selection::Entity : Editor::Selection::None;
@@ -371,7 +371,7 @@ namespace nit::editor
                     AssetHandle texture = create_asset<Texture2D>(name, relative_dest.string());
                     Texture2D* texture_2d = get_asset_data<Texture2D>(texture);
                     
-                    LoadTexture2DAsSpriteSheet(texture_2d, name, relative_source.string(), relative_dest.string());
+                    load_texture_2d_as_sprite_sheet(texture_2d, name, relative_source.string(), relative_dest.string());
                     if (texture_2d->sub_texture_count > 0 && !texture_2d->image_path.empty())
                     {
                         serialize_asset_to_file(texture);
@@ -653,7 +653,7 @@ namespace nit::editor
                         Texture2D* icons = get_asset_data<Texture2D>(editor->icons);
                         ImTextureID icons_id = reinterpret_cast<ImTextureID>(static_cast<u64>(icons->id));
                         V2Verts2D verts_2d;
-                        FillQuadVertexUVs(verts_2d, icons->size, icons->sub_textures[(u8) icon].size, icons->sub_textures[(u8) icon].location);
+                        fill_quad_vertex_u_vs(verts_2d, icons->size, icons->sub_textures[(u8) icon].size, icons->sub_textures[(u8) icon].location);
                         Vector2 bottom_left = verts_2d[0];
                         Vector2 top_right   = verts_2d[2];
                         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
@@ -820,7 +820,7 @@ namespace nit::editor
 
     void EndDraw()
     {
-        UnbindFrameBuffer();
+        unbind_frame_buffer();
 
         ImGuiWindowFlags settings_flags =
             ImGuiWindowFlags_NoDecoration

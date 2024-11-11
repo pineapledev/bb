@@ -77,7 +77,7 @@ namespace nit
         return 0;
     }
 
-    void LoadFrameBuffer(FrameBuffer* framebuffer)
+    void load_frame_buffer(FrameBuffer* framebuffer)
     {
         NIT_CHECK(framebuffer);
         if (framebuffer->frame_buffer_id)
@@ -150,7 +150,7 @@ namespace nit
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    void FreeFrameBuffer(FrameBuffer* framebuffer)
+    void free_frame_buffer(FrameBuffer* framebuffer)
     {
         NIT_CHECK(framebuffer);
         glDeleteFramebuffers(1, &framebuffer->frame_buffer_id);
@@ -164,7 +164,7 @@ namespace nit
         framebuffer->depth_attachment_id = 0;
     }
 
-    void ResizeFrameBuffer(FrameBuffer* framebuffer, u32 new_width, u32 new_height)
+    void resize_frame_buffer(FrameBuffer* framebuffer, u32 new_width, u32 new_height)
     {
         NIT_CHECK(framebuffer);
         if (new_width == 0 || new_height == 0 || new_width > MAX_FRAMEBUFFER_SIZE || new_height > MAX_FRAMEBUFFER_SIZE)
@@ -176,10 +176,10 @@ namespace nit
         framebuffer->width = new_width;
         framebuffer->height = new_height;
 
-        LoadFrameBuffer(framebuffer);
+        load_frame_buffer(framebuffer);
     }
 
-    i32 ReadFrameBufferPixel(const FrameBuffer* framebuffer, u32 attachment_index, i32 x, i32 y)
+    i32 read_frame_buffer_pixel(const FrameBuffer* framebuffer, u32 attachment_index, i32 x, i32 y)
     {
         NIT_CHECK(framebuffer);
         NIT_CHECK_MSG((attachment_index < framebuffer->color_attachment_ids.size()), "Invalid index!");
@@ -190,7 +190,7 @@ namespace nit
         return pixel_data;
     }
 
-    void ClearAttachment(const FrameBuffer* framebuffer, u32 attachment_index, i32 value)
+    void clear_attachment(const FrameBuffer* framebuffer, u32 attachment_index, i32 value)
     {
         NIT_CHECK(framebuffer);
         NIT_CHECK_MSG((attachment_index < framebuffer->color_attachment_ids.size()), "Invalid index!");
@@ -200,14 +200,14 @@ namespace nit
                         FbTextureFormatToGL(spec), GL_INT, &value);
     }
 
-    void BindFrameBuffer(const FrameBuffer* framebuffer)
+    void bind_frame_buffer(const FrameBuffer* framebuffer)
     {
         NIT_CHECK(framebuffer);
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer->frame_buffer_id);
         glViewport(0, 0, framebuffer->width, framebuffer->height);
     }
 
-    void UnbindFrameBuffer()
+    void unbind_frame_buffer()
     {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }

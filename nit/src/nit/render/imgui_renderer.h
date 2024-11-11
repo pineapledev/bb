@@ -20,10 +20,10 @@ namespace nit
         const char* dockspace_id = "Evi DockSpace";
     };
 
-    void SetImGuiRendererInstance(ImGuiRenderer* im_gui_renderer_instance);
-    void InitImGui(void* window_handler);
-    void BeginImGui();
-    void EndImGui(float window_width, float window_height);
+    void set_im_gui_renderer_instance(ImGuiRenderer* im_gui_renderer_instance);
+    void init_im_gui(void* window_handler);
+    void begin_im_gui();
+    void end_im_gui(float window_width, float window_height);
 }
 
 #endif

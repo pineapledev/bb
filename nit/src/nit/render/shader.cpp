@@ -7,7 +7,7 @@
 namespace nit
 {
     Constant::Constant(const String& name, ShaderDataType type, i32 size)
-        : data(CreateFromShaderDataType(type))
+        : data(create_from_shader_data_type(type))
           , name(name)
           , type(type)
           , size(size)
@@ -16,7 +16,7 @@ namespace nit
         {
             return;
         }
-        memset(data, 0, GetSizeOfShaderDataType(type));
+        memset(data, 0, get_size_of_shader_data_type(type));
     }
 
     Constant::Constant(Constant&& other) noexcept
@@ -199,7 +199,7 @@ namespace nit
             i32 lenght;
             i32 size;
             glGetActiveUniform(id, i, buf_size, &lenght, &size, &type, name);
-            auto constant = CreateUniquePtr<Constant>(name, ShaderDataTypeFromOpenGL(type), size);
+            auto constant = CreateUniquePtr<Constant>(name, shader_data_type_from_open_gl(type), size);
             if (!constant) { continue; }
             constants.push_back(std::move(constant));
         }

@@ -60,8 +60,8 @@ namespace nit::engine
         
         set_asset_registry_instance(&engine::get_instance()->asset_registry);
         
-        RegisterTexture2DAsset();
-        RegisterFontAsset();
+        register_texture_2d_asset();
+        register_font_asset();
         RegisterSceneAsset();
         audio::clip::register_type();
         
@@ -72,15 +72,15 @@ namespace nit::engine
         
         init_asset_registry();
 
-        SetRenderObjectsInstance(&engine::get_instance()->render_objects);
-        InitRenderObjects();
+        set_render_objects_instance(&engine::get_instance()->render_objects);
+        init_render_objects();
         
-        SetRenderer2DInstance(&engine::get_instance()->renderer_2d);
-        InitRenderer2D();
+        set_renderer_2d_instance(&engine::get_instance()->renderer_2d);
+        init_renderer_2d();
 
 #ifdef NIT_IMGUI_ENABLED
-        SetImGuiRendererInstance(&engine::get_instance()->im_gui_renderer);
-        InitImGui(engine::get_instance()->window.handler);
+        set_im_gui_renderer_instance(&engine::get_instance()->im_gui_renderer);
+        init_im_gui(engine::get_instance()->window.handler);
 #endif
 
 #ifdef NIT_EDITOR_ENABLED
@@ -116,10 +116,10 @@ namespace nit::engine
                 engine::get_instance()->acc_fixed_delta -= engine::get_instance()->fixed_delta_seconds;
             }
 
-            ClearScreen();
+            clear_screen();
             
 #ifdef NIT_IMGUI_ENABLED
-            BeginImGui();
+            begin_im_gui();
 #endif
             
 #ifdef NIT_EDITOR_ENABLED
@@ -133,7 +133,7 @@ namespace nit::engine
 #ifdef NIT_IMGUI_ENABLED
             InvokeSystemCallbacks(Stage::DrawImGUI);
             auto [window_width, window_height] = window::GetSize();
-            EndImGui(window_width, window_height);
+            end_im_gui(window_width, window_height);
 #endif
             
             window::Update();

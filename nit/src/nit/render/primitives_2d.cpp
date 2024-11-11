@@ -4,7 +4,7 @@
 
 namespace nit
 {
-    void FillVertexColors(V4Verts2D& vertex_colors, const Vector4& color)
+    void fill_vertex_colors(V4Verts2D& vertex_colors, const Vector4& color)
     {
         vertex_colors = {
             Vector4 {color.x, color.y, color.z, color.w }, // bottom-left
@@ -14,7 +14,7 @@ namespace nit
         };
     }
 
-    void TransformVertexPositions(V4Verts2D& vertex_positions, const Matrix4& transform)
+    void transform_vertex_positions(V4Verts2D& vertex_positions, const Matrix4& transform)
     {
         vertex_positions[0] = transform * vertex_positions[0];
         vertex_positions[1] = transform * vertex_positions[1];
@@ -22,7 +22,7 @@ namespace nit
         vertex_positions[3] = transform * vertex_positions[3];
     }
 
-    void FillQuadVertexPositions(const Vector2& size, V4Verts2D& vertex_positions)
+    void fill_quad_vertex_positions(const Vector2& size, V4Verts2D& vertex_positions)
     {
         if (Abs(size.x - size.y) <= F32_EPSILON)
         {
@@ -68,7 +68,7 @@ namespace nit
         }
     }
     
-    void FillQuadVertexUVs(V2Verts2D& vertex_uvs, bool flip_x, bool flip_y, const Vector2& tiling_factor)
+    void fill_quad_vertex_u_vs(V2Verts2D& vertex_uvs, bool flip_x, bool flip_y, const Vector2& tiling_factor)
     {
         FlipQuadVertexUVs(vertex_uvs, flip_x, flip_y);
 
@@ -79,7 +79,7 @@ namespace nit
         }
     }
 
-    void FillQuadVertexUVs(
+    void fill_quad_vertex_u_vs(
           V2Verts2D&     vertex_uvs
         , const Vector2& texture_size
         , const Vector2& sub_texture_size
@@ -102,10 +102,10 @@ namespace nit
         vertex_uvs[2] = { top_right.x,   bottom_left.y }; // top-right
         vertex_uvs[3] = { bottom_left.x, bottom_left.y }; // top-left
 
-        FillQuadVertexUVs(vertex_uvs, flip_x, flip_y, tiling_factor);
+        fill_quad_vertex_u_vs(vertex_uvs, flip_x, flip_y, tiling_factor);
     }
 
-    void FillCircleVertexPositions(V4Verts2D& vertex_positions, f32 radius)
+    void fill_circle_vertex_positions(V4Verts2D& vertex_positions, f32 radius)
     {
         radius *= 2.f;
         const Matrix4 scale_mat = Scale(Matrix4(), {radius, radius, 1.f});
@@ -116,7 +116,7 @@ namespace nit
         vertex_positions[3] = scale_mat * DEFAULT_VERTEX_POSITIONS_2D[3];
     }
 
-    void FillLine2DVertexPositions(V4Verts2D& vertex_positions, const Vector2& start, const Vector2& end, f32 thickness)
+    void fill_line_2d_vertex_positions(V4Verts2D& vertex_positions, const Vector2& start, const Vector2& end, f32 thickness)
     {
         const Vector3 v3_start  = { start.x, start.y };
         const Vector3 v3_end    = { end.x, end.y };
@@ -134,10 +134,10 @@ namespace nit
         vertex_positions[3] = {v_pos_3.x, v_pos_3.y, v_pos_3.z, 1 };
     }
 
-    void FillCharVertexData(const Matrix4& transform, V4Verts2D& vertex_positions, V2Verts2D& vertex_uvs, const Font* font, f32 size, Vector2& offset, f32 spacing, char c)
+    void fill_char_vertex_data(const Matrix4& transform, V4Verts2D& vertex_positions, V2Verts2D& vertex_uvs, const Font* font, f32 size, Vector2& offset, f32 spacing, char c)
     {
         CharData d;
-        GetChar(font, c, d);
+        get_char(font, c, d);
         
         static constexpr f32 SCALE = 0.002f;
 
@@ -154,7 +154,7 @@ namespace nit
         vertex_uvs[2] = {d.s1, d.t0};
         vertex_uvs[3] = {d.s0, d.t0};
 
-        TransformVertexPositions(vertex_positions, transform_offset);
+        transform_vertex_positions(vertex_positions, transform_offset);
 
         offset.x += d.x_pos * SCALE * spacing * size;
         offset.y += d.y_pos * SCALE * size;

@@ -6,7 +6,7 @@
 
 namespace nit
 {
-    ShaderDataType ShaderDataTypeFromOpenGL(i32 type)
+    ShaderDataType shader_data_type_from_open_gl(i32 type)
     {
         switch (type)
         {
@@ -26,7 +26,7 @@ namespace nit
         }
     }
 
-    i32 ShaderDataTypeToOpenGL(ShaderDataType type)
+    i32 shader_data_type_to_open_gl(ShaderDataType type)
     {
         switch (type)
         {
@@ -47,7 +47,7 @@ namespace nit
         }
     }
 
-    u32 GetSizeOfShaderDataType(ShaderDataType type)
+    u32 get_size_of_shader_data_type(ShaderDataType type)
     {
         switch (type)
         {
@@ -69,7 +69,7 @@ namespace nit
         }
     }
 
-    u32 GetComponentCountFromShaderDataType(ShaderDataType type)
+    u32 get_component_count_from_shader_data_type(ShaderDataType type)
     {
         switch (type)
         {
@@ -90,7 +90,7 @@ namespace nit
         }
     }
 
-    void* CreateFromShaderDataType(const ShaderDataType type)
+    void* create_from_shader_data_type(const ShaderDataType type)
     {
         switch (type)
         {
@@ -111,22 +111,22 @@ namespace nit
         }
     }
     
-    void SetViewport(u32 x, u32 y, u32 width, u32 height)
+    void set_viewport(u32 x, u32 y, u32 width, u32 height)
     {
         glViewport(x, y, width, height);
     }
 
-    void SetClearColor(const Vector4& clear_color)
+    void set_clear_color(const Vector4& clear_color)
     {
         glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
     }
 
-    void ClearScreen()
+    void clear_screen()
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    void SetBlendingEnabled(bool enabled)
+    void set_blending_enabled(bool enabled)
     {
         if (enabled)
         {
@@ -138,7 +138,7 @@ namespace nit
         }
     }
 
-    void SetBlendingMode(BlendingMode blending_mode)
+    void set_blending_mode(BlendingMode blending_mode)
     {
         switch (blending_mode)
         {
@@ -157,21 +157,21 @@ namespace nit
         }
     }
 
-    void DrawElements(u32 vao, u32 element_count)
+    void draw_elements(u32 vao, u32 element_count)
     {
-        BindVertexArray(vao);
+        bind_vertex_array(vao);
         glDrawElements(GL_TRIANGLES, element_count, GL_UNSIGNED_INT, nullptr);
-        UnbindVertexArray();
+        unbind_vertex_array();
     }
 
-    void DrawArrays(u32 vao, u32 element_count)
+    void draw_arrays(u32 vao, u32 element_count)
     {
-        BindVertexArray(vao);
+        bind_vertex_array(vao);
         glDrawArrays(GL_TRIANGLES, 0, element_count);
-        UnbindVertexArray();
+        unbind_vertex_array();
     }
 
-    void SetDepthTestEnabled(bool enabled)
+    void set_depth_test_enabled(bool enabled)
     {
         if (enabled)
         {

@@ -153,7 +153,7 @@ namespace nit
                 shader->SetConstantInt(constant_name, *int_data);
                 break;
             case ShaderDataType::Sampler2D:
-                shader->SetConstantSampler2D(constant_name, int_data, GetSizeOfShaderDataType(constant_type));
+                shader->SetConstantSampler2D(constant_name, int_data, get_size_of_shader_data_type(constant_type));
                 break;
             case ShaderDataType::Float:
                 shader->SetConstantFloat(constant_name, *float_data);

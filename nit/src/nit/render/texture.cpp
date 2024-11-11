@@ -70,7 +70,7 @@ namespace nit
         emitter << YAML::Key << "location" << YAML::Value << sub_texture->location;
     }
 
-    void RegisterTexture2DAsset()
+    void register_texture_2d_asset()
     {
         RegisterEnumType<MinFilter>();
         RegisterEnumValue<MinFilter>("Linear", MinFilter::Linear);
@@ -89,17 +89,17 @@ namespace nit
         RegisterEnumValue<TextureCoordinate>("V",TextureCoordinate::V);
         
         register_asset_type<Texture2D>({
-              LoadTexture2D
-            , FreeTexture2D
-            , SerializeTexture2D
-            , DeserializeTexture2D
+              load_texture_2d
+            , free_texture_2d
+            , serialize_texture_2d
+            , deserialize_texture_2d
 #ifdef NIT_EDITOR_ENABLED
-            , DrawEditorTexture2D
+            , draw_editor_texture_2d
 #endif
         });
     }
 
-    i32 FindIndexOfSubTexture2D(const Texture2D* texture, const String& sub_texture_name)
+    i32 find_index_of_sub_texture_2d(const Texture2D* texture, const String& sub_texture_name)
     {
         NIT_CHECK(texture);
         
@@ -113,7 +113,7 @@ namespace nit
         return -1;
     }
 
-    void SerializeTexture2D(const Texture2D* texture, YAML::Emitter& emitter)
+    void serialize_texture_2d(const Texture2D* texture, YAML::Emitter& emitter)
     {
         using namespace YAML;
         
@@ -138,7 +138,7 @@ namespace nit
         }
     }
 
-    void DeserializeTexture2D(Texture2D* texture, const YAML::Node& node)
+    void deserialize_texture_2d(Texture2D* texture, const YAML::Node& node)
     {
         texture->image_path        = node["image_path"]                                     .as<String>();
         texture->mag_filter        = GetEnumValueFromString<MagFilter> (node["mag_filter"]  .as<String>());
@@ -163,7 +163,7 @@ namespace nit
     }
 
 #ifdef NIT_EDITOR_ENABLED
-    void DrawEditorTexture2D(Texture2D* texture)
+    void draw_editor_texture_2d(Texture2D* texture)
     {
         editor::DrawResourceCombo("resource", {".jpg", ".png"},  texture->image_path);
         editor::DrawEnumCombo("mag filter", texture->mag_filter);
@@ -202,7 +202,7 @@ namespace nit
         texture->pixel_data = nullptr;
     }
 
-    void LoadTexture2D(Texture2D* texture)
+    void load_texture_2d(Texture2D* texture)
     {
         if (!texture->image_path.empty())
         {
@@ -222,10 +222,10 @@ namespace nit
             texture->channels = static_cast<u32>(channels);
         }
 
-        UploadToGPU(texture);
+        upload_to_gpu(texture);
     }
 
-    void UploadToGPU(Texture2D* texture)
+    void upload_to_gpu(Texture2D* texture)
     {
         NIT_CHECK(texture->id == 0);
         
@@ -258,21 +258,21 @@ namespace nit
             GL_UNSIGNED_BYTE, texture->pixel_data);
     }
 
-    void FreeTexture2D(Texture2D* texture)
+    void free_texture_2d(Texture2D* texture)
     {
         glDeleteTextures(1, &texture->id);
         texture->id = 0;
         FreeTextureImage(texture);
     }
 
-    bool IsTexture2DValid(const Texture2D* texture)
+    bool is_texture_2d_valid(const Texture2D* texture)
     {
         return texture != nullptr && texture->id != 0;
     }
     
-    void BindTexture2D(const Texture2D* texture, u32 slot)
+    void bind_texture_2d(const Texture2D* texture, u32 slot)
     {
-        NIT_CHECK(IsTexture2DValid(texture));
+        NIT_CHECK(is_texture_2d_valid(texture));
         glBindTextureUnit(slot, texture->id);
     }
 
@@ -283,7 +283,7 @@ namespace nit
         String filename;
     };
     
-    void LoadTexture2DAsSpriteSheet(Texture2D* texture, const String& sprite_sheet_name, const String& source_path, const String& dest_path, i32 max_width)
+    void load_texture_2d_as_sprite_sheet(Texture2D* texture, const String& sprite_sheet_name, const String& source_path, const String& dest_path, i32 max_width)
     {
         NIT_CHECK(texture);
         Array<Image> images;
@@ -397,7 +397,7 @@ namespace nit
         texture->pixel_data = nullptr;
 
         texture->image_path = final_path;
-        LoadTexture2D(texture);
+        load_texture_2d(texture);
     }
 }
 

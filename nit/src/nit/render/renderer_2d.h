@@ -60,23 +60,23 @@ namespace nit
         i32 entity_id    = -1;
     };
 
-    void SetRenderer2DInstance(struct Renderer2D* renderer_2d_instance);
+    void set_renderer_2d_instance(struct Renderer2D* renderer_2d_instance);
     
-    void InitRenderer2D(const Renderer2DCfg& cfg = {});
+    void init_renderer_2d(const Renderer2DCfg& cfg = {});
     
-    void StartBatch();
+    void start_batch();
     
-    void Flush();
+    void flush();
     
-    void NextBatch();
+    void next_batch();
     
-    void BeginScene2D(const Matrix4& pv_matrix);
+    void begin_scene_2d(const Matrix4& pv_matrix);
     
-    void PushMaterial2D(const SharedPtr<Material>& material);
+    void push_material_2d(const SharedPtr<Material>& material);
     
-    void PopMaterial2D();
+    void pop_material_2d();
     
-    void DrawQuad(
+    void draw_quad(
           Texture2D*                  texture_2d       = nullptr
         , const V4Verts2D&            vertex_positions = DEFAULT_VERTEX_POSITIONS_2D
         , const V2Verts2D&            vertex_uvs       = DEFAULT_VERTEX_U_VS_2D
@@ -84,7 +84,7 @@ namespace nit
         , i32                         entity_id        = -1
     );                                                  
     
-    void DrawCircle(                                    
+    void draw_circle(                                    
           const V4Verts2D&            vertex_positions  = DEFAULT_VERTEX_POSITIONS_2D
         , const V4Verts2D&            vertex_colors     = DEFAULT_VERTEX_COLORS_2D
         , f32                         thickness         = .05f
@@ -92,13 +92,13 @@ namespace nit
         , i32                         entity_id         = -1
     );                                                  
                                                         
-    void DrawLine2D(                                    
+    void draw_line_2d(                                    
           const V4Verts2D&            vertex_positions  = DEFAULT_VERTEX_POSITIONS_2D
         , const V4Verts2D&            vertex_colors     = DEFAULT_VERTEX_COLORS_2D
         , i32                         entity_id         = -1
     );                                                  
                                                         
-    void DrawChar(                                      
+    void draw_char(                                      
           const Font*                 font             = nullptr
         , const V4Verts2D&            vertex_positions = DEFAULT_VERTEX_POSITIONS_2D
         , const V2Verts2D&            vertex_uvs       = DEFAULT_VERTEX_U_VS_2D
@@ -106,7 +106,7 @@ namespace nit
         , i32                         entity_id        = -1
     );
     
-    void DrawText(
+    void draw_text(
           const Font*            font
         , const String&          text
         , const Matrix4&         transform  = {}
@@ -116,9 +116,9 @@ namespace nit
         , i32                    entity_id  = -1
     );
     
-    void EndScene2D();
+    void end_scene_2d();
     
-    void FinishRenderer2D();
+    void finish_renderer_2d();
 
     struct Renderer2D
     {

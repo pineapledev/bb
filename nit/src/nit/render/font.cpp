@@ -7,28 +7,28 @@
 
 namespace nit
 {
-    void RegisterFontAsset()
+    void register_font_asset()
     {
         register_asset_type<Font>({
-              LoadFont
-            , FreeFont
-            , SerializeFont
-            , DeserializeFont
+              load_font
+            , free_font
+            , serialize_font
+            , deserialize_font
         });
     }
 
-    void SerializeFont(const Font* font, YAML::Emitter& emitter)
+    void serialize_font(const Font* font, YAML::Emitter& emitter)
     {
         emitter << YAML::Key << "font_path" << YAML::Value << font->font_path;
     }
 
-    void DeserializeFont(Font* font, const YAML::Node& node)
+    void deserialize_font(Font* font, const YAML::Node& node)
     {
         font->font_path = node["font_path"].as<String>();
     }
 
     //TODO: All of this is just garbage, pending to refactor. 
-    void LoadFont(Font* font)
+    void load_font(Font* font)
     {
         std::ifstream file_stream("assets/" + font->font_path, std::ifstream::binary);
         
@@ -82,14 +82,14 @@ namespace nit
         font->atlas.size = { WIDTH, HEIGHT };
         font->atlas.channels   = 4;
         
-        LoadTexture2D(&font->atlas);
+        load_texture_2d(&font->atlas);
         
         delete[] pixels_rgb;
         delete[] pixels_alpha;
         delete[] buffer;
     }
 
-    void FreeFont(Font* font)
+    void free_font(Font* font)
     {
         if (font->baked_char_data)
         {
@@ -99,12 +99,12 @@ namespace nit
         }
     }
 
-    bool IsFontValid(const Font* font)
+    bool is_font_valid(const Font* font)
     {
         return font->baked_char_data != nullptr;
     }
 
-    void GetChar(const Font* font, char c, CharData& char_data)
+    void get_char(const Font* font, char c, CharData& char_data)
     {
         const auto* baked_char = static_cast<stbtt_bakedchar*>(font->baked_char_data);
         f32 x_pos(0), y_pos(0);

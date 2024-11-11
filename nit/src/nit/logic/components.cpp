@@ -408,7 +408,7 @@ namespace nit
             return;
         }
 
-        i32 index = FindIndexOfSubTexture2D(get_asset_data<Texture2D>(sprite.texture), sub_texture);
+        i32 index = find_index_of_sub_texture_2d(get_asset_data<Texture2D>(sprite.texture), sub_texture);
         sprite.sub_texture_index = index;
     }
 

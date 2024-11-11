@@ -39,29 +39,29 @@ namespace nit
         f32     size       = 1.f;
     };
 
-    void FillVertexColors(
+    void fill_vertex_colors(
           V4Verts2D&    vertex_colors
         , const Vector4& color
     );
     
-    void TransformVertexPositions(
+    void transform_vertex_positions(
           V4Verts2D&     vertex_positions
         , const Matrix4& transform
     );
 
-    void FillQuadVertexPositions(
+    void fill_quad_vertex_positions(
           const Vector2& size
         , V4Verts2D&     vertex_positions
     );
     
-    void FillQuadVertexUVs(
+    void fill_quad_vertex_u_vs(
           V2Verts2D&     vertex_uvs
         , bool           flip_x
         , bool           flip_y
         , const Vector2& tiling_factor
     );
 
-    void FillQuadVertexUVs(
+    void fill_quad_vertex_u_vs(
           V2Verts2D&     vertex_uvs
         , const Vector2& texture_size
         , const Vector2& sub_texture_size
@@ -71,19 +71,19 @@ namespace nit
         , const Vector2& tiling_factor         = V2_ONE
     );
 
-    void FillCircleVertexPositions(
+    void fill_circle_vertex_positions(
           V4Verts2D&  vertex_positions
         , f32         radius
     );
     
-    void FillLine2DVertexPositions(
+    void fill_line_2d_vertex_positions(
           V4Verts2D&     vertex_positions
         , const Vector2& start
         , const Vector2& end
         , f32            thickness
     );
     
-    void FillCharVertexData(
+    void fill_char_vertex_data(
           const Matrix4&          transform
         , V4Verts2D&              vertex_positions
         , V2Verts2D&              vertex_uvs
