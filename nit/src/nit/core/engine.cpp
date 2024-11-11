@@ -31,7 +31,7 @@ namespace nit::engine
         NIT_LOG_TRACE("Creating application...");
         
         window::set_instance(&engine::get_instance()->window);
-        window::Init();
+        window::init();
         
         InitSystemStack();
         
@@ -92,16 +92,16 @@ namespace nit::engine
         engine::get_instance()->seconds          = 0;
         engine::get_instance()->frame_count      = 0;
         engine::get_instance()->acc_fixed_delta  = 0;
-        engine::get_instance()->last_time = window::GetTime();
+        engine::get_instance()->last_time = window::get_time();
         
         NIT_LOG_TRACE("Application created!");
         
         InvokeSystemCallbacks(Stage::Start, true);
         
-        while(!window::ShouldClose())
+        while(!window::should_close())
         {
             engine::get_instance()->frame_count++;
-            const f64 current_time = window::GetTime();
+            const f64 current_time = window::get_time();
             const f64 time_between_frames = current_time - engine::get_instance()->last_time;
             engine::get_instance()->last_time = current_time;
             engine::get_instance()->seconds += time_between_frames;
@@ -132,11 +132,11 @@ namespace nit::engine
 #endif
 #ifdef NIT_IMGUI_ENABLED
             InvokeSystemCallbacks(Stage::DrawImGUI);
-            auto [window_width, window_height] = window::GetSize();
+            auto [window_width, window_height] = window::get_size();
             end_im_gui(window_width, window_height);
 #endif
             
-            window::Update();
+            window::update();
         }
 
         InvokeSystemCallbacks(Stage::End, true);

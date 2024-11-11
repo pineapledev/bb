@@ -35,28 +35,28 @@ namespace nit
     namespace window
     {
         void        set_instance(Window* window_instance);
-        void        Init(const WindowCfg& cfg = {});
-        void        Finish();
-        void        Close();
-        void        Update();
+        void        init(const WindowCfg& cfg = {});
+        void        finish();
+        void        close();
+        void        update();
         
-        void        SetTitle(const String& new_title);
-        void        SetVSync(bool enabled);
-        void        SetCursorMode(const CursorMode mode);
+        void        set_title(const String& new_title);
+        void        set_v_sync(bool enabled);
+        void        set_cursor_mode(const CursorMode mode);
 
-        bool        ShouldClose();
-        void        RetrieveSize(i32* width, i32* height);
-        Vector2     GetSize();
-        float       GetAspect();
-        void        GetCursorPosition(f64* x, f64* y);
-        Vector2     GetCursorPosition();
-        i32         GetMouseButton(i32 button);
-        bool        IsMouseButtonPressed(MouseButton button);
-        i32         GetKey(i32 key);
-        bool        IsKeyPressed(Key key);
-        const char* GetJoystickName(i32 jid);
-        const u8*   GetJoystickButtons(i32 jid, i32* count);
-        const f32*  GetJoystickAxes(i32 jid, i32* count);
-        f64         GetTime();
+        bool        should_close();
+        void        retrieve_size(i32* width, i32* height);
+        Vector2     get_size();
+        float       get_aspect();
+        void        get_cursor_position(f64* x, f64* y);
+        Vector2     get_cursor_position();
+        i32         get_mouse_button(i32 button);
+        bool        is_mouse_button_pressed(MouseButton button);
+        i32         get_key(i32 key);
+        bool        is_key_pressed(Key key);
+        const char* get_joystick_name(i32 jid);
+        const u8*   get_joystick_buttons(i32 jid, i32* count);
+        const f32*  get_joystick_axes(i32 jid, i32* count);
+        f64         get_time();
     }
 }

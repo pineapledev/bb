@@ -164,7 +164,7 @@ namespace nit::FnDrawSystem
         Camera& camera = GetComponent<Camera>(main_camera);
 
         i32 width, height;
-        window::RetrieveSize(&width, &height);
+        window::retrieve_size(&width, &height);
         
 #ifdef NIT_EDITOR_ENABLED
         if (engine::get_instance()->editor.enabled && engine::get_instance()->editor.show_viewport)

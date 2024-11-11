@@ -111,7 +111,7 @@ namespace nit::editor
         style.Colors[ImGuiCol_FrameBg] = { 0.1f, 0.1f, 0.1f, 1.f };
         style.Colors[ImGuiCol_Button] = { 0.356f, 0.356f, 0.416f, 1.f };
         
-        window::RetrieveSize((i32*)&editor->frame_buffer.width, (i32*)&editor->frame_buffer.height);
+        window::retrieve_size((i32*)&editor->frame_buffer.width, (i32*)&editor->frame_buffer.height);
         
         editor->frame_buffer.color_attachments = {
             FrameBufferTextureFormat::RGBA8,
@@ -191,7 +191,7 @@ namespace nit::editor
             
             // Move
             const bool is_right_mouse_pressed = ImGui::IsMouseDown(ImGuiMouseButton_Right);
-            Vector2 cursor_pos = window::GetCursorPosition();
+            Vector2 cursor_pos = window::get_cursor_position();
             
             Vector2 window_size;
             window_size.x = (f32) engine::get_instance()->editor.frame_buffer.width;
