@@ -7,10 +7,8 @@ namespace nit
     struct AssetHandle;
 }
 
-namespace ImGui
+namespace nit::editor
 {
-    using namespace nit;
-    
     void BeginProperty(const char* label, u32 items = 1);
     void EndProperty();
 
@@ -39,6 +37,8 @@ namespace ImGui
     template<typename T>
     void DrawEnumCombo(const char* label, T& enum_data)
     {
+        using namespace ImGui;
+        
         EnumType* type = GetEnumType<T>();
         String selected = GetStringFromEnumValue<T>(enum_data);
 

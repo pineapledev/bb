@@ -6,9 +6,9 @@
 #include <imgui_internal.h>
 #include "core/asset.h"
 
-namespace ImGui
+namespace nit::editor
 {
-    using namespace nit;
+    using namespace ImGui;
     
     constexpr f32 COLUMN_WIDTH   = 100.f;
     constexpr Vector2 ITEM_SPACING = { 0.f, 6.f };
