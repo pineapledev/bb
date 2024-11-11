@@ -53,12 +53,15 @@ namespace Nit
         Vector2          mouse_position;
     };
 
-    void SetEditorInstance(Editor* editor_instance);
-    Editor* GetEditorInstance();
+    namespace FnEditor
+    {
+        void SetInstance(Editor* editor_instance);
+        Editor* GetInstance();
     
-    void InitEditor();
-    void BeginDrawEditor();
-    void EndDrawEditor();
+        void Init();
+        void BeginDraw();
+        void EndDraw();
+    }
 }
 
 #endif

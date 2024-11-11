@@ -13,17 +13,17 @@
 
 #define NIT_CHECK_EDITOR_CREATED NIT_CHECK_MSG(editor, "Forget to call SetEditorInstance!");
 
-namespace Nit
+namespace Nit::FnEditor
 {
     Editor* editor;
 
-    void SetEditorInstance(Editor* editor_instance)
+    void SetInstance(Editor* editor_instance)
     {
         NIT_CHECK(editor_instance);
         editor = editor_instance;
     }
 
-    Editor* GetEditorInstance()
+    Editor* GetInstance()
     {
         NIT_CHECK_EDITOR_CREATED
         return editor;
@@ -84,7 +84,7 @@ namespace Nit
         TraverseDirectory(GetAssetsDirectory(), editor->root_node);
     }
     
-    void InitEditor()
+    void Init()
     {
         NIT_CHECK_EDITOR_CREATED
 
@@ -125,7 +125,7 @@ namespace Nit
         InvalidateAssetNodes();
     }
 
-    void BeginDrawEditor()
+    void BeginDraw()
     {
         NIT_CHECK_EDITOR_CREATED
 
@@ -725,7 +725,7 @@ namespace Nit
         }
     }
 
-    void EndDrawEditor()
+    void EndDraw()
     {
         UnbindFrameBuffer();
 

@@ -74,8 +74,8 @@ namespace Nit::FnEngine
 #endif
 
 #ifdef NIT_EDITOR_ENABLED
-        SetEditorInstance(&engine->editor);
-        InitEditor();
+        FnEditor::SetInstance(&engine->editor);
+        FnEditor::Init();
 #endif
         
         // Init time
@@ -113,12 +113,12 @@ namespace Nit::FnEngine
 #endif
             
 #ifdef NIT_EDITOR_ENABLED
-            BeginDrawEditor();
+             FnEditor::BeginDraw();
 #endif
             InvokeSystemCallbacks(Stage::Draw);
 
 #ifdef NIT_EDITOR_ENABLED
-            EndDrawEditor();
+             FnEditor::EndDraw();
 #endif
 #ifdef NIT_IMGUI_ENABLED
             InvokeSystemCallbacks(Stage::DrawImGUI);
