@@ -93,6 +93,7 @@ namespace Nit
     using f64 = double;
 
     inline constexpr u32 U32_MAX = std::numeric_limits<u32>::max();
+    inline constexpr f32 F32_MAX = std::numeric_limits<f32>::max();
     inline constexpr f32 F32_EPSILON = std::numeric_limits<f32>::epsilon();
     
     using VoidFunc = void(*)();

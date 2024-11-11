@@ -1,13 +1,12 @@
 ﻿#include "editor.h"
 
-#include <stack>
 
+#ifdef NIT_EDITOR_ENABLED
+#include "logic/draw_system.h"
 #include "core/engine.h"
 #include "logic/components.h"
 #include "logic/scene.h"
 #include "render/texture.h"
-
-#ifdef NIT_EDITOR_ENABLED
 #include <ImGuizmo.h>
 #include "editor_utils.h"
 
@@ -27,6 +26,11 @@ namespace Nit::FnEditor
     {
         NIT_CHECK_EDITOR_CREATED
         return editor;
+    }
+
+    void Register()
+    {
+        RegisterComponentType<EditorCameraController>();
     }
 
     void TraverseDirectory(const Path& directory, u32 parent_node, int depth = 0)
@@ -123,6 +127,20 @@ namespace Nit::FnEditor
         editor->icons = FindAssetByName("editor_icons");
         
         InvalidateAssetNodes();
+
+        editor->editor_camera_entity = CreateEntity();
+
+        auto& transform      = AddComponent<Transform>              (editor->editor_camera_entity);
+        transform.position.z = 3.f;
+        
+        auto& camera         = AddComponent<Camera>                 (editor->editor_camera_entity);
+        camera.projection    = CameraProjection::Orthographic;
+        
+        auto& controller = AddComponent<EditorCameraController> (editor->editor_camera_entity);
+        
+        controller = {
+            .desired_zoom = camera.size,
+        };
     }
 
     void BeginDraw()
@@ -133,6 +151,76 @@ namespace Nit::FnEditor
         {
             return;
         }
+        
+        // Update editor camera 
+        {
+            auto& camera     = GetComponent<Camera>(editor->editor_camera_entity); 
+            auto& controller = GetComponent<EditorCameraController>(editor->editor_camera_entity);
+            auto& transform  = GetComponent<Transform>(editor->editor_camera_entity);
+            
+            // Zoom stuff
+
+            if (!controller.is_zooming && Abs(ImGui::GetIO().MouseWheel) > F32_EPSILON)
+            {
+                controller.is_zooming = true;
+            }
+            
+            if (controller.is_zooming && controller.time_zooming < controller.time_to_stop_zoom)
+            {
+                controller.desired_zoom -= ImGui::GetIO().MouseWheel * controller.zoom_step;
+                controller.desired_zoom = std::clamp(controller.desired_zoom, 0.f, F32_MAX);
+                
+                if (std::abs(controller.desired_zoom - camera.size) > .01f)
+                {
+                    const float dir = camera.size < controller.desired_zoom ? 1.f : -1.f;
+                    camera.size += controller.zoom_speed * dir * engine->delta_seconds;
+                }
+                else
+                {
+                    camera.size = controller.desired_zoom;
+                }
+                
+                controller.time_zooming += engine->delta_seconds;
+            }
+            else
+            {
+                controller.is_zooming = false;
+                controller.time_zooming = 0.f;
+                controller.desired_zoom = camera.size;
+            }
+            
+            // Move
+            const bool is_right_mouse_pressed = ImGui::IsMouseDown(ImGuiMouseButton_Right);
+            Vector2 cursor_pos = FnWindow::GetCursorPosition();
+            
+            Vector2 window_size;
+            window_size.x = (f32) engine->editor.frame_buffer.width;
+            window_size.y = (f32) engine->editor.frame_buffer.height;
+            
+            // Mouse pressed
+            if (!controller.mouse_down && is_right_mouse_pressed)
+            {
+                controller.mouse_down = true;
+                Matrix4 camera_matrix = CalculateProjectionViewMatrix(camera, { controller.aux_position });
+                Vector3 mouse_world   = ScreenToWorldPoint(camera_matrix, cursor_pos, window_size);
+                controller.offset_pos = mouse_world + controller.aux_position;
+            }
+
+            // Mouse released
+            if (controller.mouse_down && !is_right_mouse_pressed)
+            {
+                controller.mouse_down   = false;
+                controller.aux_position = transform.position;
+            }
+
+            // Mouse hold
+            if (is_right_mouse_pressed)
+            {
+                Matrix4 camera_matrix = CalculateProjectionViewMatrix(camera, { controller.aux_position });
+                Vector3 mouse_world   = ScreenToWorldPoint(camera_matrix, cursor_pos, window_size) * -1;
+                transform.position = Vector3{ mouse_world.x, mouse_world.y, transform.position.z } + Vector3{ controller.offset_pos.x, controller.offset_pos.y, 0 };
+            }
+        }        
 
         if (engine->im_gui_renderer.is_dockspace_enabled && ImGui::BeginMenuBar())
         {
@@ -209,12 +297,12 @@ namespace Nit::FnEditor
 
                 if (!camera_group.entities.empty())
                 {
-                    Entity camera_entity = *camera_group.entities.begin();
+                    Entity camera_entity = FnDrawSystem::GetMainCamera();
 
                     // Gizmo stuff
                     Entity selected_entity = editor->selected_entity;
                     
-                    if (editor->selection == Editor::Selection::Entity && IsEntityValid(camera_entity) && HasComponent<Transform>(selected_entity))
+                    if (IsEntityValid(selected_entity) && editor->selection == Editor::Selection::Entity && IsEntityValid(camera_entity) && HasComponent<Transform>(selected_entity))
                     {
                         auto& camera_data      = GetComponent<Camera>(camera_entity);
                         auto& camera_transform = GetComponent<Transform>(camera_entity);

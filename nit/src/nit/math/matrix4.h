@@ -61,4 +61,6 @@ namespace Nit
     Matrix4 PerspectiveProjection(f32 fov, f32 aspect, f32 near_clip, f32 far_clip);
 
     bool Decompose(const Matrix4& matrix, Vector3& position, Vector3& rotation, Vector3& scale);
+    
+    Vector3 ScreenToWorldPoint(const Matrix4& projection_view_matrix, const Vector2& screen_point, const Vector2& window_size);
 }

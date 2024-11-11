@@ -339,4 +339,18 @@ namespace Nit
         rotation = ToDegrees(rotation);
         return true;
     }
+
+    Vector3 ScreenToWorldPoint(const Matrix4& projection_view_matrix, const Vector2& screen_point,
+        const Vector2& window_size)
+    {
+        const float half_screen_width = window_size.x / 2.f;
+        const float half_screen_height = window_size.y / 2.f;
+        const Matrix4 inverse_mv = Inverse(projection_view_matrix);
+        const float near_plane_x = (screen_point.x - half_screen_width) / half_screen_width;
+        const float near_plane_y = -((screen_point.y - half_screen_height) / half_screen_height);
+        const Vector4 near_plane = { near_plane_x, near_plane_y, -1, 1 };
+        Vector4 near_result = inverse_mv * near_plane;
+        near_result /= near_result.w;
+        return { near_result.x, near_result.y, 0 };
+    }
 }

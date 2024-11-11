@@ -84,7 +84,7 @@ void GameStart()
 
 void GameUpdate()
 {
-    SpawnEntity();
+    //SpawnEntity();
     
     for (Entity entity : GetEntityGroup<Transform, Sprite, Move>().entities)
     {

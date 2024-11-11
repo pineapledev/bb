@@ -7,7 +7,7 @@ namespace Nit
         Type*  type;
         String name;
         String path;
-        UUID   id;
+        UUID   id              = {};
         u32    version         = 0;
         bool   loaded          = false;
         u32    reference_count = 0;

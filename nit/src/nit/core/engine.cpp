@@ -4,8 +4,8 @@
 #include "render/font.h"
 #include "render/texture.h"
 #include "logic/components.h"
+#include "logic/draw_system.h"
 #include "logic/scene.h"
-#include "logic/systems.h"
 #include "render/render_api.h"
 
 #define NIT_CHECK_ENGINE_CREATED NIT_CHECK_MSG(engine, "Forget to call SetAppInstance!");
@@ -46,7 +46,10 @@ namespace Nit::FnEngine
         RegisterCircleComponent();
         RegisterLine2DComponent();
 
-        CreateDrawSystem();
+#ifdef NIT_EDITOR_ENABLED
+        FnEditor::Register();  
+#endif
+        FnDrawSystem::Register();
         
         SetAssetRegistryInstance(&engine->asset_registry);
         

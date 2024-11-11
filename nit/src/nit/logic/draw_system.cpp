@@ -8,7 +8,7 @@
 #include "nit/render/texture.h"
 #include "nit/render/font.h"
 
-namespace Nit
+namespace Nit::FnDrawSystem
 {
     V4Verts2D vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
     V2Verts2D vertex_uvs       = DEFAULT_VERTEX_U_VS_2D;
@@ -21,8 +21,37 @@ namespace Nit
     static ListenerAction OnAssetDestroyed(const AssetDestroyedArgs& args);
     static ListenerAction OnComponentAdded(const ComponentAddedArgs& args);
     static ListenerAction OnComponentRemoved(const ComponentRemovedArgs& args);
+
+    Entity GetMainCamera()
+    {
+        auto& camera_group = GetEntityGroup<Camera, Transform>();
+        
+        if (camera_group.entities.empty())
+        {
+            return NULL_ENTITY;
+        }
+
+#ifdef NIT_EDITOR_ENABLED
+
+        if (!engine->editor.enabled)
+        {
+            for (Entity entity : camera_group.entities)
+            {
+                if (!HasComponent<EditorCameraController>(entity))
+                {
+                    return entity;
+                }
+            }
+        }
+
+        return engine->editor.editor_camera_entity;
+        
+#else
+        return *camera_group.entities.begin();
+#endif
+    }
     
-    void CreateDrawSystem()
+    void Register()
     {
         CreateSystem("Draw");
         SetSystemCallback(Start, Stage::Start);
@@ -130,14 +159,8 @@ namespace Nit
     {
         ClearScreen();
         
-        auto& camera_group = GetEntityGroup<Camera, Transform>();
-        
-        if (camera_group.entities.empty())
-        {
-            return;
-        }
-        
-        Entity main_camera = *camera_group.entities.begin();
+        Entity main_camera = GetMainCamera();
+
         Camera& camera = GetComponent<Camera>(main_camera);
 
         i32 width, height;

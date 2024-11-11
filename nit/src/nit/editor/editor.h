@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #ifdef NIT_EDITOR_ENABLED
+#include "nit/logic/components.h"
 #include "nit/core/asset.h"
 #include "nit/logic/entity.h"
 #include "nit/render/frame_buffer.h"
@@ -32,9 +33,10 @@ namespace Nit
         };
         
         bool        enabled              = true;
-        Entity      selected_entity      = 0;
+        Entity      editor_camera_entity = NULL_ENTITY;
+        Entity      selected_entity      = NULL_ENTITY;
         AssetHandle selected_asset       = {};
-        Selection   selection            = Selection::Entity;
+        Selection   selection            = Selection::None;
         bool        show_viewport        = true;
         bool        show_sprite_packer   = false;
         bool        show_scene_entities  = true;
@@ -53,11 +55,28 @@ namespace Nit
         Vector2          mouse_position;
     };
 
+    struct EditorCameraController
+    {
+        f32     zoom_step              = 0.3f;
+        f32     zoom_speed             = 5.f;
+        f32     move_speed             = 2.f;
+
+        bool    is_zooming             = false;
+        f32     time_to_stop_zoom      = 0.2f;
+        f32     time_zooming           = 0.f;
+        f32     desired_zoom           = 0.f;
+        Vector3 aux_position           = {};
+        bool    mouse_down             = false;
+        Vector3 offset_pos             = {};
+        bool    is_right_mouse_pressed = false;
+    };
+
     namespace FnEditor
     {
         void SetInstance(Editor* editor_instance);
         Editor* GetInstance();
-    
+
+        void Register();
         void Init();
         void BeginDraw();
         void EndDraw();
