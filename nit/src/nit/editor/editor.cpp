@@ -297,7 +297,7 @@ namespace nit::editor
 
                 if (!camera_group.entities.empty())
                 {
-                    Entity camera_entity = FnDrawSystem::GetMainCamera();
+                    Entity camera_entity = draw_system::GetMainCamera();
 
                     // Gizmo stuff
                     Entity selected_entity = editor->selected_entity;

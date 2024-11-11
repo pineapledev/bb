@@ -16,7 +16,7 @@ namespace nit
     
     namespace audio::clip
     {
-        void register_type();
+        void type_register();
         void load(AudioClip* audio_clip);
         void free(AudioClip* audio_clip);
         void serialize(const AudioClip* audio_clip, YAML::Emitter& emitter);

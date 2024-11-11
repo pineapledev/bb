@@ -1,7 +1,7 @@
 #pragma once
 
-namespace nit::FnDrawSystem
+namespace nit::draw_system
 {
-    void Register();
+    void type_register();
     Entity GetMainCamera();
 }

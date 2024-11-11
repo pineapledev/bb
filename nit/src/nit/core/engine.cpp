@@ -56,14 +56,14 @@ namespace nit::engine
 #ifdef NIT_EDITOR_ENABLED
         editor::type_register();  
 #endif
-        FnDrawSystem::Register();
+        draw_system::type_register();
         
         set_asset_registry_instance(&instance->asset_registry);
         
         register_texture_2d_asset();
         register_font_asset();
         RegisterSceneAsset();
-        audio::clip::register_type();
+        audio::clip::type_register();
         
         if (run_callback)
         {

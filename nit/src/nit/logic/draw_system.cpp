@@ -8,7 +8,7 @@
 #include "nit/render/texture.h"
 #include "nit/render/font.h"
 
-namespace nit::FnDrawSystem
+namespace nit::draw_system
 {
     V4Verts2D vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
     V2Verts2D vertex_uvs       = DEFAULT_VERTEX_U_VS_2D;
@@ -51,7 +51,7 @@ namespace nit::FnDrawSystem
 #endif
     }
     
-    void Register()
+    void type_register()
     {
         CreateSystem("Draw");
         SetSystemCallback(Start, Stage::Start);
