@@ -293,7 +293,7 @@ namespace nit::editor
                     }
                 }
 
-                auto& camera_group = GetEntityGroup<Camera, Transform>();
+                auto& camera_group = entity::get_group<Camera, Transform>();
 
                 if (!camera_group.entities.empty())
                 {

@@ -159,6 +159,15 @@ namespace nit
         EntitySignatureChanged(entity, signature);
         return *element;
     }
+
+    EntitySignature BuildEntitySignature(const Array<u64>& type_hashes);
+
+    template <typename... T>
+    EntitySignature BuildEntitySignature()
+    {
+        Array<u64> type_hashes = { get_type_hash<T>()... };
+        return BuildEntitySignature(type_hashes);
+    }
     
     namespace entity
     {
@@ -179,7 +188,7 @@ namespace nit
             broadcast<const ComponentAddedArgs&>(entity::get_registry_instance()->component_added_event, args);
             return *element;
         }
-
+        
         template<typename T>
         void remove(Entity entity)
         {
@@ -223,34 +232,27 @@ namespace nit
             NIT_CHECK_MSG(IsEntityValid(entity), "Invalid entity!");
             return entity::get_registry_instance()->signatures[entity].test(get_componentTypeIndex<T>());
         }
-    }
 
-    EntitySignature BuildEntitySignature(const Array<u64>& type_hashes);
+        EntityGroup& get_group(EntitySignature signature);
 
-    template <typename... T>
-    EntitySignature BuildEntitySignature()
-    {
-        Array<u64> type_hashes = { get_type_hash<T>()... };
-        return BuildEntitySignature(type_hashes);
+        template <typename... T>
+        EntityGroup& get_group()
+        {
+            Array<u64> type_hashes = { get_type_hash<T>()... };
+            return entity::get_group(BuildEntitySignature(type_hashes));
+        }
+
+        EntitySignature create_group(const Array<u64>& type_hashes);
+    
+        template <typename... T>
+        EntitySignature create_group()
+        {
+            Array<u64> type_hashes = { get_type_hash<T>()... };
+            return entity::create_group(type_hashes);
+        }
     }
     
-    EntitySignature CreateEntityGroup(const Array<u64>& type_hashes);
     
-    template <typename... T>
-    EntitySignature CreateEntityGroup()
-    {
-        Array<u64> type_hashes = { get_type_hash<T>()... };
-        return CreateEntityGroup(type_hashes);
-    }
-
-    EntityGroup& GetEntityGroup(EntitySignature signature);
-
-    template <typename... T>
-    EntityGroup& GetEntityGroup()
-    {
-        Array<u64> type_hashes = { get_type_hash<T>()... };
-        return GetEntityGroup(BuildEntitySignature(type_hashes));
-    }
     
     void SerializeEntity(Entity entity, YAML::Emitter& emitter);
     

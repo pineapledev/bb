@@ -65,7 +65,7 @@ void on_run()
     SetSystemCallback(game_update,  Stage::Update);
 
     RegisterComponentType<Move>();
-    CreateEntityGroup<Transform, Sprite, Move>();
+    entity::create_group<Transform, Sprite, Move>();
 }
 
 // -----------------------------------------------------------------
@@ -86,7 +86,7 @@ void game_update()
 {
     //SpawnEntity();
     
-    for (Entity entity : GetEntityGroup<Transform, Sprite, Move>().entities)
+    for (Entity entity : entity::get_group<Transform, Sprite, Move>().entities)
     {
         auto& transform = entity::get<Transform>(entity);
         auto& move = entity::get<Move>(entity);

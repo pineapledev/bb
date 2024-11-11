@@ -24,7 +24,7 @@ namespace nit::draw_system
 
     Entity GetMainCamera()
     {
-        auto& camera_group = GetEntityGroup<Camera, Transform>();
+        auto& camera_group = entity::get_group<Camera, Transform>();
         
         if (camera_group.entities.empty())
         {
@@ -58,11 +58,11 @@ namespace nit::draw_system
         SetSystemCallback(End,   Stage::End);
         SetSystemCallback(Draw,  Stage::Draw);
         
-        CreateEntityGroup<Sprite, Transform>();
-        CreateEntityGroup<Camera, Transform>();
-        CreateEntityGroup<Circle, Transform>();
-        CreateEntityGroup<Line2D, Transform>();
-        CreateEntityGroup<Text,   Transform>();
+        entity::create_group<Sprite, Transform>();
+        entity::create_group<Camera, Transform>();
+        entity::create_group<Circle, Transform>();
+        entity::create_group<Line2D, Transform>();
+        entity::create_group<Text,   Transform>();
     }
     
     void Start()
@@ -188,7 +188,7 @@ namespace nit::draw_system
         
         begin_scene_2d(CalculateProjectionViewMatrix(camera, entity::get<Transform>(main_camera)));
         {
-            for (Entity entity : GetEntityGroup<Sprite, Transform>().entities)
+            for (Entity entity : entity::get_group<Sprite, Transform>().entities)
             {
                 auto& transform = entity::get<Transform>(entity);
                 auto& sprite = entity::get<Sprite>(entity);
@@ -259,7 +259,7 @@ namespace nit::draw_system
                 draw_quad(texture_data, vertex_positions, vertex_uvs, vertex_colors, (i32) entity);
             }
 
-            for (Entity entity : GetEntityGroup<Line2D, Transform>().entities)
+            for (Entity entity : entity::get_group<Line2D, Transform>().entities)
             {
                 auto& transform = entity::get<Transform>(entity);
                 auto& line = entity::get<Line2D>(entity);
@@ -276,7 +276,7 @@ namespace nit::draw_system
             }
 
             
-            for (Entity entity : GetEntityGroup<Text, Transform>().entities)
+            for (Entity entity : entity::get_group<Text, Transform>().entities)
             {
                 auto& transform = entity::get<Transform>(entity);
                 auto& text = entity::get<Text>(entity);
@@ -303,7 +303,7 @@ namespace nit::draw_system
                 );
             }
 
-            for (Entity entity : GetEntityGroup<Circle, Transform>().entities)
+            for (Entity entity : entity::get_group<Circle, Transform>().entities)
             {
                 auto& transform = entity::get<Transform>(entity);
                 auto& circle = entity::get<Circle>(entity);

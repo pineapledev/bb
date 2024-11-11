@@ -85,7 +85,7 @@ namespace nit
 
     Entity FindEntityByName(const String& name)
     {
-        for (Entity entity : GetEntityGroup<Name>().entities)
+        for (Entity entity : entity::get_group<Name>().entities)
         {
             if (entity::get<Name>(entity).data == name)
             {
@@ -98,7 +98,7 @@ namespace nit
 
     void FindEntitiesByName(Array<Entity>& entities, const String& name)
     {
-        for (Entity entity : GetEntityGroup<Name>().entities)
+        for (Entity entity : entity::get_group<Name>().entities)
         {
             if (entity::get<Name>(entity).data == name)
             {
@@ -136,7 +136,7 @@ namespace nit
 #endif
         });
 
-        CreateEntityGroup<Name>();
+        entity::create_group<Name>();
     }
 
     bool IsValid(const UUID& uuid)
@@ -156,7 +156,7 @@ namespace nit
 
     Entity FindEntityByUUID(UUID uuid)
     {
-        for (Entity entity : GetEntityGroup<UUID>().entities)
+        for (Entity entity : entity::get_group<UUID>().entities)
         {
             if (entity::get<UUID>(entity) == uuid)
             {
@@ -169,7 +169,7 @@ namespace nit
 
     void FindEntitiesByUUID(Array<Entity>& entities, UUID uuid)
     {
-        for (Entity entity : GetEntityGroup<UUID>().entities)
+        for (Entity entity : entity::get_group<UUID>().entities)
         {
             if (entity::get<UUID>(entity) == uuid)
             {
@@ -207,7 +207,7 @@ namespace nit
 #endif
         });
 
-        CreateEntityGroup<UUID>();
+        entity::create_group<UUID>();
     }
 
     void SerializeCamera(const Camera* camera, YAML::Emitter& emitter)

@@ -117,7 +117,7 @@ namespace nit
         }
     }
 
-    EntitySignature CreateEntityGroup(const Array<u64>& type_hashes)
+    EntitySignature entity::create_group(const Array<u64>& type_hashes)
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         NIT_CHECK_MSG(!entity_registry->entity_count, "Create the group before any entity gets created!");
@@ -148,7 +148,7 @@ namespace nit
         return group_signature;
     }
 
-    EntityGroup& GetEntityGroup(EntitySignature signature)
+    EntityGroup& entity::get_group(EntitySignature signature)
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         return entity_registry->entity_groups[signature];
