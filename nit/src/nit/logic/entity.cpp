@@ -51,7 +51,7 @@ namespace nit
         for (u32 i = 0; i < entity_registry->next_component_type_index; ++i)
         {
             ComponentPool& data = entity_registry->component_pool[i];
-            pool::Free(&data.data_pool);
+            pool::release(&data.data_pool);
         }
     }
 
@@ -80,7 +80,7 @@ namespace nit
                 continue;
             }
 
-            Broadcast<const ComponentRemovedArgs&>(entity_registry->component_removed_event, {entity, component_pool.data_pool.type});
+            broadcast<const ComponentRemovedArgs&>(entity_registry->component_removed_event, {entity, component_pool.data_pool.type});
             pool::DeleteData(&component_pool.data_pool, entity);
         }
 
@@ -165,7 +165,7 @@ namespace nit
             
             if (!data_pool.type->fn_invoke_deserialize
                 || !data_pool.type->fn_invoke_serialize
-                || !Invoke(component_pool.fn_is_in_entity, entity))
+                || !invoke(component_pool.fn_is_in_entity, entity))
             {
                 continue;
             }
@@ -196,13 +196,13 @@ namespace nit
             String type_name = entity_node_child.first.as<String>();
             auto* component_pool = FindComponentPool(GetType(type_name));
             auto& data_pool = component_pool->data_pool;
-            Invoke(component_pool->fn_add_to_entity, entity);
-            void* component_data = Invoke(component_pool->fn_get_from_entity, entity);
+            invoke(component_pool->fn_add_to_entity, entity);
+            void* component_data = invoke(component_pool->fn_get_from_entity, entity);
             Deserialize(data_pool.type, component_data, component_node);
             ComponentAddedArgs args;
             args.entity = entity;
             args.type = component_pool->data_pool.type;
-            Broadcast<const ComponentAddedArgs&>(GetEntityRegistryInstance()->component_added_event, args);
+            broadcast<const ComponentAddedArgs&>(GetEntityRegistryInstance()->component_added_event, args);
         }
         
         return entity;

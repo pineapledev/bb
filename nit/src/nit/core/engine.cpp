@@ -14,13 +14,13 @@ namespace nit::engine
 {
     Engine* engine = nullptr;
     
-    void SetInstance(Engine* engine_instance)
+    void set_instance(Engine* engine_instance)
     {
         NIT_CHECK(engine_instance);
         engine = engine_instance;
     }
 
-    Engine* GetInstance()
+    Engine* get_instance()
     {
         return engine;
     }
@@ -30,19 +30,19 @@ namespace nit::engine
         NIT_CHECK_ENGINE_CREATED
         NIT_LOG_TRACE("Creating application...");
         
-        window::SetInstance(&engine::GetInstance()->window);
+        window::set_instance(&engine::get_instance()->window);
         window::Init();
         
         InitSystemStack();
         
-        SetTypeRegistryInstance(&engine::GetInstance()->type_registry);
+        SetTypeRegistryInstance(&engine::get_instance()->type_registry);
         InitTypeRegistry();
 
-        SetEntityRegistryInstance(&engine::GetInstance()->entity_registry);
+        SetEntityRegistryInstance(&engine::get_instance()->entity_registry);
         InitEntityRegistry();
         
-        audio::SetInstance(&engine::GetInstance()->audio_registry);
-        audio::Init();
+        audio::set_instance(&engine::get_instance()->audio_registry);
+        audio::init();
         
         RegisterNameComponent();
         RegisterUUIDComponent();
@@ -58,41 +58,41 @@ namespace nit::engine
 #endif
         FnDrawSystem::Register();
         
-        SetAssetRegistryInstance(&engine::GetInstance()->asset_registry);
+        set_asset_registry_instance(&engine::get_instance()->asset_registry);
         
         RegisterTexture2DAsset();
         RegisterFontAsset();
         RegisterSceneAsset();
-        audio::clip::Register();
+        audio::clip::register_type();
         
         if (run_callback)
         {
             run_callback();
         }
         
-        InitAssetRegistry();
+        init_asset_registry();
 
-        SetRenderObjectsInstance(&engine::GetInstance()->render_objects);
+        SetRenderObjectsInstance(&engine::get_instance()->render_objects);
         InitRenderObjects();
         
-        SetRenderer2DInstance(&engine::GetInstance()->renderer_2d);
+        SetRenderer2DInstance(&engine::get_instance()->renderer_2d);
         InitRenderer2D();
 
 #ifdef NIT_IMGUI_ENABLED
-        SetImGuiRendererInstance(&engine::GetInstance()->im_gui_renderer);
-        InitImGui(engine::GetInstance()->window.handler);
+        SetImGuiRendererInstance(&engine::get_instance()->im_gui_renderer);
+        InitImGui(engine::get_instance()->window.handler);
 #endif
 
 #ifdef NIT_EDITOR_ENABLED
-        editor::SetInstance(&engine::GetInstance()->editor);
+        editor::set_instance(&engine::get_instance()->editor);
         editor::Init();
 #endif
         
         // Init time
-        engine::GetInstance()->seconds          = 0;
-        engine::GetInstance()->frame_count      = 0;
-        engine::GetInstance()->acc_fixed_delta  = 0;
-        engine::GetInstance()->last_time = window::GetTime();
+        engine::get_instance()->seconds          = 0;
+        engine::get_instance()->frame_count      = 0;
+        engine::get_instance()->acc_fixed_delta  = 0;
+        engine::get_instance()->last_time = window::GetTime();
         
         NIT_LOG_TRACE("Application created!");
         
@@ -100,20 +100,20 @@ namespace nit::engine
         
         while(!window::ShouldClose())
         {
-            engine::GetInstance()->frame_count++;
+            engine::get_instance()->frame_count++;
             const f64 current_time = window::GetTime();
-            const f64 time_between_frames = current_time - engine::GetInstance()->last_time;
-            engine::GetInstance()->last_time = current_time;
-            engine::GetInstance()->seconds += time_between_frames;
-            engine::GetInstance()->delta_seconds = (f32) Clamp(time_between_frames, 0., engine::GetInstance()->max_delta_time);
+            const f64 time_between_frames = current_time - engine::get_instance()->last_time;
+            engine::get_instance()->last_time = current_time;
+            engine::get_instance()->seconds += time_between_frames;
+            engine::get_instance()->delta_seconds = (f32) Clamp(time_between_frames, 0., engine::get_instance()->max_delta_time);
             
             InvokeSystemCallbacks(Stage::Update);
 
-            engine::GetInstance()->acc_fixed_delta += engine::GetInstance()->delta_seconds;
-            while (engine::GetInstance()->acc_fixed_delta >= engine::GetInstance()->fixed_delta_seconds)
+            engine::get_instance()->acc_fixed_delta += engine::get_instance()->delta_seconds;
+            while (engine::get_instance()->acc_fixed_delta >= engine::get_instance()->fixed_delta_seconds)
             {
                 InvokeSystemCallbacks(Stage::FixedUpdate);
-                engine::GetInstance()->acc_fixed_delta -= engine::GetInstance()->fixed_delta_seconds;
+                engine::get_instance()->acc_fixed_delta -= engine::get_instance()->fixed_delta_seconds;
             }
 
             ClearScreen();
@@ -145,11 +145,11 @@ namespace nit::engine
     void Play()  
     {
         NIT_CHECK_ENGINE_CREATED
-        engine::GetInstance()->paused = false; 
+        engine::get_instance()->paused = false; 
 
-        if (engine::GetInstance()->stopped)
+        if (engine::get_instance()->stopped)
         {
-            engine::GetInstance()->stopped = false;
+            engine::get_instance()->stopped = false;
             InvokeSystemCallbacks(Stage::Start, true);
         }
     }
@@ -157,14 +157,14 @@ namespace nit::engine
     void Pause() 
     {
         NIT_CHECK_ENGINE_CREATED
-        engine::GetInstance()->paused = true;  
+        engine::get_instance()->paused = true;  
     }
 
     void Stop()
     {
         NIT_CHECK_ENGINE_CREATED
         InvokeSystemCallbacks(Stage::End, true);
-        engine::GetInstance()->stopped = true;
+        engine::get_instance()->stopped = true;
     }
 }
 
@@ -175,27 +175,27 @@ namespace nit
     void InitSystemStack()
     {
         NIT_CHECK_ENGINE_CREATED
-        engine::GetInstance()->system_stack = SystemStack();
+        engine::get_instance()->system_stack = SystemStack();
     }
 
     void CreateSystem(const String& name, u32 priority, ExecutionContext context, bool start_disabled)
     {
         NIT_CHECK_ENGINE_CREATED
-        SystemStack& stack = engine::GetInstance()->system_stack;
+        SystemStack& stack = engine::get_instance()->system_stack;
         CreateSystem(stack.systems, stack.next_system, name, priority, context, start_disabled);
     }
     
     void SetSystemCallback(VoidFunc callback, Stage stage, bool try_invoke)
     {
         NIT_CHECK_ENGINE_CREATED
-        SystemStack& stack = engine::GetInstance()->system_stack;
+        SystemStack& stack = engine::get_instance()->system_stack;
         SetSystemCallback(stack.systems[stack.next_system - 1], callback, stage, try_invoke);
     }
     
     void InvokeSystemCallbacks(Stage stage, bool force_enabled)
     {
         NIT_CHECK_ENGINE_CREATED
-        SystemStack& stack = engine::GetInstance()->system_stack;
-        InvokeSystemCallbacks(stack.systems, stack.next_system, engine::GetInstance()->paused || engine::GetInstance()->stopped, stage, force_enabled);
+        SystemStack& stack = engine::get_instance()->system_stack;
+        InvokeSystemCallbacks(stack.systems, stack.next_system, engine::get_instance()->paused || engine::get_instance()->stopped, stage, force_enabled);
     }
 }

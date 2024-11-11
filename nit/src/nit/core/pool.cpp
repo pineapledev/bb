@@ -2,7 +2,7 @@
 
 namespace nit
 {
-    void pool::Free(Pool* pool)
+    void pool::release(Pool* pool)
     {
         if (!pool)
         {
@@ -16,7 +16,7 @@ namespace nit
         sparse::Free(&pool->sparse_set);
     }
 
-    bool pool::IsValid(Pool* pool, u32 element_id)
+    bool pool::is_valid(Pool* pool, u32 element_id)
     {
         if (!pool)
         {
@@ -27,7 +27,7 @@ namespace nit
         return sparse::Test(&pool->sparse_set, element_id);
     }
 
-    bool pool::InsertDataWithID(Pool* pool, u32 element_id, void* data)
+    bool pool::insert_data_with_id(Pool* pool, u32 element_id, void* data)
     {
         if (!pool)
         {
@@ -44,7 +44,7 @@ namespace nit
         return true;
     }
 
-    bool pool::InsertData(Pool* pool, u32& element_id, void* data)
+    bool pool::insert_data(Pool* pool, u32& element_id, void* data)
     {
         if (!pool || !pool->self_id_management)
         {
@@ -54,7 +54,7 @@ namespace nit
         
         element_id = pool->available_ids.front();
         pool->available_ids.pop();
-        return pool::InsertDataWithID(pool, element_id, data);
+        return pool::insert_data_with_id(pool, element_id, data);
     }
 
     SparseSetDeletion pool::DeleteData(Pool* pool, u32 element_id)

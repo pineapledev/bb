@@ -4,7 +4,7 @@
 #endif
 #include <glfw/glfw3.h>
 
-#define NIT_CHECK_WINDOW_CREATED NIT_CHECK_MSG(window, "Forget to call SetInstance!");
+#define NIT_CHECK_WINDOW_CREATED NIT_CHECK_MSG(window, "Forget to call set_instance!");
 
 #define NIT_CHECK_WINDOW_INITIALIZED \
     NIT_CHECK_WINDOW_CREATED \
@@ -15,7 +15,7 @@ namespace nit::window
 {
     Window* window = nullptr;
 
-    void SetInstance(Window* window_instance)
+    void set_instance(Window* window_instance)
     {
         NIT_CHECK(window_instance);
         window = window_instance;

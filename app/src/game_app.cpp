@@ -10,7 +10,7 @@ void GameUpdate();
 int main(int argc, char** argv)
 {
     Engine engine_instance;
-    engine::SetInstance(&engine_instance);
+    engine::set_instance(&engine_instance);
     engine::Run(OnRun);
 }
 
@@ -72,14 +72,14 @@ void OnRun()
 
 void GameStart()
 {
-    AssetHandle test_scene = FindAssetByName("test_scene");
+    AssetHandle test_scene = find_asset_by_name("test_scene");
 
-    if (IsAssetValid(test_scene))
+    if (is_asset_valid(test_scene))
     {
-        LoadAsset(test_scene);
+        load_asset(test_scene);
     }
 
-    test_texture = FindAssetByName("test_sheet");
+    test_texture = find_asset_by_name("test_sheet");
 }
 
 void GameUpdate()
@@ -97,7 +97,7 @@ void GameUpdate()
         }
         else
         {
-            transform.position += ToVector3(move.velocity * engine::GetInstance()->delta_seconds);
+            transform.position += ToVector3(move.velocity * engine::get_instance()->delta_seconds);
         }
     }
 }

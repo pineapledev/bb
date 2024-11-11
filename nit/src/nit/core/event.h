@@ -31,7 +31,7 @@ namespace nit
     }
 
     template<typename R, typename... Args>
-    bool IsDelegateEmpty(const Delegate<R(Args...)>& delegate)
+    bool is_delegate_empty(const Delegate<R(Args...)>& delegate)
     {
         return delegate.function_ptr == nullptr;
     }
@@ -39,32 +39,32 @@ namespace nit
     template<typename R, typename... Args>
     bool operator!(const Delegate<R(Args...)>& delegate)
     {
-        return IsDelegateEmpty(delegate);
+        return is_delegate_empty(delegate);
     }
     
     template<typename R, typename... Args>
-    void Bind(Delegate<R(Args...)>& delegate, R (*function_ptr)(Args...))
+    void bind(Delegate<R(Args...)>& delegate, R (*function_ptr)(Args...))
     {
         delegate.function_ptr = function_ptr;
     }
 
     template<typename R, typename... Args>
-    void Unbind(Delegate<R(Args...)>& delegate)
+    void unbind(Delegate<R(Args...)>& delegate)
     {
         delegate.function_ptr = nullptr;
     }
     
     template<typename R, typename... Args>
-    R Invoke(Delegate<R(Args...)>& delegate, Args&&... args)
+    R invoke(Delegate<R(Args...)>& delegate, Args&&... args)
     {
-        NIT_CHECK_MSG(!IsDelegateEmpty(delegate), "Trying to invoke empty delegate!");
+        NIT_CHECK_MSG(!is_delegate_empty(delegate), "Trying to invoke empty delegate!");
         return delegate.function_ptr(std::forward<Args>(args)...);
     }
 
     template<typename R, typename... Args>
-    R Invoke(Delegate<R(Args...)>& delegate, Args&... args)
+    R invoke(Delegate<R(Args...)>& delegate, Args&... args)
     {
-        NIT_CHECK_MSG(!IsDelegateEmpty(delegate), "Trying to invoke empty delegate!");
+        NIT_CHECK_MSG(!is_delegate_empty(delegate), "Trying to invoke empty delegate!");
         return delegate.function_ptr(args...);
     }
 
@@ -84,7 +84,7 @@ namespace nit
     };
 
     template<typename... Args>
-    bool IsEventEmpty(const Event<Args...>& event)
+    bool is_event_empty(const Event<Args...>& event)
     {
         return event.listeners.empty();
     }
@@ -92,13 +92,13 @@ namespace nit
     template<typename... Args>
     bool operator !(const Event<Args...>& event)
     {
-        return IsEventEmpty(event);
+        return is_event_empty(event);
     }
     
     template<typename... Args>
-    void AddListener(Event<Args...>& event, const Listener<Args...>& listener)
+    void add_listener(Event<Args...>& event, const Listener<Args...>& listener)
     {
-        if (IsDelegateEmpty(listener))
+        if (is_delegate_empty(listener))
         {
             NIT_CHECK_MSG(false, "Trying to add empty listener!");
             return;
@@ -109,13 +109,13 @@ namespace nit
     template<typename... Args>
     void operator +=(Event<Args...>& event, const Listener<Args...>& listener)
     {
-       AddListener(event, listener);
+       add_listener(event, listener);
     }
     
     template<typename... Args>
-    void RemoveListener(Event<Args...>& event, const Listener<Args...>& listener)
+    void remove_listener(Event<Args...>& event, const Listener<Args...>& listener)
     {
-        if (IsDelegateEmpty(listener))
+        if (is_delegate_empty(listener))
         {
             NIT_CHECK_MSG(false, "Trying to remove empty listener!");
             return;
@@ -131,19 +131,19 @@ namespace nit
     template<typename... Args>
     void operator -=(Event<Args...>& event, const Listener<Args...>& listener)
     {
-        RemoveListener(event, listener);
+        remove_listener(event, listener);
     }
     
     template<typename... Args>
-    void RemoveAllListeners(Event<Args...>& event)
+    void remove_all_listeners(Event<Args...>& event)
     {
         event.listeners.clear();
     }
 
     template<typename... Args>
-    void Broadcast(Event<Args...>& event, Args&&... args)
+    void broadcast(Event<Args...>& event, Args&&... args)
     {
-        if (IsEventEmpty(event))
+        if (is_event_empty(event))
         {
             return;
         }
@@ -165,7 +165,7 @@ namespace nit
 
         for (Listener<Args...>& listener : listeners_to_remove)
         {
-            RemoveListener(event, listener);
+            remove_listener(event, listener);
         }
     }
 }

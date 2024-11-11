@@ -29,7 +29,7 @@ namespace nit
         return sparse_set->count == sparse_set->max;
     }
 
-    void sparse::Load(SparseSet* sparse_set, u32 max)
+    void sparse::load(SparseSet* sparse_set, u32 max)
     {
         if (!sparse_set || max == U32_MAX)
         {

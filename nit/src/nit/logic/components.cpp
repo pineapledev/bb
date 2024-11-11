@@ -367,7 +367,7 @@ namespace nit
         
         editor::DrawInputText("sub_texture", sprite->sub_texture);
 
-        if (IsAssetValid(sprite->texture))
+        if (is_asset_valid(sprite->texture))
         {
             SetSpriteSubTexture2D(*sprite, sprite->sub_texture);
         }
@@ -402,13 +402,13 @@ namespace nit
     {
         sprite.sub_texture = sub_texture;
         
-        if (!IsAssetValid(sprite.texture))
+        if (!is_asset_valid(sprite.texture))
         {
             sprite.sub_texture_index = -1;
             return;
         }
 
-        i32 index = FindIndexOfSubTexture2D(GetAssetData<Texture2D>(sprite.texture), sub_texture);
+        i32 index = FindIndexOfSubTexture2D(get_asset_data<Texture2D>(sprite.texture), sub_texture);
         sprite.sub_texture_index = index;
     }
 

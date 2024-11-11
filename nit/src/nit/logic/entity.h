@@ -114,12 +114,12 @@ namespace nit
             return GetComponentPtr<T>(entity);
         };
         
-        Bind(component_pool.fn_add_to_entity, fn_add_to_entity);
-        Bind(component_pool.fn_remove_from_entity, fn_remove_from_entity);
-        Bind(component_pool.fn_is_in_entity, fn_is_in_entity);
-        Bind(component_pool.fn_get_from_entity, fn_get_from_entity);
+        bind(component_pool.fn_add_to_entity, fn_add_to_entity);
+        bind(component_pool.fn_remove_from_entity, fn_remove_from_entity);
+        bind(component_pool.fn_is_in_entity, fn_is_in_entity);
+        bind(component_pool.fn_get_from_entity, fn_get_from_entity);
         
-        pool::Load<T>(&component_pool.data_pool, entity_registry->max_entities, false);
+        pool::load<T>(&component_pool.data_pool, entity_registry->max_entities, false);
         ++entity_registry->next_component_type_index;
     }
 
@@ -146,7 +146,7 @@ namespace nit
         NIT_CHECK_MSG(GetEntityRegistryInstance()->signatures[entity].size() <= NIT_MAX_COMPONENT_TYPES + 1, "Components per entity out of range!");
         ComponentPool* component_pool = FindComponentPool<T>();
         NIT_CHECK_MSG(component_pool, "Invalid component type!");
-        T* element = pool::InsertDataWithID(&component_pool->data_pool, entity, data);
+        T* element = pool::insert_data_with_id(&component_pool->data_pool, entity, data);
         EntitySignature& signature = GetEntityRegistryInstance()->signatures[entity]; 
         signature.set(GetComponentTypeIndex<T>(), true);
         EntitySignatureChanged(entity, signature);
@@ -160,14 +160,14 @@ namespace nit
         NIT_CHECK_MSG(GetEntityRegistryInstance()->signatures[entity].size() <= NIT_MAX_COMPONENT_TYPES + 1, "Components per entity out of range!");
         ComponentPool* component_pool = FindComponentPool<T>();
         NIT_CHECK_MSG(component_pool, "Invalid component type!");
-        T* element = pool::InsertDataWithID(&component_pool->data_pool, entity, data);
+        T* element = pool::insert_data_with_id(&component_pool->data_pool, entity, data);
         EntitySignature& signature = GetEntityRegistryInstance()->signatures[entity]; 
         signature.set(GetComponentTypeIndex<T>(), true);
         EntitySignatureChanged(entity, signature);
         ComponentAddedArgs args;
         args.entity = entity;
         args.type = component_pool->data_pool.type;
-        Broadcast<const ComponentAddedArgs&>(GetEntityRegistryInstance()->component_added_event, args);
+        broadcast<const ComponentAddedArgs&>(GetEntityRegistryInstance()->component_added_event, args);
         return *element;
     }
 
@@ -182,7 +182,7 @@ namespace nit
         ComponentRemovedArgs args;
         args.entity = entity;
         args.type = component_pool->data_pool.type;
-        Broadcast<const ComponentRemovedArgs&>(GetEntityRegistryInstance()->component_removed_event, args);
+        broadcast<const ComponentRemovedArgs&>(GetEntityRegistryInstance()->component_removed_event, args);
         
         pool::DeleteData(&component_pool->data_pool, entity);
         EntitySignature& signature = GetEntityRegistryInstance()->signatures[entity]; 

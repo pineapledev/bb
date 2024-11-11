@@ -34,7 +34,7 @@ namespace nit
 
     namespace window
     {
-        void        SetInstance(Window* window_instance);
+        void        set_instance(Window* window_instance);
         void        Init(const WindowCfg& cfg = {});
         void        Finish();
         void        Close();

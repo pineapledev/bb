@@ -108,7 +108,7 @@ namespace nit
     void  SetArrayRawData(const Type* type, void* array, u32 index, void* data);
     void* GetArrayRawData(const Type* type, void* array, u32 index);
     void  ResizeArray(const Type* type, void* array, u32 max, u32 new_max);
-    void  Load(const Type* type, void* data);
+    void  load(const Type* type, void* data);
     void  Free(const Type* type, void* data);
     void  Serialize(const Type* type, void* data, YAML::Emitter& emitter);
     void  Deserialize(const Type* type, void* data, const YAML::Node& node);

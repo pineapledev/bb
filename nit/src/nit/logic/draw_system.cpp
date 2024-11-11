@@ -33,7 +33,7 @@ namespace nit::FnDrawSystem
 
 #ifdef NIT_EDITOR_ENABLED
 
-        if (!engine::GetInstance()->editor.enabled)
+        if (!engine::get_instance()->editor.enabled)
         {
             for (Entity entity : camera_group.entities)
             {
@@ -44,7 +44,7 @@ namespace nit::FnDrawSystem
             }
         }
 
-        return engine::GetInstance()->editor.editor_camera_entity;
+        return engine::get_instance()->editor.editor_camera_entity;
         
 #else
         return *camera_group.entities.begin();
@@ -67,16 +67,16 @@ namespace nit::FnDrawSystem
     
     void Start()
     {
-        engine::GetInstance()->asset_registry.asset_destroyed_event    += AssetDestroyedListener::Create(OnAssetDestroyed);
-        engine::GetInstance()->entity_registry.component_added_event   += ComponentAddedListener::Create(OnComponentAdded);
-        engine::GetInstance()->entity_registry.component_removed_event += ComponentRemovedListener::Create(OnComponentRemoved);
+        engine::get_instance()->asset_registry.asset_destroyed_event    += AssetDestroyedListener::Create(OnAssetDestroyed);
+        engine::get_instance()->entity_registry.component_added_event   += ComponentAddedListener::Create(OnComponentAdded);
+        engine::get_instance()->entity_registry.component_removed_event += ComponentRemovedListener::Create(OnComponentRemoved);
     }
 
     void End()
     {
-        engine::GetInstance()->asset_registry.asset_destroyed_event    -= AssetDestroyedListener::Create(OnAssetDestroyed);
-        engine::GetInstance()->entity_registry.component_added_event   -= ComponentAddedListener::Create(OnComponentAdded);
-        engine::GetInstance()->entity_registry.component_removed_event -= ComponentRemovedListener::Create(OnComponentRemoved);
+        engine::get_instance()->asset_registry.asset_destroyed_event    -= AssetDestroyedListener::Create(OnAssetDestroyed);
+        engine::get_instance()->entity_registry.component_added_event   -= ComponentAddedListener::Create(OnComponentAdded);
+        engine::get_instance()->entity_registry.component_removed_event -= ComponentRemovedListener::Create(OnComponentRemoved);
     }
     
     static ListenerAction OnAssetDestroyed(const AssetDestroyedArgs& args)
@@ -100,18 +100,18 @@ namespace nit::FnDrawSystem
             auto& sprite = GetComponent<Sprite>(args.entity); 
             auto& asset = sprite.texture;
 
-            RetargetAssetHandle(asset);
+            retarget_asset_handle(asset);
 
-            bool is_valid = IsAssetValid(asset);
+            bool is_valid = is_asset_valid(asset);
             
-            if (is_valid && !IsAssetLoaded(asset))
+            if (is_valid && !is_asset_loaded(asset))
             {
-                RetainAsset(asset);
+                retain_asset(asset);
             }
 
             if (is_valid)
             {
-                sprite.sub_texture_index = FindIndexOfSubTexture2D(GetAssetData<Texture2D>(asset), sprite.sub_texture);
+                sprite.sub_texture_index = FindIndexOfSubTexture2D(get_asset_data<Texture2D>(asset), sprite.sub_texture);
             }
             else
             {
@@ -121,10 +121,10 @@ namespace nit::FnDrawSystem
         else if (args.type == GetType<Text>())
         {
             auto& asset = GetComponent<Text>(args.entity).font;
-            RetargetAssetHandle(asset);
-            if (IsAssetValid(asset) && !IsAssetLoaded(asset))
+            retarget_asset_handle(asset);
+            if (is_asset_valid(asset) && !is_asset_loaded(asset))
             {
-                RetainAsset(asset);
+                retain_asset(asset);
             }
         }
         return ListenerAction::StayListening;
@@ -136,20 +136,20 @@ namespace nit::FnDrawSystem
         {
             auto& sprite = GetComponent<Sprite>(args.entity); 
             auto& asset = sprite.texture;
-            RetargetAssetHandle(asset);
+            retarget_asset_handle(asset);
             
-            if (IsAssetValid(asset) && IsAssetLoaded(asset))
+            if (is_asset_valid(asset) && is_asset_loaded(asset))
             {
-                ReleaseAsset(asset);
+                release_asset(asset);
             }
         }
         else if (args.type == GetType<Text>())
         {
             auto& asset = GetComponent<Text>(args.entity).font;
-            RetargetAssetHandle(asset);
-            if (IsAssetValid(asset) && IsAssetLoaded(asset))
+            retarget_asset_handle(asset);
+            if (is_asset_valid(asset) && is_asset_loaded(asset))
             {
-                ReleaseAsset(asset);
+                release_asset(asset);
             }
         }
         return ListenerAction::StayListening;
@@ -167,11 +167,11 @@ namespace nit::FnDrawSystem
         window::RetrieveSize(&width, &height);
         
 #ifdef NIT_EDITOR_ENABLED
-        if (engine::GetInstance()->editor.enabled && engine::GetInstance()->editor.show_viewport)
+        if (engine::get_instance()->editor.enabled && engine::get_instance()->editor.show_viewport)
         {
-            ClearAttachment(&engine::GetInstance()->editor.frame_buffer, 1, -1);
-            width  = engine::GetInstance()->editor.frame_buffer.width;
-            height = engine::GetInstance()->editor.frame_buffer.height;
+            ClearAttachment(&engine::get_instance()->editor.frame_buffer, 1, -1);
+            width  = engine::get_instance()->editor.frame_buffer.width;
+            height = engine::get_instance()->editor.frame_buffer.height;
         }
 #endif
 
@@ -198,15 +198,15 @@ namespace nit::FnDrawSystem
                     continue;
                 }
 
-                bool has_texture = IsAssetValid(sprite.texture); 
+                bool has_texture = is_asset_valid(sprite.texture); 
 
-                Texture2D* texture_data = has_texture ? GetAssetData<Texture2D>(sprite.texture) : nullptr; 
+                Texture2D* texture_data = has_texture ? get_asset_data<Texture2D>(sprite.texture) : nullptr; 
                 
                 if (has_texture)
                 {
-                    if (!IsAssetLoaded(sprite.texture))
+                    if (!is_asset_loaded(sprite.texture))
                     {
-                        RetainAsset(sprite.texture);
+                        retain_asset(sprite.texture);
                     }
                     
                     Vector2 size = texture_data->size;
@@ -280,11 +280,11 @@ namespace nit::FnDrawSystem
             {
                 auto& transform = GetComponent<Transform>(entity);
                 auto& text = GetComponent<Text>(entity);
-                Font* font_data = IsAssetValid(text.font) ? GetAssetData<Font>(text.font) : nullptr;
+                Font* font_data = is_asset_valid(text.font) ? get_asset_data<Font>(text.font) : nullptr;
 
-                if (font_data && !IsAssetLoaded(text.font))
+                if (font_data && !is_asset_loaded(text.font))
                 {
-                    RetainAsset(text.font);
+                    retain_asset(text.font);
                 }
                 
                 if (!text.visible || text.text.empty() || !font_data)

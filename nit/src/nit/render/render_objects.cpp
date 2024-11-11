@@ -24,9 +24,9 @@ namespace nit
     void InitRenderObjects()
     {
         NIT_CHECK_RENDER_OBJECTS_CREATED
-        pool::Load<VertexArray> (&render_objects->vertex_arrays, 100);
-        pool::Load<VertexBuffer>(&render_objects->vertex_buffers, 100);
-        pool::Load<IndexBuffer> (&render_objects->index_buffers, 100);
+        pool::load<VertexArray> (&render_objects->vertex_arrays, 100);
+        pool::load<VertexBuffer>(&render_objects->vertex_buffers, 100);
+        pool::load<IndexBuffer> (&render_objects->index_buffers, 100);
     }
 
     VertexBuffer& GetVertexBufferData(u32 vertex_buffer)

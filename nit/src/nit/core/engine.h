@@ -47,8 +47,8 @@ namespace nit
     
     namespace engine
     {
-        void SetInstance(Engine* engine_instance);
-        Engine* GetInstance();
+        void set_instance(Engine* engine_instance);
+        Engine* get_instance();
         
         void Run(VoidFunc run_callback = nullptr);
         void Play();

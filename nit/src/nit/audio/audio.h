@@ -41,37 +41,37 @@ namespace nit
     
     namespace audio
     {
-        void SetInstance(AudioRegistry* audio_registry_instance);
-        bool HasInstance();
-        AudioRegistry* GetInstance();
-        bool IsInitialized();
+        void set_instance(AudioRegistry* audio_registry_instance);
+        bool has_instance();
+        AudioRegistry* get_instance();
+        bool is_initialized();
         
-        void Init();
-        void Finish();
+        void init();
+        void finish();
 
-        AudioBufferHandle CreateBuffer(AudioFormat format, char* data, u32 size, u32 frec);
-        bool IsBufferValid(AudioBufferHandle buffer_handle);
-        void FreeBufferData(AudioBufferData* data);
-        void DestroyBuffer(AudioBufferHandle buffer_handle);
-        AudioBufferData* GetBufferData(AudioBufferHandle buffer_handle);
+        AudioBufferHandle create_buffer(AudioFormat format, char* data, u32 size, u32 frec);
+        bool is_buffer_valid(AudioBufferHandle buffer_handle);
+        void free_buffer_data(AudioBufferData* data);
+        void destroy_buffer(AudioBufferHandle buffer_handle);
+        AudioBufferData* get_buffer_data(AudioBufferHandle buffer_handle);
         
-        AudioSourceHandle CreateSource(AudioBufferHandle buffer_handle);
-        bool IsSourceValid(AudioSourceHandle source_handle);
-        void FreeSourceData(AudioSourceData* data);
-        void DestroySource(AudioSourceHandle source_handle);
-        AudioSourceData* GetSourceData(AudioSourceHandle source_handle);
+        AudioSourceHandle create_source(AudioBufferHandle buffer_handle);
+        bool is_source_valid(AudioSourceHandle source_handle);
+        void free_source_data(AudioSourceData* data);
+        void destroy_source(AudioSourceHandle source_handle);
+        AudioSourceData* get_source_data(AudioSourceHandle source_handle);
         
-        void Play(AudioSourceHandle source_handle);
-        void Stop(AudioSourceHandle source_handle);
-        bool IsPlaying(AudioSourceHandle source_handle);
-        void SetPitch(AudioSourceHandle source_handle, u32 pitch);
-        void SetGain(AudioSourceHandle source_handle, u32 gain);
-        void SetLoop(AudioSourceHandle source_handle, bool loop);
-        void Translate(AudioSourceHandle source_handle, const Vector3& position);
-        void SetVelocity(AudioSourceHandle source_handle, const Vector3& velocity);
-        void Rotate(AudioSourceHandle source_handle, const Vector3& orientation);
-        void TranslateListener(const Vector3& position);
-        void RotateListener(const Vector3& up, const Vector3& forward);
-        void SetListenerVelocity(const Vector3& velocity); 
+        void play(AudioSourceHandle source_handle);
+        void stop(AudioSourceHandle source_handle);
+        bool is_playing(AudioSourceHandle source_handle);
+        void set_pitch(AudioSourceHandle source_handle, u32 pitch);
+        void set_gain(AudioSourceHandle source_handle, u32 gain);
+        void set_loop(AudioSourceHandle source_handle, bool loop);
+        void translate(AudioSourceHandle source_handle, const Vector3& position);
+        void set_velocity(AudioSourceHandle source_handle, const Vector3& velocity);
+        void rotate(AudioSourceHandle source_handle, const Vector3& orientation);
+        void translate_listener(const Vector3& position);
+        void rotate_listener(const Vector3& up, const Vector3& forward);
+        void set_listener_velocity(const Vector3& velocity); 
     }
 }

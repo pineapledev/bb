@@ -14,18 +14,18 @@ namespace nit
     namespace pool
     {
         template<typename T>
-        void Load(Pool* pool, u32 max_element_count, bool self_id_management = true);
+        void load(Pool* pool, u32 max_element_count, bool self_id_management = true);
 
-        void Free(Pool* pool);
+        void release(Pool* pool);
 
-        bool IsValid(Pool* pool, u32 element_id);  
+        bool is_valid(Pool* pool, u32 element_id);  
     
-        bool InsertDataWithID(Pool* pool, u32 element_id, void* data = nullptr);
+        bool insert_data_with_id(Pool* pool, u32 element_id, void* data = nullptr);
 
-        bool InsertData(Pool* pool, u32& element_id, void* data = nullptr);
+        bool insert_data(Pool* pool, u32& element_id, void* data = nullptr);
     
         template<typename T>
-        T* InsertDataWithID(Pool* pool, u32 element_id, const T& data);
+        T* insert_data_with_id(Pool* pool, u32 element_id, const T& data);
     
         template<typename T>
         T* InsertData(Pool* pool, u32& out_id, const T& data = {});

@@ -9,21 +9,21 @@
 
 namespace nit::audio::clip
 {
-    void Register()
+    void register_type()
     {
-        RegisterAssetType<AudioClip>(
+        register_asset_type<AudioClip>(
         {
-              Load
-            , Free
-            , Serialize
-            , Deserialize
+              load
+            , free
+            , serialize
+            , deserialize
 #ifdef NIT_EDITOR_ENABLED
-            , DrawEditor
+            , draw_editor
 #endif
         });
     }
     
-    void Load(AudioClip* audio_clip)
+    void load(AudioClip* audio_clip)
     {
         if (!audio_clip)
         {
@@ -148,18 +148,18 @@ namespace nit::audio::clip
         
         in.read(data, size);
 
-        if (!audio::HasInstance() || !audio::IsInitialized() || audio::IsBufferValid(audio_clip->buffer_handle))
+        if (!audio::has_instance() || !audio::is_initialized() || audio::is_buffer_valid(audio_clip->buffer_handle))
         {
             NIT_CHECK(false);
             return;
         }
 
-        audio_clip->buffer_handle = audio::CreateBuffer(format, data, size, frec);
+        audio_clip->buffer_handle = audio::create_buffer(format, data, size, frec);
     }
 
-    void Free(AudioClip* audio_clip)
+    void free(AudioClip* audio_clip)
     {
-        if (!audio_clip || !audio::HasInstance() || !audio::IsInitialized())
+        if (!audio_clip || !audio::has_instance() || !audio::is_initialized())
         {
             NIT_CHECK(false);
             return;
@@ -169,13 +169,13 @@ namespace nit::audio::clip
         audio_clip->editor_source = SparseSet::INVALID;
 #endif
 
-        if (audio::IsBufferValid(audio_clip->buffer_handle))
+        if (audio::is_buffer_valid(audio_clip->buffer_handle))
         {
-            audio::DestroyBuffer(audio_clip->buffer_handle);
+            audio::destroy_buffer(audio_clip->buffer_handle);
         }
     }
 
-    void Serialize(const AudioClip* audio_clip, YAML::Emitter& emitter)
+    void serialize(const AudioClip* audio_clip, YAML::Emitter& emitter)
     {
         if (!audio_clip)
         {
@@ -186,7 +186,7 @@ namespace nit::audio::clip
         emitter << YAML::Key << "audio_path" << audio_clip->audio_path;
     }
 
-    void Deserialize(AudioClip* audio_clip, const YAML::Node& node)
+    void deserialize(AudioClip* audio_clip, const YAML::Node& node)
     {
         if (!audio_clip)
         {
@@ -198,7 +198,7 @@ namespace nit::audio::clip
     }
 
 #ifdef NIT_EDITOR_ENABLED
-    void DrawEditor(AudioClip* audio_clip)
+    void draw_editor(AudioClip* audio_clip)
     {
         if (!audio_clip)
         {
@@ -206,21 +206,21 @@ namespace nit::audio::clip
             return;
         }
 
-        AssetHandle this_asset = engine::GetInstance()->editor.selected_asset;
+        AssetHandle this_asset = engine::get_instance()->editor.selected_asset;
         editor::DrawResourceCombo("Path", {".wav"}, audio_clip->audio_path);
         
-        if (audio_clip->prev_path != audio_clip->audio_path || !IsAssetLoaded(this_asset))
+        if (audio_clip->prev_path != audio_clip->audio_path || !is_asset_loaded(this_asset))
         {
             const String path = "assets/" + audio_clip->audio_path;
             std::ifstream in(path, std::ios::binary);
 
             audio_clip->editor_source = SparseSet::INVALID;
-            ReleaseAsset(this_asset);
+            release_asset(this_asset);
             
             if (in)
             {
-                RetainAsset(this_asset);
-                audio_clip->editor_source = audio::CreateSource(audio_clip->buffer_handle);
+                retain_asset(this_asset);
+                audio_clip->editor_source = audio::create_source(audio_clip->buffer_handle);
             }
 
             audio_clip->prev_path = audio_clip->audio_path;
@@ -228,12 +228,12 @@ namespace nit::audio::clip
         
         if (audio_clip->editor_source != SparseSet::INVALID)
         {
-            auto* data = audio::GetBufferData(audio_clip->buffer_handle);
+            auto* data = audio::get_buffer_data(audio_clip->buffer_handle);
             ImGui::Text("Duration %f", data->duration);
             
             if (ImGui::Button("Play"))
             {
-                audio::Play(audio_clip->editor_source);
+                audio::play(audio_clip->editor_source);
             }
         }
     }

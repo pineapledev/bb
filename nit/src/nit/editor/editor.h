@@ -73,8 +73,8 @@ namespace nit
 
     namespace editor
     {
-        void SetInstance(Editor* editor_instance);
-        Editor* GetInstance();
+        void set_instance(Editor* editor_instance);
+        Editor* get_instance();
 
         void Register();
         void Init();

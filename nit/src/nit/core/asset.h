@@ -66,83 +66,83 @@ namespace nit
         Map<UUID, u32>       id_to_data_id;
     };
 
-    AssetHandle CreateAssetHandle(AssetInfo* asset_info);
-    void RetargetAssetHandle(AssetHandle& asset_handle);
+    AssetHandle create_asset_handle(AssetInfo* asset_info);
+    void retarget_asset_handle(AssetHandle& asset_handle);
 
-    Path GetAssetsDirectory();
+    Path get_assets_directory();
     
-    void SetAssetRegistryInstance(AssetRegistry* asset_registry_instance);
+    void set_asset_registry_instance(AssetRegistry* asset_registry_instance);
     
-    AssetRegistry* GetAssetRegistryInstance();
+    AssetRegistry* get_asset_registry_instance();
     
     template<typename T>
-    void RegisterAssetType(const AssetTypeArgs<T>& args, u32 version = 0);
+    void register_asset_type(const AssetTypeArgs<T>& args, u32 version = 0);
 
-    AssetPool* GetAssetPool(Type* type);
+    AssetPool* get_asset_pool(Type* type);
     
-    AssetPool* GetAssetPoolSafe(const AssetHandle& asset);
+    AssetPool* get_asset_pool_safe(const AssetHandle& asset);
     
-    AssetPool* GetAssetPoolSafe(Type* type);
+    AssetPool* get_asset_pool_safe(Type* type);
     
     template<typename T>
-    AssetPool* GetAssetPool();
+    AssetPool* get_asset_pool();
 
-    bool IsAssetTypeRegistered(Type* type);
+    bool is_asset_type_registered(Type* type);
     
     template<typename T>
-    bool IsAssetTypeRegistered();
+    bool is_asset_type_registered();
     
-    void BuildAssetPath(const String& name, String& path);
+    void build_asset_path(const String& name, String& path);
 
-    void PushAssetInfo(AssetInfo& asset_info, u32 index, bool build_path);
-    void EraseAssetInfo(AssetInfo& asset_info, SparseSetDeletion deletion);
+    void push_asset_info(AssetInfo& asset_info, u32 index, bool build_path);
+    void erase_asset_info(AssetInfo& asset_info, SparseSetDeletion deletion);
     
-    AssetInfo* GetAssetInfo(AssetHandle& asset);
+    AssetInfo* get_asset_info(AssetHandle& asset);
     
-    AssetHandle DeserializeAssetFromString(const String& asset_str);
+    AssetHandle deserialize_asset_from_string(const String& asset_str);
     
-    AssetHandle DeserializeAssetFromFile(const String& file_path);
+    AssetHandle deserialize_asset_from_file(const String& file_path);
     
-    void SerializeAssetToString(AssetHandle& asset, String& result);
+    void serialize_asset_to_string(AssetHandle& asset, String& result);
     
-    void SerializeAssetToFile(AssetHandle& asset);
+    void serialize_asset_to_file(AssetHandle& asset);
     
-    void InitAssetRegistry();
+    void init_asset_registry();
     
-    u32 GetLastAssetVersion(Type* type);
+    u32 get_last_asset_version(Type* type);
     
-    u32 GetLastAssetVersion(const String& type_name);
+    u32 get_last_asset_version(const String& type_name);
 
     template<typename T>
-    u32 GetLastAssetVersion();
+    u32 get_last_asset_version();
     
-    void FindAssetsByName(const String& name, Array<AssetHandle>& assets);
+    void find_assets_by_name(const String& name, Array<AssetHandle>& assets);
     
-    AssetHandle FindAssetByName(const String& name);
+    AssetHandle find_asset_by_name(const String& name);
 
-    void GetAssetsOfType(Type* type, Array<AssetHandle>& assets);
+    void get_assets_of_type(Type* type, Array<AssetHandle>& assets);
     
     template<typename T>
-    T* GetAssetData(AssetHandle& asset);
+    T* get_asset_data(AssetHandle& asset);
 
-    bool IsAssetValid(AssetHandle& asset);
+    bool is_asset_valid(AssetHandle& asset);
 
-    bool IsAssetLoaded(AssetHandle& asset);
+    bool is_asset_loaded(AssetHandle& asset);
 
-    AssetHandle CreateAsset(Type* type, const String& name, const String& path, void* data = nullptr);
+    AssetHandle create_asset(Type* type, const String& name, const String& path, void* data = nullptr);
     
     template<typename T>
-    AssetHandle CreateAsset(const String& name, const String& path = "", const T& data = {});
+    AssetHandle create_asset(const String& name, const String& path = "", const T& data = {});
     
-    void LoadAsset(AssetHandle& asset, bool force_reload = false);
+    void load_asset(AssetHandle& asset, bool force_reload = false);
     
-    void FreeAsset(AssetHandle& asset);
+    void free_asset(AssetHandle& asset);
 
-    void RetainAsset(AssetHandle& asset);
+    void retain_asset(AssetHandle& asset);
     
-    void ReleaseAsset(AssetHandle& asset, bool force_free = false);
+    void release_asset(AssetHandle& asset, bool force_free = false);
     
-    void DestroyAsset(AssetHandle& asset);
+    void destroy_asset(AssetHandle& asset);
 }
 
 #include "asset.inl"

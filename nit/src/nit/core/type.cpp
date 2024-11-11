@@ -39,7 +39,7 @@ namespace nit
         type->fn_resize_data(array, max, new_max);
     }
 
-    void Load(const Type* type, void* data)
+    void load(const Type* type, void* data)
     {
         NIT_CHECK(type);
         if (type->fn_invoke_load)

@@ -88,7 +88,7 @@ namespace nit
         RegisterEnumValue<TextureCoordinate>("U",TextureCoordinate::U);
         RegisterEnumValue<TextureCoordinate>("V",TextureCoordinate::V);
         
-        RegisterAssetType<Texture2D>({
+        register_asset_type<Texture2D>({
               LoadTexture2D
             , FreeTexture2D
             , SerializeTexture2D
