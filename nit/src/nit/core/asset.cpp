@@ -222,7 +222,7 @@ namespace nit
                 
                 if (created)
                 {
-                    broadcast<const AssetCreatedArgs&>(asset_get_instance()->asset_created_event, {result});
+                    event_broadcast<const AssetCreatedArgs&>(asset_get_instance()->asset_created_event, {result});
                 }
             }
         }
@@ -396,7 +396,7 @@ namespace nit
         AssetInfo info{type, name, path, asset_id, asset_get_last_version(type), false, 0, data_id };
         asset_push_info(info,  pool_index_of(data_pool, data_id), true);
         AssetHandle asset_handle = asset_create_handle(&info);
-        broadcast<const AssetCreatedArgs&>(asset_get_instance()->asset_created_event, {asset_handle});
+        event_broadcast<const AssetCreatedArgs&>(asset_get_instance()->asset_created_event, {asset_handle});
         return asset_handle;
     }
 
@@ -413,7 +413,7 @@ namespace nit
 
         AssetDestroyedArgs args;
         args.asset_handle = asset_create_handle(info);
-        broadcast<const AssetDestroyedArgs&>(asset_registry->asset_destroyed_event, args);
+        event_broadcast<const AssetDestroyedArgs&>(asset_registry->asset_destroyed_event, args);
         
         asset_erase_info(*info, pool_delete_data(&pool->data_pool, info->data_id));
         

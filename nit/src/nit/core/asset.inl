@@ -63,7 +63,7 @@ namespace nit
         AssetInfo info{type, name, path, asset_id, asset_get_last_version<T>(), false, 0, data_id };
         asset_push_info(info,  pool_index_of(data_pool, data_id), true);
         AssetHandle asset_handle = asset_create_handle(&info);
-        broadcast<const AssetCreatedArgs&>(asset_get_instance()->asset_created_event, {asset_handle});
+        event_broadcast<const AssetCreatedArgs&>(asset_get_instance()->asset_created_event, {asset_handle});
         return asset_handle;
     }
 }

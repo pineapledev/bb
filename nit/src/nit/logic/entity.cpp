@@ -80,7 +80,7 @@ namespace nit
                 continue;
             }
 
-            broadcast<const ComponentRemovedArgs&>(entity_registry->component_removed_event, {entity, component_pool.data_pool.type});
+            event_broadcast<const ComponentRemovedArgs&>(entity_registry->component_removed_event, {entity, component_pool.data_pool.type});
             pool_delete_data(&component_pool.data_pool, entity);
         }
 
@@ -165,7 +165,7 @@ namespace nit
             
             if (!data_pool.type->fn_invoke_deserialize
                 || !data_pool.type->fn_invoke_serialize
-                || !invoke(component_pool.fn_is_in_entity, entity))
+                || !delegate_invoke(component_pool.fn_is_in_entity, entity))
             {
                 continue;
             }
@@ -196,13 +196,13 @@ namespace nit
             String type_name = entity_node_child.first.as<String>();
             auto* component_pool = FindComponentPool(GetType(type_name));
             auto& data_pool = component_pool->data_pool;
-            invoke(component_pool->fn_add_to_entity, entity);
-            void* component_data = invoke(component_pool->fn_get_from_entity, entity);
+            delegate_invoke(component_pool->fn_add_to_entity, entity);
+            void* component_data = delegate_invoke(component_pool->fn_get_from_entity, entity);
             deserialize(data_pool.type, component_data, component_node);
             ComponentAddedArgs args;
             args.entity = entity;
             args.type = component_pool->data_pool.type;
-            broadcast<const ComponentAddedArgs&>(entity::get_registry_instance()->component_added_event, args);
+            event_broadcast<const ComponentAddedArgs&>(entity::get_registry_instance()->component_added_event, args);
         }
         
         return entity;

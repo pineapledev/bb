@@ -88,7 +88,7 @@ ListenerAction game_start()
 
 ListenerAction game_update()
 {
-    //SpawnEntity();
+    spawn_entity();
     
     for (Entity entity : entity::get_group<Transform, Sprite, Move>().entities)
     {

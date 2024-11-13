@@ -69,7 +69,7 @@ namespace nit
         register_scene();
         register_clip();
         
-        broadcast(instance->events[(u8)Stage::Run]);
+        event_broadcast(instance->events[(u8)Stage::Run]);
         
         asset_init();
 
@@ -97,7 +97,7 @@ namespace nit
         
         NIT_LOG_TRACE("Application created!");
         
-        broadcast(instance->events[(u8)Stage::Start]);
+        event_broadcast(instance->events[(u8)Stage::Start]);
         
         while(!window_should_close())
         {
@@ -108,12 +108,12 @@ namespace nit
             instance->seconds += time_between_frames;
             instance->delta_seconds = (f32) Clamp(time_between_frames, 0., instance->max_delta_time);
             
-            broadcast(instance->events[(u8)Stage::Update]);
+            event_broadcast(instance->events[(u8)Stage::Update]);
 
             instance->acc_fixed_delta += instance->delta_seconds;
             while (instance->acc_fixed_delta >= instance->fixed_delta_seconds)
             {
-                broadcast(instance->events[(u8)Stage::FixedUpdate]);
+                event_broadcast(instance->events[(u8)Stage::FixedUpdate]);
                 instance->acc_fixed_delta -= instance->fixed_delta_seconds;
             }
 
@@ -126,13 +126,13 @@ namespace nit
 #ifdef NIT_EDITOR_ENABLED
              editor::begin_draw();
 #endif
-            broadcast(instance->events[(u8)Stage::Draw]);
+            event_broadcast(instance->events[(u8)Stage::Draw]);
 
 #ifdef NIT_EDITOR_ENABLED
              editor::end_draw();
 #endif
 #ifdef NIT_IMGUI_ENABLED
-            broadcast(instance->events[(u8)Stage::DrawImGUI]);
+            event_broadcast(instance->events[(u8)Stage::DrawImGUI]);
             auto [window_width, window_height] = window_get_size();
             end_im_gui(window_width, window_height);
 #endif
@@ -140,7 +140,7 @@ namespace nit
             window_update();
         }
 
-        broadcast(instance->events[(u8)Stage::End]);
+        event_broadcast(instance->events[(u8)Stage::End]);
     }
 
     void engine_play()  
@@ -151,7 +151,7 @@ namespace nit
         if (instance->stopped)
         {
             instance->stopped = false;
-            broadcast(instance->events[(u8)Stage::Start]);
+            event_broadcast(instance->events[(u8)Stage::Start]);
         }
     }
 
@@ -164,7 +164,7 @@ namespace nit
     void engine_stop()
     {
         NIT_CHECK_ENGINE_CREATED
-        broadcast(instance->events[(u8)Stage::End]);
+        event_broadcast(instance->events[(u8)Stage::End]);
         instance->stopped = true;
     }
 }

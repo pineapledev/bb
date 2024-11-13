@@ -540,7 +540,7 @@ namespace nit::editor
                 for (u32 i = 0; i < engine_get_instance()->entity_registry.next_component_type_index - 1; ++i)
                 {
                     ComponentPool* pool = &engine_get_instance()->entity_registry.component_pool[i];
-                    if (!invoke(pool->fn_is_in_entity, selected_entity))
+                    if (!delegate_invoke(pool->fn_is_in_entity, selected_entity))
                     {
                         continue;
                     }
@@ -588,7 +588,7 @@ namespace nit::editor
 
                     if (remove_entity)
                     {
-                        invoke(pool->fn_remove_from_entity, selected_entity);
+                        delegate_invoke(pool->fn_remove_from_entity, selected_entity);
                     }
                 }
 
@@ -602,14 +602,14 @@ namespace nit::editor
                     for (u32 i = 0; i < engine_get_instance()->entity_registry.next_component_type_index - 1; ++i)
                     {
                         ComponentPool* pool = &engine_get_instance()->entity_registry.component_pool[i];
-                        if (invoke(pool->fn_is_in_entity, selected_entity))
+                        if (delegate_invoke(pool->fn_is_in_entity, selected_entity))
                         {
                             continue;
                         }
 
                         if (ImGui::MenuItem(pool->data_pool.type->name.c_str()))
                         {
-                            invoke(pool->fn_add_to_entity, selected_entity);
+                            delegate_invoke(pool->fn_add_to_entity, selected_entity);
                         }
                     }
                     ImGui::EndPopup();

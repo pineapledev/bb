@@ -121,10 +121,10 @@ namespace nit
             return entity::get_component_ptr<T>(entity);
         };
         
-        bind(component_pool.fn_add_to_entity, fn_add_to_entity);
-        bind(component_pool.fn_remove_from_entity, fn_remove_from_entity);
-        bind(component_pool.fn_is_in_entity, fn_is_in_entity);
-        bind(component_pool.fn_get_from_entity, fn_get_from_entity);
+        delegate_bind(component_pool.fn_add_to_entity, fn_add_to_entity);
+        delegate_bind(component_pool.fn_remove_from_entity, fn_remove_from_entity);
+        delegate_bind(component_pool.fn_is_in_entity, fn_is_in_entity);
+        delegate_bind(component_pool.fn_get_from_entity, fn_get_from_entity);
         
         pool_load<T>(&component_pool.data_pool, entity_registry->max_entities, false);
         ++entity_registry->next_component_type_index;
@@ -185,7 +185,7 @@ namespace nit
             ComponentAddedArgs args;
             args.entity = entity;
             args.type = component_pool->data_pool.type;
-            broadcast<const ComponentAddedArgs&>(entity::get_registry_instance()->component_added_event, args);
+            event_broadcast<const ComponentAddedArgs&>(entity::get_registry_instance()->component_added_event, args);
             return *element;
         }
         
@@ -200,7 +200,7 @@ namespace nit
             ComponentRemovedArgs args;
             args.entity = entity;
             args.type = component_pool->data_pool.type;
-            broadcast<const ComponentRemovedArgs&>(entity::get_registry_instance()->component_removed_event, args);
+            event_broadcast<const ComponentRemovedArgs&>(entity::get_registry_instance()->component_removed_event, args);
         
             pool_delete_data(&component_pool->data_pool, entity);
             EntitySignature& signature = entity::get_registry_instance()->signatures[entity]; 
