@@ -50,10 +50,7 @@ namespace nit
 
         entity_registry_set_instance(&engine->entity_registry);
         entity_registry_init();
-        
-        audio_set_instance(&engine->audio_registry);
-        audio_init();
-        
+
         register_name_component();
         register_uuid_component();
         register_transform_component();
@@ -62,6 +59,9 @@ namespace nit
         register_sprite_component();
         register_circle_component();
         register_line_2d_component();
+        
+        audio_set_instance(&engine->audio_registry);
+        audio_init();
 
         NIT_IF_EDITOR_ENABLED(register_editor());
         
@@ -75,9 +75,9 @@ namespace nit
         register_clip_asset();
 
         event_broadcast(engine_event(Stage::Run));
-        
-        assets_init();
 
+        assets_init();
+        
         set_render_objects_instance(&engine->render_objects);
         init_render_objects();
         
@@ -136,6 +136,6 @@ namespace nit
             window_update();
         }
 
-        event_broadcast(engine->events[(u8)Stage::End]);
+        event_broadcast(engine_event(Stage::End));
     }
 }

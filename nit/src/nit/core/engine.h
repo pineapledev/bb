@@ -36,7 +36,7 @@ namespace nit
 
     using EngineEvent    = Event<>;
     using EngineListener = Listener<>;
-    
+
     struct Engine
     {
         EngineEvent    events[(u8) Stage::Count];
