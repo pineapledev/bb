@@ -126,7 +126,7 @@ namespace nit
         bind(component_pool.fn_is_in_entity, fn_is_in_entity);
         bind(component_pool.fn_get_from_entity, fn_get_from_entity);
         
-        pool::load<T>(&component_pool.data_pool, entity_registry->max_entities, false);
+        pool_load<T>(&component_pool.data_pool, entity_registry->max_entities, false);
         ++entity_registry->next_component_type_index;
     }
 
@@ -153,7 +153,7 @@ namespace nit
         NIT_CHECK_MSG(entity::get_registry_instance()->signatures[entity].size() <= NIT_MAX_COMPONENT_TYPES + 1, "Components per entity out of range!");
         ComponentPool* component_pool = FindComponentPool<T>();
         NIT_CHECK_MSG(component_pool, "Invalid component type!");
-        T* element = pool::insert_data_with_id(&component_pool->data_pool, entity, data);
+        T* element = pool_insert_data_with_id(&component_pool->data_pool, entity, data);
         EntitySignature& signature = entity::get_registry_instance()->signatures[entity]; 
         signature.set(get_componentTypeIndex<T>(), true);
         EntitySignatureChanged(entity, signature);
@@ -178,7 +178,7 @@ namespace nit
             NIT_CHECK_MSG(entity::get_registry_instance()->signatures[entity].size() <= NIT_MAX_COMPONENT_TYPES + 1, "Components per entity out of range!");
             ComponentPool* component_pool = FindComponentPool<T>();
             NIT_CHECK_MSG(component_pool, "Invalid component type!");
-            T* element = pool::insert_data_with_id(&component_pool->data_pool, entity, data);
+            T* element = pool_insert_data_with_id(&component_pool->data_pool, entity, data);
             EntitySignature& signature = entity::get_registry_instance()->signatures[entity]; 
             signature.set(get_componentTypeIndex<T>(), true);
             EntitySignatureChanged(entity, signature);
@@ -202,7 +202,7 @@ namespace nit
             args.type = component_pool->data_pool.type;
             broadcast<const ComponentRemovedArgs&>(entity::get_registry_instance()->component_removed_event, args);
         
-            pool::delete_data(&component_pool->data_pool, entity);
+            pool_delete_data(&component_pool->data_pool, entity);
             EntitySignature& signature = entity::get_registry_instance()->signatures[entity]; 
             signature.set(get_componentTypeIndex<T>(), false);
             EntitySignatureChanged(entity, signature);
@@ -214,7 +214,7 @@ namespace nit
             NIT_CHECK_MSG(IsEntityValid(entity), "Invalid entity!");
             ComponentPool* component_pool = FindComponentPool<T>();
             NIT_CHECK_MSG(component_pool, "Invalid component type!");
-            return *pool::get_data<T>(&component_pool->data_pool, entity);
+            return *pool_get_data<T>(&component_pool->data_pool, entity);
         }
     
         template<typename T>
@@ -223,7 +223,7 @@ namespace nit
             NIT_CHECK_MSG(IsEntityValid(entity), "Invalid entity!");
             ComponentPool* component_pool = FindComponentPool<T>();
             NIT_CHECK_MSG(component_pool, "Invalid component type!");
-            return pool::get_data<T>(&component_pool->data_pool, entity);
+            return pool_get_data<T>(&component_pool->data_pool, entity);
         }
 
         template<typename T>

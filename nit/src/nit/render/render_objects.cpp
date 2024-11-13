@@ -24,19 +24,19 @@ namespace nit
     void init_render_objects()
     {
         NIT_CHECK_RENDER_OBJECTS_CREATED
-        pool::load<VertexArray> (&render_objects->vertex_arrays, 100);
-        pool::load<VertexBuffer>(&render_objects->vertex_buffers, 100);
-        pool::load<IndexBuffer> (&render_objects->index_buffers, 100);
+        pool_load<VertexArray> (&render_objects->vertex_arrays, 100);
+        pool_load<VertexBuffer>(&render_objects->vertex_buffers, 100);
+        pool_load<IndexBuffer> (&render_objects->index_buffers, 100);
     }
 
     VertexBuffer& get_vertex_buffer_data(u32 vertex_buffer)
     {
-        return *pool::get_data<VertexBuffer>(&render_objects->vertex_buffers, vertex_buffer);
+        return *pool_get_data<VertexBuffer>(&render_objects->vertex_buffers, vertex_buffer);
     }
 
     void bind_vertex_buffer(u32 vertex_buffer)
     {
-        auto* vertex_buffer_data = pool::get_data<VertexBuffer>(&render_objects->vertex_buffers, vertex_buffer);
+        auto* vertex_buffer_data = pool_get_data<VertexBuffer>(&render_objects->vertex_buffers, vertex_buffer);
         glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_data->buffer_id);
     }
 
@@ -47,7 +47,7 @@ namespace nit
 
     void set_vertex_buffer_data(u32 vertex_buffer, const void* data, u64 size)
     {
-        auto* vertex_buffer_data = pool::get_data<VertexBuffer>(&render_objects->vertex_buffers, vertex_buffer);
+        auto* vertex_buffer_data = pool_get_data<VertexBuffer>(&render_objects->vertex_buffers, vertex_buffer);
         glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_data->buffer_id);
         glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
     }
@@ -56,7 +56,7 @@ namespace nit
     {
         NIT_CHECK_RENDER_OBJECTS_CREATED
         u32 id;
-        auto* vertex_buffer_data = pool::insert_data<VertexBuffer>(&render_objects->vertex_buffers, id);
+        auto* vertex_buffer_data = pool_insert_data<VertexBuffer>(&render_objects->vertex_buffers, id);
         glCreateBuffers(1, &vertex_buffer_data->buffer_id);
         glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_data->buffer_id);
         glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
@@ -67,7 +67,7 @@ namespace nit
     {
         NIT_CHECK_RENDER_OBJECTS_CREATED
         u32 id;
-        auto* vertex_buffer_data = pool::insert_data<VertexBuffer>(&render_objects->vertex_buffers, id);
+        auto* vertex_buffer_data = pool_insert_data<VertexBuffer>(&render_objects->vertex_buffers, id);
         glCreateBuffers(1, &vertex_buffer_data->buffer_id);
         glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_data->buffer_id);
         glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
@@ -76,14 +76,14 @@ namespace nit
 
     void destroy_vertex_buffer(u32 vertex_buffer)
     {
-        auto* vertex_buffer_data = pool::get_data<VertexBuffer>(&render_objects->vertex_buffers, vertex_buffer);
+        auto* vertex_buffer_data = pool_get_data<VertexBuffer>(&render_objects->vertex_buffers, vertex_buffer);
         glDeleteBuffers(1, &vertex_buffer_data->buffer_id);
-        pool::delete_data(&render_objects->vertex_buffers, vertex_buffer);
+        pool_delete_data(&render_objects->vertex_buffers, vertex_buffer);
     }
 
     void bind_index_buffer(u32 index_buffer)
     {
-        auto* index_buffer_data = pool::get_data<IndexBuffer>(&render_objects->index_buffers, index_buffer);
+        auto* index_buffer_data = pool_get_data<IndexBuffer>(&render_objects->index_buffers, index_buffer);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_data->buffer_id);
     }
 
@@ -95,7 +95,7 @@ namespace nit
     u32 create_index_buffer(const u32* indices, u64 count)
     {
         u32 id;
-        auto* index_buffer_data = pool::insert_data<IndexBuffer>(&render_objects->index_buffers, id);
+        auto* index_buffer_data = pool_insert_data<IndexBuffer>(&render_objects->index_buffers, id);
         glCreateBuffers(1, &index_buffer_data->buffer_id);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_data->buffer_id);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(u32), indices, GL_STATIC_DRAW);
@@ -104,14 +104,14 @@ namespace nit
 
     void destroy_index_buffer(u32 index_buffer)
     {
-        auto* index_buffer_data = pool::get_data<IndexBuffer>(&render_objects->index_buffers, index_buffer);
+        auto* index_buffer_data = pool_get_data<IndexBuffer>(&render_objects->index_buffers, index_buffer);
         glDeleteBuffers(1, &index_buffer_data->buffer_id);
-        pool::delete_data(&render_objects->vertex_buffers, index_buffer);
+        pool_delete_data(&render_objects->vertex_buffers, index_buffer);
     }
 
     void bind_vertex_array(u32 vertex_array)
     {
-        auto* vertex_array_data = pool::get_data<VertexArray>(&render_objects->vertex_arrays, vertex_array);
+        auto* vertex_array_data = pool_get_data<VertexArray>(&render_objects->vertex_arrays, vertex_array);
         glBindVertexArray(vertex_array_data->id);
     }
 
@@ -123,33 +123,33 @@ namespace nit
     u32 create_vertex_array()
     {
         u32 id;
-        auto* vertex_array_data = pool::insert_data<VertexArray>(&render_objects->vertex_arrays, id);
+        auto* vertex_array_data = pool_insert_data<VertexArray>(&render_objects->vertex_arrays, id);
         glCreateVertexArrays(1, &vertex_array_data->id);
         return id;
     }
     
     void destroy_vertex_array(u32 vertex_array)
     {
-        auto* vertex_array_data = pool::get_data<VertexArray>(&render_objects->vertex_arrays, vertex_array);
+        auto* vertex_array_data = pool_get_data<VertexArray>(&render_objects->vertex_arrays, vertex_array);
         glDeleteVertexArrays(1, &vertex_array_data->id);
-        pool::delete_data(&render_objects->vertex_arrays, vertex_array);
+        pool_delete_data(&render_objects->vertex_arrays, vertex_array);
     }
 
     void add_index_buffer(u32 vertex_array, u32 index_buffer)
     {
-        auto* vertex_array_data = pool::get_data<VertexArray>(&render_objects->vertex_arrays, vertex_array);
+        auto* vertex_array_data = pool_get_data<VertexArray>(&render_objects->vertex_arrays, vertex_array);
         glBindVertexArray(vertex_array_data->id);
-        auto* index_buffer_data = pool::get_data<IndexBuffer>(&render_objects->index_buffers, index_buffer);
+        auto* index_buffer_data = pool_get_data<IndexBuffer>(&render_objects->index_buffers, index_buffer);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_data->buffer_id);
     }
 
     void add_vertex_buffer(u32 vertex_array, u32 vertex_buffer)
     {
-        auto* vertex_buffer_data = pool::get_data<VertexBuffer>(&render_objects->vertex_buffers, vertex_buffer);
+        auto* vertex_buffer_data = pool_get_data<VertexBuffer>(&render_objects->vertex_buffers, vertex_buffer);
         
         NIT_CHECK_MSG(!vertex_buffer_data->layout.elements.empty(), "Vertex buffer has no layout!");
 
-        auto* vertex_array_data = pool::get_data<VertexArray>(&render_objects->vertex_arrays, vertex_array);
+        auto* vertex_array_data = pool_get_data<VertexArray>(&render_objects->vertex_arrays, vertex_array);
         glBindVertexArray(vertex_array_data->id);
         glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_data->buffer_id);
         u32 index = 0;

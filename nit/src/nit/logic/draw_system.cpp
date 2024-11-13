@@ -111,7 +111,7 @@ namespace nit::draw_system
 
             if (is_valid)
             {
-                sprite.sub_texture_index = find_index_of_sub_texture_2d(asset_get_data<Texture2D>(asset), sprite.sub_texture);
+                sprite.sub_texture_index = find_pool_index_of_sub_texture_2d(asset_get_data<Texture2D>(asset), sprite.sub_texture);
             }
             else
             {

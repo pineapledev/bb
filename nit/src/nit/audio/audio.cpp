@@ -70,8 +70,8 @@ namespace nit
             audio_registry->context = open_al_context;
             audio_registry->device  = open_al_device;
 
-            pool::load<AudioSourceData>(&audio_registry->audio_sources, 100);
-            pool::load<AudioBufferData>(&audio_registry->audio_buffers, 100);
+            pool_load<AudioSourceData>(&audio_registry->audio_sources, 100);
+            pool_load<AudioBufferData>(&audio_registry->audio_buffers, 100);
             
             return;
         }
@@ -90,8 +90,8 @@ namespace nit
             audio_free_buffer_data(buffer_data + i);
         }
 
-        pool::release(&audio_registry->audio_sources);
-        pool::release(&audio_registry->audio_buffers);
+        pool_free(&audio_registry->audio_sources);
+        pool_free(&audio_registry->audio_buffers);
         
         alcDestroyContext(static_cast<ALCcontext*>(audio_registry->context));
         audio_registry->context = nullptr;
@@ -142,7 +142,7 @@ namespace nit
         
         AudioBufferHandle handle = 0;
         
-        pool::insert_data<AudioBufferData>(&audio_registry->audio_buffers, handle, {
+        pool_insert_data<AudioBufferData>(&audio_registry->audio_buffers, handle, {
             .buffer_id = buffer_id,
             .format    = format,
             .size      = size,
@@ -156,7 +156,7 @@ namespace nit
     bool audio_is_buffer_valid(AudioBufferHandle buffer_handle)
     {
         if (IsAudioRegistryInvalid()) return false;
-        return pool::is_valid(&audio_registry->audio_buffers, buffer_handle);
+        return pool_is_valid(&audio_registry->audio_buffers, buffer_handle);
     }
 
     void audio_free_buffer_data(AudioBufferData* data)
@@ -191,10 +191,10 @@ namespace nit
 
         for (AudioSourceHandle& source_handle : data->audio_sources)
         {
-            pool::delete_data(&audio_registry->audio_sources, source_handle);
+            pool_delete_data(&audio_registry->audio_sources, source_handle);
         }
         
-        pool::delete_data(&audio_registry->audio_buffers, buffer_handle);
+        pool_delete_data(&audio_registry->audio_buffers, buffer_handle);
     }
 
     AudioBufferData* audio_get_buffer_data(AudioBufferHandle buffer_handle)
@@ -207,7 +207,7 @@ namespace nit
             return nullptr;
         }
 
-        return pool::get_data<AudioBufferData>(&audio_registry->audio_buffers, buffer_handle);
+        return pool_get_data<AudioBufferData>(&audio_registry->audio_buffers, buffer_handle);
     }
 
     AudioSourceHandle audio_create_source(AudioBufferHandle buffer_handle)
@@ -228,7 +228,7 @@ namespace nit
         
         AudioSourceHandle audio_source = 0;
 
-        pool::insert_data<AudioSourceData>(&audio_registry->audio_sources, audio_source, {
+        pool_insert_data<AudioSourceData>(&audio_registry->audio_sources, audio_source, {
             .source_id    = source_id,
             .audio_buffer = buffer_handle
         });
@@ -240,7 +240,7 @@ namespace nit
     bool audio_is_source_valid(AudioSourceHandle source_handle)
     {
         if (IsAudioRegistryInvalid()) return false;
-        return pool::is_valid(&audio_registry->audio_sources, source_handle);
+        return pool_is_valid(&audio_registry->audio_sources, source_handle);
     }
 
     void audio_free_source_data(AudioSourceData* data)
@@ -270,7 +270,7 @@ namespace nit
         AudioBufferData* buffer_data = audio_get_buffer_data(source_data->audio_buffer);
         buffer_data->audio_sources.erase(std::ranges::find(buffer_data->audio_sources, source_handle));
         
-        pool::delete_data(&audio_registry->audio_sources, source_handle);
+        pool_delete_data(&audio_registry->audio_sources, source_handle);
     }
 
     AudioSourceData* audio_get_source_data(AudioSourceHandle source_handle)
@@ -283,7 +283,7 @@ namespace nit
             return nullptr;
         }
 
-        return pool::get_data<AudioSourceData>(&audio_registry->audio_sources, source_handle);
+        return pool_get_data<AudioSourceData>(&audio_registry->audio_sources, source_handle);
     }
 
     void audio_play(AudioSourceHandle source_handle)

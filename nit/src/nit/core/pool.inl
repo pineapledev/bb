@@ -3,7 +3,7 @@
 namespace nit
 {
     template<typename T>
-    void pool::load(Pool* pool, u32 max_element_count, bool self_id_management)
+    void pool_load(Pool* pool, u32 max_element_count, bool self_id_management)
     {
         if (!pool)
         {
@@ -33,7 +33,7 @@ namespace nit
     }
     
     template<typename T>
-    T* pool::insert_data_with_id(Pool* pool, u32 element_id, const T& data)
+    T* pool_insert_data_with_id(Pool* pool, u32 element_id, const T& data)
     {
         if (!pool)
         {
@@ -43,7 +43,7 @@ namespace nit
 
         if (sparse::is_full(&pool->sparse_set))
         {
-            pool::resize(pool, pool->sparse_set.max * 2);
+            pool_resize(pool, pool->sparse_set.max * 2);
         }
         
         NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");
@@ -51,7 +51,7 @@ namespace nit
     }
 
     template<typename T>
-    T* pool::insert_data(Pool* pool, u32& out_id, const T& data)
+    T* pool_insert_data(Pool* pool, u32& out_id, const T& data)
     {
         if (!pool || !pool->self_id_management)
         {
@@ -61,11 +61,11 @@ namespace nit
         
         out_id = pool->available_ids.front();
         pool->available_ids.pop();
-        return insert_data_with_id(pool, out_id, data);
+        return pool_insert_data_with_id(pool, out_id, data);
     }
     
     template<typename T>
-    T* pool::get_data(Pool* pool, u32 element_id)
+    T* pool_get_data(Pool* pool, u32 element_id)
     {
         if (!pool)
         {
@@ -75,7 +75,7 @@ namespace nit
 
         NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");
 
-        if (!pool::is_valid(pool, element_id))
+        if (!pool_is_valid(pool, element_id))
         {
             return nullptr;
         }

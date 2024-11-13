@@ -48,7 +48,7 @@ namespace nit
     };
 
     void register_texture_2d();
-    i32  find_index_of_sub_texture_2d(const Texture2D* texture, const String& sub_texture_name);
+    i32  find_pool_index_of_sub_texture_2d(const Texture2D* texture, const String& sub_texture_name);
     void serialize_texture_2d(const Texture2D* texture, YAML::Emitter& emitter);
     void deserialize_texture_2d(Texture2D* texture, const YAML::Node& node);
 #ifdef NIT_EDITOR_ENABLED

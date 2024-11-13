@@ -2,14 +2,14 @@
 
 namespace nit
 {
-    enum InputState
+    enum InputState : i32
     {
         InputRelease = 0,
         InputPress = 1,
         InputRepeat = 2
     };
     
-    enum HatState
+    enum HatState : i32
     {
         HatCentered = 0,
         HatUp = 1,
@@ -22,7 +22,7 @@ namespace nit
         HatLeftDown = (HatLeft | HatDown)
     };
     
-    enum Key
+    enum Key : i32
     {
         KeyUnknown = -1,
         KeySpace = 32,
@@ -150,7 +150,7 @@ namespace nit
         KeyLast = KeyMenu
     };
 
-    enum ModifierKey
+    enum ModifierKey : i32
     {
         ModShift = 0x0001,
         ModControl = 0x0002,
@@ -160,7 +160,7 @@ namespace nit
         ModNumLock = 0x0020
     };
 
-    enum MouseButton
+    enum MouseButton : i32
     {
         MouseButton1 = 0,
         MouseButton2 = 1,
@@ -176,7 +176,7 @@ namespace nit
         MouseButtonMiddle = MouseButton3
     };
 
-    enum MouseAxis
+    enum MouseAxis : i32
     {
         MouseAxisDeltaX = 0,
         MouseAxisDeltaY = 1,
@@ -184,7 +184,7 @@ namespace nit
         MouseAxisScrollY = 3,
     };
 
-    enum Joystick
+    enum Joystick : i32
     {
         Joystick1 = 0,
         Joystick2 = 1,

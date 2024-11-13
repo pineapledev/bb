@@ -51,7 +51,7 @@ namespace nit
         for (u32 i = 0; i < entity_registry->next_component_type_index; ++i)
         {
             ComponentPool& data = entity_registry->component_pool[i];
-            pool::release(&data.data_pool);
+            pool_free(&data.data_pool);
         }
     }
 
@@ -81,7 +81,7 @@ namespace nit
             }
 
             broadcast<const ComponentRemovedArgs&>(entity_registry->component_removed_event, {entity, component_pool.data_pool.type});
-            pool::delete_data(&component_pool.data_pool, entity);
+            pool_delete_data(&component_pool.data_pool, entity);
         }
 
         entity_registry->signatures[entity].reset();
@@ -172,7 +172,7 @@ namespace nit
 
             emitter << YAML::Key << data_pool.type->name << YAML::Value << YAML::BeginMap;
                 
-            void* raw_data = pool::get_raw_data(&data_pool, entity);
+            void* raw_data = pool_get_raw_data(&data_pool, entity);
             serialize(data_pool.type, raw_data, emitter);
                 
             emitter << YAML::EndMap;

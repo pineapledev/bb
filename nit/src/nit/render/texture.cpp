@@ -99,7 +99,7 @@ namespace nit
         });
     }
 
-    i32 find_index_of_sub_texture_2d(const Texture2D* texture, const String& sub_texture_name)
+    i32 find_pool_index_of_sub_texture_2d(const Texture2D* texture, const String& sub_texture_name)
     {
         NIT_CHECK(texture);
         

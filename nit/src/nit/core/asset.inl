@@ -22,7 +22,7 @@ namespace nit
 #ifdef NIT_EDITOR_ENABLED
         set_draw_editor_function  (type,  args.fn_draw_editor);
 #endif
-        pool::load<T>(&asset_pool->data_pool, args.max_elements);
+        pool_load<T>(&asset_pool->data_pool, args.max_elements);
         asset_pool->asset_infos = new AssetInfo[args.max_elements];
     }
     
@@ -48,7 +48,7 @@ namespace nit
     T* asset_get_data(AssetHandle& asset)
     {
         AssetPool* pool = asset_get_pool_safe(GetType<T>());
-        return pool::get_data<T>(&pool->data_pool, asset.data_id);
+        return pool_get_data<T>(&pool->data_pool, asset.data_id);
     }
     
     template<typename T>
@@ -57,11 +57,11 @@ namespace nit
         AssetPool* pool = asset_get_pool_safe(GetType<T>());
         Pool* data_pool = &pool->data_pool;
         Type* type = data_pool->type;
-        u32 data_id; pool::insert_data(data_pool, data_id, data);
+        u32 data_id; pool_insert_data(data_pool, data_id, data);
         UUID asset_id = GenerateID();
         asset_get_instance()->id_to_data_id.insert({asset_id, data_id});
         AssetInfo info{type, name, path, asset_id, asset_get_last_version<T>(), false, 0, data_id };
-        asset_push_info(info,  pool::index_of(data_pool, data_id), true);
+        asset_push_info(info,  pool_index_of(data_pool, data_id), true);
         AssetHandle asset_handle = asset_create_handle(&info);
         broadcast<const AssetCreatedArgs&>(asset_get_instance()->asset_created_event, {asset_handle});
         return asset_handle;

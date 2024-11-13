@@ -2,7 +2,7 @@
 
 namespace nit
 {
-    void pool::release(Pool* pool)
+    void pool_free(Pool* pool)
     {
         if (!pool)
         {
@@ -16,7 +16,7 @@ namespace nit
         sparse::release(&pool->sparse_set);
     }
 
-    bool pool::is_valid(Pool* pool, u32 element_id)
+    bool pool_is_valid(Pool* pool, u32 element_id)
     {
         if (!pool)
         {
@@ -27,7 +27,7 @@ namespace nit
         return sparse::test(&pool->sparse_set, element_id);
     }
 
-    bool pool::insert_data_with_id(Pool* pool, u32 element_id, void* data)
+    bool pool_insert_data_with_id(Pool* pool, u32 element_id, void* data)
     {
         if (!pool)
         {
@@ -37,14 +37,14 @@ namespace nit
 
         if (sparse::is_full(&pool->sparse_set))
         {
-            pool::resize(pool, pool->sparse_set.max * 2);
+            pool_resize(pool, pool->sparse_set.max * 2);
         }
         
         set_array_raw_data(pool->type, pool->elements, sparse::insert(&pool->sparse_set, element_id), data);
         return true;
     }
 
-    bool pool::insert_data(Pool* pool, u32& element_id, void* data)
+    bool pool_insert_data(Pool* pool, u32& element_id, void* data)
     {
         if (!pool || !pool->self_id_management)
         {
@@ -54,10 +54,10 @@ namespace nit
         
         element_id = pool->available_ids.front();
         pool->available_ids.pop();
-        return pool::insert_data_with_id(pool, element_id, data);
+        return pool_insert_data_with_id(pool, element_id, data);
     }
 
-    SparseSetDeletion pool::delete_data(Pool* pool, u32 element_id)
+    SparseSetDeletion pool_delete_data(Pool* pool, u32 element_id)
     {
         if (!pool)
         {
@@ -76,7 +76,7 @@ namespace nit
         return deletion;
     }
 
-    void pool::resize(Pool* pool, u32 new_max)
+    void pool_resize(Pool* pool, u32 new_max)
     {
         if (!pool)
         {
@@ -87,7 +87,7 @@ namespace nit
         sparse::resize(&pool->sparse_set, new_max);
     }
 
-    u32 pool::index_of(Pool* pool, u32 element_id)
+    u32 pool_index_of(Pool* pool, u32 element_id)
     {
         if (!pool)
         {
@@ -98,7 +98,7 @@ namespace nit
         return sparse::search(&pool->sparse_set, element_id);
     }
 
-    void* pool::get_raw_data(Pool* pool, u32 element_id)
+    void* pool_get_raw_data(Pool* pool, u32 element_id)
     {
         if (!pool)
         {
