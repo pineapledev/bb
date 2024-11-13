@@ -14,15 +14,12 @@ namespace nit
         #endif
     };
     
-    namespace audio::clip
-    {
-        void type_register();
-        void load(AudioClip* audio_clip);
-        void free(AudioClip* audio_clip);
-        void serialize(const AudioClip* audio_clip, YAML::Emitter& emitter);
-        void deserialize(AudioClip* audio_clip, const YAML::Node& node);
+    void register_clip();
+    void clip_load(AudioClip* audio_clip);
+    void clip_free(AudioClip* audio_clip);
+    void clip_serialize(const AudioClip* audio_clip, YAML::Emitter& emitter);
+    void clip_deserialize(AudioClip* audio_clip, const YAML::Node& node);
 #ifdef NIT_EDITOR_ENABLED
-        void draw_editor(AudioClip* audio_clip);
+    void clip_draw_editor(AudioClip* audio_clip);
 #endif
-    }
 }

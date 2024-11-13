@@ -47,7 +47,7 @@ namespace nit
         SubTexture2D* sub_textures      = nullptr;
     };
 
-    void register_texture_2d_asset();
+    void register_texture_2d();
     i32  find_index_of_sub_texture_2d(const Texture2D* texture, const String& sub_texture_name);
     void serialize_texture_2d(const Texture2D* texture, YAML::Emitter& emitter);
     void deserialize_texture_2d(Texture2D* texture, const YAML::Node& node);

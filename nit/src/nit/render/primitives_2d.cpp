@@ -137,7 +137,7 @@ namespace nit
     void fill_char_vertex_data(const Matrix4& transform, V4Verts2D& vertex_positions, V2Verts2D& vertex_uvs, const Font* font, f32 size, Vector2& offset, f32 spacing, char c)
     {
         CharData d;
-        get_char(font, c, d);
+        font_get_char(font, c, d);
         
         static constexpr f32 SCALE = 0.002f;
 

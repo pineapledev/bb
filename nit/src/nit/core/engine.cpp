@@ -45,8 +45,8 @@ namespace nit
         entity::set_registry_instance(&instance->entity_registry);
         InitEntityRegistry();
         
-        audio::audio_set_instance(&instance->audio_registry);
-        audio::audio_init();
+        audio_set_instance(&instance->audio_registry);
+        audio_init();
         
         RegisterNameComponent();
         RegisterUUIDComponent();
@@ -64,11 +64,11 @@ namespace nit
         
         set_asset_registry_instance(&instance->asset_registry);
         
-        register_texture_2d_asset();
-        register_font_asset();
-        RegisterSceneAsset();
-        audio::clip::type_register();
-
+        register_texture_2d();
+        register_font();
+        register_scene();
+        register_clip();
+        
         broadcast(instance->events[(u8)Stage::Run]);
         
         init_asset_registry();

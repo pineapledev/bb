@@ -7,28 +7,28 @@
 
 namespace nit
 {
-    void register_font_asset()
+    void register_font()
     {
         register_asset_type<Font>({
-              load_font
-            , free_font
-            , serialize_font
-            , deserialize_font
+              font_load
+            , font_free
+            , font_serialize
+            , font_deserialize
         });
     }
 
-    void serialize_font(const Font* font, YAML::Emitter& emitter)
+    void font_serialize(const Font* font, YAML::Emitter& emitter)
     {
         emitter << YAML::Key << "font_path" << YAML::Value << font->font_path;
     }
 
-    void deserialize_font(Font* font, const YAML::Node& node)
+    void font_deserialize(Font* font, const YAML::Node& node)
     {
         font->font_path = node["font_path"].as<String>();
     }
 
     //TODO: All of this is just garbage, pending to refactor. 
-    void load_font(Font* font)
+    void font_load(Font* font)
     {
         std::ifstream file_stream("assets/" + font->font_path, std::ifstream::binary);
         
@@ -89,7 +89,7 @@ namespace nit
         delete[] buffer;
     }
 
-    void free_font(Font* font)
+    void font_free(Font* font)
     {
         if (font->baked_char_data)
         {
@@ -99,12 +99,12 @@ namespace nit
         }
     }
 
-    bool is_font_valid(const Font* font)
+    bool font_is_valid(const Font* font)
     {
         return font->baked_char_data != nullptr;
     }
 
-    void get_char(const Font* font, char c, CharData& char_data)
+    void font_get_char(const Font* font, char c, CharData& char_data)
     {
         const auto* baked_char = static_cast<stbtt_bakedchar*>(font->baked_char_data);
         f32 x_pos(0), y_pos(0);

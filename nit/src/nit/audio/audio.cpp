@@ -2,7 +2,7 @@
 #include <AL/alc.h>
 #include <alc/alcmain.h>
 
-namespace nit::audio
+namespace nit
 {
     static AudioRegistry* audio_registry = nullptr;
 

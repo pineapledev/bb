@@ -4,17 +4,17 @@
 
 namespace nit
 {
-    void RegisterSceneAsset()
+    void register_scene()
     {
         register_asset_type<Scene>({
-              LoadScene
-            , FreeScene
-            , SerializeScene
-            , DeserializeScene
+              scene_load
+            , scene_free
+            , scene_serialize
+            , scene_deserialize
         });
     }
 
-    void SerializeSceneEntities(const Scene* scene, YAML::Emitter& emitter)
+    static void serialize_entities(const Scene* scene, YAML::Emitter& emitter)
     {
         emitter << YAML::Key << "Entities" << YAML::Value << YAML::BeginMap;
         for (Entity entity : scene->entities)
@@ -24,43 +24,43 @@ namespace nit
         emitter << YAML::EndMap;
     }
     
-    void SerializeScene(const Scene* scene, YAML::Emitter& emitter)
+    void scene_serialize(const Scene* scene, YAML::Emitter& emitter)
     {
         // More items to serialize
-        SerializeSceneEntities(scene, emitter);
+        serialize_entities(scene, emitter);
     }
 
-    void DeserializeScene(Scene* scene, const YAML::Node& node)
+    void scene_deserialize(Scene* scene, const YAML::Node& node)
     {
         StringStream ss;
         ss << node;
         scene->cached_scene = ss.str();
     }
     
-    void LoadScene(Scene* scene)
+    void scene_load(Scene* scene)
     {
-        LoadSceneEntities(scene);
+        scene_load_entities(scene);
     }
 
-    void FreeScene(Scene* scene)
+    void scene_free(Scene* scene)
     {
-        FreeSceneEntities(scene);
+        scene_free_entities(scene);
     }
 
-    bool AreSceneEntitiesLoaded(const Scene* scene)
+    bool scene_entities_loaded(const Scene* scene)
     {
         return !scene->entities.empty();
     }
 
-    void SaveSceneEntities(Scene* scene)
+    void scene_save_entities(Scene* scene)
     {
         NIT_CHECK(scene);
         YAML::Emitter emitter;
-        SerializeSceneEntities(scene, emitter);
+        serialize_entities(scene, emitter);
         scene->cached_scene = emitter.c_str();
     }
 
-    void FreeSceneEntities(Scene* scene)
+    void scene_free_entities(Scene* scene)
     {
         NIT_CHECK(scene);
         if (!scene->entities.empty())
@@ -73,7 +73,7 @@ namespace nit
         scene->entities.clear();
     }
 
-    void LoadSceneEntities(Scene* scene)
+    void scene_load_entities(Scene* scene)
     {
         NIT_CHECK(scene);
         const YAML::Node node = YAML::Load(scene->cached_scene);

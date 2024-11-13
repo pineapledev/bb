@@ -17,11 +17,11 @@ namespace nit
         Texture2D  atlas;
     };
     
-    void register_font_asset();
-    void serialize_font(const Font* font, YAML::Emitter& emitter);
-    void deserialize_font(Font* font, const YAML::Node& node);
-    void load_font(Font* font);
-    void free_font(Font* font);
-    bool is_font_valid(const Font* font);
-    void get_char(const Font* font, char c, CharData& char_data);
+    void register_font();
+    void font_serialize(const Font* font, YAML::Emitter& emitter);
+    void font_deserialize(Font* font, const YAML::Node& node);
+    void font_load(Font* font);
+    void font_free(Font* font);
+    bool font_is_valid(const Font* font);
+    void font_get_char(const Font* font, char c, CharData& char_data);
 }

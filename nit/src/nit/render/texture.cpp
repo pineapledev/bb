@@ -70,7 +70,7 @@ namespace nit
         emitter << YAML::Key << "location" << YAML::Value << sub_texture->location;
     }
 
-    void register_texture_2d_asset()
+    void register_texture_2d()
     {
         RegisterEnumType<MinFilter>();
         RegisterEnumValue<MinFilter>("Linear", MinFilter::Linear);
