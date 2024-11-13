@@ -43,7 +43,7 @@ namespace nit
         type_registry_init();
 
         entity_registry_set_instance(&engine->entity_registry);
-        InitEntityRegistry();
+        entity_registry_init();
         
         audio_set_instance(&engine->audio_registry);
         audio_init();

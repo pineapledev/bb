@@ -130,7 +130,7 @@ namespace nit
         return component_pool->type_index;
     }
     
-    void InitEntityRegistry();
+    void entity_registry_init();
     void FinishEntityRegistry();
     Entity CreateEntity();
     void DestroyEntity(Entity entity);

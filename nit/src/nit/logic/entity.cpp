@@ -32,7 +32,7 @@ namespace nit
         return nullptr;
     }
 
-    void InitEntityRegistry()
+    void entity_registry_init()
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
 
