@@ -15,7 +15,7 @@ namespace nit
     
     ListenerAction start();
     ListenerAction end();
-    ListenerAction Draw();
+    ListenerAction draw();
     
     static ListenerAction on_asset_destroyed(const AssetDestroyedArgs& args);
     static ListenerAction on_component_added(const ComponentAddedArgs& args);
@@ -54,7 +54,7 @@ namespace nit
     {
         engine_event(Stage::Start)  += EngineListener::Create(start);
         engine_event(Stage::End)    += EngineListener::Create(end);
-        engine_event(Stage::Draw)   += EngineListener::Create(Draw);
+        engine_event(Stage::Draw)   += EngineListener::Create(draw);
         
         entity::create_group<Sprite, Transform>();
         entity::create_group<Camera, Transform>();
@@ -155,7 +155,7 @@ namespace nit
         return ListenerAction::StayListening;
     }
     
-    ListenerAction Draw()
+    ListenerAction draw()
     {
         clear_screen();
         
