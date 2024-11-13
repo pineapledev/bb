@@ -11,7 +11,7 @@ namespace nit
 {
     void register_clip()
     {
-        register_asset_type<AudioClip>(
+        asset_register_type<AudioClip>(
         {
               clip_load
             , clip_free
@@ -209,17 +209,17 @@ namespace nit
         AssetHandle this_asset = engine_get_instance()->editor.selected_asset;
         editor::draw_resource_combo("Path", {".wav"}, audio_clip->audio_path);
         
-        if (audio_clip->prev_path != audio_clip->audio_path || !is_asset_loaded(this_asset))
+        if (audio_clip->prev_path != audio_clip->audio_path || !asset_loaded(this_asset))
         {
             const String path = "assets/" + audio_clip->audio_path;
             std::ifstream in(path, std::ios::binary);
 
             audio_clip->editor_source = SparseSet::INVALID;
-            release_asset(this_asset);
+            asset_release(this_asset);
             
             if (in)
             {
-                retain_asset(this_asset);
+                asset_retain(this_asset);
                 audio_clip->editor_source = audio_create_source(audio_clip->buffer_handle);
             }
 

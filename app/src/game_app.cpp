@@ -74,14 +74,14 @@ ListenerAction on_run()
 
 ListenerAction game_start()
 {
-    AssetHandle test_scene = find_asset_by_name("test_scene");
+    AssetHandle test_scene = asset_find_by_name("test_scene");
 
-    if (is_asset_valid(test_scene))
+    if (asset_valid(test_scene))
     {
-        load_asset(test_scene);
+        asset_load(test_scene);
     }
 
-    test_texture = find_asset_by_name("test_sheet");
+    test_texture = asset_find_by_name("test_sheet");
 
     return ListenerAction::StayListening;
 }

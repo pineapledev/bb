@@ -271,7 +271,7 @@ namespace nit::editor
         String selected = asset->name;
 
         Array<AssetHandle> assets;
-        get_assets_of_type(type, assets);
+        asset_find_by_type(type, assets);
         
         begin_property(label);
 
@@ -297,7 +297,7 @@ namespace nit::editor
 
             EndCombo();
         }
-        *asset = find_asset_by_name(selected);
+        *asset = asset_find_by_name(selected);
         
         end_property();
     }
@@ -309,10 +309,10 @@ namespace nit::editor
         Array<String> paths;
         paths.emplace_back("None");
         
-        for (const auto& dir_entry : std::filesystem::recursive_directory_iterator(get_assets_directory()))
+        for (const auto& dir_entry : std::filesystem::recursive_directory_iterator(asset_get_directory()))
         {
             const Path& dir_path = dir_entry.path();
-            const String relative_path = std::filesystem::relative(dir_path, get_assets_directory()).string();
+            const String relative_path = std::filesystem::relative(dir_path, asset_get_directory()).string();
             
             if (dir_entry.is_directory())
             {

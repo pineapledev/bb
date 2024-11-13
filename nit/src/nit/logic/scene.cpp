@@ -6,7 +6,7 @@ namespace nit
 {
     void register_scene()
     {
-        register_asset_type<Scene>({
+        asset_register_type<Scene>({
               scene_load
             , scene_free
             , scene_serialize

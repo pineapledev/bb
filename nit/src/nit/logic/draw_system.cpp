@@ -100,18 +100,18 @@ namespace nit::draw_system
             auto& sprite = entity::get<Sprite>(args.entity); 
             auto& asset = sprite.texture;
 
-            retarget_asset_handle(asset);
+            asset_retarget_handle(asset);
 
-            bool is_valid = is_asset_valid(asset);
+            bool is_valid = asset_valid(asset);
             
-            if (is_valid && !is_asset_loaded(asset))
+            if (is_valid && !asset_loaded(asset))
             {
-                retain_asset(asset);
+                asset_retain(asset);
             }
 
             if (is_valid)
             {
-                sprite.sub_texture_index = find_index_of_sub_texture_2d(get_asset_data<Texture2D>(asset), sprite.sub_texture);
+                sprite.sub_texture_index = find_index_of_sub_texture_2d(asset_get_data<Texture2D>(asset), sprite.sub_texture);
             }
             else
             {
@@ -121,10 +121,10 @@ namespace nit::draw_system
         else if (args.type == GetType<Text>())
         {
             auto& asset = entity::get<Text>(args.entity).font;
-            retarget_asset_handle(asset);
-            if (is_asset_valid(asset) && !is_asset_loaded(asset))
+            asset_retarget_handle(asset);
+            if (asset_valid(asset) && !asset_loaded(asset))
             {
-                retain_asset(asset);
+                asset_retain(asset);
             }
         }
         return ListenerAction::StayListening;
@@ -136,20 +136,20 @@ namespace nit::draw_system
         {
             auto& sprite = entity::get<Sprite>(args.entity); 
             auto& asset = sprite.texture;
-            retarget_asset_handle(asset);
+            asset_retarget_handle(asset);
             
-            if (is_asset_valid(asset) && is_asset_loaded(asset))
+            if (asset_valid(asset) && asset_loaded(asset))
             {
-                release_asset(asset);
+                asset_release(asset);
             }
         }
         else if (args.type == GetType<Text>())
         {
             auto& asset = entity::get<Text>(args.entity).font;
-            retarget_asset_handle(asset);
-            if (is_asset_valid(asset) && is_asset_loaded(asset))
+            asset_retarget_handle(asset);
+            if (asset_valid(asset) && asset_loaded(asset))
             {
-                release_asset(asset);
+                asset_release(asset);
             }
         }
         return ListenerAction::StayListening;
@@ -198,15 +198,15 @@ namespace nit::draw_system
                     continue;
                 }
 
-                bool has_texture = is_asset_valid(sprite.texture); 
+                bool has_texture = asset_valid(sprite.texture); 
 
-                Texture2D* texture_data = has_texture ? get_asset_data<Texture2D>(sprite.texture) : nullptr; 
+                Texture2D* texture_data = has_texture ? asset_get_data<Texture2D>(sprite.texture) : nullptr; 
                 
                 if (has_texture)
                 {
-                    if (!is_asset_loaded(sprite.texture))
+                    if (!asset_loaded(sprite.texture))
                     {
-                        retain_asset(sprite.texture);
+                        asset_retain(sprite.texture);
                     }
                     
                     Vector2 size = texture_data->size;
@@ -280,11 +280,11 @@ namespace nit::draw_system
             {
                 auto& transform = entity::get<Transform>(entity);
                 auto& text = entity::get<Text>(entity);
-                Font* font_data = is_asset_valid(text.font) ? get_asset_data<Font>(text.font) : nullptr;
+                Font* font_data = asset_valid(text.font) ? asset_get_data<Font>(text.font) : nullptr;
 
-                if (font_data && !is_asset_loaded(text.font))
+                if (font_data && !asset_loaded(text.font))
                 {
-                    retain_asset(text.font);
+                    asset_retain(text.font);
                 }
                 
                 if (!text.visible || text.text.empty() || !font_data)

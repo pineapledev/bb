@@ -3,9 +3,9 @@
 namespace nit
 {
     template<typename T>
-    void register_asset_type(const AssetTypeArgs<T>& args, u32 version)
+    void asset_register_type(const AssetTypeArgs<T>& args, u32 version)
     {
-        AssetRegistry* asset_registry = get_asset_registry_instance();
+        AssetRegistry* asset_registry = asset_get_instance();
         AssetPool* asset_pool = &asset_registry->asset_pools.emplace_back();
         
         if (!IsTypeRegistered<T>())
@@ -27,43 +27,43 @@ namespace nit
     }
     
     template<typename T>
-    AssetPool* get_asset_pool()
+    AssetPool* asset_get_pool()
     {
-        return get_asset_pool(GetType<T>());
+        return asset_get_pool(GetType<T>());
     }
     
     template<typename T>
-    bool is_asset_type_registered()
+    bool asset_type_registered()
     {
-        return is_asset_type_registered(GetType<T>());
+        return asset_type_registered(GetType<T>());
     }
     
     template<typename T>
-    u32 get_last_asset_version()
+    u32 asset_get_last_version()
     {
-        return get_last_asset_version(GetType<T>());
+        return asset_get_last_version(GetType<T>());
     }
     
     template<typename T>
-    T* get_asset_data(AssetHandle& asset)
+    T* asset_get_data(AssetHandle& asset)
     {
-        AssetPool* pool = get_asset_pool_safe(GetType<T>());
+        AssetPool* pool = asset_get_pool_safe(GetType<T>());
         return pool::get_data<T>(&pool->data_pool, asset.data_id);
     }
     
     template<typename T>
-    AssetHandle create_asset(const String& name, const String& path, const T& data)
+    AssetHandle asset_create(const String& name, const String& path, const T& data)
     {
-        AssetPool* pool = get_asset_pool_safe(GetType<T>());
+        AssetPool* pool = asset_get_pool_safe(GetType<T>());
         Pool* data_pool = &pool->data_pool;
         Type* type = data_pool->type;
         u32 data_id; pool::insert_data(data_pool, data_id, data);
         UUID asset_id = GenerateID();
-        get_asset_registry_instance()->id_to_data_id.insert({asset_id, data_id});
-        AssetInfo info{type, name, path, asset_id, get_last_asset_version<T>(), false, 0, data_id };
-        push_asset_info(info,  pool::index_of(data_pool, data_id), true);
-        AssetHandle asset_handle = create_asset_handle(&info);
-        broadcast<const AssetCreatedArgs&>(get_asset_registry_instance()->asset_created_event, {asset_handle});
+        asset_get_instance()->id_to_data_id.insert({asset_id, data_id});
+        AssetInfo info{type, name, path, asset_id, asset_get_last_version<T>(), false, 0, data_id };
+        asset_push_info(info,  pool::index_of(data_pool, data_id), true);
+        AssetHandle asset_handle = asset_create_handle(&info);
+        broadcast<const AssetCreatedArgs&>(asset_get_instance()->asset_created_event, {asset_handle});
         return asset_handle;
     }
 }

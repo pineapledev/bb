@@ -62,7 +62,7 @@ namespace nit
 #endif
         draw_system::type_register();
         
-        set_asset_registry_instance(&instance->asset_registry);
+        asset_set_instance(&instance->asset_registry);
         
         register_texture_2d();
         register_font();
@@ -71,7 +71,7 @@ namespace nit
         
         broadcast(instance->events[(u8)Stage::Run]);
         
-        init_asset_registry();
+        asset_init();
 
         set_render_objects_instance(&instance->render_objects);
         init_render_objects();

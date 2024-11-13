@@ -66,83 +66,45 @@ namespace nit
         Map<UUID, u32>       id_to_data_id;
     };
 
-    AssetHandle create_asset_handle(AssetInfo* asset_info);
-    void retarget_asset_handle(AssetHandle& asset_handle);
-
-    Path get_assets_directory();
+    AssetHandle    asset_create_handle           (AssetInfo* asset_info);
+    void           asset_retarget_handle         (AssetHandle& asset_handle);
+    Path           asset_get_directory           ();
+    void           asset_set_instance            (AssetRegistry* asset_registry_instance);
+    AssetRegistry* asset_get_instance            ();
+    AssetPool*     asset_get_pool                (Type* type);
+    AssetPool*     asset_get_pool_safe           (const AssetHandle& asset);
+    AssetPool*     asset_get_pool_safe           (Type* type);
+    AssetPool*     asset_get_pool_safe           (const AssetInfo& asset_info);
+    bool           asset_type_registered         (Type* type);
+    void           asset_build_path              (const String& name, String& path);
+    void           asset_push_info               (AssetInfo& asset_info, u32 index, bool build_path);
+    void           asset_erase_info              (AssetInfo& asset_info, SparseSetDeletion deletion);
+    AssetInfo*     asset_get_info                (AssetHandle& asset);
+    AssetHandle    asset_deserialize_from_string (const String& asset_str);
+    AssetHandle    asset_deserialize_from_file   (const String& file_path);
+    void           asset_serialize_to_string     (AssetHandle& asset, String& result);
+    void           asset_serialize_to_file       (AssetHandle& asset);
+    void           asset_init();
+    u32            asset_get_last_version        (Type* type);
+    u32            asset_get_last_version        (const String& type_name);
+    void           asset_find_by_name            (const String& name, Array<AssetHandle>& assets);
+    AssetHandle    asset_find_by_name            (const String& name);
+    void           asset_find_by_type            (Type* type, Array<AssetHandle>& assets);
+    bool           asset_valid                   (AssetHandle& asset);
+    bool           asset_loaded                  (AssetHandle& asset);
+    AssetHandle    asset_create                  (Type* type, const String& name, const String& path, void* data = nullptr);
+    void           asset_load                    (AssetHandle& asset, bool force_reload = false);
+    void           asset_retain                  (AssetHandle& asset);
+    void           asset_free                    (AssetHandle& asset);
+    void           asset_release                 (AssetHandle& asset, bool force_free = false);
+    void           asset_destroy                 (AssetHandle& asset);
     
-    void set_asset_registry_instance(AssetRegistry* asset_registry_instance);
-    
-    AssetRegistry* get_asset_registry_instance();
-    
-    template<typename T>
-    void register_asset_type(const AssetTypeArgs<T>& args, u32 version = 0);
-
-    AssetPool* get_asset_pool(Type* type);
-    
-    AssetPool* get_asset_pool_safe(const AssetHandle& asset);
-    
-    AssetPool* get_asset_pool_safe(Type* type);
-    
-    template<typename T>
-    AssetPool* get_asset_pool();
-
-    bool is_asset_type_registered(Type* type);
-    
-    template<typename T>
-    bool is_asset_type_registered();
-    
-    void build_asset_path(const String& name, String& path);
-
-    void push_asset_info(AssetInfo& asset_info, u32 index, bool build_path);
-    void erase_asset_info(AssetInfo& asset_info, SparseSetDeletion deletion);
-    
-    AssetInfo* get_asset_info(AssetHandle& asset);
-    
-    AssetHandle deserialize_asset_from_string(const String& asset_str);
-    
-    AssetHandle deserialize_asset_from_file(const String& file_path);
-    
-    void serialize_asset_to_string(AssetHandle& asset, String& result);
-    
-    void serialize_asset_to_file(AssetHandle& asset);
-    
-    void init_asset_registry();
-    
-    u32 get_last_asset_version(Type* type);
-    
-    u32 get_last_asset_version(const String& type_name);
-
-    template<typename T>
-    u32 get_last_asset_version();
-    
-    void find_assets_by_name(const String& name, Array<AssetHandle>& assets);
-    
-    AssetHandle find_asset_by_name(const String& name);
-
-    void get_assets_of_type(Type* type, Array<AssetHandle>& assets);
-    
-    template<typename T>
-    T* get_asset_data(AssetHandle& asset);
-
-    bool is_asset_valid(AssetHandle& asset);
-
-    bool is_asset_loaded(AssetHandle& asset);
-
-    AssetHandle create_asset(Type* type, const String& name, const String& path, void* data = nullptr);
-    
-    template<typename T>
-    AssetHandle create_asset(const String& name, const String& path = "", const T& data = {});
-    
-    void load_asset(AssetHandle& asset, bool force_reload = false);
-    
-    void free_asset(AssetHandle& asset);
-
-    void retain_asset(AssetHandle& asset);
-    
-    void release_asset(AssetHandle& asset, bool force_free = false);
-    
-    void destroy_asset(AssetHandle& asset);
+    template<typename T>   void        asset_register_type    (const AssetTypeArgs<T>& args, u32 version = 0);
+    template<typename T>   AssetPool*  asset_get_pool         ();
+    template<typename T>   bool        asset_type_registered  ();
+    template<typename T>   u32         asset_get_last_version ();
+    template<typename T>   T*          asset_get_data         (AssetHandle& asset);
+    template<typename T>   AssetHandle asset_create           (const String& name, const String& path = "", const T& data = {});
 }
 
 #include "asset.inl"

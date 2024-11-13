@@ -38,7 +38,7 @@ namespace nit::editor
         for (const auto& dir_entry : std::filesystem::directory_iterator(directory))
         {
             const Path& dir_path = dir_entry.path();
-            const String relative_path = std::filesystem::relative(dir_path, get_assets_directory()).string();
+            const String relative_path = std::filesystem::relative(dir_path, asset_get_directory()).string();
             
             if (dir_entry.is_directory())
             {
@@ -54,9 +54,9 @@ namespace nit::editor
             }
             else if (dir_path.extension().string() == engine_get_instance()->asset_registry.extension)
             {
-                AssetHandle handle = find_asset_by_name(dir_path.filename().stem().string());
+                AssetHandle handle = asset_find_by_name(dir_path.filename().stem().string());
 
-                if (!is_asset_valid(handle))
+                if (!asset_valid(handle))
                 {
                     continue;
                 }
@@ -85,7 +85,7 @@ namespace nit::editor
         pool::insert_data(&editor->asset_nodes, editor->root_node, AssetNode{ .is_dir = true, .path = "" });
         editor->draw_node = editor->root_node;
         
-        TraverseDirectory(get_assets_directory(), editor->root_node);
+        TraverseDirectory(asset_get_directory(), editor->root_node);
     }
     
     void init()
@@ -124,7 +124,7 @@ namespace nit::editor
 
         load_frame_buffer(&editor->frame_buffer);
 
-        editor->icons = find_asset_by_name("editor_icons");
+        editor->icons = asset_find_by_name("editor_icons");
         
         InvalidateAssetNodes();
 
@@ -368,17 +368,17 @@ namespace nit::editor
                     Path relative_source = relative(source, GetWorkingDirectory());
                     Path relative_dest = relative(dest, GetWorkingDirectory());
                     
-                    AssetHandle texture = create_asset<Texture2D>(name, relative_dest.string());
-                    Texture2D* texture_2d = get_asset_data<Texture2D>(texture);
+                    AssetHandle texture = asset_create<Texture2D>(name, relative_dest.string());
+                    Texture2D* texture_2d = asset_get_data<Texture2D>(texture);
                     
                     load_texture_2d_as_sprite_sheet(texture_2d, name, relative_source.string(), relative_dest.string());
                     if (texture_2d->sub_texture_count > 0 && !texture_2d->image_path.empty())
                     {
-                        serialize_asset_to_file(texture);
+                        asset_serialize_to_file(texture);
                     }
                     else
                     {
-                        destroy_asset(texture);
+                        asset_destroy(texture);
                     }
                 }
             }
@@ -390,7 +390,7 @@ namespace nit::editor
         {
             ImGui::Begin("Scene Entities", &editor->show_scene_entities);
             
-            AssetPool* pool = get_asset_pool<Scene>();
+            AssetPool* pool = asset_get_pool<Scene>();
             u32 num_of_scenes = pool->data_pool.sparse_set.count;
             Scene* scenes = static_cast<Scene*>(pool->data_pool.elements);
             
@@ -401,7 +401,7 @@ namespace nit::editor
                     for (u32 i = 0; i < num_of_scenes; ++i)
                     {
                         AssetInfo* info = &pool->asset_infos[i];
-                        AssetHandle scene_asset = create_asset_handle(info);
+                        AssetHandle scene_asset = asset_create_handle(info);
                 
                         if (info->loaded)
                         {
@@ -410,8 +410,8 @@ namespace nit::editor
 
                         if (ImGui::MenuItem(info->name.c_str()))
                         {
-                            deserialize_asset_from_file(info->path);
-                            load_asset(scene_asset);
+                            asset_deserialize_from_file(info->path);
+                            asset_load(scene_asset);
                         }
                     }
                     ImGui::EndMenu();
@@ -423,7 +423,7 @@ namespace nit::editor
             {
                 Scene* scene = &scenes[i];
                 AssetInfo* info = &pool->asset_infos[i];
-                AssetHandle scene_asset = create_asset_handle(info);
+                AssetHandle scene_asset = asset_create_handle(info);
                 
                 if (!info->loaded)
                 {
@@ -443,18 +443,18 @@ namespace nit::editor
                     }
                     if (ImGui::MenuItem("Save"))
                     {
-                        serialize_asset_to_file(scene_asset);
+                        asset_serialize_to_file(scene_asset);
                     }
                     if (ImGui::MenuItem("Reload"))
                     {
-                        free_asset(scene_asset);
-                        deserialize_asset_from_file(info->path);
-                        load_asset(scene_asset);
+                        asset_free(scene_asset);
+                        asset_deserialize_from_file(info->path);
+                        asset_load(scene_asset);
                         editor->selection = Editor::Selection::None;
                     }
                     if (ImGui::MenuItem("Close"))
                     {
-                        free_asset(scene_asset);
+                        asset_free(scene_asset);
                         editor->selection = Editor::Selection::None;
                     }
                     ImGui::EndPopup();
@@ -617,12 +617,12 @@ namespace nit::editor
             }
             else if (editor->selection == Editor::Selection::Asset)
             {
-                AssetPool* asset_pool = get_asset_pool(editor->selected_asset.type);
+                AssetPool* asset_pool = asset_get_pool(editor->selected_asset.type);
                 NIT_CHECK(asset_pool);
                 
                 if (editor->selected_asset.data_id == SparseSet::INVALID)
                 {
-                    retarget_asset_handle(editor->selected_asset);
+                    asset_retarget_handle(editor->selected_asset);
                 }
 
                 void* data = pool::get_raw_data(&asset_pool->data_pool, editor->selected_asset.data_id);
@@ -637,9 +637,9 @@ namespace nit::editor
         {
             ImGui::Begin("Assets", &editor->show_assets);
             {
-                if (!is_asset_loaded(editor->icons))
+                if (!asset_loaded(editor->icons))
                 {
-                    retain_asset(editor->icons);
+                    asset_retain(editor->icons);
                 }
                 
                 if (!pool::is_valid(&editor->asset_nodes, editor->draw_node))
@@ -650,7 +650,7 @@ namespace nit::editor
                 {
                     static auto draw_image_button = [](Editor::Icon icon, f32 size, const char* tag) -> bool
                     {
-                        Texture2D* icons = get_asset_data<Texture2D>(editor->icons);
+                        Texture2D* icons = asset_get_data<Texture2D>(editor->icons);
                         ImTextureID icons_id = reinterpret_cast<ImTextureID>(static_cast<u64>(icons->id));
                         V2Verts2D verts_2d;
                         fill_quad_vertex_u_vs(verts_2d, icons->size, icons->sub_textures[(u8) icon].size, icons->sub_textures[(u8) icon].location);
@@ -664,7 +664,7 @@ namespace nit::editor
 
                     AssetNode* draw_node = pool::get_data<AssetNode>(&editor->asset_nodes, editor->draw_node);
 
-                    static Type* create_asset_type = nullptr;
+                    static Type* asset_create_type = nullptr;
                 
                     if (ImGui::BeginPopupContextWindow())
                     {
@@ -676,7 +676,7 @@ namespace nit::editor
                 
                                 if (ImGui::MenuItem(pool->data_pool.type->name.c_str()))
                                 {
-                                    create_asset_type = pool->data_pool.type;
+                                    asset_create_type = pool->data_pool.type;
                                 }
                             }
                             ImGui::EndMenu();
@@ -684,7 +684,7 @@ namespace nit::editor
                         ImGui::EndPopup();
                     }
 
-                    if (create_asset_type)
+                    if (asset_create_type)
                     {
                         ImGui::OpenPopup("Create Asset");
                     }
@@ -698,12 +698,12 @@ namespace nit::editor
                         
                         if (ImGui::Button("Create"))
                         {
-                            AssetHandle asset = create_asset(create_asset_type, asset_name, draw_node->path);
+                            AssetHandle asset = asset_create(asset_create_type, asset_name, draw_node->path);
                             u32 id; pool::insert_data(&editor->asset_nodes, id, AssetNode{ .is_dir = false, .path = draw_node->path, .parent = editor->draw_node, .asset = asset});
                             draw_node->children.push_back(id);
                             
                             ImGui::CloseCurrentPopup();
-                            create_asset_type = nullptr;
+                            asset_create_type = nullptr;
                         }
                         
                         ImGui::SameLine();
@@ -711,7 +711,7 @@ namespace nit::editor
                         if (ImGui::Button("Close"))
                         {
                             ImGui::CloseCurrentPopup();
-                            create_asset_type = nullptr;
+                            asset_create_type = nullptr;
                         }
                         ImGui::EndPopup();
                     }
@@ -769,21 +769,21 @@ namespace nit::editor
                                 
                                 if (ImGui::MenuItem("Save"))
                                 {
-                                    serialize_asset_to_file(editor->selected_asset);
-                                    free_asset(editor->selected_asset);
-                                    deserialize_asset_from_file(get_asset_info(editor->selected_asset)->path);
-                                    load_asset(editor->selected_asset);
+                                    asset_serialize_to_file(editor->selected_asset);
+                                    asset_free(editor->selected_asset);
+                                    asset_deserialize_from_file(asset_get_info(editor->selected_asset)->path);
+                                    asset_load(editor->selected_asset);
                                 }
                                 if (ImGui::MenuItem("Reload"))
                                 {
-                                    free_asset(editor->selected_asset);
-                                    deserialize_asset_from_file(get_asset_info(editor->selected_asset)->path);
-                                    load_asset(editor->selected_asset);
+                                    asset_free(editor->selected_asset);
+                                    asset_deserialize_from_file(asset_get_info(editor->selected_asset)->path);
+                                    asset_load(editor->selected_asset);
                                 }
                                 if (ImGui::MenuItem("Delete"))
                                 {
                                     draw_node->children.erase(std::ranges::find(draw_node->children, node_id));
-                                    destroy_asset(editor->selected_asset);
+                                    asset_destroy(editor->selected_asset);
                                     pool::delete_data(&editor->asset_nodes, node_id);
                                     editor->selected_asset = {};
                                     editor->selection = Editor::Selection::None;

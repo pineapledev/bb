@@ -9,7 +9,7 @@ namespace nit
 {
     void register_font()
     {
-        register_asset_type<Font>({
+        asset_register_type<Font>({
               font_load
             , font_free
             , font_serialize
