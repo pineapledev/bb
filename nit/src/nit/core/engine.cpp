@@ -58,7 +58,7 @@ namespace nit
         RegisterLine2DComponent();
 
 #ifdef NIT_EDITOR_ENABLED
-        editor::type_register();  
+        editor_type_register();  
 #endif
         draw_system::type_register();
         
@@ -85,8 +85,8 @@ namespace nit
 #endif
 
 #ifdef NIT_EDITOR_ENABLED
-        editor::set_instance(&instance->editor);
-        editor::init();
+        editor_set_instance(&instance->editor);
+        editor_init();
 #endif
         
         // Init time
@@ -124,12 +124,12 @@ namespace nit
 #endif
             
 #ifdef NIT_EDITOR_ENABLED
-             editor::begin_draw();
+             editor_begin_draw();
 #endif
             event_broadcast(instance->events[(u8)Stage::Draw]);
 
 #ifdef NIT_EDITOR_ENABLED
-             editor::end_draw();
+             editor_end_draw();
 #endif
 #ifdef NIT_IMGUI_ENABLED
             event_broadcast(instance->events[(u8)Stage::DrawImGUI]);

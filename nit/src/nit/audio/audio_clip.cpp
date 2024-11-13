@@ -207,7 +207,7 @@ namespace nit
         }
 
         AssetHandle this_asset = engine_get_instance()->editor.selected_asset;
-        editor::draw_resource_combo("Path", {".wav"}, audio_clip->audio_path);
+        editor_draw_resource_combo("Path", {".wav"}, audio_clip->audio_path);
         
         if (audio_clip->prev_path != audio_clip->audio_path || !asset_loaded(this_asset))
         {

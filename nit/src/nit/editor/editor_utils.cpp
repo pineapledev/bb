@@ -6,7 +6,7 @@
 #include <imgui_internal.h>
 #include "core/asset.h"
 
-namespace nit::editor
+namespace nit
 {
     using namespace ImGui;
     
@@ -19,7 +19,7 @@ namespace nit::editor
 
     bool property_in_context = false;
     
-    void begin_property(const char* label, u32 items)
+    void editor_begin_property(const char* label, u32 items)
     {
         PushID(label);
 
@@ -34,7 +34,7 @@ namespace nit::editor
         property_in_context = true;
     }
 
-    void end_property()
+    void editor_end_property()
     {
         PopStyleVar();
         Columns(1);
@@ -42,12 +42,12 @@ namespace nit::editor
         property_in_context = false;
     }
 
-    void draw_spacing(u32 spacing)
+    void editor_draw_spacing(u32 spacing)
     {
         for (u32 i = 0; i < spacing; i++)
             Spacing();
     }
-    bool draw_centered_button(const char* label, f32 alignment)
+    bool editor_draw_centered_button(const char* label, f32 alignment)
     {
         const ImGuiStyle& style = GetStyle();
 
@@ -61,7 +61,7 @@ namespace nit::editor
         return Button(label);
     }
 
-    void draw_centered_text(const char* label, float alignment)
+    void editor_draw_centered_text(const char* label, float alignment)
     {
         const ImGuiStyle& style = GetStyle();
 
@@ -75,9 +75,9 @@ namespace nit::editor
         return Text(label);
     }
 
-    bool draw_input_text(const char* label, String& text)
+    bool editor_draw_input_text(const char* label, String& text)
     {
-        begin_property(label);
+        editor_begin_property(label);
         static constexpr u32 MAX_CHARS = 300;
         char text_buffer[MAX_CHARS];
         strcpy_s(text_buffer, text.c_str());
@@ -86,13 +86,13 @@ namespace nit::editor
         {
             text = text_buffer;
         }
-        end_property();
+        editor_end_property();
         return text_changed;
     }
 
-    bool draw_input_folder(const Window* window, const char* label, String& text)
+    bool editor_draw_input_folder(const Window* window, const char* label, String& text)
     {
-        begin_property(label);
+        editor_begin_property(label);
         static constexpr u32 MAX_CHARS = 300;
         char text_buffer[MAX_CHARS];
         strcpy_s(text_buffer, text.c_str());
@@ -115,65 +115,65 @@ namespace nit::editor
             text = text_buffer;
         }
 
-        end_property();
+        editor_end_property();
         return text_changed;
     }
 
-    void draw_text(const char* label, const char* text, ...)
+    void editor_draw_text(const char* label, const char* text, ...)
     {
-        begin_property(label);
+        editor_begin_property(label);
         va_list args;
         va_start(args, text);
         ImGui::TextV(text, args);
         va_end(args);
-        end_property();
+        editor_end_property();
     }
 
-    bool draw_bool(const char* label, bool& enabled)
+    bool editor_draw_bool(const char* label, bool& enabled)
     {
-        begin_property(label);
+        editor_begin_property(label);
         bool changed = Checkbox("##", &enabled);
         if (property_in_context)
             PopItemWidth();
-        end_property();
+        editor_end_property();
         return changed;
     }
 
-    bool draw_drag_i32(const char* label, i32& num, f32 speed /*= 1.f*/)
+    bool editor_draw_drag_i32(const char* label, i32& num, f32 speed /*= 1.f*/)
     {
-        begin_property(label);
+        editor_begin_property(label);
         bool changed = DragInt("##", &num, speed);
         if (property_in_context)
             PopItemWidth();
-        end_property();
+        editor_end_property();
         return changed;
     }
 
-    bool draw_drag_u32(const char* label, u32& num, f32 speed /*= 1.f*/)
+    bool editor_draw_drag_u32(const char* label, u32& num, f32 speed /*= 1.f*/)
     {
-        begin_property(label);
+        editor_begin_property(label);
         int i = static_cast<int>(num);
         bool changed = DragInt("##", &i, speed);
         num = i;
         if (property_in_context)
             PopItemWidth();
-        end_property();
+        editor_end_property();
         return changed;
     }
 
-    bool draw_drag_f32(const char* label, f32& num, f32 speed /*= 0.1f*/)
+    bool editor_draw_drag_f32(const char* label, f32& num, f32 speed /*= 0.1f*/)
     {
-        begin_property(label);
+        editor_begin_property(label);
         bool changed = DragFloat("##", &num, speed, 0, 0, "%.3f");
         if (property_in_context)
             PopItemWidth();
-        end_property();
+        editor_end_property();
         return changed;
     }
 
-    void draw_combo(const char* label, String& selected, const Array<String>& options)
+    void editor_draw_combo(const char* label, String& selected, const Array<String>& options)
     {
-        begin_property(label);
+        editor_begin_property(label);
         if (selected.empty())
             selected = options[0];
 
@@ -192,10 +192,10 @@ namespace nit::editor
 
             EndCombo();
         }
-        end_property();
+        editor_end_property();
     }
 
-    bool draw_drag_f32_with_button(const char* label, f32& value, const Vector4& reset_color, f32 reset_value, f32 speed)
+    bool editor_draw_drag_f32_with_button(const char* label, f32& value, const Vector4& reset_color, f32 reset_value, f32 speed)
     {
         PushID(label);
         const f32 line_height = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.f;
@@ -220,60 +220,60 @@ namespace nit::editor
         return changed || reset;
     }
 
-    bool draw_drag_vector2(const char* label, Vector2& vector, const Vector2& reset_value, f32 speed)
+    bool editor_draw_drag_vector2(const char* label, Vector2& vector, const Vector2& reset_value, f32 speed)
     {
-        begin_property(label, 2);
-        bool x_changed = draw_drag_f32_with_button("X", vector.x, V4_COLOR_X, reset_value.x, speed);
+        editor_begin_property(label, 2);
+        bool x_changed = editor_draw_drag_f32_with_button("X", vector.x, V4_COLOR_X, reset_value.x, speed);
         SameLine();
-        bool y_changed = draw_drag_f32_with_button("Y", vector.y, V4_COLOR_Y, reset_value.y, speed);
-        end_property();
+        bool y_changed = editor_draw_drag_f32_with_button("Y", vector.y, V4_COLOR_Y, reset_value.y, speed);
+        editor_end_property();
         return x_changed || y_changed;
     }
 
-    bool draw_drag_vector3(const char* label, Vector3& vector, const Vector3& reset_value, f32 speed)
+    bool editor_draw_drag_vector3(const char* label, Vector3& vector, const Vector3& reset_value, f32 speed)
     {
-        begin_property(label, 3);
-        bool x_changed = draw_drag_f32_with_button("X", vector.x, V4_COLOR_X, reset_value.x, speed);
+        editor_begin_property(label, 3);
+        bool x_changed = editor_draw_drag_f32_with_button("X", vector.x, V4_COLOR_X, reset_value.x, speed);
         SameLine();
-        bool y_changed = draw_drag_f32_with_button("Y", vector.y, V4_COLOR_Y, reset_value.y, speed);
+        bool y_changed = editor_draw_drag_f32_with_button("Y", vector.y, V4_COLOR_Y, reset_value.y, speed);
         SameLine();
-        bool z_changed = draw_drag_f32_with_button("Z", vector.z, V4_COLOR_Z, reset_value.z, speed);
-        end_property();
+        bool z_changed = editor_draw_drag_f32_with_button("Z", vector.z, V4_COLOR_Z, reset_value.z, speed);
+        editor_end_property();
         return x_changed || y_changed || z_changed;
     }
 
-    bool draw_drag_vector4(const char* label, Vector4& vector, const Vector4& reset_value, f32 speed)
+    bool editor_draw_drag_vector4(const char* label, Vector4& vector, const Vector4& reset_value, f32 speed)
     {
-        begin_property(label, 4);
-        bool x_changed = draw_drag_f32_with_button("X", vector.x, V4_COLOR_X, reset_value.x, speed);
+        editor_begin_property(label, 4);
+        bool x_changed = editor_draw_drag_f32_with_button("X", vector.x, V4_COLOR_X, reset_value.x, speed);
         SameLine();
-        bool y_changed = draw_drag_f32_with_button("Y", vector.y, V4_COLOR_Y, reset_value.y, speed);
+        bool y_changed = editor_draw_drag_f32_with_button("Y", vector.y, V4_COLOR_Y, reset_value.y, speed);
         SameLine();
-        bool z_changed = draw_drag_f32_with_button("Z", vector.z, V4_COLOR_Z, reset_value.z, speed);
+        bool z_changed = editor_draw_drag_f32_with_button("Z", vector.z, V4_COLOR_Z, reset_value.z, speed);
         SameLine();
-        bool w_changed = draw_drag_f32_with_button("W", vector.w, V4_COLOR_W, reset_value.w, speed);
-        end_property();
+        bool w_changed = editor_draw_drag_f32_with_button("W", vector.w, V4_COLOR_W, reset_value.w, speed);
+        editor_end_property();
         return x_changed || y_changed || z_changed || w_changed;
     }
 
-    bool draw_color_palette(const char* label, Vector4& color)
+    bool editor_draw_color_palette(const char* label, Vector4& color)
     {
-        begin_property(label);
+        editor_begin_property(label);
         f32 f32_color[] = { color.x, color.y, color.z, color.w };
         const bool changed = ColorEdit4("", f32_color, ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_NoInputs);
         color = { f32_color[0], f32_color[1], f32_color[2], f32_color[3] };
-        end_property();
+        editor_end_property();
         return changed;
     }
 
-    void draw_asset_combo(const char* label, Type* type, AssetHandle* asset)
+    void editor_draw_asset_combo(const char* label, Type* type, AssetHandle* asset)
     {
         String selected = asset->name;
 
         Array<AssetHandle> assets;
         asset_find_by_type(type, assets);
         
-        begin_property(label);
+        editor_begin_property(label);
 
         if (BeginCombo("##combo", selected.c_str()))
         {
@@ -299,12 +299,12 @@ namespace nit::editor
         }
         *asset = asset_find_by_name(selected);
         
-        end_property();
+        editor_end_property();
     }
 
-    void draw_resource_combo(const char* label, const Array<String>& extensions, String& selected)
+    void editor_draw_resource_combo(const char* label, const Array<String>& extensions, String& selected)
     {
-        begin_property(label);
+        editor_begin_property(label);
 
         Array<String> paths;
         paths.emplace_back("None");
@@ -349,7 +349,7 @@ namespace nit::editor
             EndCombo();
         }
         
-        end_property();
+        editor_end_property();
     }
 }
 

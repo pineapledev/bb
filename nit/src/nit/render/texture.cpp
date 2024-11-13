@@ -165,11 +165,11 @@ namespace nit
 #ifdef NIT_EDITOR_ENABLED
     void draw_editor_texture_2d(Texture2D* texture)
     {
-        editor::draw_resource_combo("resource", {".jpg", ".png"},  texture->image_path);
-        editor::draw_enum_combo("mag filter", texture->mag_filter);
-        editor::draw_enum_combo("min filter", texture->min_filter);
-        editor::draw_enum_combo("wrap u", texture->wrap_mode_u);
-        editor::draw_enum_combo("wrap v", texture->wrap_mode_v);
+        editor_draw_resource_combo("resource", {".jpg", ".png"},  texture->image_path);
+        editor_draw_enum_combo("mag filter", texture->mag_filter);
+        editor_draw_enum_combo("min filter", texture->min_filter);
+        editor_draw_enum_combo("wrap u", texture->wrap_mode_u);
+        editor_draw_enum_combo("wrap v", texture->wrap_mode_v);
 
         if (texture->sub_texture_count > 0 && ImGui::TreeNodeEx("subtextures", ImGuiTreeNodeFlags_DefaultOpen))
         {

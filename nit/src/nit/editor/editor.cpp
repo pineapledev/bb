@@ -12,23 +12,23 @@
 
 #define NIT_CHECK_EDITOR_CREATED NIT_CHECK_MSG(editor, "Forget to call SetEditorInstance!");
 
-namespace nit::editor
+namespace nit
 {
     Editor* editor;
 
-    void set_instance(Editor* editor_instance)
+    void editor_set_instance(Editor* editor_instance)
     {
         NIT_CHECK(editor_instance);
         editor = editor_instance;
     }
 
-    Editor* get_instance()
+    Editor* editor_get_instance()
     {
         NIT_CHECK_EDITOR_CREATED
         return editor;
     }
 
-    void type_register()
+    void editor_type_register()
     {
         RegisterComponentType<EditorCameraController>();
     }
@@ -88,7 +88,7 @@ namespace nit::editor
         TraverseDirectory(asset_get_directory(), editor->root_node);
     }
     
-    void init()
+    void editor_init()
     {
         NIT_CHECK_EDITOR_CREATED
 
@@ -143,7 +143,7 @@ namespace nit::editor
         };
     }
 
-    void begin_draw()
+    void editor_begin_draw()
     {
         NIT_CHECK_EDITOR_CREATED
 
@@ -355,13 +355,13 @@ namespace nit::editor
             // source
             {
                 static String source = GetWorkingDirectory().string();
-                editor::draw_input_folder(&engine_get_instance()->window, "Source", source);
+                editor_draw_input_folder(&engine_get_instance()->window, "Source", source);
                 
                 static String dest = GetWorkingDirectory().string();
-                editor::draw_input_folder(&engine_get_instance()->window, "Destination", dest);
+                editor_draw_input_folder(&engine_get_instance()->window, "Destination", dest);
 
                 static String name;
-                editor::draw_input_text("Asset Name", name);
+                editor_draw_input_text("Asset Name", name);
 
                 if (ImGui::Button("Generate"))
                 {
@@ -592,7 +592,7 @@ namespace nit::editor
                     }
                 }
 
-                if (editor::draw_centered_button("Add Component"))
+                if (editor_draw_centered_button("Add Component"))
                 {
                     ImGui::OpenPopup("Add Component");
                 }
@@ -694,7 +694,7 @@ namespace nit::editor
                     {
                         static char asset_name[500];
                         ImGui::InputText("##name", asset_name, 500);
-                        editor::draw_spacing(3);
+                        editor_draw_spacing(3);
                         
                         if (ImGui::Button("Create"))
                         {
@@ -793,7 +793,7 @@ namespace nit::editor
                             }
                         }
 
-                        editor::draw_centered_text(node->asset.name.c_str());
+                        editor_draw_centered_text(node->asset.name.c_str());
                         ImGui::NextColumn();
                     }
                 }
@@ -818,7 +818,7 @@ namespace nit::editor
         }
     }
 
-    void end_draw()
+    void editor_end_draw()
     {
         unbind_frame_buffer();
 

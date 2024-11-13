@@ -71,16 +71,12 @@ namespace nit
         bool    is_right_mouse_pressed = false;
     };
 
-    namespace editor
-    {
-        void set_instance(Editor* editor_instance);
-        Editor* get_instance();
-
-        void type_register();
-        void init();
-        void begin_draw();
-        void end_draw();
-    }
+    void    editor_set_instance(Editor* editor_instance);
+    Editor* editor_get_instance();
+    void    editor_type_register();
+    void    editor_init();
+    void    editor_begin_draw();
+    void    editor_end_draw();
 }
 
 #endif
