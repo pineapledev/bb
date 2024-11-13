@@ -130,13 +130,13 @@ namespace nit
 
         editor->editor_camera_entity = CreateEntity();
 
-        auto& transform      = entity::add<Transform>              (editor->editor_camera_entity);
+        auto& transform      = entity_add<Transform>              (editor->editor_camera_entity);
         transform.position.z = 3.f;
         
-        auto& camera         = entity::add<Camera>                 (editor->editor_camera_entity);
+        auto& camera         = entity_add<Camera>                 (editor->editor_camera_entity);
         camera.projection    = CameraProjection::Orthographic;
         
-        auto& controller = entity::add<EditorCameraController> (editor->editor_camera_entity);
+        auto& controller = entity_add<EditorCameraController> (editor->editor_camera_entity);
         
         controller = {
             .desired_zoom = camera.size,
@@ -154,9 +154,9 @@ namespace nit
         
         // Update editor camera 
         {
-            auto& camera     = entity::get<Camera>(editor->editor_camera_entity); 
-            auto& controller = entity::get<EditorCameraController>(editor->editor_camera_entity);
-            auto& transform  = entity::get<Transform>(editor->editor_camera_entity);
+            auto& camera     = entity_get<Camera>(editor->editor_camera_entity); 
+            auto& controller = entity_get<EditorCameraController>(editor->editor_camera_entity);
+            auto& transform  = entity_get<Transform>(editor->editor_camera_entity);
             
             // Zoom stuff
 
@@ -293,7 +293,7 @@ namespace nit
                     }
                 }
 
-                auto& camera_group = entity::get_group<Camera, Transform>();
+                auto& camera_group = entity_get_group<Camera, Transform>();
 
                 if (!camera_group.entities.empty())
                 {
@@ -302,10 +302,10 @@ namespace nit
                     // Gizmo stuff
                     Entity selected_entity = editor->selected_entity;
                     
-                    if (IsEntityValid(selected_entity) && editor->selection == Editor::Selection::Entity && IsEntityValid(camera_entity) && entity::has<Transform>(selected_entity))
+                    if (IsEntityValid(selected_entity) && editor->selection == Editor::Selection::Entity && IsEntityValid(camera_entity) && entity_has<Transform>(selected_entity))
                     {
-                        auto& camera_data      = entity::get<Camera>(camera_entity);
-                        auto& camera_transform = entity::get<Transform>(camera_entity);
+                        auto& camera_data      = entity_get<Camera>(camera_entity);
+                        auto& camera_transform = entity_get<Transform>(camera_entity);
                         
                         ImGuizmo::SetOrthographic(camera_data.projection == CameraProjection::Orthographic);
                         ImGuizmo::SetDrawlist();
@@ -324,7 +324,7 @@ namespace nit
                         const float* view = &CalculateViewMatrix(camera_transform).n[0];
                         const float* projection = &CalculateProjectionMatrix(camera_data).n[0];
 
-                        Transform& transform = entity::get<Transform>(selected_entity);
+                        Transform& transform = entity_get<Transform>(selected_entity);
                         
                         Matrix4 gizmo_matrix = CreateTransform(transform.position, transform.rotation, transform.scale);
                         
@@ -505,9 +505,9 @@ namespace nit
 
                         if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
                         {
-                            auto& transform = entity::get<Transform>(entity);
-                            auto& camera_transform  = entity::get<Transform>(editor->editor_camera_entity);
-                            auto& camera_controller = entity::get<EditorCameraController>(editor->editor_camera_entity);
+                            auto& transform = entity_get<Transform>(entity);
+                            auto& camera_transform  = entity_get<Transform>(editor->editor_camera_entity);
+                            auto& camera_controller = entity_get<EditorCameraController>(editor->editor_camera_entity);
                             auto pos = Vector3{ transform.position.x, transform.position.y, camera_transform.position.z };
                             camera_controller.aux_position = pos;
                             camera_transform.position      = pos;

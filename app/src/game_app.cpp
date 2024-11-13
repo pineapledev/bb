@@ -48,12 +48,12 @@ void spawn_entity()
 {
     Entity entity = CreateEntity();
     Vector3 position = ToVector3(RandomPointInSquare(RECT_LEFT.x, RECT_RIGHT.y, RECT_RIGHT.x, RECT_LEFT.y)); 
-    entity::add<Transform>(entity).position = position;
-    //entity::add<Transform>(entity).position = V3_ZERO;
-    entity::add<Sprite>(entity).tint = GetRandomColor();
-    //entity::get<Sprite>(entity).texture = test_texture;
-    SetSpriteSubTexture2D(entity::get<Sprite>(entity), "cpp");
-    reset_movement(entity::get<Transform>(entity), entity::add<Move>(entity));
+    entity_add<Transform>(entity).position = position;
+    //add<Transform>(entity).position = V3_ZERO;
+    entity_add<Sprite>(entity).tint = GetRandomColor();
+    //get<Sprite>(entity).texture = test_texture;
+    SetSpriteSubTexture2D(entity_get<Sprite>(entity), "cpp");
+    reset_movement(entity_get<Transform>(entity), entity_add<Move>(entity));
 }
 
 // -----------------------------------------------------------------
@@ -65,7 +65,7 @@ ListenerAction on_run()
     engine_event(Stage::Update) += EngineListener::Create(game_update);
 
     RegisterComponentType<Move>();
-    entity::create_group<Transform, Sprite, Move>();
+    entity_create_group<Transform, Sprite, Move>();
 
     return ListenerAction::StayListening;
 }
@@ -90,10 +90,10 @@ ListenerAction game_update()
 {
     spawn_entity();
     
-    for (Entity entity : entity::get_group<Transform, Sprite, Move>().entities)
+    for (Entity entity : entity_get_group<Transform, Sprite, Move>().entities)
     {
-        auto& transform = entity::get<Transform>(entity);
-        auto& move = entity::get<Move>(entity);
+        auto& transform = entity_get<Transform>(entity);
+        auto& move      = entity_get<Move>(entity);
 
         if (Distance(ToVector2(transform.position), move.destination) < 0.1f)
         {

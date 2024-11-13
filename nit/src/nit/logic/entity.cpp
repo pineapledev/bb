@@ -5,14 +5,14 @@ namespace nit
 #define NIT_CHECK_ENTITY_REGISTRY_CREATED NIT_CHECK(entity_registry)
     
     EntityRegistry* entity_registry = nullptr;
-    
-    void entity::set_registry_instance(EntityRegistry* entity_registry_instance)
+
+    void entity_registry_set_instance(EntityRegistry* entity_registry_instance)
     {
         NIT_CHECK(entity_registry_instance);
         entity_registry = entity_registry_instance;
     }
 
-    EntityRegistry* entity::get_registry_instance()
+    EntityRegistry* entity_registry_get_instance()
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         return entity_registry;
@@ -117,7 +117,7 @@ namespace nit
         }
     }
 
-    EntitySignature entity::create_group(const Array<u64>& type_hashes)
+    EntitySignature entity_create_group(const Array<u64>& type_hashes)
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         NIT_CHECK_MSG(!entity_registry->entity_count, "Create the group before any entity gets created!");
@@ -148,7 +148,7 @@ namespace nit
         return group_signature;
     }
 
-    EntityGroup& entity::get_group(EntitySignature signature)
+    EntityGroup& entity_get_group(EntitySignature signature)
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         return entity_registry->entity_groups[signature];
@@ -202,7 +202,7 @@ namespace nit
             ComponentAddedArgs args;
             args.entity = entity;
             args.type = component_pool->data_pool.type;
-            event_broadcast<const ComponentAddedArgs&>(entity::get_registry_instance()->component_added_event, args);
+            event_broadcast<const ComponentAddedArgs&>(entity_registry_get_instance()->component_added_event, args);
         }
         
         return entity;

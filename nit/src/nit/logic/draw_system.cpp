@@ -23,7 +23,7 @@ namespace nit
 
     Entity get_main_camera()
     {
-        auto& camera_group = entity::get_group<Camera, Transform>();
+        auto& camera_group = entity_get_group<Camera, Transform>();
         
         if (camera_group.entities.empty())
         {
@@ -36,7 +36,7 @@ namespace nit
         {
             for (Entity entity : camera_group.entities)
             {
-                if (!entity::has<EditorCameraController>(entity))
+                if (!entity_has<EditorCameraController>(entity))
                 {
                     return entity;
                 }
@@ -56,11 +56,11 @@ namespace nit
         engine_event(Stage::End)    += EngineListener::Create(end);
         engine_event(Stage::Draw)   += EngineListener::Create(draw);
         
-        entity::create_group<Sprite, Transform>();
-        entity::create_group<Camera, Transform>();
-        entity::create_group<Circle, Transform>();
-        entity::create_group<Line2D, Transform>();
-        entity::create_group<Text,   Transform>();
+        entity_create_group<Sprite, Transform>();
+        entity_create_group<Camera, Transform>();
+        entity_create_group<Circle, Transform>();
+        entity_create_group<Line2D, Transform>();
+        entity_create_group<Text,   Transform>();
     }
     
     ListenerAction start()
@@ -97,7 +97,7 @@ namespace nit
     {
         if (args.type == GetType<Sprite>())
         {
-            auto& sprite = entity::get<Sprite>(args.entity); 
+            auto& sprite = entity_get<Sprite>(args.entity); 
             auto& asset = sprite.texture;
 
             asset_retarget_handle(asset);
@@ -120,7 +120,7 @@ namespace nit
         }
         else if (args.type == GetType<Text>())
         {
-            auto& asset = entity::get<Text>(args.entity).font;
+            auto& asset = entity_get<Text>(args.entity).font;
             asset_retarget_handle(asset);
             if (asset_valid(asset) && !asset_loaded(asset))
             {
@@ -134,7 +134,7 @@ namespace nit
     {
         if (args.type == GetType<Sprite>())
         {
-            auto& sprite = entity::get<Sprite>(args.entity); 
+            auto& sprite = entity_get<Sprite>(args.entity); 
             auto& asset = sprite.texture;
             asset_retarget_handle(asset);
             
@@ -145,7 +145,7 @@ namespace nit
         }
         else if (args.type == GetType<Text>())
         {
-            auto& asset = entity::get<Text>(args.entity).font;
+            auto& asset = entity_get<Text>(args.entity).font;
             asset_retarget_handle(asset);
             if (asset_valid(asset) && asset_loaded(asset))
             {
@@ -161,7 +161,7 @@ namespace nit
         
         Entity main_camera = get_main_camera();
 
-        Camera& camera = entity::get<Camera>(main_camera);
+        Camera& camera = entity_get<Camera>(main_camera);
 
         i32 width, height;
         window_retrieve_size(&width, &height);
@@ -186,12 +186,12 @@ namespace nit
 
         set_depth_test_enabled(camera.projection == CameraProjection::Perspective);
         
-        begin_scene_2d(CalculateProjectionViewMatrix(camera, entity::get<Transform>(main_camera)));
+        begin_scene_2d(CalculateProjectionViewMatrix(camera, entity_get<Transform>(main_camera)));
         {
-            for (Entity entity : entity::get_group<Sprite, Transform>().entities)
+            for (Entity entity : entity_get_group<Sprite, Transform>().entities)
             {
-                auto& transform = entity::get<Transform>(entity);
-                auto& sprite = entity::get<Sprite>(entity);
+                auto& transform = entity_get<Transform>(entity);
+                auto& sprite = entity_get<Sprite>(entity);
 
                 if (!sprite.visible || sprite.tint.w <= F32_EPSILON)
                 {
@@ -259,10 +259,10 @@ namespace nit
                 draw_quad(texture_data, vertex_positions, vertex_uvs, vertex_colors, (i32) entity);
             }
 
-            for (Entity entity : entity::get_group<Line2D, Transform>().entities)
+            for (Entity entity : entity_get_group<Line2D, Transform>().entities)
             {
-                auto& transform = entity::get<Transform>(entity);
-                auto& line = entity::get<Line2D>(entity);
+                auto& transform = entity_get<Transform>(entity);
+                auto& line = entity_get<Line2D>(entity);
 
                 if (!line.visible || line.tint.w <= F32_EPSILON )
                 {
@@ -276,10 +276,10 @@ namespace nit
             }
 
             
-            for (Entity entity : entity::get_group<Text, Transform>().entities)
+            for (Entity entity : entity_get_group<Text, Transform>().entities)
             {
-                auto& transform = entity::get<Transform>(entity);
-                auto& text = entity::get<Text>(entity);
+                auto& transform = entity_get<Transform>(entity);
+                auto& text = entity_get<Text>(entity);
                 Font* font_data = asset_valid(text.font) ? asset_get_data<Font>(text.font) : nullptr;
 
                 if (font_data && !asset_loaded(text.font))
@@ -303,10 +303,10 @@ namespace nit
                 );
             }
 
-            for (Entity entity : entity::get_group<Circle, Transform>().entities)
+            for (Entity entity : entity_get_group<Circle, Transform>().entities)
             {
-                auto& transform = entity::get<Transform>(entity);
-                auto& circle = entity::get<Circle>(entity);
+                auto& transform = entity_get<Transform>(entity);
+                auto& circle = entity_get<Circle>(entity);
 
                 if (!circle.visible || circle.tint.w <= F32_EPSILON)
                 {
