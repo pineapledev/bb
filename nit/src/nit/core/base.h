@@ -50,7 +50,10 @@ NIT_PRINT("\x1B[91m"); NIT_PRINTLN(__VA_ARGS__); NIT_PRINT("\033[0m")
 #endif
 
 #ifdef NIT_EDITOR_ENABLED
+#define NIT_IF_EDITOR_ENABLED(_LINE) _LINE
 #define NIT_IMGUI_ENABLED
+#else
+#define NIT_EXECUTE_IF_EDITOR(_LINE)
 #endif
 
 #ifdef NIT_DEBUG

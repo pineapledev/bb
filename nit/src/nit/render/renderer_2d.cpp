@@ -79,7 +79,7 @@ namespace nit
             renderer_2d->white_texture.size       = V2_ONE;
             renderer_2d->white_texture.channels   = 4;
             renderer_2d->white_texture.pixel_data = new u8[]{ 255, 255, 255, 255 };
-            load_texture_2d(&renderer_2d->white_texture);
+            texture_2d_load(&renderer_2d->white_texture);
             
             renderer_2d->textures_to_bind[0] = &renderer_2d->white_texture;
 
@@ -201,7 +201,7 @@ namespace nit
             NIT_CHECK(renderer_2d->default_material);
             for (u32 i = 0; i < renderer_2d->last_texture_slot; i++)
             {
-                bind_texture_2d(renderer_2d->textures_to_bind[i], i);
+                texture_2d_bind(renderer_2d->textures_to_bind[i], i);
             }
 
             renderer_2d->default_material->SetConstantSampler2D("u_Textures[0]", &renderer_2d->texture_slots.front(),
@@ -237,7 +237,7 @@ namespace nit
             NIT_CHECK(renderer_2d->default_material);
             for (u32 i = 0; i < renderer_2d->last_texture_slot; i++)
             {
-                bind_texture_2d(renderer_2d->textures_to_bind[i], i);
+                texture_2d_bind(renderer_2d->textures_to_bind[i], i);
             }
 
             renderer_2d->default_material->SetConstantSampler2D("u_Textures[0]", &renderer_2d->texture_slots.front(),
@@ -541,7 +541,7 @@ namespace nit
     {
         NIT_CHECK_RENDERER_2D_CREATED
 
-        free_texture_2d(&renderer_2d->white_texture);
+        texture_2d_free(&renderer_2d->white_texture);
         renderer_2d->white_texture = {};
         delete renderer_2d->quad_batch;
         delete renderer_2d->circle_batch;

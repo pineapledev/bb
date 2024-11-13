@@ -15,13 +15,13 @@ namespace nit
 {
     ImGuiRenderer* im_gui_renderer = nullptr;
 
-    void set_im_gui_renderer_instance(ImGuiRenderer* im_gui_renderer_instance)
+    void im_gui_renderer_set_instance(ImGuiRenderer* im_gui_renderer_instance)
     {
         NIT_CHECK(im_gui_renderer_instance);
         im_gui_renderer = im_gui_renderer_instance;
     }
 
-    void init_im_gui(void* window_handler)
+    void im_gui_init(void* window_handler)
     {
         NIT_CHECK_IM_GUI_CREATED
         IMGUI_CHECKVERSION();
@@ -39,7 +39,7 @@ namespace nit
         style.Colors[ImGuiCol_DockingEmptyBg] = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
     }
 
-    void begin_im_gui()
+    void im_gui_begin()
     {
         NIT_CHECK_IM_GUI_CREATED
         ImGui_ImplOpenGL3_NewFrame();
@@ -89,7 +89,7 @@ namespace nit
         }
     }
 
-    void end_im_gui(float window_width, float window_height)
+    void im_gui_end(const Vector2& window_size)
     {
         NIT_CHECK_IM_GUI_CREATED
         
@@ -99,7 +99,7 @@ namespace nit
         }
         
         ImGuiIO& io = ImGui::GetIO();
-        io.DisplaySize = { window_width, window_height };
+        io.DisplaySize = { window_size.x, window_size.y };
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

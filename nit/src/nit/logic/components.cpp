@@ -51,7 +51,7 @@ namespace nit
     }
 #endif
     
-    void RegisterTransformComponent()
+    void register_transform_component()
     {
         RegisterComponentType<Transform>
         ({
@@ -125,7 +125,7 @@ namespace nit
     }
 #endif
 
-    void RegisterNameComponent()
+    void register_name_component()
     {
         RegisterComponentType<Name>
         ({
@@ -196,7 +196,7 @@ namespace nit
     }
 #endif
     
-    void RegisterUUIDComponent()
+    void register_uuid_component()
     {
         RegisterComponentType<UUID>
         ({
@@ -240,7 +240,7 @@ namespace nit
     }
 #endif
     
-    void RegisterCameraComponent()
+    void register_camera_component()
     {
         RegisterEnumType<CameraProjection>();
         RegisterEnumValue<CameraProjection>("Orthographic", CameraProjection::Orthographic);
@@ -322,7 +322,7 @@ namespace nit
     }
 #endif
     
-    void RegisterTextComponent()
+    void register_text_component()
     {
         TypeArgs<Text> args;
         args.fn_serialize   = SerializeText;
@@ -386,7 +386,7 @@ namespace nit
     }
 #endif
 
-    void RegisterSpriteComponent()
+    void register_sprite_component()
     {
         TypeArgs<Sprite> args;
         args.fn_serialize   = SerializeSprite;
@@ -408,7 +408,7 @@ namespace nit
             return;
         }
 
-        i32 index = find_pool_index_of_sub_texture_2d(asset_get_data<Texture2D>(sprite.texture), sub_texture);
+        i32 index = texture_2d_get_sub_tex_index(asset_get_data<Texture2D>(sprite.texture), sub_texture);
         sprite.sub_texture_index = index;
     }
 
@@ -447,7 +447,7 @@ namespace nit
     }
 #endif
 
-    void RegisterCircleComponent()
+    void register_circle_component()
     {
         TypeArgs<Circle> args;
         args.fn_serialize   = SerializeCircle;
@@ -488,7 +488,7 @@ namespace nit
     }
 #endif
 
-    void RegisterLine2DComponent()
+    void register_line_2d_component()
     {
         TypeArgs<Line2D> args;
         args.fn_serialize   = SerializeLine2D;

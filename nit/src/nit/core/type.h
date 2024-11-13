@@ -135,11 +135,11 @@ namespace nit
     template <typename T>
     String GetStringFromEnumValue(EnumType* enum_type, T value);
 
-    void SetTypeRegistryInstance(TypeRegistry* type_registry_instance);
+    void type_registry_set_instance(TypeRegistry* type_registry_instance);
     
     TypeRegistry* GetTypeRegistryInstance();
     
-    void init_type_registry(u32 max_types = DEFAULT_MAX_TYPES);
+    void type_registry_init(u32 max_types = DEFAULT_MAX_TYPES);
     
     template <typename T>
     void RegisterType(const TypeArgs<T>& args = {});

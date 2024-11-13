@@ -4,7 +4,7 @@ namespace nit
 {
     TypeRegistry* type_registry = nullptr;
 
-    void SetTypeRegistryInstance(TypeRegistry* type_registry_instance)
+    void type_registry_set_instance(TypeRegistry* type_registry_instance)
     {
         NIT_CHECK(type_registry_instance);
         type_registry = type_registry_instance;
@@ -91,7 +91,7 @@ namespace nit
     }
 #endif
 
-    void init_type_registry(u32 max_types)
+    void type_registry_init(u32 max_types)
     {
         NIT_CHECK(type_registry && !type_registry->types && !type_registry->enum_types);
         type_registry->types          = new Type[max_types];

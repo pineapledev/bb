@@ -4,7 +4,7 @@
 
 namespace nit
 {
-    void register_scene()
+    void register_scene_asset()
     {
         asset_register_type<Scene>({
               scene_load

@@ -14,7 +14,7 @@ namespace nit
         #endif
     };
     
-    void register_clip();
+    void register_clip_asset();
     void clip_load(AudioClip* audio_clip);
     void clip_free(AudioClip* audio_clip);
     void clip_serialize(const AudioClip* audio_clip, YAML::Emitter& emitter);

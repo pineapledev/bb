@@ -9,7 +9,7 @@
 
 namespace nit
 {
-    void register_clip()
+    void register_clip_asset()
     {
         asset_register_type<AudioClip>(
         {

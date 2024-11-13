@@ -28,7 +28,7 @@ namespace nit
         return editor;
     }
 
-    void editor_type_register()
+    void register_editor()
     {
         RegisterComponentType<EditorCameraController>();
     }
@@ -143,7 +143,7 @@ namespace nit
         };
     }
 
-    void editor_begin_draw()
+    void editor_begin()
     {
         NIT_CHECK_EDITOR_CREATED
 
@@ -297,7 +297,7 @@ namespace nit
 
                 if (!camera_group.entities.empty())
                 {
-                    Entity camera_entity = draw_system::GetMainCamera();
+                    Entity camera_entity = get_main_camera();
 
                     // Gizmo stuff
                     Entity selected_entity = editor->selected_entity;
@@ -371,7 +371,7 @@ namespace nit
                     AssetHandle texture = asset_create<Texture2D>(name, relative_dest.string());
                     Texture2D* texture_2d = asset_get_data<Texture2D>(texture);
                     
-                    load_texture_2d_as_sprite_sheet(texture_2d, name, relative_source.string(), relative_dest.string());
+                    texture_2d_load(texture_2d, name, relative_source.string(), relative_dest.string());
                     if (texture_2d->sub_texture_count > 0 && !texture_2d->image_path.empty())
                     {
                         asset_serialize_to_file(texture);
@@ -818,7 +818,7 @@ namespace nit
         }
     }
 
-    void editor_end_draw()
+    void editor_end()
     {
         unbind_frame_buffer();
 

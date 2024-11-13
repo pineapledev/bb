@@ -7,7 +7,7 @@
 #include "nit/render/texture.h"
 #include "nit/render/font.h"
 
-namespace nit::draw_system
+namespace nit
 {
     V4Verts2D vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
     V2Verts2D vertex_uvs       = DEFAULT_VERTEX_U_VS_2D;
@@ -21,7 +21,7 @@ namespace nit::draw_system
     static ListenerAction OnComponentAdded(const ComponentAddedArgs& args);
     static ListenerAction OnComponentRemoved(const ComponentRemovedArgs& args);
 
-    Entity GetMainCamera()
+    Entity get_main_camera()
     {
         auto& camera_group = entity::get_group<Camera, Transform>();
         
@@ -49,8 +49,8 @@ namespace nit::draw_system
         return *camera_group.entities.begin();
 #endif
     }
-    
-    void type_register()
+
+    void register_draw_system()
     {
         engine_event(Stage::Start)  += EngineListener::Create(Start);
         engine_event(Stage::End)    += EngineListener::Create(End);
@@ -111,7 +111,7 @@ namespace nit::draw_system
 
             if (is_valid)
             {
-                sprite.sub_texture_index = find_pool_index_of_sub_texture_2d(asset_get_data<Texture2D>(asset), sprite.sub_texture);
+                sprite.sub_texture_index = texture_2d_get_sub_tex_index(asset_get_data<Texture2D>(asset), sprite.sub_texture);
             }
             else
             {
@@ -159,7 +159,7 @@ namespace nit::draw_system
     {
         clear_screen();
         
-        Entity main_camera = GetMainCamera();
+        Entity main_camera = get_main_camera();
 
         Camera& camera = entity::get<Camera>(main_camera);
 

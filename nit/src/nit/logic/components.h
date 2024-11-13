@@ -16,7 +16,7 @@ namespace nit
     Vector3 Right(const Transform& transform);
     Vector3 Front(const Transform& transform);
 
-    void RegisterTransformComponent();
+    void register_transform_component();
     
     struct Name
     {
@@ -31,13 +31,13 @@ namespace nit
     Entity FindEntityByName(const String& name);
     void FindEntitiesByName(Array<Entity>& entities, const String& name);
     
-    void RegisterNameComponent();
+    void register_name_component();
 
     // UUID Declared in base
     Entity FindEntityByUUID(UUID uuid);
     void   FindEntitiesByUUID(Array<Entity>& entities, UUID uuid);
     
-    void RegisterUUIDComponent();
+    void register_uuid_component();
     
     enum class CameraProjection : u8 { Perspective, Orthographic };
     
@@ -51,7 +51,7 @@ namespace nit
         f32              size       = 3.f; // Used in Orthographic
     };
 
-    void RegisterCameraComponent();
+    void register_camera_component();
     
     Matrix4 CalculateProjectionViewMatrix(const Camera& camera, const Transform& transform= { {0.f, 0.f, 3.f} });
     Matrix4 CalculateProjectionMatrix(const Camera& camera);
@@ -69,7 +69,7 @@ namespace nit
         f32              size      = 1.f;
     };
 
-    void RegisterTextComponent();
+    void register_text_component();
 
     struct Texture2D;
     
@@ -87,7 +87,7 @@ namespace nit
         bool                  keep_aspect        = true;
     };
 
-    void RegisterSpriteComponent();
+    void register_sprite_component();
     
     void SetSpriteSubTexture2D(Sprite& sprite, const String& sub_texture);
     void ResetSpriteSubTexture2D(Sprite& sprite);
@@ -101,7 +101,7 @@ namespace nit
         f32             fade                   = .01f;
     };
 
-    void RegisterCircleComponent();
+    void register_circle_component();
 
     struct Line2D
     {
@@ -112,5 +112,5 @@ namespace nit
         f32             thickness        = .05f;
     };
 
-    void RegisterLine2DComponent();
+    void register_line_2d_component();
 }

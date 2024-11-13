@@ -73,10 +73,11 @@ namespace nit
 
     void    editor_set_instance(Editor* editor_instance);
     Editor* editor_get_instance();
-    void    editor_type_register();
+    void    register_editor();
     void    editor_init();
-    void    editor_begin_draw();
-    void    editor_end_draw();
+
+    void    editor_begin();
+    void    editor_end();
 }
 
 #endif

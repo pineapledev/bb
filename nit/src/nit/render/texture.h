@@ -29,8 +29,8 @@ namespace nit
         Vector2 location;
     };
     
-    void DeserializeSubTexture2D(SubTexture2D* sub_texture, const YAML::Node& node);
-    void SerializeSubTexture2D(const SubTexture2D* sub_texture, YAML::Emitter& emitter);
+    void sub_texture_2d_deserialize(SubTexture2D* sub_texture, const YAML::Node& node);
+    void sub_texture_2d_serialize(const SubTexture2D* sub_texture, YAML::Emitter& emitter);
     
     struct Texture2D
     {
@@ -47,17 +47,16 @@ namespace nit
         SubTexture2D* sub_textures      = nullptr;
     };
 
-    void register_texture_2d();
-    i32  find_pool_index_of_sub_texture_2d(const Texture2D* texture, const String& sub_texture_name);
-    void serialize_texture_2d(const Texture2D* texture, YAML::Emitter& emitter);
-    void deserialize_texture_2d(Texture2D* texture, const YAML::Node& node);
+    void register_texture_2d_asset();
+    i32  texture_2d_get_sub_tex_index(const Texture2D* texture, const String& sub_texture_name);
+    void texture_2d_serialize(const Texture2D* texture, YAML::Emitter& emitter);
+    void texture_2d_deserialize(Texture2D* texture, const YAML::Node& node);
 #ifdef NIT_EDITOR_ENABLED
-    void draw_editor_texture_2d(Texture2D* texture);
+    void texture_2d_draw_editor(Texture2D* texture);
 #endif
-    void load_texture_2d(Texture2D* texture);
-    void upload_to_gpu(Texture2D* texture);
-    void free_texture_2d(Texture2D* texture);
-    void bind_texture_2d(const Texture2D* texture, u32 slot = 0);
-    bool is_texture_2d_valid(const Texture2D* texture);
-    void load_texture_2d_as_sprite_sheet(Texture2D* texture, const String& sprite_sheet_name, const String& source_path, const String& dest_path, i32 max_width = 5034);
+    void texture_2d_load(Texture2D* texture);
+    void texture_2d_free(Texture2D* texture);
+    void texture_2d_bind(const Texture2D* texture, u32 slot = 0);
+    bool texture_2d_valid(const Texture2D* texture);
+    void texture_2d_load(Texture2D* texture, const String& sprite_sheet_name, const String& source_path, const String& dest_path, i32 max_width = 5034);
 }

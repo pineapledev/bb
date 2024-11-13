@@ -84,7 +84,7 @@ namespace nit
     AssetHandle    asset_deserialize_from_file   (const String& file_path);
     void           asset_serialize_to_string     (AssetHandle& asset, String& result);
     void           asset_serialize_to_file       (AssetHandle& asset);
-    void           asset_init();
+    void           assets_init();
     u32            asset_get_last_version        (Type* type);
     u32            asset_get_last_version        (const String& type_name);
     void           asset_find_by_name            (const String& name, Array<AssetHandle>& assets);

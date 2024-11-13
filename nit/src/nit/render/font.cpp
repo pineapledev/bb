@@ -7,7 +7,7 @@
 
 namespace nit
 {
-    void register_font()
+    void register_font_asset()
     {
         asset_register_type<Font>({
               font_load
@@ -82,7 +82,7 @@ namespace nit
         font->atlas.size = { WIDTH, HEIGHT };
         font->atlas.channels   = 4;
         
-        load_texture_2d(&font->atlas);
+        texture_2d_load(&font->atlas);
         
         delete[] pixels_rgb;
         delete[] pixels_alpha;

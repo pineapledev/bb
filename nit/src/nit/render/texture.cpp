@@ -54,7 +54,7 @@ namespace nit
         }
     }
     
-    void DeserializeSubTexture2D(SubTexture2D* sub_texture, const YAML::Node& node)
+    void sub_texture_2d_deserialize(SubTexture2D* sub_texture, const YAML::Node& node)
     {
         NIT_CHECK(sub_texture);
         sub_texture->name     = node["name"].as<String>();
@@ -62,7 +62,7 @@ namespace nit
         sub_texture->location = node["location"].as<Vector2>();
     }
 
-    void SerializeSubTexture2D(const SubTexture2D* sub_texture, YAML::Emitter& emitter)
+    void sub_texture_2d_serialize(const SubTexture2D* sub_texture, YAML::Emitter& emitter)
     {
         NIT_CHECK(sub_texture);
         emitter << YAML::Key << "name"     << YAML::Value << sub_texture->name;
@@ -70,7 +70,7 @@ namespace nit
         emitter << YAML::Key << "location" << YAML::Value << sub_texture->location;
     }
 
-    void register_texture_2d()
+    void register_texture_2d_asset()
     {
         RegisterEnumType<MinFilter>();
         RegisterEnumValue<MinFilter>("Linear", MinFilter::Linear);
@@ -89,17 +89,17 @@ namespace nit
         RegisterEnumValue<TextureCoordinate>("V",TextureCoordinate::V);
         
         asset_register_type<Texture2D>({
-              load_texture_2d
-            , free_texture_2d
-            , serialize_texture_2d
-            , deserialize_texture_2d
+              texture_2d_load
+            , texture_2d_free
+            , texture_2d_serialize
+            , texture_2d_deserialize
 #ifdef NIT_EDITOR_ENABLED
-            , draw_editor_texture_2d
+            , texture_2d_draw_editor
 #endif
         });
     }
 
-    i32 find_pool_index_of_sub_texture_2d(const Texture2D* texture, const String& sub_texture_name)
+    i32 texture_2d_get_sub_tex_index(const Texture2D* texture, const String& sub_texture_name)
     {
         NIT_CHECK(texture);
         
@@ -113,7 +113,7 @@ namespace nit
         return -1;
     }
 
-    void serialize_texture_2d(const Texture2D* texture, YAML::Emitter& emitter)
+    void texture_2d_serialize(const Texture2D* texture, YAML::Emitter& emitter)
     {
         using namespace YAML;
         
@@ -131,14 +131,14 @@ namespace nit
             {
                 SubTexture2D* sub_texture = &texture->sub_textures[i];
                 emitter << Key << "sub_texture" << Value << BeginMap;
-                SerializeSubTexture2D(sub_texture, emitter);
+                sub_texture_2d_serialize(sub_texture, emitter);
                 emitter << EndMap;
             }
             emitter << EndMap;
         }
     }
 
-    void deserialize_texture_2d(Texture2D* texture, const YAML::Node& node)
+    void texture_2d_deserialize(Texture2D* texture, const YAML::Node& node)
     {
         texture->image_path        = node["image_path"]                                     .as<String>();
         texture->mag_filter        = GetEnumValueFromString<MagFilter> (node["mag_filter"]  .as<String>());
@@ -156,14 +156,14 @@ namespace nit
             {
                 const YAML::Node& sub_texture_node = sub_texture_node_child.second;
                 SubTexture2D* sub_texture = &texture->sub_textures[sub_texture_index]; 
-                DeserializeSubTexture2D(sub_texture, sub_texture_node);
+                sub_texture_2d_deserialize(sub_texture, sub_texture_node);
                 ++sub_texture_index;
             }
         }
     }
 
 #ifdef NIT_EDITOR_ENABLED
-    void draw_editor_texture_2d(Texture2D* texture)
+    void texture_2d_draw_editor(Texture2D* texture)
     {
         editor_draw_resource_combo("resource", {".jpg", ".png"},  texture->image_path);
         editor_draw_enum_combo("mag filter", texture->mag_filter);
@@ -202,29 +202,6 @@ namespace nit
         texture->pixel_data = nullptr;
     }
 
-    void load_texture_2d(Texture2D* texture)
-    {
-        if (!texture->image_path.empty())
-        {
-            if (texture->pixel_data)
-            {
-                FreeTextureImage(texture);    
-            }
-            
-            stbi_set_flip_vertically_on_load(1);
-            i32 width, height, channels;
-            
-            String image_path = "assets/";
-            image_path.append(texture->image_path);
-            texture->pixel_data = stbi_load(image_path.c_str(), &width, &height, &channels, 0);
-            
-            texture->size = {(f32) width, (f32) height }; 
-            texture->channels = static_cast<u32>(channels);
-        }
-
-        upload_to_gpu(texture);
-    }
-
     void upload_to_gpu(Texture2D* texture)
     {
         NIT_CHECK(texture->id == 0);
@@ -258,21 +235,44 @@ namespace nit
             GL_UNSIGNED_BYTE, texture->pixel_data);
     }
 
-    void free_texture_2d(Texture2D* texture)
+    void texture_2d_load(Texture2D* texture)
+    {
+        if (!texture->image_path.empty())
+        {
+            if (texture->pixel_data)
+            {
+                FreeTextureImage(texture);    
+            }
+            
+            stbi_set_flip_vertically_on_load(1);
+            i32 width, height, channels;
+            
+            String image_path = "assets/";
+            image_path.append(texture->image_path);
+            texture->pixel_data = stbi_load(image_path.c_str(), &width, &height, &channels, 0);
+            
+            texture->size = {(f32) width, (f32) height }; 
+            texture->channels = static_cast<u32>(channels);
+        }
+
+        upload_to_gpu(texture);
+    }
+
+    void texture_2d_free(Texture2D* texture)
     {
         glDeleteTextures(1, &texture->id);
         texture->id = 0;
         FreeTextureImage(texture);
     }
 
-    bool is_texture_2d_valid(const Texture2D* texture)
+    bool texture_2d_valid(const Texture2D* texture)
     {
         return texture != nullptr && texture->id != 0;
     }
     
-    void bind_texture_2d(const Texture2D* texture, u32 slot)
+    void texture_2d_bind(const Texture2D* texture, u32 slot)
     {
-        NIT_CHECK(is_texture_2d_valid(texture));
+        NIT_CHECK(texture_2d_valid(texture));
         glBindTextureUnit(slot, texture->id);
     }
 
@@ -283,7 +283,7 @@ namespace nit
         String filename;
     };
     
-    void load_texture_2d_as_sprite_sheet(Texture2D* texture, const String& sprite_sheet_name, const String& source_path, const String& dest_path, i32 max_width)
+    void texture_2d_load(Texture2D* texture, const String& sprite_sheet_name, const String& source_path, const String& dest_path, i32 max_width)
     {
         NIT_CHECK(texture);
         Array<Image> images;
@@ -397,7 +397,7 @@ namespace nit
         texture->pixel_data = nullptr;
 
         texture->image_path = final_path;
-        load_texture_2d(texture);
+        texture_2d_load(texture);
     }
 }
 

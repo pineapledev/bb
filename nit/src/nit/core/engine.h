@@ -26,8 +26,10 @@ namespace nit
       , Start
       , Update
       , FixedUpdate
+      , LateUpdate
+      , PreDraw
       , Draw
-      , DrawImGUI
+      , PostDraw
       , End
       , Count
     };
@@ -37,9 +39,6 @@ namespace nit
     
     struct Engine
     {
-        bool stopped        = false;
-        bool paused         = false;
-        
         EngineEvent    events[(u8) Stage::Count];
         
         TypeRegistry   type_registry;
@@ -49,13 +48,9 @@ namespace nit
         Renderer2D     renderer_2d;
         AudioRegistry  audio_registry;
         Window         window;
-
-#ifdef NIT_IMGUI_ENABLED
-        ImGuiRenderer  im_gui_renderer;
-#endif
-#ifdef NIT_EDITOR_ENABLED
-        Editor editor;
-#endif
+        
+        NIT_IF_EDITOR_ENABLED(ImGuiRenderer  im_gui_renderer);
+        NIT_IF_EDITOR_ENABLED(Editor editor);
         
         f32 delta_seconds    = 0;
         f64 seconds          = 0;
@@ -71,7 +66,4 @@ namespace nit
     Engine*      engine_get_instance();
     EngineEvent& engine_event(Stage stage);
     void         engine_run();
-    void         engine_play();
-    void         engine_pause();
-    void         engine_stop();
 }

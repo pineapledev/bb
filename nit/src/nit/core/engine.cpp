@@ -39,8 +39,8 @@ namespace nit
         window_set_instance(&instance->window);
         window_init();
         
-        SetTypeRegistryInstance(&instance->type_registry);
-        init_type_registry();
+        type_registry_set_instance(&instance->type_registry);
+        type_registry_init();
 
         entity::set_registry_instance(&instance->entity_registry);
         InitEntityRegistry();
@@ -48,30 +48,29 @@ namespace nit
         audio_set_instance(&instance->audio_registry);
         audio_init();
         
-        RegisterNameComponent();
-        RegisterUUIDComponent();
-        RegisterTransformComponent();
-        RegisterCameraComponent();
-        RegisterTextComponent();
-        RegisterSpriteComponent();
-        RegisterCircleComponent();
-        RegisterLine2DComponent();
+        register_name_component();
+        register_uuid_component();
+        register_transform_component();
+        register_camera_component();
+        register_text_component();
+        register_sprite_component();
+        register_circle_component();
+        register_line_2d_component();
 
-#ifdef NIT_EDITOR_ENABLED
-        editor_type_register();  
-#endif
-        draw_system::type_register();
+        NIT_IF_EDITOR_ENABLED(register_editor());
+        
+        register_draw_system();
         
         asset_set_instance(&instance->asset_registry);
         
-        register_texture_2d();
-        register_font();
-        register_scene();
-        register_clip();
+        register_texture_2d_asset();
+        register_font_asset();
+        register_scene_asset();
+        register_clip_asset();
+
+        event_broadcast(engine_event(Stage::Run));
         
-        event_broadcast(instance->events[(u8)Stage::Run]);
-        
-        asset_init();
+        assets_init();
 
         set_render_objects_instance(&instance->render_objects);
         init_render_objects();
@@ -79,15 +78,11 @@ namespace nit
         set_renderer_2d_instance(&instance->renderer_2d);
         init_renderer_2d();
 
-#ifdef NIT_IMGUI_ENABLED
-        set_im_gui_renderer_instance(&instance->im_gui_renderer);
-        init_im_gui(instance->window.handler);
-#endif
+        NIT_IF_EDITOR_ENABLED(im_gui_renderer_set_instance(&instance->im_gui_renderer));
+        NIT_IF_EDITOR_ENABLED(im_gui_init(instance->window.handler));
 
-#ifdef NIT_EDITOR_ENABLED
-        editor_set_instance(&instance->editor);
-        editor_init();
-#endif
+        NIT_IF_EDITOR_ENABLED(editor_set_instance(&instance->editor));
+        NIT_IF_EDITOR_ENABLED(editor_init());
         
         // Init time
         instance->seconds          = 0;
@@ -97,7 +92,7 @@ namespace nit
         
         NIT_LOG_TRACE("Application created!");
         
-        event_broadcast(instance->events[(u8)Stage::Start]);
+        event_broadcast(engine_event(Stage::Start));
         
         while(!window_should_close())
         {
@@ -107,64 +102,34 @@ namespace nit
             instance->last_time = current_time;
             instance->seconds += time_between_frames;
             instance->delta_seconds = (f32) Clamp(time_between_frames, 0., instance->max_delta_time);
-            
-            event_broadcast(instance->events[(u8)Stage::Update]);
+
+            event_broadcast(engine_event(Stage::Update));
 
             instance->acc_fixed_delta += instance->delta_seconds;
+            
             while (instance->acc_fixed_delta >= instance->fixed_delta_seconds)
             {
-                event_broadcast(instance->events[(u8)Stage::FixedUpdate]);
+                event_broadcast(engine_event(Stage::FixedUpdate));
                 instance->acc_fixed_delta -= instance->fixed_delta_seconds;
             }
+            
+            event_broadcast(engine_event(Stage::LateUpdate));
 
             clear_screen();
             
-#ifdef NIT_IMGUI_ENABLED
-            begin_im_gui();
-#endif
+            NIT_IF_EDITOR_ENABLED(im_gui_begin());
+            NIT_IF_EDITOR_ENABLED(editor_begin());
             
-#ifdef NIT_EDITOR_ENABLED
-             editor_begin_draw();
-#endif
-            event_broadcast(instance->events[(u8)Stage::Draw]);
+            event_broadcast(engine_event(Stage::PreDraw));
+            event_broadcast(engine_event(Stage::Draw));
+            event_broadcast(engine_event(Stage::PostDraw));
 
-#ifdef NIT_EDITOR_ENABLED
-             editor_end_draw();
-#endif
-#ifdef NIT_IMGUI_ENABLED
-            event_broadcast(instance->events[(u8)Stage::DrawImGUI]);
-            auto [window_width, window_height] = window_get_size();
-            end_im_gui(window_width, window_height);
-#endif
+            NIT_IF_EDITOR_ENABLED(editor_end());
+            NIT_IF_EDITOR_ENABLED(im_gui_end(window_get_size()));
             
             window_update();
         }
 
         event_broadcast(instance->events[(u8)Stage::End]);
-    }
-
-    void engine_play()  
-    {
-        NIT_CHECK_ENGINE_CREATED
-        instance->paused = false; 
-
-        if (instance->stopped)
-        {
-            instance->stopped = false;
-            event_broadcast(instance->events[(u8)Stage::Start]);
-        }
-    }
-
-    void engine_pause() 
-    {
-        NIT_CHECK_ENGINE_CREATED
-        instance->paused = true;  
-    }
-
-    void engine_stop()
-    {
-        NIT_CHECK_ENGINE_CREATED
-        event_broadcast(instance->events[(u8)Stage::End]);
-        instance->stopped = true;
     }
 }
