@@ -8,27 +8,27 @@
 #include "logic/scene.h"
 #include "render/render_api.h"
 
-#define NIT_CHECK_ENGINE_CREATED NIT_CHECK_MSG(nit::instance, "Forget to call SetAppInstance!");
+#define NIT_CHECK_ENGINE_CREATED NIT_CHECK_MSG(nit::engine, "Forget to call SetAppInstance!");
 
 namespace nit
 {
-    Engine* instance = nullptr;
+    Engine* engine = nullptr;
     
     void engine_set_instance(Engine* new_engine_instance)
     {
         NIT_CHECK(new_engine_instance);
-        instance = new_engine_instance;
+        engine = new_engine_instance;
     }
 
     Engine* engine_get_instance()
     {
-        return instance;
+        return engine;
     }
 
     EngineEvent& engine_event(Stage stage)
     {
         NIT_CHECK_ENGINE_CREATED
-        return instance->events[(u8) stage];
+        return engine->events[(u8) stage];
     }
 
     void engine_run()
@@ -36,16 +36,16 @@ namespace nit
         NIT_CHECK_ENGINE_CREATED
         NIT_LOG_TRACE("Creating application...");
         
-        window_set_instance(&instance->window);
+        window_set_instance(&engine->window);
         window_init();
         
-        type_registry_set_instance(&instance->type_registry);
+        type_registry_set_instance(&engine->type_registry);
         type_registry_init();
 
-        entity::set_registry_instance(&instance->entity_registry);
+        entity::set_registry_instance(&engine->entity_registry);
         InitEntityRegistry();
         
-        audio_set_instance(&instance->audio_registry);
+        audio_set_instance(&engine->audio_registry);
         audio_init();
         
         register_name_component();
@@ -61,7 +61,7 @@ namespace nit
         
         register_draw_system();
         
-        asset_set_instance(&instance->asset_registry);
+        asset_set_instance(&engine->asset_registry);
         
         register_texture_2d_asset();
         register_font_asset();
@@ -72,23 +72,23 @@ namespace nit
         
         assets_init();
 
-        set_render_objects_instance(&instance->render_objects);
+        set_render_objects_instance(&engine->render_objects);
         init_render_objects();
         
-        set_renderer_2d_instance(&instance->renderer_2d);
+        set_renderer_2d_instance(&engine->renderer_2d);
         init_renderer_2d();
 
-        NIT_IF_EDITOR_ENABLED(im_gui_renderer_set_instance(&instance->im_gui_renderer));
-        NIT_IF_EDITOR_ENABLED(im_gui_init(instance->window.handler));
+        NIT_IF_EDITOR_ENABLED(im_gui_renderer_set_instance(&engine->im_gui_renderer));
+        NIT_IF_EDITOR_ENABLED(im_gui_init(engine->window.handler));
 
-        NIT_IF_EDITOR_ENABLED(editor_set_instance(&instance->editor));
+        NIT_IF_EDITOR_ENABLED(editor_set_instance(&engine->editor));
         NIT_IF_EDITOR_ENABLED(editor_init());
         
         // Init time
-        instance->seconds          = 0;
-        instance->frame_count      = 0;
-        instance->acc_fixed_delta  = 0;
-        instance->last_time = window_get_time();
+        engine->seconds          = 0;
+        engine->frame_count      = 0;
+        engine->acc_fixed_delta  = 0;
+        engine->last_time = window_get_time();
         
         NIT_LOG_TRACE("Application created!");
         
@@ -96,21 +96,21 @@ namespace nit
         
         while(!window_should_close())
         {
-            instance->frame_count++;
+            engine->frame_count++;
             const f64 current_time = window_get_time();
-            const f64 time_between_frames = current_time - instance->last_time;
-            instance->last_time = current_time;
-            instance->seconds += time_between_frames;
-            instance->delta_seconds = (f32) Clamp(time_between_frames, 0., instance->max_delta_time);
+            const f64 time_between_frames = current_time - engine->last_time;
+            engine->last_time = current_time;
+            engine->seconds += time_between_frames;
+            engine->delta_seconds = (f32) Clamp(time_between_frames, 0., engine->max_delta_time);
 
             event_broadcast(engine_event(Stage::Update));
 
-            instance->acc_fixed_delta += instance->delta_seconds;
+            engine->acc_fixed_delta += engine->delta_seconds;
             
-            while (instance->acc_fixed_delta >= instance->fixed_delta_seconds)
+            while (engine->acc_fixed_delta >= engine->fixed_delta_seconds)
             {
                 event_broadcast(engine_event(Stage::FixedUpdate));
-                instance->acc_fixed_delta -= instance->fixed_delta_seconds;
+                engine->acc_fixed_delta -= engine->fixed_delta_seconds;
             }
             
             event_broadcast(engine_event(Stage::LateUpdate));
@@ -130,6 +130,6 @@ namespace nit
             window_update();
         }
 
-        event_broadcast(instance->events[(u8)Stage::End]);
+        event_broadcast(engine->events[(u8)Stage::End]);
     }
 }

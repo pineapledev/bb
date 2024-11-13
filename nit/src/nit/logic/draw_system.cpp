@@ -13,13 +13,13 @@ namespace nit
     V2Verts2D vertex_uvs       = DEFAULT_VERTEX_U_VS_2D;
     V4Verts2D vertex_colors    = DEFAULT_VERTEX_COLORS_2D;
     
-    ListenerAction Start();
-    ListenerAction End();
+    ListenerAction start();
+    ListenerAction end();
     ListenerAction Draw();
     
-    static ListenerAction OnAssetDestroyed(const AssetDestroyedArgs& args);
-    static ListenerAction OnComponentAdded(const ComponentAddedArgs& args);
-    static ListenerAction OnComponentRemoved(const ComponentRemovedArgs& args);
+    static ListenerAction on_asset_destroyed(const AssetDestroyedArgs& args);
+    static ListenerAction on_component_added(const ComponentAddedArgs& args);
+    static ListenerAction on_component_removed(const ComponentRemovedArgs& args);
 
     Entity get_main_camera()
     {
@@ -52,8 +52,8 @@ namespace nit
 
     void register_draw_system()
     {
-        engine_event(Stage::Start)  += EngineListener::Create(Start);
-        engine_event(Stage::End)    += EngineListener::Create(End);
+        engine_event(Stage::Start)  += EngineListener::Create(start);
+        engine_event(Stage::End)    += EngineListener::Create(end);
         engine_event(Stage::Draw)   += EngineListener::Create(Draw);
         
         entity::create_group<Sprite, Transform>();
@@ -63,23 +63,23 @@ namespace nit
         entity::create_group<Text,   Transform>();
     }
     
-    ListenerAction Start()
+    ListenerAction start()
     {
-        engine_get_instance()->asset_registry.asset_destroyed_event    += AssetDestroyedListener::Create(OnAssetDestroyed);
-        engine_get_instance()->entity_registry.component_added_event   += ComponentAddedListener::Create(OnComponentAdded);
-        engine_get_instance()->entity_registry.component_removed_event += ComponentRemovedListener::Create(OnComponentRemoved);
+        engine_get_instance()->asset_registry.asset_destroyed_event    += AssetDestroyedListener::Create(on_asset_destroyed);
+        engine_get_instance()->entity_registry.component_added_event   += ComponentAddedListener::Create(on_component_added);
+        engine_get_instance()->entity_registry.component_removed_event += ComponentRemovedListener::Create(on_component_removed);
         return ListenerAction::StayListening;
     }
 
-    ListenerAction End()
+    ListenerAction end()
     {
-        engine_get_instance()->asset_registry.asset_destroyed_event    -= AssetDestroyedListener::Create(OnAssetDestroyed);
-        engine_get_instance()->entity_registry.component_added_event   -= ComponentAddedListener::Create(OnComponentAdded);
-        engine_get_instance()->entity_registry.component_removed_event -= ComponentRemovedListener::Create(OnComponentRemoved);
+        engine_get_instance()->asset_registry.asset_destroyed_event    -= AssetDestroyedListener::Create(on_asset_destroyed);
+        engine_get_instance()->entity_registry.component_added_event   -= ComponentAddedListener::Create(on_component_added);
+        engine_get_instance()->entity_registry.component_removed_event -= ComponentRemovedListener::Create(on_component_removed);
         return ListenerAction::StayListening;
     }
     
-    static ListenerAction OnAssetDestroyed(const AssetDestroyedArgs& args)
+    static ListenerAction on_asset_destroyed(const AssetDestroyedArgs& args)
     {
         if (args.asset_handle.type == GetType<Texture2D>())
         {
@@ -93,7 +93,7 @@ namespace nit
         return ListenerAction::StayListening;
     }
 
-    static ListenerAction OnComponentAdded(const ComponentAddedArgs& args)
+    static ListenerAction on_component_added(const ComponentAddedArgs& args)
     {
         if (args.type == GetType<Sprite>())
         {
@@ -130,7 +130,7 @@ namespace nit
         return ListenerAction::StayListening;
     }
 
-    static ListenerAction OnComponentRemoved(const ComponentRemovedArgs& args)
+    static ListenerAction on_component_removed(const ComponentRemovedArgs& args)
     {
         if (args.type == GetType<Sprite>())
         {
