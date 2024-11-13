@@ -148,18 +148,18 @@ namespace nit::audio::clip
         
         in.read(data, size);
 
-        if (!audio::has_instance() || !audio::is_initialized() || audio::is_buffer_valid(audio_clip->buffer_handle))
+        if (!audio_has_instance() || !audio::audio_is_initialized() || audio::audio_is_buffer_valid(audio_clip->buffer_handle))
         {
             NIT_CHECK(false);
             return;
         }
 
-        audio_clip->buffer_handle = audio::create_buffer(format, data, size, frec);
+        audio_clip->buffer_handle = audio::audio_create_buffer(format, data, size, frec);
     }
 
     void free(AudioClip* audio_clip)
     {
-        if (!audio_clip || !audio::has_instance() || !audio::is_initialized())
+        if (!audio_clip || !audio_has_instance() || !audio::audio_is_initialized())
         {
             NIT_CHECK(false);
             return;
@@ -169,9 +169,9 @@ namespace nit::audio::clip
         audio_clip->editor_source = SparseSet::INVALID;
 #endif
 
-        if (audio::is_buffer_valid(audio_clip->buffer_handle))
+        if (audio::audio_is_buffer_valid(audio_clip->buffer_handle))
         {
-            audio::destroy_buffer(audio_clip->buffer_handle);
+            audio::audio_destroy_buffer(audio_clip->buffer_handle);
         }
     }
 
@@ -206,7 +206,7 @@ namespace nit::audio::clip
             return;
         }
 
-        AssetHandle this_asset = engine::get_instance()->editor.selected_asset;
+        AssetHandle this_asset = engine_get_instance()->editor.selected_asset;
         editor::draw_resource_combo("Path", {".wav"}, audio_clip->audio_path);
         
         if (audio_clip->prev_path != audio_clip->audio_path || !is_asset_loaded(this_asset))
@@ -220,7 +220,7 @@ namespace nit::audio::clip
             if (in)
             {
                 retain_asset(this_asset);
-                audio_clip->editor_source = audio::create_source(audio_clip->buffer_handle);
+                audio_clip->editor_source = audio::audio_create_source(audio_clip->buffer_handle);
             }
 
             audio_clip->prev_path = audio_clip->audio_path;
@@ -228,12 +228,12 @@ namespace nit::audio::clip
         
         if (audio_clip->editor_source != SparseSet::INVALID)
         {
-            auto* data = audio::get_buffer_data(audio_clip->buffer_handle);
+            auto* data = audio::audio_get_buffer_data(audio_clip->buffer_handle);
             ImGui::Text("Duration %f", data->duration);
             
             if (ImGui::Button("Play"))
             {
-                audio::play(audio_clip->editor_source);
+                audio::audio_play(audio_clip->editor_source);
             }
         }
     }

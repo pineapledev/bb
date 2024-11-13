@@ -52,7 +52,7 @@ namespace nit::editor
 
                 TraverseDirectory(dir_path, id, depth + 1);
             }
-            else if (dir_path.extension().string() == engine::get_instance()->asset_registry.extension)
+            else if (dir_path.extension().string() == engine_get_instance()->asset_registry.extension)
             {
                 AssetHandle handle = find_asset_by_name(dir_path.filename().stem().string());
 
@@ -111,7 +111,7 @@ namespace nit::editor
         style.Colors[ImGuiCol_FrameBg] = { 0.1f, 0.1f, 0.1f, 1.f };
         style.Colors[ImGuiCol_Button] = { 0.356f, 0.356f, 0.416f, 1.f };
         
-        window::retrieve_size((i32*)&editor->frame_buffer.width, (i32*)&editor->frame_buffer.height);
+        window_retrieve_size((i32*)&editor->frame_buffer.width, (i32*)&editor->frame_buffer.height);
         
         editor->frame_buffer.color_attachments = {
             FrameBufferTextureFormat::RGBA8,
@@ -173,14 +173,14 @@ namespace nit::editor
                 if (std::abs(controller.desired_zoom - camera.size) > .01f)
                 {
                     const float dir = camera.size < controller.desired_zoom ? 1.f : -1.f;
-                    camera.size += controller.zoom_speed * dir * engine::get_instance()->delta_seconds;
+                    camera.size += controller.zoom_speed * dir * engine_get_instance()->delta_seconds;
                 }
                 else
                 {
                     camera.size = controller.desired_zoom;
                 }
                 
-                controller.time_zooming += engine::get_instance()->delta_seconds;
+                controller.time_zooming += engine_get_instance()->delta_seconds;
             }
             else
             {
@@ -191,11 +191,11 @@ namespace nit::editor
             
             // Move
             const bool is_right_mouse_pressed = ImGui::IsMouseDown(ImGuiMouseButton_Right);
-            Vector2 cursor_pos = window::get_cursor_position();
+            Vector2 cursor_pos = input_get_cursor_position();
             
             Vector2 window_size;
-            window_size.x = (f32) engine::get_instance()->editor.frame_buffer.width;
-            window_size.y = (f32) engine::get_instance()->editor.frame_buffer.height;
+            window_size.x = (f32) engine_get_instance()->editor.frame_buffer.width;
+            window_size.y = (f32) engine_get_instance()->editor.frame_buffer.height;
             
             // Mouse pressed
             if (!controller.mouse_down && is_right_mouse_pressed)
@@ -222,7 +222,7 @@ namespace nit::editor
             }
         }        
 
-        if (engine::get_instance()->im_gui_renderer.is_dockspace_enabled && ImGui::BeginMenuBar())
+        if (engine_get_instance()->im_gui_renderer.is_dockspace_enabled && ImGui::BeginMenuBar())
         {
             if (ImGui::BeginMenu("Window"))
             {
@@ -355,10 +355,10 @@ namespace nit::editor
             // source
             {
                 static String source = GetWorkingDirectory().string();
-                editor::draw_input_folder(&engine::get_instance()->window, "Source", source);
+                editor::draw_input_folder(&engine_get_instance()->window, "Source", source);
                 
                 static String dest = GetWorkingDirectory().string();
-                editor::draw_input_folder(&engine::get_instance()->window, "Destination", dest);
+                editor::draw_input_folder(&engine_get_instance()->window, "Destination", dest);
 
                 static String name;
                 editor::draw_input_text("Asset Name", name);
@@ -537,9 +537,9 @@ namespace nit::editor
             {
                 Entity selected_entity = editor->selected_entity;
 
-                for (u32 i = 0; i < engine::get_instance()->entity_registry.next_component_type_index - 1; ++i)
+                for (u32 i = 0; i < engine_get_instance()->entity_registry.next_component_type_index - 1; ++i)
                 {
-                    ComponentPool* pool = &engine::get_instance()->entity_registry.component_pool[i];
+                    ComponentPool* pool = &engine_get_instance()->entity_registry.component_pool[i];
                     if (!invoke(pool->fn_is_in_entity, selected_entity))
                     {
                         continue;
@@ -599,9 +599,9 @@ namespace nit::editor
 
                 if (ImGui::BeginPopup("Add Component"))
                 {
-                    for (u32 i = 0; i < engine::get_instance()->entity_registry.next_component_type_index - 1; ++i)
+                    for (u32 i = 0; i < engine_get_instance()->entity_registry.next_component_type_index - 1; ++i)
                     {
-                        ComponentPool* pool = &engine::get_instance()->entity_registry.component_pool[i];
+                        ComponentPool* pool = &engine_get_instance()->entity_registry.component_pool[i];
                         if (invoke(pool->fn_is_in_entity, selected_entity))
                         {
                             continue;
@@ -670,9 +670,9 @@ namespace nit::editor
                     {
                         if (ImGui::BeginMenu("Create"))
                         {
-                            for (u32 i = 0; i < engine::get_instance()->asset_registry.asset_pools.size(); ++i)
+                            for (u32 i = 0; i < engine_get_instance()->asset_registry.asset_pools.size(); ++i)
                             {
-                                AssetPool* pool = &engine::get_instance()->asset_registry.asset_pools[i];
+                                AssetPool* pool = &engine_get_instance()->asset_registry.asset_pools[i];
                 
                                 if (ImGui::MenuItem(pool->data_pool.type->name.c_str()))
                                 {
@@ -808,11 +808,11 @@ namespace nit::editor
 
             ImGui::Begin("Stats", &editor->show_stats, window_flags);
             String stats_text;
-            stats_text.append("\nTime: "     + std::to_string(engine::get_instance()->seconds));
-            stats_text.append("\nFrames: "   + std::to_string(engine::get_instance()->frame_count));
-            stats_text.append("\nFPS: "      + std::to_string(engine::get_instance()->frame_count / engine::get_instance()->seconds));
-            stats_text.append("\nEntities: " + std::to_string(engine::get_instance()->entity_registry.entity_count));
-            stats_text.append("\nDelta: "    + std::to_string(engine::get_instance()->delta_seconds));
+            stats_text.append("\nTime: "     + std::to_string(engine_get_instance()->seconds));
+            stats_text.append("\nFrames: "   + std::to_string(engine_get_instance()->frame_count));
+            stats_text.append("\nFPS: "      + std::to_string(engine_get_instance()->frame_count / engine_get_instance()->seconds));
+            stats_text.append("\nEntities: " + std::to_string(engine_get_instance()->entity_registry.entity_count));
+            stats_text.append("\nDelta: "    + std::to_string(engine_get_instance()->delta_seconds));
             ImGui::Text(stats_text.c_str());
             ImGui::End();
         }
@@ -836,7 +836,7 @@ namespace nit::editor
         if (ImGui::Button(toggle_button_name))
         {
             editor->enabled = !editor->enabled;
-            engine::get_instance()->im_gui_renderer.use_dockspace = editor->enabled;
+            engine_get_instance()->im_gui_renderer.use_dockspace = editor->enabled;
         }
         ImGui::End();
     }

@@ -1,7 +1,6 @@
 ﻿#include "nit/render/primitives_2d.h"
 #include "nit/render/renderer_2d.h"
 #include "nit/render/render_api.h"
-#include "nit/core/system.h"
 #include "nit/core/engine.h"
 #include "nit/logic/entity.h"
 #include "nit/logic/components.h"
@@ -14,9 +13,9 @@ namespace nit::draw_system
     V2Verts2D vertex_uvs       = DEFAULT_VERTEX_U_VS_2D;
     V4Verts2D vertex_colors    = DEFAULT_VERTEX_COLORS_2D;
     
-    void Start();
-    void End();
-    void Draw();
+    ListenerAction Start();
+    ListenerAction End();
+    ListenerAction Draw();
     
     static ListenerAction OnAssetDestroyed(const AssetDestroyedArgs& args);
     static ListenerAction OnComponentAdded(const ComponentAddedArgs& args);
@@ -33,7 +32,7 @@ namespace nit::draw_system
 
 #ifdef NIT_EDITOR_ENABLED
 
-        if (!engine::get_instance()->editor.enabled)
+        if (!engine_get_instance()->editor.enabled)
         {
             for (Entity entity : camera_group.entities)
             {
@@ -44,7 +43,7 @@ namespace nit::draw_system
             }
         }
 
-        return engine::get_instance()->editor.editor_camera_entity;
+        return engine_get_instance()->editor.editor_camera_entity;
         
 #else
         return *camera_group.entities.begin();
@@ -53,10 +52,9 @@ namespace nit::draw_system
     
     void type_register()
     {
-        CreateSystem("Draw");
-        SetSystemCallback(Start, Stage::Start);
-        SetSystemCallback(End,   Stage::End);
-        SetSystemCallback(Draw,  Stage::Draw);
+        engine_event(Stage::Start)  += EngineListener::Create(Start);
+        engine_event(Stage::End)    += EngineListener::Create(End);
+        engine_event(Stage::Draw)   += EngineListener::Create(Draw);
         
         entity::create_group<Sprite, Transform>();
         entity::create_group<Camera, Transform>();
@@ -65,18 +63,20 @@ namespace nit::draw_system
         entity::create_group<Text,   Transform>();
     }
     
-    void Start()
+    ListenerAction Start()
     {
-        engine::get_instance()->asset_registry.asset_destroyed_event    += AssetDestroyedListener::Create(OnAssetDestroyed);
-        engine::get_instance()->entity_registry.component_added_event   += ComponentAddedListener::Create(OnComponentAdded);
-        engine::get_instance()->entity_registry.component_removed_event += ComponentRemovedListener::Create(OnComponentRemoved);
+        engine_get_instance()->asset_registry.asset_destroyed_event    += AssetDestroyedListener::Create(OnAssetDestroyed);
+        engine_get_instance()->entity_registry.component_added_event   += ComponentAddedListener::Create(OnComponentAdded);
+        engine_get_instance()->entity_registry.component_removed_event += ComponentRemovedListener::Create(OnComponentRemoved);
+        return ListenerAction::StayListening;
     }
 
-    void End()
+    ListenerAction End()
     {
-        engine::get_instance()->asset_registry.asset_destroyed_event    -= AssetDestroyedListener::Create(OnAssetDestroyed);
-        engine::get_instance()->entity_registry.component_added_event   -= ComponentAddedListener::Create(OnComponentAdded);
-        engine::get_instance()->entity_registry.component_removed_event -= ComponentRemovedListener::Create(OnComponentRemoved);
+        engine_get_instance()->asset_registry.asset_destroyed_event    -= AssetDestroyedListener::Create(OnAssetDestroyed);
+        engine_get_instance()->entity_registry.component_added_event   -= ComponentAddedListener::Create(OnComponentAdded);
+        engine_get_instance()->entity_registry.component_removed_event -= ComponentRemovedListener::Create(OnComponentRemoved);
+        return ListenerAction::StayListening;
     }
     
     static ListenerAction OnAssetDestroyed(const AssetDestroyedArgs& args)
@@ -155,7 +155,7 @@ namespace nit::draw_system
         return ListenerAction::StayListening;
     }
     
-    void Draw()
+    ListenerAction Draw()
     {
         clear_screen();
         
@@ -164,14 +164,14 @@ namespace nit::draw_system
         Camera& camera = entity::get<Camera>(main_camera);
 
         i32 width, height;
-        window::retrieve_size(&width, &height);
+        window_retrieve_size(&width, &height);
         
 #ifdef NIT_EDITOR_ENABLED
-        if (engine::get_instance()->editor.enabled && engine::get_instance()->editor.show_viewport)
+        if (engine_get_instance()->editor.enabled && engine_get_instance()->editor.show_viewport)
         {
-            clear_attachment(&engine::get_instance()->editor.frame_buffer, 1, -1);
-            width  = engine::get_instance()->editor.frame_buffer.width;
-            height = engine::get_instance()->editor.frame_buffer.height;
+            clear_attachment(&engine_get_instance()->editor.frame_buffer, 1, -1);
+            width  = engine_get_instance()->editor.frame_buffer.width;
+            height = engine_get_instance()->editor.frame_buffer.height;
         }
 #endif
 
@@ -181,7 +181,7 @@ namespace nit::draw_system
         
         if (isnan(camera.aspect))
         {
-            return;
+            return ListenerAction::StayListening;;
         }
 
         set_depth_test_enabled(camera.projection == CameraProjection::Perspective);
@@ -320,5 +320,7 @@ namespace nit::draw_system
             }
         }
         end_scene_2d();
+
+        return ListenerAction::StayListening;
     }
 }

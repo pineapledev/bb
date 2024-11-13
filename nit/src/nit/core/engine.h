@@ -1,6 +1,5 @@
 #pragma once
 #include "nit/core/window.h"
-#include "nit/core/system.h"
 #include "nit/core/asset.h"
 #include "nit/render/renderer_2d.h"
 #include "nit/render/imgui_renderer.h"
@@ -14,14 +13,37 @@
 
 namespace nit
 {
+    enum class ExecutionContext : u8
+    {
+        Runtime
+      , Editor
+      , Always
+    };
+    
+    enum class Stage : u8
+    {
+        Run
+      , Start
+      , Update
+      , FixedUpdate
+      , Draw
+      , DrawImGUI
+      , End
+      , Count
+    };
+
+    using EngineEvent    = Event<>;
+    using EngineListener = Listener<>;
+    
     struct Engine
     {
         bool stopped        = false;
         bool paused         = false;
         
+        EngineEvent    events[(u8) Stage::Count];
+        
         TypeRegistry   type_registry;
         AssetRegistry  asset_registry;
-        SystemStack    system_stack;
         EntityRegistry entity_registry;
         RenderObjects  render_objects;
         Renderer2D     renderer_2d;
@@ -45,20 +67,11 @@ namespace nit
         f64 fixed_delta_seconds = 0.0166;
     };
     
-    namespace engine
-    {
-        void set_instance(Engine* new_engine_instance);
-        Engine* get_instance();
-        
-        void run(VoidFunc run_callback = nullptr);
-        void play();
-        void pause();
-        void stop();
-    }
-    
-    // System shortcuts
-    void InitSystemStack();
-    void CreateSystem(const String& name, u32 priority = 0, ExecutionContext context = ExecutionContext::Runtime, bool start_disabled = false);
-    void SetSystemCallback(VoidFunc callback, Stage stage, bool try_invoke = false);
-    void InvokeSystemCallbacks(Stage stage, bool force_enabled = false);
+    void         engine_set_instance(Engine* new_engine_instance);
+    Engine*      engine_get_instance();
+    EngineEvent& engine_event(Stage stage);
+    void         engine_run();
+    void         engine_play();
+    void         engine_pause();
+    void         engine_stop();
 }

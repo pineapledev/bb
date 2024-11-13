@@ -3,15 +3,16 @@
 
 using namespace nit;
 
-void on_run();
-void game_start();
-void game_update();
+ListenerAction on_run();
+ListenerAction game_start();
+ListenerAction game_update();
 
 int main(int argc, char** argv)
 {
     Engine engine_instance;
-    engine::set_instance(&engine_instance);
-    engine::run(on_run);
+    engine_set_instance(&engine_instance);
+    engine_event(Stage::Run) += EngineListener::Create(on_run);
+    engine_run();
 }
 
 // -----------------------------------------------------------------
@@ -57,20 +58,21 @@ void spawn_entity()
 
 // -----------------------------------------------------------------
 
-void on_run()
+ListenerAction on_run()
 {
     //Create game system
-    CreateSystem("Game", 1);
-    SetSystemCallback(game_start,   Stage::Start);
-    SetSystemCallback(game_update,  Stage::Update);
+    engine_event(Stage::Start)  += EngineListener::Create(game_start);
+    engine_event(Stage::Update) += EngineListener::Create(game_update);
 
     RegisterComponentType<Move>();
     entity::create_group<Transform, Sprite, Move>();
+
+    return ListenerAction::StayListening;
 }
 
 // -----------------------------------------------------------------
 
-void game_start()
+ListenerAction game_start()
 {
     AssetHandle test_scene = find_asset_by_name("test_scene");
 
@@ -80,9 +82,11 @@ void game_start()
     }
 
     test_texture = find_asset_by_name("test_sheet");
+
+    return ListenerAction::StayListening;
 }
 
-void game_update()
+ListenerAction game_update()
 {
     //SpawnEntity();
     
@@ -97,7 +101,9 @@ void game_update()
         }
         else
         {
-            transform.position += ToVector3(move.velocity * engine::get_instance()->delta_seconds);
+            transform.position += ToVector3(move.velocity * engine_get_instance()->delta_seconds);
         }
     }
+
+    return ListenerAction::StayListening;
 }

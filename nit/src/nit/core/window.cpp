@@ -11,11 +11,11 @@
     NIT_CHECK_MSG(window->handler, "Forget to call Init!");
 
 
-namespace nit::window
+namespace nit
 {
     Window* window = nullptr;
 
-    void set_instance(Window* window_instance)
+    void window_set_instance(Window* window_instance)
     {
         NIT_CHECK(window_instance);
         window = window_instance;
@@ -27,12 +27,12 @@ namespace nit::window
         NIT_LOG_TRACE("[OpenGL] %s ", message);
     }
     
-    void init(const WindowCfg& cfg)
+    void window_init(const WindowCfg& cfg)
     {
         NIT_LOG_TRACE("Creating Window...");
         NIT_CHECK_WINDOW_CREATED
         
-        finish();
+        window_finish();
 
         const bool initialized = glfwInit();
 
@@ -69,9 +69,9 @@ namespace nit::window
         }
 #endif
         
-        set_v_sync(cfg.v_sync);
-        set_title(cfg.title);
-        set_cursor_mode(cfg.cursor_mode);
+        window_set_v_sync(cfg.v_sync);
+        window_set_title(cfg.title);
+        window_set_cursor_mode(cfg.cursor_mode);
 
         if (cfg.start_maximized)
         {
@@ -81,45 +81,45 @@ namespace nit::window
         NIT_LOG_TRACE("Window created!");
     }
 
-    void finish()
+    void window_finish()
     {
         NIT_CHECK_WINDOW_CREATED
         if (window->handler)
         {
-            close();
+            window_close();
             glfwDestroyWindow(window->handler);
             window->handler = nullptr;
             glfwTerminate();
         }
     }
 
-    void close()
+    void window_close()
     {
         NIT_CHECK_WINDOW_INITIALIZED
         glfwSetWindowShouldClose(window->handler, true);
     }
 
-    void update()
+    void window_update()
     {
         glfwPollEvents();
         glfwSwapBuffers(window->handler);
     }
 
-    void set_title(const String& new_title)
+    void window_set_title(const String& new_title)
     {
         NIT_CHECK_WINDOW_INITIALIZED
         window->title = new_title;
         glfwSetWindowTitle(window->handler, new_title.c_str());
     }
 
-    void set_v_sync(bool enabled)
+    void window_set_v_sync(bool enabled)
     {
         NIT_CHECK_WINDOW_INITIALIZED
         window->v_sync = enabled;
         glfwSwapInterval(enabled ? 1 : 0);
     }
 
-    void set_cursor_mode(const CursorMode mode)
+    void window_set_cursor_mode(const CursorMode mode)
     {
         NIT_CHECK_WINDOW_INITIALIZED
         window->cursor_mode = mode;
@@ -140,90 +140,90 @@ namespace nit::window
         }
     }
 
-    bool should_close()
+    bool window_should_close()
     {
         NIT_CHECK_WINDOW_INITIALIZED
         return glfwWindowShouldClose(window->handler);
     }
 
-    void retrieve_size(i32* width, i32* height)
+    void window_retrieve_size(i32* width, i32* height)
     {
         NIT_CHECK_WINDOW_INITIALIZED
         glfwGetWindowSize(window->handler, width, height);
     }
 
-    Vector2 get_size()
+    Vector2 window_get_size()
     {
         i32 x, y;
-        retrieve_size(&x, &y);
+        window_retrieve_size(&x, &y);
         return { (f32)x, (f32) y };
     }
 
-    float get_aspect()
+    float window_get_aspect()
     {
         i32 x, y;
-        retrieve_size(&x, &y);
+        window_retrieve_size(&x, &y);
         return (f32)x / (f32)y;
     }
+
+    f64 window_get_time()
+    {
+        NIT_CHECK_WINDOW_INITIALIZED
+        return glfwGetTime();
+    }
     
-    void get_cursor_position(f64* x, f64* y)
+    void input_get_cursor_position(f64* x, f64* y)
     {
         NIT_CHECK_WINDOW_INITIALIZED
         glfwGetCursorPos(window->handler, x, y);
     }
 
-    Vector2 get_cursor_position()
+    Vector2 input_get_cursor_position()
     {
         f64 x, y;
-        get_cursor_position(&x, &y);
+        input_get_cursor_position(&x, &y);
         return { (f32) x, (f32) y };
     }
 
-    i32 get_mouse_button(i32 button)
+    i32 input_get_mouse_button(i32 button)
     {
         NIT_CHECK_WINDOW_INITIALIZED
         return glfwGetMouseButton(window->handler, button);
     }
 
-    bool is_mouse_button_pressed(MouseButton button)
+    bool input_is_mouse_button_pressed(MouseButton button)
     {
-        const auto state = get_mouse_button(button);
+        const auto state = input_get_mouse_button(button);
         return state == GLFW_PRESS;
     }
 
-    i32 get_key(i32 key)
+    i32 input_get_key(i32 key)
     {
         NIT_CHECK_WINDOW_INITIALIZED
         return glfwGetKey(window->handler, key);
     }
 
-    bool is_key_pressed(Key key)
+    bool input_is_key_pressed(Key key)
     {
-        const auto state = get_key(key);
+        const auto state = input_get_key(key);
         return state == GLFW_PRESS;
     }
 
-    const char* get_joystick_name(i32 jid)
+    const char* input_get_joystick_name(i32 jid)
     {
         NIT_CHECK_WINDOW_INITIALIZED
         return glfwGetJoystickName(jid);
     }
 
-    const u8* get_joystick_buttons(i32 jid, i32* count)
+    const u8* input_get_joystick_buttons(i32 jid, i32* count)
     {
         NIT_CHECK_WINDOW_INITIALIZED
         return glfwGetJoystickButtons(jid, count);
     }
 
-    const f32* get_joystick_axes(i32 jid, i32* count)
+    const f32* input_get_joystick_axes(i32 jid, i32* count)
     {
         NIT_CHECK_WINDOW_INITIALIZED
         return glfwGetJoystickAxes(jid, count);
-    }
-
-    f64 get_time()
-    {
-        NIT_CHECK_WINDOW_INITIALIZED
-        return glfwGetTime();
     }
 }

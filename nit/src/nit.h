@@ -7,7 +7,6 @@
 
 #include "nit/core/engine.h"
 #include "nit/core/window.h"
-#include "nit/core/system.h"
 #include "nit/core/asset.h"
 
 #include "nit/logic/entity.h"

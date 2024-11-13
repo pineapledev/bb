@@ -168,4 +168,33 @@ namespace nit
             remove_listener(event, listener);
         }
     }
+
+    template<typename... Args>
+    void broadcast(Event<Args...>& event)
+    {
+        if (is_event_empty(event))
+        {
+            return;
+        }
+        
+        Array<Listener<Args...>> listeners_to_remove;
+        listeners_to_remove.reserve(event.listeners.size());
+        
+        for (Listener<Args...>& listener : event.listeners)
+        {
+            switch (listener.function_ptr())
+            {
+            case ListenerAction::StayListening:
+                break;
+            case ListenerAction::StopListening:
+                listeners_to_remove.push_back(listener);
+                break;
+            }
+        }
+
+        for (Listener<Args...>& listener : listeners_to_remove)
+        {
+            remove_listener(event, listener);
+        }
+    }
 }

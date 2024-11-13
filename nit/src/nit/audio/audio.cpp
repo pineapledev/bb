@@ -23,7 +23,7 @@ namespace nit::audio
         return false;
     }
 
-    void set_instance(AudioRegistry* audio_registry_instance)
+    void audio_set_instance(AudioRegistry* audio_registry_instance)
     {
         if (!audio_registry_instance)
         {
@@ -34,12 +34,12 @@ namespace nit::audio
         audio_registry = audio_registry_instance;
     }
 
-    bool has_instance()
+    bool audio_has_instance()
     {
         return audio_registry != nullptr;
     }
 
-    AudioRegistry* get_instance()
+    AudioRegistry* engine_get_instance()
     {
         if (!audio_registry)
         {
@@ -50,12 +50,12 @@ namespace nit::audio
         return audio_registry;
     }
 
-    bool is_initialized()
+    bool audio_is_initialized()
     {
         return audio_registry->context != nullptr && audio_registry->device != nullptr;
     }
 
-    void init()
+    void audio_init()
     {
         if (!audio_registry)
         {
@@ -79,7 +79,7 @@ namespace nit::audio
         NIT_CHECK_MSG(false, "AudioRegistry initialization failed!\n");
     }
 
-    void finish()
+    void audio_finish()
     {
         if (IsAudioRegistryInvalid()) return;
         
@@ -87,7 +87,7 @@ namespace nit::audio
         
         for (u32 i = 0; i < audio_registry->audio_buffers.sparse_set.count; ++i)
         {
-            free_buffer_data(buffer_data + i);
+            audio_free_buffer_data(buffer_data + i);
         }
 
         pool::release(&audio_registry->audio_sources);
@@ -100,7 +100,7 @@ namespace nit::audio
         audio_registry->device = nullptr;
     }
 
-    AudioBufferHandle create_buffer(AudioFormat format, char* data, u32 size, u32 frec)
+    AudioBufferHandle audio_create_buffer(AudioFormat format, char* data, u32 size, u32 frec)
     {
         if (IsAudioRegistryInvalid()) return 0;
         
@@ -153,13 +153,13 @@ namespace nit::audio
         return handle;
     }
 
-    bool is_buffer_valid(AudioBufferHandle buffer_handle)
+    bool audio_is_buffer_valid(AudioBufferHandle buffer_handle)
     {
         if (IsAudioRegistryInvalid()) return false;
         return pool::is_valid(&audio_registry->audio_buffers, buffer_handle);
     }
 
-    void free_buffer_data(AudioBufferData* data)
+    void audio_free_buffer_data(AudioBufferData* data)
     {
         if (!data)
         {
@@ -169,25 +169,25 @@ namespace nit::audio
 
         for (AudioSourceHandle& source_handle : data->audio_sources)
         {
-            AudioSourceData* audio_source_data = get_source_data(source_handle);
-            free_source_data(audio_source_data);
+            AudioSourceData* audio_source_data = audio_get_source_data(source_handle);
+            audio_free_source_data(audio_source_data);
         }
         
         alDeleteBuffers(1, &data->buffer_id);
     }
 
-    void destroy_buffer(AudioBufferHandle buffer_handle)
+    void audio_destroy_buffer(AudioBufferHandle buffer_handle)
     {
         if (IsAudioRegistryInvalid()) return;
         
-        if (!is_buffer_valid(buffer_handle))
+        if (!audio_is_buffer_valid(buffer_handle))
         {
             NIT_CHECK_MSG(false, "Trying to destroy invalid buffer!");
             return;
         }
 
-        AudioBufferData* data = get_buffer_data(buffer_handle);
-        free_buffer_data(data);
+        AudioBufferData* data = audio_get_buffer_data(buffer_handle);
+        audio_free_buffer_data(data);
 
         for (AudioSourceHandle& source_handle : data->audio_sources)
         {
@@ -197,11 +197,11 @@ namespace nit::audio
         pool::delete_data(&audio_registry->audio_buffers, buffer_handle);
     }
 
-    AudioBufferData* get_buffer_data(AudioBufferHandle buffer_handle)
+    AudioBufferData* audio_get_buffer_data(AudioBufferHandle buffer_handle)
     {
         if (IsAudioRegistryInvalid()) return nullptr;
         
-        if (!is_buffer_valid(buffer_handle))
+        if (!audio_is_buffer_valid(buffer_handle))
         {
             NIT_CHECK_MSG(false, "Trying to use invalid buffer!");
             return nullptr;
@@ -210,17 +210,17 @@ namespace nit::audio
         return pool::get_data<AudioBufferData>(&audio_registry->audio_buffers, buffer_handle);
     }
 
-    AudioSourceHandle create_source(AudioBufferHandle buffer_handle)
+    AudioSourceHandle audio_create_source(AudioBufferHandle buffer_handle)
     {
         if (IsAudioRegistryInvalid()) return 0;
 
-        if (!is_buffer_valid(buffer_handle))
+        if (!audio_is_buffer_valid(buffer_handle))
         {
             NIT_CHECK_MSG(false, "Trying to use invalid buffer!");
             return SparseSet::INVALID;
         }
 
-        AudioBufferData* buffer_data = get_buffer_data(buffer_handle);
+        AudioBufferData* buffer_data = audio_get_buffer_data(buffer_handle);
         
         u32 source_id = 0;
         alGenSources(1, &source_id);
@@ -237,13 +237,13 @@ namespace nit::audio
         return audio_source;
     }
 
-    bool is_source_valid(AudioSourceHandle source_handle)
+    bool audio_is_source_valid(AudioSourceHandle source_handle)
     {
         if (IsAudioRegistryInvalid()) return false;
         return pool::is_valid(&audio_registry->audio_sources, source_handle);
     }
 
-    void free_source_data(AudioSourceData* data)
+    void audio_free_source_data(AudioSourceData* data)
     {
         if (!data)
         {
@@ -254,30 +254,30 @@ namespace nit::audio
         alDeleteSources(1, &data->source_id);
     }
 
-    void destroy_source(AudioSourceHandle source_handle)
+    void audio_destroy_source(AudioSourceHandle source_handle)
     {
         if (IsAudioRegistryInvalid()) return;
         
-        if (!is_source_valid(source_handle))
+        if (!audio_is_source_valid(source_handle))
         {
             NIT_CHECK_MSG(false, "Trying to destroy invalid source!");
             return;
         }
 
-        AudioSourceData* source_data = get_source_data(source_handle);
-        free_source_data(source_data);
+        AudioSourceData* source_data = audio_get_source_data(source_handle);
+        audio_free_source_data(source_data);
 
-        AudioBufferData* buffer_data = get_buffer_data(source_data->audio_buffer);
+        AudioBufferData* buffer_data = audio_get_buffer_data(source_data->audio_buffer);
         buffer_data->audio_sources.erase(std::ranges::find(buffer_data->audio_sources, source_handle));
         
         pool::delete_data(&audio_registry->audio_sources, source_handle);
     }
 
-    AudioSourceData* get_source_data(AudioSourceHandle source_handle)
+    AudioSourceData* audio_get_source_data(AudioSourceHandle source_handle)
     {
         if (IsAudioRegistryInvalid()) return nullptr;
         
-        if (!is_source_valid(source_handle))
+        if (!audio_is_source_valid(source_handle))
         {
             NIT_CHECK_MSG(false, "Trying to use invalid source!");
             return nullptr;
@@ -286,85 +286,85 @@ namespace nit::audio
         return pool::get_data<AudioSourceData>(&audio_registry->audio_sources, source_handle);
     }
 
-    void play(AudioSourceHandle source_handle)
+    void audio_play(AudioSourceHandle source_handle)
     {
         if (IsAudioRegistryInvalid()) return;
-        AudioSourceData* source_data = get_source_data(source_handle);
+        AudioSourceData* source_data = audio_get_source_data(source_handle);
         alSourcePlay(source_data->source_id);
     }
 
-    void stop(AudioSourceHandle source_handle)
+    void audio_stop(AudioSourceHandle source_handle)
     {
         if (IsAudioRegistryInvalid()) return;
-        AudioSourceData* source_data = get_source_data(source_handle);
+        AudioSourceData* source_data = audio_get_source_data(source_handle);
         alSourceStop(source_data->source_id);
     }
 
-    bool is_playing(AudioSourceHandle source_handle)
+    bool audio_is_playing(AudioSourceHandle source_handle)
     {
         if (IsAudioRegistryInvalid()) return false;
         ALint state;
-        AudioSourceData* source_data = get_source_data(source_handle);
+        AudioSourceData* source_data = audio_get_source_data(source_handle);
         alGetSourcei(source_data->source_id, AL_SOURCE_STATE, &state);
         return state == AL_PLAYING;
     }
 
-    void set_pitch(AudioSourceHandle source_handle, const u32 pitch)
+    void audio_set_pitch(AudioSourceHandle source_handle, const u32 pitch)
     {
         if (IsAudioRegistryInvalid()) return;
-        AudioSourceData* source_data = get_source_data(source_handle);
+        AudioSourceData* source_data = audio_get_source_data(source_handle);
         alSourcei(source_data->source_id, AL_PITCH, static_cast<ALint>(pitch));
     }
 
-    void set_gain(AudioSourceHandle source_handle, const u32 gain)
+    void audio_set_gain(AudioSourceHandle source_handle, const u32 gain)
     {
         if (IsAudioRegistryInvalid()) return;
-        AudioSourceData* source_data = get_source_data(source_handle);
+        AudioSourceData* source_data = audio_get_source_data(source_handle);
         alSourcei(source_data->source_id, AL_GAIN, static_cast<ALint>(gain));
     }
 
-    void set_loop(AudioSourceHandle source_handle, const bool loop)
+    void audio_set_loop(AudioSourceHandle source_handle, const bool loop)
     {
         if (IsAudioRegistryInvalid()) return;
-        AudioSourceData* source_data = get_source_data(source_handle);
+        AudioSourceData* source_data = audio_get_source_data(source_handle);
         alSourcei(source_data->source_id, AL_LOOPING, loop);
     }
 
-    void translate(AudioSourceHandle source_handle, const Vector3& position)
+    void audio_translate(AudioSourceHandle source_handle, const Vector3& position)
     {
         if (IsAudioRegistryInvalid()) return;
-        AudioSourceData* source_data = get_source_data(source_handle);
+        AudioSourceData* source_data = audio_get_source_data(source_handle);
         alSource3f(source_data->source_id, AL_POSITION, position.x, position.y, position.z);
     }
 
-    void set_velocity(AudioSourceHandle source_handle, const Vector3& velocity)
+    void audio_set_velocity(AudioSourceHandle source_handle, const Vector3& velocity)
     {
         if (IsAudioRegistryInvalid()) return;
-        AudioSourceData* source_data = get_source_data(source_handle);
+        AudioSourceData* source_data = audio_get_source_data(source_handle);
         alSource3f(source_data->source_id, AL_VELOCITY, velocity.x, velocity.y, velocity.z);
     }
 
-    void rotate(AudioSourceHandle source_handle, const Vector3& orientation)
+    void audio_rotate(AudioSourceHandle source_handle, const Vector3& orientation)
     {
         if (IsAudioRegistryInvalid()) return;
-        AudioSourceData* source_data = get_source_data(source_handle);
+        AudioSourceData* source_data = audio_get_source_data(source_handle);
         alSource3f(source_data->source_id, AL_ORIENTATION, orientation.x, orientation.y, orientation.z);
     }
 
-    void translate_listener(const Vector3& position)
+    void audio_translate_listener(const Vector3& position)
     {
         if (IsAudioRegistryInvalid()) return;
         alListener3f(AL_POSITION, position.x, position.y, position.z);
     }
   
-    void rotate_listener(const Vector3& up, const Vector3& forward)
+    void audio_rotate_listener(const Vector3& up, const Vector3& forward)
     {
         if (IsAudioRegistryInvalid()) return;
         const float values[] = {up.x, up.y, up.z, forward.x, forward.y, forward.z};
         alListenerfv(AL_ORIENTATION, values);
     }
 
-    void set_listener_velocity(const Vector3& velocity)
+    void audio_set_listener_velocity(const Vector3& velocity)
     {
         if (IsAudioRegistryInvalid()) return;
         alListener3f(AL_VELOCITY, velocity.x, velocity.y, velocity.z);

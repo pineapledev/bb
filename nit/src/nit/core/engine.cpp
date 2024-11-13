@@ -8,32 +8,36 @@
 #include "logic/scene.h"
 #include "render/render_api.h"
 
-#define NIT_CHECK_ENGINE_CREATED NIT_CHECK_MSG(nit::engine::instance, "Forget to call SetAppInstance!");
+#define NIT_CHECK_ENGINE_CREATED NIT_CHECK_MSG(nit::instance, "Forget to call SetAppInstance!");
 
-namespace nit::engine
+namespace nit
 {
     Engine* instance = nullptr;
     
-    void set_instance(Engine* new_engine_instance)
+    void engine_set_instance(Engine* new_engine_instance)
     {
         NIT_CHECK(new_engine_instance);
         instance = new_engine_instance;
     }
 
-    Engine* get_instance()
+    Engine* engine_get_instance()
     {
         return instance;
     }
 
-    void run(VoidFunc run_callback)
+    EngineEvent& engine_event(Stage stage)
+    {
+        NIT_CHECK_ENGINE_CREATED
+        return instance->events[(u8) stage];
+    }
+
+    void engine_run()
     {
         NIT_CHECK_ENGINE_CREATED
         NIT_LOG_TRACE("Creating application...");
         
-        window::set_instance(&instance->window);
-        window::init();
-        
-        InitSystemStack();
+        window_set_instance(&instance->window);
+        window_init();
         
         SetTypeRegistryInstance(&instance->type_registry);
         init_type_registry();
@@ -41,8 +45,8 @@ namespace nit::engine
         entity::set_registry_instance(&instance->entity_registry);
         InitEntityRegistry();
         
-        audio::set_instance(&instance->audio_registry);
-        audio::init();
+        audio::audio_set_instance(&instance->audio_registry);
+        audio::audio_init();
         
         RegisterNameComponent();
         RegisterUUIDComponent();
@@ -64,11 +68,8 @@ namespace nit::engine
         register_font_asset();
         RegisterSceneAsset();
         audio::clip::type_register();
-        
-        if (run_callback)
-        {
-            run_callback();
-        }
+
+        broadcast(instance->events[(u8)Stage::Run]);
         
         init_asset_registry();
 
@@ -92,27 +93,27 @@ namespace nit::engine
         instance->seconds          = 0;
         instance->frame_count      = 0;
         instance->acc_fixed_delta  = 0;
-        instance->last_time = window::get_time();
+        instance->last_time = window_get_time();
         
         NIT_LOG_TRACE("Application created!");
         
-        InvokeSystemCallbacks(Stage::Start, true);
+        broadcast(instance->events[(u8)Stage::Start]);
         
-        while(!window::should_close())
+        while(!window_should_close())
         {
             instance->frame_count++;
-            const f64 current_time = window::get_time();
+            const f64 current_time = window_get_time();
             const f64 time_between_frames = current_time - instance->last_time;
             instance->last_time = current_time;
             instance->seconds += time_between_frames;
             instance->delta_seconds = (f32) Clamp(time_between_frames, 0., instance->max_delta_time);
             
-            InvokeSystemCallbacks(Stage::Update);
+            broadcast(instance->events[(u8)Stage::Update]);
 
             instance->acc_fixed_delta += instance->delta_seconds;
             while (instance->acc_fixed_delta >= instance->fixed_delta_seconds)
             {
-                InvokeSystemCallbacks(Stage::FixedUpdate);
+                broadcast(instance->events[(u8)Stage::FixedUpdate]);
                 instance->acc_fixed_delta -= instance->fixed_delta_seconds;
             }
 
@@ -125,24 +126,24 @@ namespace nit::engine
 #ifdef NIT_EDITOR_ENABLED
              editor::begin_draw();
 #endif
-            InvokeSystemCallbacks(Stage::Draw);
+            broadcast(instance->events[(u8)Stage::Draw]);
 
 #ifdef NIT_EDITOR_ENABLED
              editor::end_draw();
 #endif
 #ifdef NIT_IMGUI_ENABLED
-            InvokeSystemCallbacks(Stage::DrawImGUI);
-            auto [window_width, window_height] = window::get_size();
+            broadcast(instance->events[(u8)Stage::DrawImGUI]);
+            auto [window_width, window_height] = window_get_size();
             end_im_gui(window_width, window_height);
 #endif
             
-            window::update();
+            window_update();
         }
 
-        InvokeSystemCallbacks(Stage::End, true);
+        broadcast(instance->events[(u8)Stage::End]);
     }
-    
-    void play()  
+
+    void engine_play()  
     {
         NIT_CHECK_ENGINE_CREATED
         instance->paused = false; 
@@ -150,52 +151,20 @@ namespace nit::engine
         if (instance->stopped)
         {
             instance->stopped = false;
-            InvokeSystemCallbacks(Stage::Start, true);
+            broadcast(instance->events[(u8)Stage::Start]);
         }
     }
 
-    void pause() 
+    void engine_pause() 
     {
         NIT_CHECK_ENGINE_CREATED
         instance->paused = true;  
     }
 
-    void stop()
+    void engine_stop()
     {
         NIT_CHECK_ENGINE_CREATED
-        InvokeSystemCallbacks(Stage::End, true);
+        broadcast(instance->events[(u8)Stage::End]);
         instance->stopped = true;
-    }
-}
-
-namespace nit
-{
-    // System shortcuts
-
-    void InitSystemStack()
-    {
-        NIT_CHECK_ENGINE_CREATED
-        engine::instance->system_stack = SystemStack();
-    }
-
-    void CreateSystem(const String& name, u32 priority, ExecutionContext context, bool start_disabled)
-    {
-        NIT_CHECK_ENGINE_CREATED
-        SystemStack& stack = engine::instance->system_stack;
-        CreateSystem(stack.systems, stack.next_system, name, priority, context, start_disabled);
-    }
-    
-    void SetSystemCallback(VoidFunc callback, Stage stage, bool try_invoke)
-    {
-        NIT_CHECK_ENGINE_CREATED
-        SystemStack& stack = engine::instance->system_stack;
-        SetSystemCallback(stack.systems[stack.next_system - 1], callback, stage, try_invoke);
-    }
-    
-    void InvokeSystemCallbacks(Stage stage, bool force_enabled)
-    {
-        NIT_CHECK_ENGINE_CREATED
-        SystemStack& stack = engine::instance->system_stack;
-        InvokeSystemCallbacks(stack.systems, stack.next_system, engine::instance->paused || engine::instance->stopped, stage, force_enabled);
     }
 }
