@@ -52,9 +52,9 @@ namespace nit
 
     void register_draw_system()
     {
-        engine_event(Stage::Start)  += EngineListener::Create(start);
-        engine_event(Stage::End)    += EngineListener::Create(end);
-        engine_event(Stage::Draw)   += EngineListener::Create(draw);
+        engine_event(Stage::Start)  += EngineListener::create(start);
+        engine_event(Stage::End)    += EngineListener::create(end);
+        engine_event(Stage::Draw)   += EngineListener::create(draw);
         
         entity_create_group<Sprite, Transform>();
         entity_create_group<Camera, Transform>();
@@ -65,17 +65,17 @@ namespace nit
     
     ListenerAction start()
     {
-        engine_get_instance()->asset_registry.asset_destroyed_event    += AssetDestroyedListener::Create(on_asset_destroyed);
-        engine_get_instance()->entity_registry.component_added_event   += ComponentAddedListener::Create(on_component_added);
-        engine_get_instance()->entity_registry.component_removed_event += ComponentRemovedListener::Create(on_component_removed);
+        engine_get_instance()->asset_registry.asset_destroyed_event    += AssetDestroyedListener::create(on_asset_destroyed);
+        engine_get_instance()->entity_registry.component_added_event   += ComponentAddedListener::create(on_component_added);
+        engine_get_instance()->entity_registry.component_removed_event += ComponentRemovedListener::create(on_component_removed);
         return ListenerAction::StayListening;
     }
 
     ListenerAction end()
     {
-        engine_get_instance()->asset_registry.asset_destroyed_event    -= AssetDestroyedListener::Create(on_asset_destroyed);
-        engine_get_instance()->entity_registry.component_added_event   -= ComponentAddedListener::Create(on_component_added);
-        engine_get_instance()->entity_registry.component_removed_event -= ComponentRemovedListener::Create(on_component_removed);
+        engine_get_instance()->asset_registry.asset_destroyed_event    -= AssetDestroyedListener::create(on_asset_destroyed);
+        engine_get_instance()->entity_registry.component_added_event   -= ComponentAddedListener::create(on_component_added);
+        engine_get_instance()->entity_registry.component_removed_event -= ComponentRemovedListener::create(on_component_removed);
         return ListenerAction::StayListening;
     }
     

@@ -11,7 +11,7 @@ int main(int argc, char** argv)
 {
     Engine engine_instance;
     engine_set_instance(&engine_instance);
-    engine_event(Stage::Run) += EngineListener::Create(on_run);
+    engine_event(Stage::Run) += EngineListener::create(on_run);
     engine_run();
 }
 
@@ -61,8 +61,8 @@ void spawn_entity()
 ListenerAction on_run()
 {
     //Create game system
-    engine_event(Stage::Start)  += EngineListener::Create(game_start);
-    engine_event(Stage::Update) += EngineListener::Create(game_update);
+    engine_event(Stage::Start)  += EngineListener::create(game_start);
+    engine_event(Stage::Update) += EngineListener::create(game_update);
 
     RegisterComponentType<Move>();
     entity_create_group<Transform, Sprite, Move>();

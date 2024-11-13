@@ -10,7 +10,7 @@ namespace nit
     {
         R (*function_ptr)(Args...) = nullptr;
         
-        static Delegate Create(R (*function_ptr)(Args...))
+        static Delegate create(R (*function_ptr)(Args...))
         {
             Delegate delegate;
             delegate.function_ptr = function_ptr;
