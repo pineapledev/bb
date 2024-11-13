@@ -13,7 +13,7 @@
 namespace nit
 {
     Engine* engine = nullptr;
-    
+
     void engine_set_instance(Engine* new_engine_instance)
     {
         NIT_CHECK(new_engine_instance);
@@ -23,6 +23,12 @@ namespace nit
     Engine* engine_get_instance()
     {
         return engine;
+    }
+
+    f32 delta_seconds()
+    {
+        NIT_CHECK_ENGINE_CREATED
+        return engine->delta_seconds;
     }
 
     EngineEvent& engine_event(Stage stage)

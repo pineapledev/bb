@@ -173,14 +173,14 @@ namespace nit
                 if (std::abs(controller.desired_zoom - camera.size) > .01f)
                 {
                     const float dir = camera.size < controller.desired_zoom ? 1.f : -1.f;
-                    camera.size += controller.zoom_speed * dir * engine_get_instance()->delta_seconds;
+                    camera.size += controller.zoom_speed * dir * delta_seconds();
                 }
                 else
                 {
                     camera.size = controller.desired_zoom;
                 }
                 
-                controller.time_zooming += engine_get_instance()->delta_seconds;
+                controller.time_zooming += delta_seconds();
             }
             else
             {
@@ -812,7 +812,7 @@ namespace nit
             stats_text.append("\nFrames: "   + std::to_string(engine_get_instance()->frame_count));
             stats_text.append("\nFPS: "      + std::to_string(engine_get_instance()->frame_count / engine_get_instance()->seconds));
             stats_text.append("\nEntities: " + std::to_string(engine_get_instance()->entity_registry.entity_count));
-            stats_text.append("\nDelta: "    + std::to_string(engine_get_instance()->delta_seconds));
+            stats_text.append("\nDelta: "    + std::to_string(delta_seconds()));
             ImGui::Text(stats_text.c_str());
             ImGui::End();
         }

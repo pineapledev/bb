@@ -61,9 +61,10 @@ namespace nit
         f64 max_delta_time      = 1.f / 15.f;
         f64 fixed_delta_seconds = 0.0166;
     };
-    
+
     void         engine_set_instance(Engine* new_engine_instance);
     Engine*      engine_get_instance();
+    f32          delta_seconds();
     EngineEvent& engine_event(Stage stage);
     void         engine_run();
 }

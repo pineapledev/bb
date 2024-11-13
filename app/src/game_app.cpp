@@ -101,7 +101,7 @@ ListenerAction game_update()
         }
         else
         {
-            transform.position += ToVector3(move.velocity * engine_get_instance()->delta_seconds);
+            transform.position += ToVector3(move.velocity * delta_seconds());
         }
     }
 
