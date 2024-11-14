@@ -201,7 +201,7 @@ namespace nit
             if (!controller.mouse_down && is_right_mouse_pressed)
             {
                 controller.mouse_down = true;
-                Matrix4 camera_matrix = CalculateProjectionViewMatrix(camera, { controller.aux_position });
+                Matrix4 camera_matrix = camera_proj_view(camera, { controller.aux_position });
                 Vector3 mouse_world   = ScreenToWorldPoint(camera_matrix, cursor_pos, window_size);
                 controller.offset_pos = mouse_world + controller.aux_position;
             }
@@ -216,7 +216,7 @@ namespace nit
             // Mouse hold
             if (is_right_mouse_pressed)
             {
-                Matrix4 camera_matrix = CalculateProjectionViewMatrix(camera, { controller.aux_position });
+                Matrix4 camera_matrix = camera_proj_view(camera, { controller.aux_position });
                 Vector3 mouse_world   = ScreenToWorldPoint(camera_matrix, cursor_pos, window_size) * -1;
                 transform.position = Vector3{ mouse_world.x, mouse_world.y, transform.position.z } + Vector3{ controller.offset_pos.x, controller.offset_pos.y, 0 };
             }

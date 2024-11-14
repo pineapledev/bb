@@ -186,7 +186,7 @@ namespace nit
 
         set_depth_test_enabled(camera.projection == CameraProjection::Perspective);
         
-        begin_scene_2d(CalculateProjectionViewMatrix(camera, entity_get<Transform>(main_camera)));
+        begin_scene_2d(camera_proj_view(camera, entity_get<Transform>(main_camera)));
         {
             for (Entity entity : entity_get_group<Sprite, Transform>().entities)
             {

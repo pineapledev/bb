@@ -53,7 +53,7 @@ namespace nit
 
     void register_camera_component();
     
-    Matrix4 CalculateProjectionViewMatrix(const Camera& camera, const Transform& transform= { {0.f, 0.f, 3.f} });
+    Matrix4 camera_proj_view(const Camera& camera, const Transform& transform= { {0.f, 0.f, 3.f} });
     Matrix4 CalculateProjectionMatrix(const Camera& camera);
     Matrix4 CalculateViewMatrix(const Transform& transform);
 

@@ -29,6 +29,9 @@ namespace nit
         NIT_CHECK_RENDERER_2D_CREATED
         
         finish_renderer_2d();
+
+        set_clear_color(V4_COLOR_DARK_GRAY);
+        
         NIT_LOG_TRACE("Creating Renderer2D...");
 
         // We create the index buffer shared across all the 2D Primitives
@@ -248,8 +251,6 @@ namespace nit
             set_vertex_buffer_data(renderer_2d->char_vbo, renderer_2d->char_batch, char_vertex_data_size);
             draw_elements(renderer_2d->char_vao, renderer_2d->char_index_count);
         }
-
-        set_clear_color(V4_COLOR_DARK_GREY);
     }
 
     void next_batch()

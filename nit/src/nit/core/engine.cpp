@@ -53,7 +53,7 @@ namespace nit
         
         renderer_2d_set_instance(&engine->renderer_2d);
         renderer_2d_init();
-
+        
         entity_registry_set_instance(&engine->entity_registry);
         entity_registry_init();
 

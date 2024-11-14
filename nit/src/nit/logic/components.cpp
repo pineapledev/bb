@@ -256,7 +256,7 @@ namespace nit
         RegisterComponentType<Camera>();
     }
 
-    Matrix4 CalculateProjectionViewMatrix(const Camera& camera, const Transform& transform)
+    Matrix4 camera_proj_view(const Camera& camera, const Transform& transform)
     {
         return CalculateProjectionMatrix(camera) * CalculateViewMatrix(transform);
     }
@@ -274,7 +274,7 @@ namespace nit
             break;
         case CameraProjection::Orthographic:
             {
-                proj = OrthographicProjection(camera.aspect, camera.size, camera.near_clip, camera.far_clip);
+                proj = ortho_projection(camera.aspect, camera.size, camera.near_clip, camera.far_clip);
             }
             break;
         default:

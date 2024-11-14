@@ -107,7 +107,10 @@ ListenerAction game_update()
     return ListenerAction::StayListening;
 }
 
-/*int main(int argc, char** argv)
+/*
+#include "nit.h"
+
+int main(int argc, char** argv)
 {
     using namespace nit;
 
@@ -120,22 +123,42 @@ ListenerAction game_update()
     type_registry_init();
     
     window_set_instance(&window);
-    window_init();
+    window_init({ .start_maximized = false });
 
     render_objects_set_instance(&render_objects);
     render_objects_init();
         
     renderer_2d_set_instance(&renderer_2d);
     renderer_2d_init();
+
+    Camera camera;
+    camera.projection = CameraProjection::Orthographic;
     
-    while (!window_should_close())
+    Transform camera_transform;
+    camera_transform.position = { 0, 0, 3 };
+    
+    Vector3 quad_pos;
+    
+    while (window_should_close() == false)
     {
         clear_screen();
         
-        begin_scene_2d(Matrix4{});
-        draw_quad(V3_ZERO);
+        Vector3 right; // 1, 0, 0
+        right.x = 1; 
+        quad_pos = quad_pos + right * 0.0001f;
+
+        // position, rotation, scale
+
+        Matrix4 camera_matrix = camera_proj_view(camera, camera_transform);
+        
+        begin_scene_2d(camera_matrix);
+        {
+            draw_quad(quad_pos, V3_ZERO, V3_ONE, V4_COLOR_ORANGE);
+            draw_quad(V3_ZERO);
+        }
         end_scene_2d();
         
         window_update();
     }
-}*/
+}
+ */

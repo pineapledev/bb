@@ -52,9 +52,9 @@ namespace nit
     
     Matrix4 Inverse(const Matrix4& matrix);
     
-    Matrix4 OrthographicProjection(const f32 aspect_ratio, const f32 size, f32 near_plane, f32 far_plane);
+    Matrix4 ortho_projection(const f32 aspect_ratio, const f32 size, f32 near_plane, f32 far_plane);
     
-    Matrix4 OrthographicProjection(f32 left, f32 right, f32 bottom, f32 top, f32 near_plane, f32 far_plane);
+    Matrix4 ortho_projection(f32 left, f32 right, f32 bottom, f32 top, f32 near_plane, f32 far_plane);
     
     Matrix4 ViewProjection(const Vector3& position, const Vector3& rotation);
     
