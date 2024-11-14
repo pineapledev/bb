@@ -20,9 +20,20 @@ namespace nit
         NIT_CHECK(window_instance);
         window = window_instance;
     }
-    
+
+    Window* window_get_instance()
+    {
+        NIT_CHECK(window);
+        return window;
+    }
+
+    bool window_has_instance()
+    {
+        return window != nullptr;
+    }
+
     void APIENTRY OnDebugMessageCallback(GLenum source, GLenum type, u32 id, GLenum severity,
-        GLsizei length, const char* message, const void* user_param)
+                                         GLsizei length, const char* message, const void* user_param)
     {
         NIT_LOG_TRACE("[OpenGL] %s ", message);
     }
@@ -30,7 +41,12 @@ namespace nit
     void window_init(const WindowCfg& cfg)
     {
         NIT_LOG_TRACE("Creating Window...");
-        NIT_CHECK_WINDOW_CREATED
+
+        if (!window_has_instance())
+        {
+            static Window window_instance;
+            window_set_instance(&window_instance);
+        }
         
         window_finish();
 

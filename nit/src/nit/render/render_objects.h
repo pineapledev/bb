@@ -10,10 +10,11 @@ namespace nit
         Pool index_buffers;
     };
 
-    void render_objects_set_instance(RenderObjects* render_objects_instance);
-    RenderObjects* get_render_objects_instance();
-    void render_objects_init();
-        
+    void           render_objects_set_instance(RenderObjects* render_objects_instance);
+    RenderObjects* render_objects_get_instance();
+    bool           render_objects_has_instance();
+    void           render_objects_init();
+    
     struct BufferElement
     {
         ShaderDataType type = ShaderDataType::None;

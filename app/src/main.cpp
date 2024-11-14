@@ -107,28 +107,14 @@ ListenerAction game_update()
     return ListenerAction::StayListening;
 }
 
-/*
-#include "nit.h"
+/*#include "nit.h"
 
 int main(int argc, char** argv)
 {
     using namespace nit;
 
-    Window         window;
-    RenderObjects  render_objects;
-    Renderer2D     renderer_2d;
-    TypeRegistry   type_registry;
-    
-    type_registry_set_instance(&type_registry);
-    type_registry_init();
-    
-    window_set_instance(&window);
     window_init({ .start_maximized = false });
-
-    render_objects_set_instance(&render_objects);
-    render_objects_init();
-        
-    renderer_2d_set_instance(&renderer_2d);
+    audio_init();
     renderer_2d_init();
 
     Camera camera;
@@ -139,13 +125,11 @@ int main(int argc, char** argv)
     
     Vector3 quad_pos;
     
-    while (window_should_close() == false)
+    while (!window_should_close())
     {
         clear_screen();
         
-        Vector3 right; // 1, 0, 0
-        right.x = 1; 
-        quad_pos = quad_pos + right * 0.0001f;
+        quad_pos = quad_pos + V3_RIGHT * 0.0001f;
 
         // position, rotation, scale
 
@@ -160,5 +144,4 @@ int main(int argc, char** argv)
         
         window_update();
     }
-}
- */
+}*/

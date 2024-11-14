@@ -60,9 +60,15 @@ namespace nit
         i32 entity_id    = -1;
     };
 
-    void renderer_2d_set_instance(struct Renderer2D* renderer_2d_instance);
-    
-    void renderer_2d_init(const Renderer2DCfg& cfg = {});
+    struct Scene2D
+    {
+        
+    };
+
+    void        renderer_2d_set_instance(struct Renderer2D* renderer_2d_instance);
+    Renderer2D* renderer_2d_get_instance();
+    bool        renderer_2d_has_instance();
+    void        renderer_2d_init(const Renderer2DCfg& cfg = {});
     
     void start_batch();
     

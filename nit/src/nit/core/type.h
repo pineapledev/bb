@@ -134,15 +134,14 @@ namespace nit
 
     template <typename T>
     String GetStringFromEnumValue(EnumType* enum_type, T value);
-
-    void type_registry_set_instance(TypeRegistry* type_registry_instance);
     
-    TypeRegistry* GetTypeRegistryInstance();
-    
-    void type_registry_init(u32 max_types = DEFAULT_MAX_TYPES);
+    void          type_registry_set_instance(TypeRegistry* type_registry_instance);
+    TypeRegistry* type_registry_get_instance();
+    bool          type_registry_has_instance();
+    void          type_registry_init(u32 max_types = DEFAULT_MAX_TYPES);
     
     template <typename T>
-    void RegisterType(const TypeArgs<T>& args = {});
+    void type_register(const TypeArgs<T>& args = {});
 
     template <typename T>
     void RegisterEnumType();
@@ -166,11 +165,11 @@ namespace nit
     template <typename EType, typename T>
     String GetStringFromEnumValue(T value);
     
-    bool IsTypeRegistered(u64 type_hash);
-    bool IsTypeRegistered(const String& name);
+    bool type_exists(u64 type_hash);
+    bool type_exists(const String& name);
     
     template <typename T>
-    bool IsTypeRegistered();
+    bool type_exists();
     
     Type* GetType(u64 type_hash);
     

@@ -88,9 +88,9 @@ namespace nit
         EntityRegistry* entity_registry = entity_registry_get_instance(); 
         NIT_CHECK_MSG(entity_registry->next_component_type_index <= NIT_MAX_COMPONENT_TYPES, "Components out of range!");
 
-        if (!IsTypeRegistered<T>())
+        if (!type_exists<T>())
         {
-            RegisterType<T>(args);
+            type_register<T>(args);
         }
         
         ComponentPool& component_pool  = entity_registry->component_pool[entity_registry->next_component_type_index - 1];

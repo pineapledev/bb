@@ -8,9 +8,9 @@ namespace nit
         AssetRegistry* asset_registry = asset_get_instance();
         AssetPool* asset_pool = &asset_registry->asset_pools.emplace_back();
         
-        if (!IsTypeRegistered<T>())
+        if (!type_exists<T>())
         {
-            RegisterType<T>();
+            type_register<T>();
         }
         
         Type* type = GetType<T>();

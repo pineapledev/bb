@@ -252,7 +252,7 @@ namespace nit
 #ifdef NIT_EDITOR_ENABLED
         args.fn_draw_editor = DrawEditorCamera;
 #endif
-        RegisterType<Camera>(args);
+        type_register<Camera>(args);
         RegisterComponentType<Camera>();
     }
 
@@ -330,7 +330,7 @@ namespace nit
 #ifdef NIT_EDITOR_ENABLED
         args.fn_draw_editor = DrawEditorText;
 #endif
-        RegisterType<Text>(args);
+        type_register<Text>(args);
         RegisterComponentType<Text>();
     }
 
@@ -394,7 +394,7 @@ namespace nit
 #ifdef NIT_EDITOR_ENABLED
         args.fn_draw_editor = DrawEditorSprite;
 #endif
-        RegisterType<Sprite>(args);
+        type_register<Sprite>(args);
         RegisterComponentType<Sprite>();
     }
 
@@ -455,7 +455,7 @@ namespace nit
 #ifdef NIT_EDITOR_ENABLED
         args.fn_draw_editor = DrawEditorCircle;
 #endif
-        RegisterType<Circle>(args);
+        type_register<Circle>(args);
         RegisterComponentType<Circle>();
     }
 
@@ -496,7 +496,7 @@ namespace nit
 #ifdef NIT_EDITOR_ENABLED
         args.fn_draw_editor = DrawEditorLine;
 #endif
-        RegisterType<Line2D>(args);
+        type_register<Line2D>(args);
         RegisterComponentType<Line2D>();
     }
 }

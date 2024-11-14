@@ -23,10 +23,35 @@ namespace nit
         NIT_CHECK(renderer_2d_instance);
         renderer_2d = renderer_2d_instance;
     }
-    
+
+    Renderer2D* renderer_2d_get_instance()
+    {
+        NIT_CHECK(renderer_2d);
+        return renderer_2d;
+    }
+
+    bool renderer_2d_has_instance()
+    {
+        return renderer_2d != nullptr;
+    }
+
     void renderer_2d_init(const Renderer2DCfg& cfg)
     {
-        NIT_CHECK_RENDERER_2D_CREATED
+        if (!type_registry_has_instance())
+        {
+            type_registry_init();
+        }
+        
+        if (!renderer_2d_has_instance())
+        {
+            static Renderer2D renderer_2d_instance;
+            renderer_2d_set_instance(&renderer_2d_instance);
+        }
+
+        if (!render_objects_has_instance())
+        {
+            render_objects_init();
+        }
         
         finish_renderer_2d();
 

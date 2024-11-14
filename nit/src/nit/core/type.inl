@@ -193,9 +193,9 @@ namespace nit
     }
 
     template <typename T>
-    void RegisterType(const TypeArgs<T>& args)
+    void type_register(const TypeArgs<T>& args)
     {
-        TypeRegistry* type_registry = GetTypeRegistryInstance();
+        TypeRegistry* type_registry = type_registry_get_instance();
         
         if (type_registry->count >= type_registry->max)
         {
@@ -214,7 +214,7 @@ namespace nit
     template <typename T>
     void RegisterEnumType()
     {
-        TypeRegistry* type_registry = GetTypeRegistryInstance();
+        TypeRegistry* type_registry = type_registry_get_instance();
         if (type_registry->enum_count >= type_registry->max_enum_types)
         {
             NIT_CHECK_MSG(false, "Max enum type count reached!");
@@ -262,9 +262,9 @@ namespace nit
     }
 
     template <typename T>
-    bool IsTypeRegistered()
+    bool type_exists()
     {
-        return IsTypeRegistered(get_type_hash<T>());
+        return type_exists(get_type_hash<T>());
     }
 
     template <typename T>

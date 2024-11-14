@@ -33,6 +33,8 @@ namespace nit
     };
 
     void        window_set_instance(Window* window_instance);
+    Window*     window_get_instance();
+    bool        window_has_instance();
     void        window_init(const WindowCfg& cfg = {});
     void        window_finish();
     void        window_close();

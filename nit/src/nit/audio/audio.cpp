@@ -57,10 +57,15 @@ namespace nit
 
     void audio_init()
     {
-        if (!audio_registry)
+        if (!type_registry_has_instance())
         {
-            NIT_CHECK_MSG(false, "AudioRegistry not created!")
-            return;
+            type_registry_init();
+        }
+        
+        if (!audio_has_instance())
+        {
+            static AudioRegistry audio_registry_instance;
+            audio_set_instance(&audio_registry_instance);
         }
         
         if (ALCdevice* open_al_device = alcOpenDevice(nullptr))

@@ -15,15 +15,25 @@ namespace nit
         render_objects = render_objects_instance;
     }
 
-    RenderObjects* get_render_objects_instance()
+    RenderObjects* render_objects_get_instance()
     {
         NIT_CHECK_RENDER_OBJECTS_CREATED
         return render_objects;
     }
 
+    bool render_objects_has_instance()
+    {
+        return render_objects != nullptr;
+    }
+    
     void render_objects_init()
     {
-        NIT_CHECK_RENDER_OBJECTS_CREATED
+        if (!render_objects_has_instance())
+        {
+            static RenderObjects render_objects_instance;
+            render_objects_set_instance(&render_objects_instance);
+        }
+        
         pool_load<VertexArray> (&render_objects->vertex_arrays, 100);
         pool_load<VertexBuffer>(&render_objects->vertex_buffers, 100);
         pool_load<IndexBuffer> (&render_objects->index_buffers, 100);

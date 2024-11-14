@@ -11,9 +11,9 @@ namespace nit
             return;
         }
         
-        if (!IsTypeRegistered<T>())
+        if (!type_exists<T>())
         {
-            RegisterType<T>();
+            type_register<T>();
         }
         
         pool->type = GetType<T>();

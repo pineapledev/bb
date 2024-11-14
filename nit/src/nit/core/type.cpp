@@ -10,12 +10,34 @@ namespace nit
         type_registry = type_registry_instance;
     }
 
-    TypeRegistry* GetTypeRegistryInstance()
+    TypeRegistry* type_registry_get_instance()
     {
         NIT_CHECK(type_registry);
         return type_registry;
     }
-    
+
+    bool type_registry_has_instance()
+    {
+        return type_registry != nullptr;
+    }
+
+    void type_registry_init(u32 max_types)
+    {
+        if (!type_registry_has_instance())
+        {
+            static TypeRegistry type_registry_instance;
+            type_registry_set_instance(&type_registry_instance);
+        }
+        
+        NIT_CHECK(!type_registry->types && !type_registry->enum_types);
+        type_registry->types          = new Type[max_types];
+        type_registry->max            = max_types;
+        type_registry->count          = 0;
+        type_registry->enum_types     = new EnumType[max_types];
+        type_registry->max_enum_types = max_types;
+        type_registry->enum_count     = 0;
+    }
+
     void set_array_raw_data(const Type* type, void* array, u32 index, void* data)
     {
         NIT_CHECK(type && type->fn_set_data && array);
@@ -91,17 +113,6 @@ namespace nit
     }
 #endif
 
-    void type_registry_init(u32 max_types)
-    {
-        NIT_CHECK(type_registry && !type_registry->types && !type_registry->enum_types);
-        type_registry->types          = new Type[max_types];
-        type_registry->max            = max_types;
-        type_registry->count          = 0;
-        type_registry->enum_types     = new EnumType[max_types];
-        type_registry->max_enum_types = max_types;
-        type_registry->enum_count     = 0;
-    }
-
     bool IsEnumTypeRegistered(u64 type_hash)
     {
         NIT_CHECK(type_registry);
@@ -114,13 +125,13 @@ namespace nit
         return &type_registry->enum_types[type_registry->hash_to_enum_index.at(type_hash)];
     }
 
-    bool IsTypeRegistered(u64 type_hash)
+    bool type_exists(u64 type_hash)
     {
-        NIT_CHECK(type_registry);
+        NIT_CHECK(type_registry && type_registry->enum_types);
         return type_registry->hash_to_index.count(type_hash) != 0;
     }
 
-    bool IsTypeRegistered(const String& name)
+    bool type_exists(const String& name)
     {
         NIT_CHECK(type_registry && type_registry->types);
         return type_registry->name_to_index.count(name) != 0;
