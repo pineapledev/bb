@@ -2,18 +2,6 @@
 
 using namespace nit;
 
-ListenerAction on_run();
-ListenerAction game_start();
-ListenerAction game_update();
-
-int main(int argc, char** argv)
-{
-    Engine engine_instance;
-    engine_set_instance(&engine_instance);
-    engine_event(Stage::Run) += EngineListener::create(on_run);
-    engine_run();
-}
-
 // -----------------------------------------------------------------
 
 constexpr Vector2 RECT_LEFT  = { -100.f, 100.f };
@@ -57,21 +45,31 @@ void spawn_entity()
 
 // -----------------------------------------------------------------
 
-ListenerAction on_run()
+void init();
+
+int main(int argc, char** argv)
 {
-    //Create game system
-    engine_event(Stage::Start)  += EngineListener::create(game_start);
-    engine_event(Stage::Update) += EngineListener::create(game_update);
-
-    RegisterComponentType<Move>();
-    entity_create_group<Transform, Sprite, Move>();
-
-    return ListenerAction::StayListening;
+    engine_init(init);
 }
 
 // -----------------------------------------------------------------
 
-ListenerAction game_start()
+ListenerAction start();
+ListenerAction update();
+
+void init()
+{
+    //Create game system
+    engine_event(Stage::Start)  += EngineListener::create(start);
+    engine_event(Stage::Update) += EngineListener::create(update);
+
+    RegisterComponentType<Move>();
+    entity_create_group<Transform, Sprite, Move>();
+}
+
+// -----------------------------------------------------------------
+
+ListenerAction start()
 {
     AssetHandle test_scene = asset_find_by_name("test_scene");
 
@@ -85,7 +83,7 @@ ListenerAction game_start()
     return ListenerAction::StayListening;
 }
 
-ListenerAction game_update()
+ListenerAction update()
 {
     spawn_entity();
     

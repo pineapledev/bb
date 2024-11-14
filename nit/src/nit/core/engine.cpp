@@ -13,7 +13,7 @@
 namespace nit
 {
     Engine* engine = nullptr;
-
+    
     void engine_set_instance(Engine* new_engine_instance)
     {
         NIT_CHECK(new_engine_instance);
@@ -22,9 +22,26 @@ namespace nit
 
     Engine* engine_get_instance()
     {
+        NIT_CHECK(engine);
         return engine;
     }
 
+    bool engine_has_instance()
+    {
+        return engine != nullptr;
+    }
+
+    static void engine_try_lazy_create()
+    {
+        if (engine_has_instance())
+        {
+            return;
+        }
+
+        static Engine engine_instance;
+        engine_set_instance(&engine_instance);
+    }
+    
     f32 delta_seconds()
     {
         NIT_CHECK_ENGINE_CREATED
@@ -33,13 +50,14 @@ namespace nit
 
     EngineEvent& engine_event(Stage stage)
     {
-        NIT_CHECK_ENGINE_CREATED
+        engine_try_lazy_create();
         return engine->events[(u8) stage];
     }
 
-    void engine_run()
+    void engine_init(VoidFunc on_init)
     {
-        NIT_CHECK_ENGINE_CREATED
+        engine_try_lazy_create();
+        
         NIT_LOG_TRACE("Creating application...");
         
         window_set_instance(&engine->window);
@@ -79,10 +97,15 @@ namespace nit
         register_font_asset();
         register_scene_asset();
         register_clip_asset();
+
+        if (on_init)
+        {
+            on_init();
+        }
         
-        event_broadcast(engine_event(Stage::Run));
+        event_broadcast(engine_event(Stage::Init));
         
-        asset_registry_init();
+        asset_registry_deserialize();
 
         NIT_IF_EDITOR_ENABLED(im_gui_renderer_set_instance(&engine->im_gui_renderer));
         NIT_IF_EDITOR_ENABLED(im_gui_init(engine->window.handler));

@@ -22,7 +22,7 @@ namespace nit
     
     enum class Stage : u8
     {
-        Run
+        Init
       , Start
       , Update
       , FixedUpdate
@@ -64,7 +64,8 @@ namespace nit
 
     void         engine_set_instance(Engine* new_engine_instance);
     Engine*      engine_get_instance();
+    bool         engine_has_instance();
     f32          delta_seconds();
     EngineEvent& engine_event(Stage stage);
-    void         engine_run();
+    void         engine_init(VoidFunc on_init = nullptr);
 }

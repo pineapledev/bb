@@ -291,7 +291,7 @@ namespace nit
         NIT_CHECK_MSG(false, "Cannot open file!");
     }
 
-    void asset_registry_init()
+    void asset_registry_deserialize()
     {
         NIT_CHECK_ASSET_REGISTRY_CREATED
         
