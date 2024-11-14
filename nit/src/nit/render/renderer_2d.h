@@ -60,9 +60,9 @@ namespace nit
         i32 entity_id    = -1;
     };
 
-    void set_renderer_2d_instance(struct Renderer2D* renderer_2d_instance);
+    void renderer_2d_set_instance(struct Renderer2D* renderer_2d_instance);
     
-    void init_renderer_2d(const Renderer2DCfg& cfg = {});
+    void renderer_2d_init(const Renderer2DCfg& cfg = {});
     
     void start_batch();
     
@@ -82,7 +82,16 @@ namespace nit
         , const V2Verts2D&            vertex_uvs       = DEFAULT_VERTEX_U_VS_2D
         , const V4Verts2D&            vertex_colors    = DEFAULT_VERTEX_COLORS_2D
         , i32                         entity_id        = -1
-    );                                                  
+    );
+    
+    void draw_quad(
+          const Vector3&              position         = V3_ZERO
+        , const Vector3&              rotation         = V3_ZERO
+        , const Vector3&              scale            = V3_ONE
+        , const Vector4&              tint             = V4_ONE
+        , Texture2D*                  texture_2d       = nullptr
+        , i32                         entity_id        = -1
+    );
     
     void draw_circle(                                    
           const V4Verts2D&            vertex_positions  = DEFAULT_VERTEX_POSITIONS_2D

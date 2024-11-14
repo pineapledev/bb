@@ -10,9 +10,9 @@ namespace nit
         Pool index_buffers;
     };
 
-    void set_render_objects_instance(RenderObjects* render_objects_instance);
+    void render_objects_set_instance(RenderObjects* render_objects_instance);
     RenderObjects* get_render_objects_instance();
-    void init_render_objects();
+    void render_objects_init();
         
     struct BufferElement
     {

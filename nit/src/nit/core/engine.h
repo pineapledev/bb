@@ -41,13 +41,13 @@ namespace nit
     {
         EngineEvent    events[(u8) Stage::Count];
         
+        Window         window;
         TypeRegistry   type_registry;
-        AssetRegistry  asset_registry;
-        EntityRegistry entity_registry;
         RenderObjects  render_objects;
         Renderer2D     renderer_2d;
+        AssetRegistry  asset_registry;
+        EntityRegistry entity_registry;
         AudioRegistry  audio_registry;
-        Window         window;
         
         NIT_IF_EDITOR_ENABLED(ImGuiRenderer  im_gui_renderer);
         NIT_IF_EDITOR_ENABLED(Editor editor);

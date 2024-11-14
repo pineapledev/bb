@@ -18,13 +18,13 @@ namespace nit
     
     Renderer2D* renderer_2d = nullptr;
     
-    void set_renderer_2d_instance(Renderer2D* renderer_2d_instance)
+    void renderer_2d_set_instance(Renderer2D* renderer_2d_instance)
     {
         NIT_CHECK(renderer_2d_instance);
         renderer_2d = renderer_2d_instance;
     }
     
-    void init_renderer_2d(const Renderer2DCfg& cfg)
+    void renderer_2d_init(const Renderer2DCfg& cfg)
     {
         NIT_CHECK_RENDERER_2D_CREATED
         
@@ -391,6 +391,41 @@ namespace nit
 
         renderer_2d->quad_index_count += INDICES_PER_PRIMITIVE;
         renderer_2d->quad_count++;
+    }
+    
+    void draw_quad(
+          const Vector3&  position  
+        , const Vector3&  rotation  
+        , const Vector3&  scale     
+        , const Vector4&  tint      
+        , Texture2D*      texture_2d
+        , i32             entity_id 
+    )
+    {
+        V4Verts2D vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
+        V2Verts2D vertex_uvs       = DEFAULT_VERTEX_U_VS_2D;
+        V4Verts2D vertex_colors    = DEFAULT_VERTEX_COLORS_2D;
+        
+        if (texture_2d)
+        {
+            Vector2 size = texture_2d->size;
+        
+            fill_quad_vertex_u_vs(
+                 vertex_uvs
+               , false
+               , false
+               , V2_ONE);
+        
+            fill_quad_vertex_positions(size , vertex_positions);
+        }
+        else
+        {
+            vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
+        }
+
+        transform_vertex_positions(vertex_positions, CreateTransform(position, rotation, scale));
+        fill_vertex_colors(vertex_colors, tint);
+        draw_quad(texture_2d, vertex_positions, vertex_uvs, vertex_colors, entity_id);
     }
 
     void draw_circle(

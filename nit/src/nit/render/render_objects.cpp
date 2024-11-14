@@ -9,7 +9,7 @@ namespace nit
 {
     RenderObjects* render_objects = nullptr;
     
-    void set_render_objects_instance(RenderObjects* render_objects_instance)
+    void render_objects_set_instance(RenderObjects* render_objects_instance)
     {
         NIT_CHECK(render_objects_instance);
         render_objects = render_objects_instance;
@@ -21,7 +21,7 @@ namespace nit
         return render_objects;
     }
 
-    void init_render_objects()
+    void render_objects_init()
     {
         NIT_CHECK_RENDER_OBJECTS_CREATED
         pool_load<VertexArray> (&render_objects->vertex_arrays, 100);

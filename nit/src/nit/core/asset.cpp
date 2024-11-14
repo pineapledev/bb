@@ -54,7 +54,7 @@ namespace nit
         return GetWorkingDirectory().string().append("\\assets");
     }
 
-    void asset_set_instance(AssetRegistry* asset_registry_instance)
+    void asset_registry_set_instance(AssetRegistry* asset_registry_instance)
     {
         NIT_CHECK(asset_registry_instance);
         asset_registry = asset_registry_instance;
@@ -291,7 +291,7 @@ namespace nit
         NIT_CHECK_MSG(false, "Cannot open file!");
     }
 
-    void assets_init()
+    void asset_registry_init()
     {
         NIT_CHECK_ASSET_REGISTRY_CREATED
         

@@ -48,6 +48,12 @@ namespace nit
         type_registry_set_instance(&engine->type_registry);
         type_registry_init();
 
+        render_objects_set_instance(&engine->render_objects);
+        render_objects_init();
+        
+        renderer_2d_set_instance(&engine->renderer_2d);
+        renderer_2d_init();
+
         entity_registry_set_instance(&engine->entity_registry);
         entity_registry_init();
 
@@ -67,22 +73,16 @@ namespace nit
         
         register_draw_system();
         
-        asset_set_instance(&engine->asset_registry);
+        asset_registry_set_instance(&engine->asset_registry);
         
         register_texture_2d_asset();
         register_font_asset();
         register_scene_asset();
         register_clip_asset();
-
+        
         event_broadcast(engine_event(Stage::Run));
-
-        assets_init();
         
-        set_render_objects_instance(&engine->render_objects);
-        init_render_objects();
-        
-        set_renderer_2d_instance(&engine->renderer_2d);
-        init_renderer_2d();
+        asset_registry_init();
 
         NIT_IF_EDITOR_ENABLED(im_gui_renderer_set_instance(&engine->im_gui_renderer));
         NIT_IF_EDITOR_ENABLED(im_gui_init(engine->window.handler));

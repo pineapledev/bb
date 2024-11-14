@@ -69,7 +69,7 @@ namespace nit
     AssetHandle    asset_create_handle           (AssetInfo* asset_info);
     void           asset_retarget_handle         (AssetHandle& asset_handle);
     Path           asset_get_directory           ();
-    void           asset_set_instance            (AssetRegistry* asset_registry_instance);
+    void           asset_registry_set_instance            (AssetRegistry* asset_registry_instance);
     AssetRegistry* asset_get_instance            ();
     AssetPool*     asset_get_pool                (Type* type);
     AssetPool*     asset_get_pool_safe           (const AssetHandle& asset);
@@ -84,7 +84,7 @@ namespace nit
     AssetHandle    asset_deserialize_from_file   (const String& file_path);
     void           asset_serialize_to_string     (AssetHandle& asset, String& result);
     void           asset_serialize_to_file       (AssetHandle& asset);
-    void           assets_init();
+    void           asset_registry_init();
     u32            asset_get_last_version        (Type* type);
     u32            asset_get_last_version        (const String& type_name);
     void           asset_find_by_name            (const String& name, Array<AssetHandle>& assets);
