@@ -10,7 +10,7 @@
 #include "render/camera.h"
 #include "render/text.h"
 #include "render/sprite.h"
-#include "render/line.h"
+#include "render/line_2d.h"
 #include "render/circle.h"
 
 #include "audio/audio_clip.h"

@@ -8,7 +8,7 @@
 #include "nit/render/camera.h"
 #include "nit/render/circle.h"
 #include "nit/render/sprite.h"
-#include "nit/render/line.h"
+#include "nit/render/line_2d.h"
 #include "nit/render/draw_system.h"
 
 #include "nit/core/engine.h"
