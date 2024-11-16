@@ -7,6 +7,8 @@ AssetInfo:
 Scene:
   Entities:
     Entity:
+      Name:
+        data: camera
       Transform:
         position: [0, 0, 2.95000005]
         rotation: [0, 0, 0]
@@ -18,6 +20,8 @@ Scene:
         far_clip: 1000
         size: 9.19999981
     Entity:
+      Name:
+        data: quad
       Transform:
         position: [-1.06095123, 0.959213257, 0]
         rotation: [0, 0, 0]
@@ -33,6 +37,8 @@ Scene:
         tiling_factor: [1, 1]
         keep_aspect: true
     Entity:
+      Name:
+        data: circle
       Transform:
         position: [-0.0318238884, -0.656334341, -6.10351562e-05]
         rotation: [0, 0, 0]
@@ -44,6 +50,8 @@ Scene:
         thickness: 0.400000006
         fade: 0.230000004
     Entity:
+      Name:
+        data: line
       Transform:
         position: [-1, 0, 0]
         rotation: [0, 0, 0]
@@ -55,6 +63,8 @@ Scene:
         end: [1, 1]
         thickness: 0.0500000007
     Entity:
+      Name:
+        data: text
       Transform:
         position: [-0.131579012, 0.314851582, 0]
         rotation: [0, 0, 0]
@@ -67,6 +77,8 @@ Scene:
         spacing: 1
         size: 1
     Entity:
+      Name:
+        data: bola
       Transform:
         position: [2.1666348, -1.33121252, 0]
         rotation: [0, 0, 0]
@@ -82,6 +94,8 @@ Scene:
         tiling_factor: [1, 1]
         keep_aspect: true
     Entity:
+      Name:
+        data: cpp
       Transform:
         position: [2.14792466, -0.447024733, 2.00006104]
         rotation: [0, 0, 0]

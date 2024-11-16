@@ -36,7 +36,7 @@ namespace nit
         component_register<EditorCameraController>();
     }
 
-    void TraverseDirectory(const Path& directory, u32 parent_node, int depth = 0)
+    void traverse_directory(const Path& directory, u32 parent_node, int depth = 0)
     {
         for (const auto& dir_entry : std::filesystem::directory_iterator(directory))
         {
@@ -53,7 +53,7 @@ namespace nit
                     parent_node_data->children.push_back(id);
                 }
 
-                TraverseDirectory(dir_path, id, depth + 1);
+                traverse_directory(dir_path, id, depth + 1);
             }
             else if (dir_path.extension().string() == engine_get_instance()->asset_registry.extension)
             {
@@ -76,7 +76,7 @@ namespace nit
         }
     }
 
-    void InvalidateAssetNodes()
+    void invalidate_asset_nodes()
     {
         if (editor->asset_nodes.elements != nullptr)
         {
@@ -88,7 +88,7 @@ namespace nit
         pool_insert_data(&editor->asset_nodes, editor->root_node, AssetNode{ .is_dir = true, .path = "" });
         editor->draw_node = editor->root_node;
         
-        TraverseDirectory(asset_get_directory(), editor->root_node);
+        traverse_directory(asset_get_directory(), editor->root_node);
     }
     
     void editor_init()
@@ -129,7 +129,7 @@ namespace nit
 
         editor->icons = asset_find_by_name("editor_icons");
         
-        InvalidateAssetNodes();
+        invalidate_asset_nodes();
 
         editor->editor_camera_entity = CreateEntity();
 
@@ -478,7 +478,13 @@ namespace nit
 
                     Entity selected_entity = editor->selected_entity;
 
-                    const String name = std::to_string(entity);
+                    String name = std::to_string(entity);
+
+                    if (entity_has<Name>(entity))
+                    {
+                        name = entity_get<Name>(entity).data;    
+                    }
+                    
                     const ImGuiTreeNodeFlags flags = ((IsEntityValid(entity) && selected_entity == entity) ?
                         ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_Leaf;
 
