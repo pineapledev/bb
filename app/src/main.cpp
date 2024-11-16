@@ -33,7 +33,7 @@ void reset_movement(Transform& transform, Move& move)
 
 void spawn_entity()
 {
-    Entity entity = CreateEntity();
+    Entity entity = entity_create();
     Vector3 position = ToVector3(RandomPointInSquare(RECT_LEFT.x, RECT_RIGHT.y, RECT_RIGHT.x, RECT_LEFT.y)); 
     entity_add<Transform>(entity).position = position;
     //add<Transform>(entity).position = V3_ZERO;
@@ -71,14 +71,14 @@ void init()
 
 ListenerAction start()
 {
-    AssetHandle test_scene = asset_find_by_name("test_scene");
+    AssetHandle test_scene = asset_find_by_name("test scene");
 
     if (asset_valid(test_scene))
     {
         asset_load(test_scene);
     }
 
-    test_texture = asset_find_by_name("test_sheet");
+    test_texture = asset_find_by_name("test sheet");
 
     return ListenerAction::StayListening;
 }

@@ -19,7 +19,7 @@ namespace nit
         emitter << YAML::Key << "Entities" << YAML::Value << YAML::BeginMap;
         for (Entity entity : scene->entities)
         {
-            SerializeEntity(entity, emitter);
+            entity_serialize(entity, emitter);
         }
         emitter << YAML::EndMap;
     }
@@ -67,7 +67,7 @@ namespace nit
         {
             for (Entity entity : scene->entities)
             {
-                DestroyEntity(entity);
+                entity_destroy(entity);
             }
         }
         scene->entities.clear();
@@ -82,7 +82,7 @@ namespace nit
         for (const auto& entity_node : entities_node)
         {
             const YAML::Node& entity_node_value = entity_node.second;
-            Entity entity = DeserializeEntity(entity_node_value);
+            Entity entity = entity_deserialize(entity_node_value);
             scene->entities.push_back(entity);
         }
     }

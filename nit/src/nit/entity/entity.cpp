@@ -18,7 +18,7 @@ namespace nit
         return entity_registry;
     }
 
-    ComponentPool* FindComponentPool(const Type* type)
+    ComponentPool* entity_find_component_pool(const Type* type)
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         for (u32 i = 0; i < entity_registry->next_component_type_index; ++i)
@@ -30,6 +30,40 @@ namespace nit
             }
         }
         return nullptr;
+    }
+
+    Entity entity_clone(Entity entity)
+    {
+        if (!entity_valid(entity))
+        {
+            return NULL_ENTITY;
+        }
+
+        Entity cloned_entity = entity_create();
+
+        for (u32 i = 0; i < entity_registry->next_component_type_index - 1; ++i)
+        {
+            ComponentPool* pool = &entity_registry->component_pool[i];
+            if (!delegate_invoke(pool->fn_is_in_entity, entity))
+            {
+                continue;
+            }
+            void* component_data = delegate_invoke(pool->fn_get_from_entity, entity);
+            delegate_invoke(pool->fn_add_to_entity, cloned_entity, component_data);
+        }
+
+        return cloned_entity;
+    }
+
+    EntitySignature entity_get_signature(Entity entity)
+    {
+        NIT_CHECK_ENTITY_REGISTRY_CREATED
+        if (entity_valid(entity))
+        {
+            NIT_CHECK_MSG(false, "Trying to get signature from non existent entity!");
+            return {};
+        }
+        return entity_registry->signatures[entity];
     }
 
     void entity_registry_init()
@@ -45,7 +79,7 @@ namespace nit
         }
     }
 
-    void FinishEntityRegistry()
+    void entity_registry_finish()
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         for (u32 i = 0; i < entity_registry->next_component_type_index; ++i)
@@ -55,7 +89,7 @@ namespace nit
         }
     }
 
-    Entity CreateEntity()
+    Entity entity_create()
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         NIT_CHECK_MSG(entity_registry->entity_count < entity_registry->max_entities, "Entity limit reached!");
@@ -66,10 +100,10 @@ namespace nit
         return entity;
     }
 
-    void DestroyEntity(Entity entity)
+    void entity_destroy(Entity entity)
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
-        NIT_CHECK_MSG(IsEntityValid(entity), "Entity is not valid!");
+        NIT_CHECK_MSG(entity_valid(entity), "Entity is not valid!");
 
         for (u32 i = 0; i < entity_registry->next_component_type_index; ++i)
         {
@@ -96,13 +130,13 @@ namespace nit
         }
     }
 
-    bool IsEntityValid(const Entity entity)
+    bool entity_valid(const Entity entity)
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         return entity < entity_registry->max_entities && entity_registry->signatures[entity].test(0);
     }
 
-    void EntitySignatureChanged(Entity entity, EntitySignature new_entity_signature)
+    void entity_signature_changed(Entity entity, EntitySignature new_entity_signature)
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         for (auto& [signature, group] : entity_registry->entity_groups)
@@ -121,7 +155,7 @@ namespace nit
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         NIT_CHECK_MSG(!entity_registry->entity_count, "Create the group before any entity gets created!");
-        EntitySignature group_signature = BuildEntitySignature(type_hashes);
+        EntitySignature group_signature = entity_build_signature(type_hashes);
 
         if (entity_registry->entity_groups.count(group_signature) != 0)
         {
@@ -133,14 +167,14 @@ namespace nit
         return group_signature;
     }
 
-    EntitySignature BuildEntitySignature(const Array<u64>& type_hashes)
+    EntitySignature entity_build_signature(const Array<u64>& type_hashes)
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         EntitySignature group_signature;
         group_signature.set(0, true);
         for (u64 type_hash : type_hashes)
         {
-            if (ComponentPool* pool = FindComponentPool(GetType(type_hash)))
+            if (ComponentPool* pool = entity_find_component_pool(GetType(type_hash)))
             {
                 group_signature.set(pool->type_index, true);
             }
@@ -154,7 +188,7 @@ namespace nit
         return entity_registry->entity_groups[signature];
     }
 
-    void SerializeEntity(Entity entity, YAML::Emitter& emitter)
+    void entity_serialize(Entity entity, YAML::Emitter& emitter)
     {
         emitter << YAML::Key << "Entity" << YAML::Value << YAML::BeginMap;
         
@@ -181,22 +215,23 @@ namespace nit
         emitter << YAML::EndMap;
     }
 
-    Entity DeserializeEntity(const YAML::Node& node)
+    Entity entity_deserialize(const YAML::Node& node)
     {
         if (!node)
         {
             return 0;
         }
 
-        Entity entity = CreateEntity();
+        Entity entity = entity_create();
         
         for (const auto& entity_node_child : node)
         {
             const YAML::Node& component_node = entity_node_child.second;
             String type_name = entity_node_child.first.as<String>();
-            auto* component_pool = FindComponentPool(GetType(type_name));
+            auto* component_pool = entity_find_component_pool(GetType(type_name));
             auto& data_pool = component_pool->data_pool;
-            delegate_invoke(component_pool->fn_add_to_entity, entity);
+            void* null_data = nullptr;
+            delegate_invoke(component_pool->fn_add_to_entity, entity, null_data);
             void* component_data = delegate_invoke(component_pool->fn_get_from_entity, entity);
             deserialize(data_pool.type, component_data, component_node);
             ComponentAddedArgs args;

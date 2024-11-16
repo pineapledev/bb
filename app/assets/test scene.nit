@@ -1,7 +1,7 @@
 AssetInfo:
   type: Scene
-  name: test_scene
-  path: test_scene.nit
+  name: test scene
+  path: test scene.nit
   id: 9621028665531299668
   version: 0
 Scene:

@@ -1,11 +1,11 @@
 AssetInfo:
   type: Texture2D
-  name: test_sheet
-  path: test_sheet.nit
+  name: test sheet
+  path: test sheet.nit
   id: 12761694976786155438
   version: 0
 Texture2D:
-  image_path: test_sheet.png
+  image_path: test sheet.png
   mag_filter: Linear
   min_filter: Linear
   wrap_mode_u: Repeat

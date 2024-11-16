@@ -15,12 +15,13 @@ namespace nit
 
     struct ComponentPool
     {
-        u32                     type_index  = 0;
-        Pool                    data_pool;
-        Delegate<void(Entity)>  fn_add_to_entity;
-        Delegate<void(Entity)>  fn_remove_from_entity;
-        Delegate<bool(Entity)>  fn_is_in_entity;
-        Delegate<void*(Entity)> fn_get_from_entity;
+        u32                           type_index  = 0;
+        Pool                          data_pool;
+        
+        Delegate<void(Entity, void*)> fn_add_to_entity;
+        Delegate<void(Entity)>        fn_remove_from_entity;
+        Delegate<bool(Entity)>        fn_is_in_entity;
+        Delegate<void*(Entity)>       fn_get_from_entity;
     };
     
     struct EntityGroup
@@ -62,13 +63,7 @@ namespace nit
     void            entity_registry_set_instance(EntityRegistry* entity_registry_instance);
     EntityRegistry* entity_registry_get_instance();
     
-    ComponentPool* FindComponentPool(const Type* type);
     
-    template<typename T>
-    ComponentPool* FindComponentPool()
-    {
-        return FindComponentPool(GetType<T>());
-    }
 
     template<typename T>
     T& component_add_silent(Entity entity, const T& data = {});
@@ -77,7 +72,7 @@ namespace nit
     void entity_remove(Entity entity);
 
     template<typename T>
-    T* get_component_ptr(Entity entity);
+    T* entity_get_ptr(Entity entity);
         
     template<typename T>
     bool entity_has(Entity entity);
@@ -97,8 +92,16 @@ namespace nit
         component_pool.data_pool.type  = GetType<T>();
         component_pool.type_index      = entity_registry->next_component_type_index;
 
-        void (*fn_add_to_entity)(Entity) = [](Entity entity) {
-            component_add_silent<T>(entity);  
+        void (*fn_add_to_entity)(Entity, void*) = [](Entity entity, void* data) {
+
+            if (!data)
+            {
+                component_add_silent<T>(entity);  
+                return;
+            }
+
+            T* casted_data = static_cast<T*>(data);
+            component_add_silent(entity, *casted_data);
         };
 
         void (*fn_remove_from_entity)(Entity) = [](Entity entity){
@@ -110,7 +113,7 @@ namespace nit
         };
 
         void* (*fn_get_from_entity)(Entity) = [](Entity entity) -> void* {
-            return get_component_ptr<T>(entity);
+            return entity_get_ptr<T>(entity);
         };
         
         delegate_bind(component_pool.fn_add_to_entity, fn_add_to_entity);
@@ -123,125 +126,133 @@ namespace nit
     }
 
     template<typename T>
-    u32 get_componentTypeIndex()
+    u32 entity_component_type_index()
     {
-        ComponentPool* component_pool = FindComponentPool<T>();
+        ComponentPool* component_pool = entity_find_component_pool<T>();
         NIT_CHECK_MSG(component_pool, "Component type is not registered!");
         return component_pool->type_index;
     }
     
-    void entity_registry_init();
-    void FinishEntityRegistry();
-    Entity CreateEntity();
-    void DestroyEntity(Entity entity);
-    bool IsEntityValid(Entity entity);
-
-    void EntitySignatureChanged(Entity entity, EntitySignature new_entity_signature);
-
+    void            entity_registry_init();
+    void            entity_registry_finish();
+    Entity          entity_create();
+    void            entity_destroy(Entity entity);
+    bool            entity_valid(Entity entity);
+    EntitySignature entity_get_signature(Entity entity);
+    void            entity_signature_changed(Entity entity, EntitySignature new_entity_signature);
+    ComponentPool*  entity_find_component_pool(const Type* type);
+    Entity          entity_clone(Entity entity);
+    
+    template<typename T>
+    ComponentPool* entity_find_component_pool()
+    {
+        return entity_find_component_pool(GetType<T>());
+    }
+    
     template<typename T>
     T& component_add_silent(Entity entity, const T& data)
     {
-        NIT_CHECK_MSG(IsEntityValid(entity), "Invalid entity!");
+        NIT_CHECK_MSG(entity_valid(entity), "Invalid entity!");
         NIT_CHECK_MSG(entity_registry_get_instance()->signatures[entity].size() <= NIT_MAX_COMPONENT_TYPES + 1, "Components per entity out of range!");
-        ComponentPool* component_pool = FindComponentPool<T>();
+        ComponentPool* component_pool = entity_find_component_pool<T>();
         NIT_CHECK_MSG(component_pool, "Invalid component type!");
         T* element = pool_insert_data_with_id(&component_pool->data_pool, entity, data);
         EntitySignature& signature = entity_registry_get_instance()->signatures[entity]; 
-        signature.set(get_componentTypeIndex<T>(), true);
-        EntitySignatureChanged(entity, signature);
+        signature.set(entity_component_type_index<T>(), true);
+        entity_signature_changed(entity, signature);
         return *element;
     }
 
-    EntitySignature BuildEntitySignature(const Array<u64>& type_hashes);
+    EntitySignature entity_build_signature(const Array<u64>& type_hashes);
 
     template <typename... T>
-    EntitySignature BuildEntitySignature()
+    EntitySignature entity_build_signature()
     {
         Array<u64> type_hashes = { get_type_hash<T>()... };
-        return BuildEntitySignature(type_hashes);
+        return entity_build_signature(type_hashes);
     }
-    
-    template<typename T>
-        T& entity_add(Entity entity, const T& data = {})
-        {
-            NIT_CHECK_MSG(IsEntityValid(entity), "Invalid entity!");
-            NIT_CHECK_MSG(entity_registry_get_instance()->signatures[entity].size() <= NIT_MAX_COMPONENT_TYPES + 1, "Components per entity out of range!");
-            ComponentPool* component_pool = FindComponentPool<T>();
-            NIT_CHECK_MSG(component_pool, "Invalid component type!");
-            T* element = pool_insert_data_with_id(&component_pool->data_pool, entity, data);
-            EntitySignature& signature = entity_registry_get_instance()->signatures[entity]; 
-            signature.set(get_componentTypeIndex<T>(), true);
-            EntitySignatureChanged(entity, signature);
-            ComponentAddedArgs args;
-            args.entity = entity;
-            args.type = component_pool->data_pool.type;
-            event_broadcast<const ComponentAddedArgs&>(entity_registry_get_instance()->component_added_event, args);
-            return *element;
-        }
-        
-        template<typename T>
-        void entity_remove(Entity entity)
-        {
-            NIT_CHECK_MSG(IsEntityValid(entity), "Invalid entity!");
-            NIT_CHECK_MSG(entity < entity_registry_get_instance()->max_entities, "Entity out of range!");
-            ComponentPool* component_pool = FindComponentPool<T>();
-            NIT_CHECK_MSG(component_pool, "Invalid component type!");
 
-            ComponentRemovedArgs args;
-            args.entity = entity;
-            args.type = component_pool->data_pool.type;
-            event_broadcast<const ComponentRemovedArgs&>(entity_registry_get_instance()->component_removed_event, args);
-        
-            pool_delete_data(&component_pool->data_pool, entity);
-            EntitySignature& signature = entity_registry_get_instance()->signatures[entity]; 
-            signature.set(get_componentTypeIndex<T>(), false);
-            EntitySignatureChanged(entity, signature);
-        }
+    template <typename T>
+    T& entity_add(Entity entity, const T& data = {})
+    {
+        NIT_CHECK_MSG(entity_valid(entity), "Invalid entity!");
+        NIT_CHECK_MSG(entity_registry_get_instance()->signatures[entity].size() <= NIT_MAX_COMPONENT_TYPES + 1,
+                      "Components per entity out of range!");
+        ComponentPool* component_pool = entity_find_component_pool<T>();
+        NIT_CHECK_MSG(component_pool, "Invalid component type!");
+        T* element = pool_insert_data_with_id(&component_pool->data_pool, entity, data);
+        EntitySignature& signature = entity_registry_get_instance()->signatures[entity];
+        signature.set(entity_component_type_index<T>(), true);
+        entity_signature_changed(entity, signature);
+        ComponentAddedArgs args;
+        args.entity = entity;
+        args.type = component_pool->data_pool.type;
+        event_broadcast<const ComponentAddedArgs&>(entity_registry_get_instance()->component_added_event, args);
+        return *element;
+    }
 
-        template<typename T>
-        T& entity_get(Entity entity)
-        {
-            NIT_CHECK_MSG(IsEntityValid(entity), "Invalid entity!");
-            ComponentPool* component_pool = FindComponentPool<T>();
-            NIT_CHECK_MSG(component_pool, "Invalid component type!");
-            return *pool_get_data<T>(&component_pool->data_pool, entity);
-        }
-    
-        template<typename T>
-        T* get_component_ptr(Entity entity)
-        {
-            NIT_CHECK_MSG(IsEntityValid(entity), "Invalid entity!");
-            ComponentPool* component_pool = FindComponentPool<T>();
-            NIT_CHECK_MSG(component_pool, "Invalid component type!");
-            return pool_get_data<T>(&component_pool->data_pool, entity);
-        }
+    template <typename T>
+    void entity_remove(Entity entity)
+    {
+        NIT_CHECK_MSG(entity_valid(entity), "Invalid entity!");
+        NIT_CHECK_MSG(entity < entity_registry_get_instance()->max_entities, "Entity out of range!");
+        ComponentPool* component_pool = entity_find_component_pool<T>();
+        NIT_CHECK_MSG(component_pool, "Invalid component type!");
 
-        template<typename T>
-        bool entity_has(Entity entity)
-        {
-            NIT_CHECK_MSG(IsEntityValid(entity), "Invalid entity!");
-            return entity_registry_get_instance()->signatures[entity].test(get_componentTypeIndex<T>());
-        }
+        ComponentRemovedArgs args;
+        args.entity = entity;
+        args.type = component_pool->data_pool.type;
+        event_broadcast<const ComponentRemovedArgs&>(entity_registry_get_instance()->component_removed_event, args);
 
-        EntityGroup& entity_get_group(EntitySignature signature);
+        pool_delete_data(&component_pool->data_pool, entity);
+        EntitySignature& signature = entity_registry_get_instance()->signatures[entity];
+        signature.set(entity_component_type_index<T>(), false);
+        entity_signature_changed(entity, signature);
+    }
 
-        template <typename... T>
-        EntityGroup& entity_get_group()
-        {
-            Array<u64> type_hashes = { get_type_hash<T>()... };
-            return entity_get_group(BuildEntitySignature(type_hashes));
-        }
+    template <typename T>
+    T& entity_get(Entity entity)
+    {
+        NIT_CHECK_MSG(entity_valid(entity), "Invalid entity!");
+        ComponentPool* component_pool = entity_find_component_pool<T>();
+        NIT_CHECK_MSG(component_pool, "Invalid component type!");
+        return *pool_get_data<T>(&component_pool->data_pool, entity);
+    }
 
-        EntitySignature entity_create_group(const Array<u64>& type_hashes);
-    
-        template <typename... T>
-        EntitySignature entity_create_group()
-        {
-            Array<u64> type_hashes = { get_type_hash<T>()... };
-            return entity_create_group(type_hashes);
-        }
-    
-    void SerializeEntity(Entity entity, YAML::Emitter& emitter);
-    
-    Entity DeserializeEntity(const YAML::Node& node);
+    template <typename T>
+    T* entity_get_ptr(Entity entity)
+    {
+        NIT_CHECK_MSG(entity_valid(entity), "Invalid entity!");
+        ComponentPool* component_pool = entity_find_component_pool<T>();
+        NIT_CHECK_MSG(component_pool, "Invalid component type!");
+        return pool_get_data<T>(&component_pool->data_pool, entity);
+    }
+
+    template <typename T>
+    bool entity_has(Entity entity)
+    {
+        NIT_CHECK_MSG(entity_valid(entity), "Invalid entity!");
+        return entity_registry_get_instance()->signatures[entity].test(entity_component_type_index<T>());
+    }
+
+    EntityGroup& entity_get_group(EntitySignature signature);
+
+    template <typename... T>
+    EntityGroup& entity_get_group()
+    {
+        Array<u64> type_hashes = {get_type_hash<T>()...};
+        return entity_get_group(entity_build_signature(type_hashes));
+    }
+
+    EntitySignature entity_create_group(const Array<u64>& type_hashes);
+
+    template <typename... T>
+    EntitySignature entity_create_group()
+    {
+        Array<u64> type_hashes = {get_type_hash<T>()...};
+        return entity_create_group(type_hashes);
+    }
+
+    void   entity_serialize(Entity entity, YAML::Emitter& emitter);
+    Entity entity_deserialize(const YAML::Node& node);
 }

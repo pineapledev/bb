@@ -131,7 +131,7 @@ namespace nit
         
         invalidate_asset_nodes();
 
-        editor->editor_camera_entity = CreateEntity();
+        editor->editor_camera_entity = entity_create();
 
         auto& transform      = entity_add<Transform>              (editor->editor_camera_entity);
         transform.position.z = 3.f;
@@ -290,7 +290,7 @@ namespace nit
                     {
                         i32 entity_id = read_frame_buffer_pixel(&editor->frame_buffer, 1, mouse_x, mouse_y);
                         Entity selected = (Entity) entity_id;
-                        bool valid_entity = IsEntityValid(selected);
+                        bool valid_entity = entity_valid(selected);
                         editor->selection = valid_entity ? Editor::Selection::Entity : Editor::Selection::None;
                         editor->selected_entity = valid_entity ? selected : U32_MAX;
                     }
@@ -305,7 +305,7 @@ namespace nit
                     // Gizmo stuff
                     Entity selected_entity = editor->selected_entity;
                     
-                    if (IsEntityValid(selected_entity) && editor->selection == Editor::Selection::Entity && IsEntityValid(camera_entity) && entity_has<Transform>(selected_entity))
+                    if (entity_valid(selected_entity) && editor->selection == Editor::Selection::Entity && entity_valid(camera_entity) && entity_has<Transform>(selected_entity))
                     {
                         auto& camera_data      = entity_get<Camera>(camera_entity);
                         auto& camera_transform = entity_get<Transform>(camera_entity);
@@ -441,7 +441,7 @@ namespace nit
                 {
                     if (ImGui::MenuItem("Create Entity"))
                     {
-                        Entity entity = CreateEntity();
+                        Entity entity = entity_create();
                         scene->entities.push_back(entity);
                     }
                     if (ImGui::MenuItem("Save"))
@@ -485,7 +485,7 @@ namespace nit
                         name = entity_get<Name>(entity).data;    
                     }
                     
-                    const ImGuiTreeNodeFlags flags = ((IsEntityValid(entity) && selected_entity == entity) ?
+                    const ImGuiTreeNodeFlags flags = ((entity_valid(entity) && selected_entity == entity) ?
                         ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_Leaf;
 
                     const bool is_entity_expanded = ImGui::TreeNodeEx(name.c_str(), flags);
@@ -496,13 +496,20 @@ namespace nit
                         {
                             editor->selection = Editor::Selection::None;
                             editor->selected_entity = U32_MAX;
-                            DestroyEntity(selected_entity);
+                            entity_destroy(selected_entity);
                             num_of_entities--;
                             scene->entities.erase(std::ranges::find(scene->entities, selected_entity));
                         }
                         if (ImGui::MenuItem("Clone Entity"))
                         {
-                            NIT_LOG_TRACE("Not implemented yet!");
+                            selected_entity = entity_clone(selected_entity);
+                            if (entity_has<Name>(selected_entity))
+                            {
+                                Name& cloned_name = entity_get<Name>(selected_entity);
+                                cloned_name.data.append(" ").append(std::to_string(selected_entity));
+                            }
+                            scene->entities.push_back(selected_entity);
+                            num_of_entities++;
                         }
                         ImGui::EndPopup();
                     }
@@ -618,7 +625,8 @@ namespace nit
 
                         if (ImGui::MenuItem(pool->data_pool.type->name.c_str()))
                         {
-                            delegate_invoke(pool->fn_add_to_entity, selected_entity);
+                            void* null_data = nullptr;
+                            delegate_invoke(pool->fn_add_to_entity, selected_entity, null_data);
                         }
                     }
                     ImGui::EndPopup();
