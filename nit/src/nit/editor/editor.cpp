@@ -1,4 +1,9 @@
 ﻿#include "editor.h"
+
+#include "render/circle.h"
+#include "render/line_2d.h"
+#include "render/sprite.h"
+#include "render/text.h"
 #ifdef NIT_EDITOR_ENABLED
 
 #include "core/engine.h"
@@ -33,6 +38,13 @@ namespace nit
 
     void register_editor()
     {
+        entity_create_preset<Name, Transform, Camera>("Camera");
+        entity_create_preset<Name, Transform, Sprite>("Sprite");
+        entity_create_preset<Name, Transform, Text>("Text");
+        entity_create_preset<Name, Transform, Circle>("Circle");
+        entity_create_preset<Name, Transform, Line2D>("Line");
+        entity_create_preset<Name, Circle, Line2D, Text>("Test Preset");
+
         component_register<EditorCameraController>();
     }
 
@@ -439,11 +451,30 @@ namespace nit
                 
                 if (ImGui::BeginPopupContextItem())
                 {
-                    if (ImGui::MenuItem("Create Entity"))
+                    if (ImGui::BeginMenu("Create"))
                     {
-                        Entity entity = entity_create();
-                        scene->entities.push_back(entity);
+                        if (ImGui::MenuItem("Empty entity"))
+                        {
+                            Entity entity = entity_create();
+                            scene->entities.push_back(entity);
+                        }
+
+                        for (auto& [name, preset] : entity_registry_get_instance()->entity_presets)
+                        {
+                            if (ImGui::MenuItem(name.c_str()))
+                            {
+                                Entity entity = entity_create_from_preset(name);
+                                if (entity_has<Name>(entity))
+                                {
+                                    auto& created_entity_name = entity_get<Name>(entity);
+                                    created_entity_name.data = std::to_string(entity);
+                                }
+                                scene->entities.push_back(entity);
+                            }
+                        }
+                        ImGui::EndMenu();
                     }
+                    
                     if (ImGui::MenuItem("Save"))
                     {
                         asset_serialize_to_file(scene_asset);
@@ -506,7 +537,7 @@ namespace nit
                             if (entity_has<Name>(selected_entity))
                             {
                                 Name& cloned_name = entity_get<Name>(selected_entity);
-                                cloned_name.data.append(" ").append(std::to_string(selected_entity));
+                                cloned_name.data = std::to_string(selected_entity);
                             }
                             scene->entities.push_back(selected_entity);
                             num_of_entities++;

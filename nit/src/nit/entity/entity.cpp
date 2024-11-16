@@ -167,6 +167,18 @@ namespace nit
         return group_signature;
     }
 
+    void entity_create_preset(const String& name, const Array<u64>& type_hashes)
+    {
+        NIT_CHECK_ENTITY_REGISTRY_CREATED
+        if (entity_registry->entity_presets.count(name) != 0)
+        {
+            NIT_CHECK_MSG(false, "There is already a preset called %s", name.c_str());
+            return;
+        }
+
+        entity_registry->entity_presets[name] = type_hashes;
+    }
+
     EntitySignature entity_build_signature(const Array<u64>& type_hashes)
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
@@ -186,6 +198,32 @@ namespace nit
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         return entity_registry->entity_groups[signature];
+    }
+
+    Entity entity_create_from_preset(const String& name)
+    {
+        NIT_CHECK_ENTITY_REGISTRY_CREATED
+
+        if (entity_registry->entity_presets.count(name) == 0)
+        {
+            NIT_CHECK_MSG(false, "There is not a preset called %s", name.c_str());
+            return NULL_ENTITY;
+        }
+        
+        auto& type_hashes = entity_registry->entity_presets[name];
+
+        Entity entity = entity_create();
+        
+        for (u64 type_hash : type_hashes)
+        {
+            if (ComponentPool* pool = entity_find_component_pool(GetType(type_hash)))
+            {
+                void* null_data = nullptr;
+                delegate_invoke(pool->fn_add_to_entity, entity, null_data);
+            }
+        }
+
+        return entity;
     }
 
     void entity_serialize(Entity entity, YAML::Emitter& emitter)

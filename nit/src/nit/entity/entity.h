@@ -41,7 +41,7 @@ namespace nit
         Entity entity = 0;
         Type*  type   = nullptr;
     };
-
+    
     using ComponentAddedListener   = Listener<const ComponentAddedArgs&>; 
     using ComponentRemovedListener = Listener<const ComponentRemovedArgs&>; 
     using ComponentAddedEvent      = Event<const ComponentAddedArgs&>;
@@ -53,6 +53,7 @@ namespace nit
         EntitySignature*                  signatures;
         u32                               entity_count = 0;
         Map<EntitySignature, EntityGroup> entity_groups;
+        Map<String, Array<u64>>           entity_presets;
         ComponentPool*                    component_pool;
         u32                               next_component_type_index = 1;
         ComponentAddedEvent               component_added_event;
@@ -252,6 +253,17 @@ namespace nit
         Array<u64> type_hashes = {get_type_hash<T>()...};
         return entity_create_group(type_hashes);
     }
+
+    void entity_create_preset(const String& name, const Array<u64>& type_hashes);
+
+    template <typename... T>
+    void entity_create_preset(const String& name)
+    {
+        Array<u64> type_hashes = {get_type_hash<T>()...};
+        entity_create_preset(name, type_hashes);
+    }
+
+    Entity entity_create_from_preset(const String& name);
 
     void   entity_serialize(Entity entity, YAML::Emitter& emitter);
     Entity entity_deserialize(const YAML::Node& node);
