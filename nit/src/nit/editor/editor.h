@@ -1,9 +1,8 @@
 ﻿#pragma once
 
 #ifdef NIT_EDITOR_ENABLED
-#include "nit/logic/components.h"
 #include "nit/core/asset.h"
-#include "nit/logic/entity.h"
+#include "nit/entity/entity.h"
 #include "nit/render/frame_buffer.h"
 
 namespace nit

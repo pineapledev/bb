@@ -1,12 +1,19 @@
 #include "engine.h"
 
-#include "audio/audio_clip.h"
+#include "entity/scene.h"
+
+#include "render/draw_system.h"
+#include "render/render_api.h"
 #include "render/font.h"
 #include "render/texture.h"
-#include "logic/components.h"
-#include "logic/draw_system.h"
-#include "logic/scene.h"
-#include "render/render_api.h"
+#include "render/transform.h"
+#include "render/camera.h"
+#include "render/text.h"
+#include "render/sprite.h"
+#include "render/line.h"
+#include "render/circle.h"
+
+#include "audio/audio_clip.h"
 
 #define NIT_CHECK_ENGINE_CREATED NIT_CHECK_MSG(nit::engine, "Forget to call SetAppInstance!");
 

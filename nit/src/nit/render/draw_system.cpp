@@ -1,11 +1,16 @@
-﻿#include "nit/render/primitives_2d.h"
-#include "nit/render/renderer_2d.h"
-#include "nit/render/render_api.h"
+﻿#include "circle.h"
+#include "line.h"
+#include "sprite.h"
+#include "text.h"
+#include "primitives_2d.h"
+#include "renderer_2d.h"
+#include "render_api.h"
 #include "nit/core/engine.h"
-#include "nit/logic/entity.h"
-#include "nit/logic/components.h"
+#include "nit/entity/entity.h"
 #include "nit/render/texture.h"
 #include "nit/render/font.h"
+#include "render/camera.h"
+#include "render/transform.h"
 
 namespace nit
 {
@@ -247,12 +252,12 @@ namespace nit
                         vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
                     }
                     
-                    transform_vertex_positions(vertex_positions, ToMatrix4(transform));
+                    transform_vertex_positions(vertex_positions, transform_to_matrix(transform));
                 }
                 else
                 {
                     vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
-                    transform_vertex_positions(vertex_positions, ToMatrix4(transform));
+                    transform_vertex_positions(vertex_positions, transform_to_matrix(transform));
                 }
                 
                 fill_vertex_colors(vertex_colors, sprite.tint);
@@ -270,7 +275,7 @@ namespace nit
                 }
                 
                 fill_line_2d_vertex_positions(vertex_positions, line.start, line.end, line.thickness);
-                transform_vertex_positions(vertex_positions, ToMatrix4(transform));
+                transform_vertex_positions(vertex_positions, transform_to_matrix(transform));
                 fill_vertex_colors(vertex_colors, line.tint);
                 draw_line_2d(vertex_positions, vertex_colors, (i32) entity);
             }
@@ -295,7 +300,7 @@ namespace nit
                 draw_text(
                       font_data
                     , text.text
-                    , ToMatrix4(transform)
+                    , transform_to_matrix(transform)
                     , text.tint
                     , text.spacing
                     , text.size
@@ -314,7 +319,7 @@ namespace nit
                 }
                 
                 fill_circle_vertex_positions(vertex_positions, circle.radius);
-                transform_vertex_positions(vertex_positions, ToMatrix4(transform));
+                transform_vertex_positions(vertex_positions, transform_to_matrix(transform));
                 fill_vertex_colors(vertex_colors, circle.tint);
                 draw_circle(vertex_positions, vertex_colors, circle.thickness, circle.fade, (i32) entity);
             }

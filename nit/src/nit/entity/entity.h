@@ -83,7 +83,7 @@ namespace nit
     bool entity_has(Entity entity);
     
     template<typename T>
-    void RegisterComponentType(const TypeArgs<T>& args = {})
+    void component_register(const TypeArgs<T>& args = {})
     {
         EntityRegistry* entity_registry = entity_registry_get_instance(); 
         NIT_CHECK_MSG(entity_registry->next_component_type_index <= NIT_MAX_COMPONENT_TYPES, "Components out of range!");

@@ -3,7 +3,7 @@
 #include "nit/core/asset.h"
 #include "nit/render/renderer_2d.h"
 #include "nit/render/imgui_renderer.h"
-#include "nit/logic/entity.h"
+#include "nit/entity/entity.h"
 #include "nit/render/render_objects.h"
 #include "nit/audio/audio.h"
 

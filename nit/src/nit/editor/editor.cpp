@@ -1,14 +1,17 @@
 ﻿#include "editor.h"
-
-
 #ifdef NIT_EDITOR_ENABLED
-#include "logic/draw_system.h"
+
 #include "core/engine.h"
-#include "logic/components.h"
-#include "logic/scene.h"
+
+#include "render/draw_system.h"
+#include "render/transform.h"
+#include "render/camera.h"
+#include "entity/scene.h"
 #include "render/texture.h"
-#include <ImGuizmo.h>
+
 #include "editor_utils.h"
+
+#include <ImGuizmo.h>
 
 #define NIT_CHECK_EDITOR_CREATED NIT_CHECK_MSG(editor, "Forget to call SetEditorInstance!");
 
@@ -30,7 +33,7 @@ namespace nit
 
     void register_editor()
     {
-        RegisterComponentType<EditorCameraController>();
+        component_register<EditorCameraController>();
     }
 
     void TraverseDirectory(const Path& directory, u32 parent_node, int depth = 0)
@@ -321,8 +324,8 @@ namespace nit
                         if (ImGui::IsKeyPressed(ImGuiKey_E)) operation = ImGuizmo::ROTATE;
                         if (ImGui::IsKeyPressed(ImGuiKey_R)) operation = ImGuizmo::SCALE;
 
-                        const float* view = &CalculateViewMatrix(camera_transform).n[0];
-                        const float* projection = &CalculateProjectionMatrix(camera_data).n[0];
+                        const float* view = &camera_view(camera_transform).n[0];
+                        const float* projection = &camera_proj(camera_data).n[0];
 
                         Transform& transform = entity_get<Transform>(selected_entity);
                         

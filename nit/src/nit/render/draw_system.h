@@ -1,4 +1,5 @@
 #pragma once
+#include "nit/entity/entity.h"
 
 namespace nit
 {

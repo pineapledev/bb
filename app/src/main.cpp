@@ -63,7 +63,7 @@ void init()
     engine_event(Stage::Start)  += EngineListener::create(start);
     engine_event(Stage::Update) += EngineListener::create(update);
 
-    RegisterComponentType<Move>();
+    component_register<Move>();
     entity_create_group<Transform, Sprite, Move>();
 }
 
