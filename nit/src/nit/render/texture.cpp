@@ -294,12 +294,13 @@ namespace nit
         {
             return;
         }
-
+        
         for (const auto& entry : std::filesystem::directory_iterator(src_path))
         {
             String path = entry.path().string();
             String filename = entry.path().filename().stem().string();
             i32 width, height, channels;
+
             if (u8* data = stbi_load(path.c_str(), &width, &height, &channels, 4))
             {
                 images.push_back({data, width, height, channels, filename});
@@ -366,8 +367,8 @@ namespace nit
             {
                 for (i32 x = 0; x < image.width; ++x)
                 {
-                    u32 sprite_idx = (u32) ((y + current_y_offset) * sprite_sheet_width + (x + current_x_offset)) * 4;
-                    i32 img_idx = (y * image.width + x) * 4;
+                    u32 sprite_idx = (u32)((y + current_y_offset) * sprite_sheet_width + (x + current_x_offset)) * 4;
+                    i32 img_idx = ((image.height - 1 - y) * image.width + x) * 4;
 
                     if (sprite_idx < pixel_data_count && img_idx < image.width * image.height * 4)
                     {
@@ -378,7 +379,7 @@ namespace nit
                     }
                 }
             }
-
+            
             SubTexture2D& sub_texture_2d = texture->sub_textures[i];
             sub_texture_2d.name = image.filename;
             sub_texture_2d.size = {(f32)image.width, (f32)image.height};
@@ -388,10 +389,10 @@ namespace nit
             max_row_height = std::max(max_row_height, image.height);
         }
 
-        String final_path = dest_path;
-        final_path.append("\\").append(sprite_sheet_name).append(".png");
-
-        stbi_write_png(final_path.c_str(), sprite_sheet_width, sprite_sheet_height, 4, texture->pixel_data, sprite_sheet_width * 4);
+        String final_path = dest_path + "\\" + sprite_sheet_name + ".png";
+        String full_path  = "assets\\" + final_path;
+        
+        stbi_write_png(full_path.c_str(), sprite_sheet_width, sprite_sheet_height, 4, texture->pixel_data, sprite_sheet_width * 4);
 
         delete[] texture->pixel_data;
         texture->pixel_data = nullptr;

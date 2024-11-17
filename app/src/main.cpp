@@ -85,7 +85,7 @@ ListenerAction start()
 
 ListenerAction update()
 {
-    spawn_entity();
+    //spawn_entity();
     
     for (Entity entity : entity_get_group<Transform, Sprite, Move>().entities)
     {

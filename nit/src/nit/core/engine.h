@@ -13,13 +13,6 @@
 
 namespace nit
 {
-    enum class ExecutionContext : u8
-    {
-        Runtime
-      , Editor
-      , Always
-    };
-    
     enum class Stage : u8
     {
         Init

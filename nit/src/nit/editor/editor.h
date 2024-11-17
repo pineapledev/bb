@@ -27,8 +27,12 @@ namespace nit
 
         enum class Icon : u8
         {
-            File   = 0,
-            Folder = 1
+            File = 0,
+            Folder  ,
+            Next    ,
+            Pause   ,
+            Play    ,
+            Stop  
         };
         
         bool        enabled              = true;

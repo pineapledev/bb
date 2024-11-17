@@ -43,10 +43,23 @@ namespace nit
         entity_create_preset<Name, Transform, Text>("Text");
         entity_create_preset<Name, Transform, Circle>("Circle");
         entity_create_preset<Name, Transform, Line2D>("Line");
-        entity_create_preset<Name, Circle, Line2D, Text>("Test Preset");
 
         component_register<EditorCameraController>();
     }
+
+    static bool draw_image_button(Editor::Icon icon, f32 size, const char* tag)
+    {
+        Texture2D* icons = asset_get_data<Texture2D>(editor->icons);
+        ImTextureID icons_id = reinterpret_cast<ImTextureID>(static_cast<u64>(icons->id));
+        V2Verts2D verts_2d;
+        fill_quad_vertex_u_vs(verts_2d, icons->size, icons->sub_textures[(u8) icon].size, icons->sub_textures[(u8) icon].location);
+        Vector2 bottom_left = verts_2d[0];
+        Vector2 top_right   = verts_2d[2];
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+        bool res = ImGui::ImageButton(tag, icons_id, {size, size}, {top_right.x, top_right.y}, {bottom_left.x, bottom_left.y});
+        ImGui::PopStyleColor();
+        return res;
+    };
 
     void traverse_directory(const Path& directory, u32 parent_node, int depth = 0)
     {
@@ -139,17 +152,17 @@ namespace nit
 
         load_frame_buffer(&editor->frame_buffer);
 
-        editor->icons = asset_find_by_name("editor_icons");
+        editor->icons = asset_find_by_name("editor icons");
         
         invalidate_asset_nodes();
 
         editor->editor_camera_entity = entity_create();
 
-        auto& transform      = entity_add<Transform>              (editor->editor_camera_entity);
+        auto& transform = entity_add<Transform>(editor->editor_camera_entity);
         transform.position.z = 3.f;
         
-        auto& camera         = entity_add<Camera>                 (editor->editor_camera_entity);
-        camera.projection    = CameraProjection::Orthographic;
+        auto& camera = entity_add<Camera>(editor->editor_camera_entity);
+        camera.projection = CameraProjection::Orthographic;
         
         auto& controller = entity_add<EditorCameraController> (editor->editor_camera_entity);
         
@@ -369,24 +382,22 @@ namespace nit
 
             // source
             {
-                static String source = GetWorkingDirectory().string();
-                editor_draw_input_folder(&engine_get_instance()->window, "Source", source);
+                static String source;
+                editor_draw_input_text("Source", source);
                 
-                static String dest = GetWorkingDirectory().string();
-                editor_draw_input_folder(&engine_get_instance()->window, "Destination", dest);
+                static String dest;
+                editor_draw_input_text("Destination", dest);
 
                 static String name;
                 editor_draw_input_text("Asset Name", name);
 
                 if (ImGui::Button("Generate"))
                 {
-                    Path relative_source = relative(source, GetWorkingDirectory());
-                    Path relative_dest = relative(dest, GetWorkingDirectory());
-                    
-                    AssetHandle texture = asset_create<Texture2D>(name, relative_dest.string());
+                    AssetHandle texture = asset_create<Texture2D>(name, dest);
                     Texture2D* texture_2d = asset_get_data<Texture2D>(texture);
                     
-                    texture_2d_load(texture_2d, name, relative_source.string(), relative_dest.string());
+                    texture_2d_load(texture_2d, name, source, dest);
+                    
                     if (texture_2d->sub_texture_count > 0 && !texture_2d->image_path.empty())
                     {
                         asset_serialize_to_file(texture);
@@ -696,20 +707,6 @@ namespace nit
                 }
                 else
                 {
-                    static auto draw_image_button = [](Editor::Icon icon, f32 size, const char* tag) -> bool
-                    {
-                        Texture2D* icons = asset_get_data<Texture2D>(editor->icons);
-                        ImTextureID icons_id = reinterpret_cast<ImTextureID>(static_cast<u64>(icons->id));
-                        V2Verts2D verts_2d;
-                        fill_quad_vertex_u_vs(verts_2d, icons->size, icons->sub_textures[(u8) icon].size, icons->sub_textures[(u8) icon].location);
-                        Vector2 bottom_left = verts_2d[0];
-                        Vector2 top_right   = verts_2d[2];
-                        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-                        bool res = ImGui::ImageButton(tag, icons_id, {size, size}, {bottom_left.x, bottom_left.y}, {top_right.x, top_right.y});
-                        ImGui::PopStyleColor();
-                        return res;
-                    };
-
                     AssetNode* draw_node = pool_get_data<AssetNode>(&editor->asset_nodes, editor->draw_node);
 
                     static Type* asset_create_type = nullptr;
