@@ -47,16 +47,16 @@ namespace nit
         component_register<EditorCameraController>();
     }
 
-    static bool draw_image_button(Editor::Icon icon, f32 size, const char* tag)
+    static bool draw_image_button(Editor::Icon icon, f32 size, const char* tag, Vector4 color = V4_COLOR_WHITE)
     {
         Texture2D* icons = asset_get_data<Texture2D>(editor->icons);
         ImTextureID icons_id = reinterpret_cast<ImTextureID>(static_cast<u64>(icons->id));
         V2Verts2D verts_2d;
         fill_quad_vertex_u_vs(verts_2d, icons->size, icons->sub_textures[(u8) icon].size, icons->sub_textures[(u8) icon].location);
-        Vector2 bottom_left = verts_2d[0];
-        Vector2 top_right   = verts_2d[2];
-        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-        bool res = ImGui::ImageButton(tag, icons_id, {size, size}, {top_right.x, top_right.y}, {bottom_left.x, bottom_left.y});
+        Vector2 top_left     = verts_2d[3];
+        Vector2 bottom_right = verts_2d[1];
+        ImGui::PushStyleColor(ImGuiCol_Button, { 0.f, 0.f, 0.f, 0.f });
+        bool res = ImGui::ImageButton(tag, icons_id, {size, size}, {top_left.x, top_left.y}, {bottom_right.x, bottom_right.y});
         ImGui::PopStyleColor();
         return res;
     };
@@ -265,6 +265,33 @@ namespace nit
             ImGui::EndMenuBar();
         }
 
+        // Play / Pause screen
+        /*{
+            ImGuiWindowFlags flags = 0;
+            flags |= ImGuiWindowFlags_NoTitleBar;
+            flags |= ImGuiWindowFlags_AlwaysAutoResize;
+            flags |= ImGuiWindowFlags_NoFocusOnAppearing;
+            ImGui::SetNextWindowBgAlpha(0.35f);
+            ImGui::Begin("#PlayPauseScreen", nullptr, flags);
+            if (draw_image_button(Editor::Icon::Play, 16, "play", V4_COLOR_LIGHT_GREEN))
+            {
+                
+            }
+
+            ImGui::SameLine();
+            if (draw_image_button(Editor::Icon::Pause, 16, "pause"))
+            {
+                
+            }
+
+            ImGui::SameLine();
+            if (draw_image_button(Editor::Icon::Stop, 16, "stop", V4_COLOR_LIGHT_RED))
+            {
+                
+            }
+            ImGui::End();
+        }*/
+        
         if (editor->show_viewport)
         {
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, {0, 0});

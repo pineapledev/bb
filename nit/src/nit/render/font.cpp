@@ -84,7 +84,6 @@ namespace nit
         
         texture_2d_load(&font->atlas);
         
-        delete[] pixels_rgb;
         delete[] pixels_alpha;
         delete[] buffer;
     }
@@ -96,6 +95,11 @@ namespace nit
             const auto* baked_char = static_cast<stbtt_bakedchar*>(font->baked_char_data);
             delete[] baked_char;
             font->baked_char_data = nullptr;
+        }
+
+        if (font->atlas.id != 0)
+        {
+            texture_2d_free(&font->atlas);
         }
     }
 

@@ -55,17 +55,10 @@ namespace nit
     }
     
     template<typename R, typename... Args>
-    R delegate_invoke(Delegate<R(Args...)>& delegate, Args&&... args)
+    R delegate_invoke(Delegate<R(Args...)>& delegate, Args... args)
     {
         NIT_CHECK_MSG(!delegate_empty(delegate), "Trying to invoke empty delegate!");
         return delegate.function_ptr(std::forward<Args>(args)...);
-    }
-
-    template<typename R, typename... Args>
-    R delegate_invoke(Delegate<R(Args...)>& delegate, Args&... args)
-    {
-        NIT_CHECK_MSG(!delegate_empty(delegate), "Trying to invoke empty delegate!");
-        return delegate.function_ptr(args...);
     }
 
     enum class ListenerAction : u8
@@ -141,7 +134,7 @@ namespace nit
     }
 
     template<typename... Args>
-    void event_broadcast(Event<Args...>& event, Args&&... args)
+    void event_broadcast(Event<Args...>& event, Args... args)
     {
         if (event_empty(event))
         {
@@ -154,35 +147,6 @@ namespace nit
         for (Listener<Args...>& listener : event.listeners)
         {
             switch (listener.function_ptr(std::forward<Args>(args)...))
-            {
-            case ListenerAction::StayListening:
-                break;
-            case ListenerAction::StopListening:
-                listeners_to_remove.push_back(listener);
-                break;
-            }
-        }
-
-        for (Listener<Args...>& listener : listeners_to_remove)
-        {
-            event_remove_listener(event, listener);
-        }
-    }
-
-    template<typename... Args>
-    void event_broadcast(Event<Args...>& event)
-    {
-        if (event_empty(event))
-        {
-            return;
-        }
-        
-        Array<Listener<Args...>> listeners_to_remove;
-        listeners_to_remove.reserve(event.listeners.size());
-        
-        for (Listener<Args...>& listener : event.listeners)
-        {
-            switch (listener.function_ptr())
             {
             case ListenerAction::StayListening:
                 break;
