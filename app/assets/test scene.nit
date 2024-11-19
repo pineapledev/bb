@@ -59,6 +59,10 @@ Scene:
         radius: 0.5
         thickness: 0.400000006
         fade: 0.230000004
+      CircleCollider:
+        radius: 1
+        center: [0, 0]
+        physic_material: [test ph material, PhysicMaterial, 17295311971134077511]
     Entity:
       Name:
         data: line
