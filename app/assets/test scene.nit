@@ -42,6 +42,10 @@ Scene:
         body_type: Dynamic
         mass: 1
         gravity_scale: 1
+      BoxCollider2D:
+        size: [1, 1]
+        center: [0, 0]
+        physic_material: ["", "", 0]
     Entity:
       Name:
         data: circle

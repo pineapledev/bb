@@ -15,6 +15,7 @@
 
 #include "audio/audio_clip.h"
 #include "physics/rigidbody_2d.h"
+#include "physics/box_collider_2d.h"
 
 #define NIT_CHECK_ENGINE_CREATED NIT_CHECK_MSG(nit::engine, "Forget to call SetAppInstance!");
 
@@ -92,6 +93,7 @@ namespace nit
         register_circle_component();
         register_line_2d_component();
         register_rigidbody_2d_component();
+        register_box_collider_2d_component();
         
         audio_set_instance(&engine->audio_registry);
         audio_init();
