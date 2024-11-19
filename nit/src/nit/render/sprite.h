@@ -17,10 +17,11 @@ namespace nit
         bool                  flip_y             = false;
         Vector2               tiling_factor      = V2_ONE;
         bool                  keep_aspect        = true;
+        i32                   draw_layer         = 0;
     };
 
     void register_sprite_component();
     
-    void SetSpriteSubTexture2D(Sprite& sprite, const String& sub_texture);
-    void ResetSpriteSubTexture2D(Sprite& sprite);
+    void sprite_set_sub_texture(Sprite& sprite, const String& sub_texture);
+    void sprite_reset_sub_texture(Sprite& sprite);
 }

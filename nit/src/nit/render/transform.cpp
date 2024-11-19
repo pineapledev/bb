@@ -44,9 +44,9 @@ namespace nit
 #ifdef NIT_EDITOR_ENABLED
     void draw_editor(Transform* transform)
     {
-        editor_draw_drag_vector3("position", transform->position);
-        editor_draw_drag_vector3("rotation", transform->rotation);
-        editor_draw_drag_vector3("scale", transform->scale);
+        editor_draw_drag_vector3("Position", transform->position);
+        editor_draw_drag_vector3("Rotation", transform->rotation);
+        editor_draw_drag_vector3("Scale", transform->scale);
     }
 #endif
     

@@ -39,7 +39,7 @@ void spawn_entity()
     //add<Transform>(entity).position = V3_ZERO;
     entity_add<Sprite>(entity).tint = GetRandomColor();
     //get<Sprite>(entity).texture = test_texture;
-    SetSpriteSubTexture2D(entity_get<Sprite>(entity), "cpp");
+    sprite_set_sub_texture(entity_get<Sprite>(entity), "cpp");
     reset_movement(entity_get<Transform>(entity), entity_add<Move>(entity));
 }
 

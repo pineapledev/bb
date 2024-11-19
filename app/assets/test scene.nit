@@ -36,6 +36,7 @@ Scene:
         flip_y: false
         tiling_factor: [1, 1]
         keep_aspect: true
+        draw_layer: 0
     Entity:
       Name:
         data: circle
@@ -84,7 +85,7 @@ Scene:
         rotation: [0, 0, 0]
         scale: [1, 1, 1]
       Sprite:
-        texture: [test_sheet, Texture2D, 12761694976786155438]
+        texture: [test sheet, Texture2D, 12761694976786155438]
         sub_texture: bola
         visible: true
         tint: [1, 1, 1, 1]
@@ -93,15 +94,16 @@ Scene:
         flip_y: false
         tiling_factor: [1, 1]
         keep_aspect: true
+        draw_layer: 0
     Entity:
       Name:
         data: cpp
       Transform:
-        position: [2.14792466, -0.447024733, 2.00006104]
+        position: [1.47728443, 0.019834131, 2.00006104]
         rotation: [0, 0, 0]
         scale: [0.999999762, 1, 1]
       Sprite:
-        texture: [test_sheet, Texture2D, 12761694976786155438]
+        texture: [test sheet, Texture2D, 12761694976786155438]
         sub_texture: cpp
         visible: true
         tint: [1, 1, 1, 1]
@@ -110,3 +112,4 @@ Scene:
         flip_y: false
         tiling_factor: [1, 1]
         keep_aspect: true
+        draw_layer: 0

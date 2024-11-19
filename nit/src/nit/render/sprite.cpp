@@ -9,7 +9,7 @@
 
 namespace nit
 {
-    void SerializeSprite(const Sprite* sprite, YAML::Emitter& emitter)
+    void serialize_sprite(const Sprite* sprite, YAML::Emitter& emitter)
     {                                         
         emitter << YAML::Key << "texture"       << YAML::Value << sprite->texture;
         emitter << YAML::Key << "sub_texture"   << YAML::Value << sprite->sub_texture;
@@ -20,9 +20,10 @@ namespace nit
         emitter << YAML::Key << "flip_y"        << YAML::Value << sprite->flip_y;
         emitter << YAML::Key << "tiling_factor" << YAML::Value << sprite->tiling_factor;
         emitter << YAML::Key << "keep_aspect"   << YAML::Value << sprite->keep_aspect;
+        emitter << YAML::Key << "draw_layer"    << YAML::Value << sprite->draw_layer;
     }
     
-    void DeserializeSprite(Sprite* sprite, const YAML::Node& node)
+    void deserialize_sprite(Sprite* sprite, const YAML::Node& node)
     {
         sprite->texture       = node["texture"]       .as<AssetHandle>();
         sprite->sub_texture   = node["sub_texture"]   .as<String>();
@@ -33,47 +34,46 @@ namespace nit
         sprite->flip_y        = node["flip_y"]        .as<bool>();
         sprite->tiling_factor = node["tiling_factor"] .as<Vector2>();
         sprite->keep_aspect   = node["keep_aspect"]   .as<bool>();
+        sprite->draw_layer    = node["draw_layer"]    .as<i32>();
     }
 
 #ifdef NIT_EDITOR_ENABLED
-    void DrawEditorSprite(Sprite* sprite)
+    void draw_editor_sprite(Sprite* sprite)
     {
-        editor_draw_asset_combo("texture", GetType<Texture2D>(), &sprite->texture);
+        editor_draw_asset_combo("Texture", GetType<Texture2D>(), &sprite->texture);
         
-        editor_draw_input_text("sub_texture", sprite->sub_texture);
+        editor_draw_input_text("Sub Texture", sprite->sub_texture);
 
         if (asset_valid(sprite->texture))
         {
-            SetSpriteSubTexture2D(*sprite, sprite->sub_texture);
+            sprite_set_sub_texture(*sprite, sprite->sub_texture);
         }
         else
         {
             sprite->sub_texture_index = -1;
         }
         
-        editor_draw_bool("visible", sprite->visible);
-        editor_draw_color_palette("tint", sprite->tint);
-        editor_draw_drag_vector2("size", sprite->size);
-        editor_draw_bool("flip_x", sprite->flip_x);
-        editor_draw_bool("flip_y", sprite->flip_y);
-        editor_draw_drag_vector2("tiling_factor", sprite->tiling_factor);
-        editor_draw_bool("keep_aspect", sprite->keep_aspect);
+        editor_draw_bool("Visible", sprite->visible);
+        editor_draw_color_palette("Tint", sprite->tint);
+        editor_draw_drag_vector2("Size", sprite->size);
+        editor_draw_bool("Flip X", sprite->flip_x);
+        editor_draw_bool("Flip Y", sprite->flip_y);
+        editor_draw_drag_vector2("Tiling Factor", sprite->tiling_factor);
+        editor_draw_bool("Keep Aspect", sprite->keep_aspect);
+        editor_draw_drag_i32("Draw Layer", sprite->draw_layer);
     }
 #endif
 
     void register_sprite_component()
     {
-        TypeArgs<Sprite> args;
-        args.fn_serialize   = SerializeSprite;
-        args.fn_deserialize = DeserializeSprite;
-#ifdef NIT_EDITOR_ENABLED
-        args.fn_draw_editor = DrawEditorSprite;
-#endif
-        type_register<Sprite>(args);
-        component_register<Sprite>();
+        component_register<Sprite>({
+            .fn_serialize   = serialize_sprite,
+            .fn_deserialize = deserialize_sprite,
+            NIT_IF_EDITOR_ENABLED(.fn_draw_editor = draw_editor_sprite)
+        });
     }
 
-    void SetSpriteSubTexture2D(Sprite& sprite, const String& sub_texture)
+    void sprite_set_sub_texture(Sprite& sprite, const String& sub_texture)
     {
         sprite.sub_texture = sub_texture;
         
@@ -87,7 +87,7 @@ namespace nit
         sprite.sub_texture_index = index;
     }
 
-    void ResetSpriteSubTexture2D(Sprite& sprite)
+    void sprite_reset_sub_texture(Sprite& sprite)
     {
         sprite.sub_texture = "";
         sprite.sub_texture_index = -1;

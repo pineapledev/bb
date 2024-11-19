@@ -162,6 +162,15 @@ namespace nit
     
     ListenerAction draw()
     {
+
+        // Sprite sorting
+
+        auto& sprite_group = entity_get_group<Sprite, Transform>().entities;
+        Array<Entity> sorted_sprite_group(sprite_group.begin(), sprite_group.end());
+        std::ranges::sort(sorted_sprite_group, [](Entity a, Entity b) ->bool {
+            return entity_get<Sprite>(a).draw_layer < entity_get<Sprite>(b).draw_layer; 
+        });
+        
         clear_screen();
         
         Entity main_camera = get_main_camera();
@@ -193,7 +202,7 @@ namespace nit
         
         begin_scene_2d(camera_proj_view(camera, entity_get<Transform>(main_camera)));
         {
-            for (Entity entity : entity_get_group<Sprite, Transform>().entities)
+            for (Entity entity : sorted_sprite_group)
             {
                 auto& transform = entity_get<Transform>(entity);
                 auto& sprite = entity_get<Sprite>(entity);
