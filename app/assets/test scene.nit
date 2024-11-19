@@ -98,6 +98,8 @@ Scene:
     Entity:
       Name:
         data: cpp
+      UUID:
+        data: 14255733511512113340
       Transform:
         position: [1.47728443, 0.019834131, 2.00006104]
         rotation: [0, 0, 0]

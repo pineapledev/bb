@@ -50,7 +50,7 @@ namespace nit
             {
                 String        sub_texture = sprite->sub_texture;
                 Array<String> sub_textures;
-
+                
                 sub_textures.emplace_back("None");
                 for (u32 i = 0; i < texture->sub_texture_count; ++i) sub_textures.push_back(texture->sub_textures[i].name);
                 editor_draw_combo("Sub Texture", sub_texture, sub_textures);

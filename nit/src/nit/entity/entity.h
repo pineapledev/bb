@@ -18,10 +18,10 @@ namespace nit
         u32                           type_index  = 0;
         Pool                          data_pool;
         
-        Delegate<void(Entity, void*)> fn_add_to_entity;
-        Delegate<void(Entity)>        fn_remove_from_entity;
-        Delegate<bool(Entity)>        fn_is_in_entity;
-        Delegate<void*(Entity)>       fn_get_from_entity;
+        Delegate<void(Entity, void*, bool)> fn_add_to_entity;
+        Delegate<void(Entity)>              fn_remove_from_entity;
+        Delegate<bool(Entity)>              fn_is_in_entity;
+        Delegate<void*(Entity)>             fn_get_from_entity;
     };
     
     struct EntityGroup
@@ -65,10 +65,6 @@ namespace nit
     EntityRegistry* entity_registry_get_instance();
     
     
-
-    template<typename T>
-    T& component_add_silent(Entity entity, const T& data = {});
-    
     template<typename T>
     void entity_remove(Entity entity);
 
@@ -77,6 +73,9 @@ namespace nit
         
     template<typename T>
     bool entity_has(Entity entity);
+
+    template<typename T>
+    T& entity_add(Entity entity, const T& data = {}, bool invoke_add_event = true);
     
     template<typename T>
     void component_register(const TypeArgs<T>& args = {})
@@ -93,16 +92,16 @@ namespace nit
         component_pool.data_pool.type  = GetType<T>();
         component_pool.type_index      = entity_registry->next_component_type_index;
 
-        void (*fn_add_to_entity)(Entity, void*) = [](Entity entity, void* data) {
+        void (*fn_add_to_entity)(Entity, void*, bool) = [](Entity entity, void* data, bool invoke_add_event) {
 
             if (!data)
             {
-                component_add_silent<T>(entity);  
+                entity_add<T>(entity, T{}, invoke_add_event);  
                 return;
             }
-
+            
             T* casted_data = static_cast<T*>(data);
-            component_add_silent(entity, *casted_data);
+            entity_add<T>(entity, *casted_data, invoke_add_event);
         };
 
         void (*fn_remove_from_entity)(Entity) = [](Entity entity){
@@ -149,20 +148,6 @@ namespace nit
     {
         return entity_find_component_pool(GetType<T>());
     }
-    
-    template<typename T>
-    T& component_add_silent(Entity entity, const T& data)
-    {
-        NIT_CHECK_MSG(entity_valid(entity), "Invalid entity!");
-        NIT_CHECK_MSG(entity_registry_get_instance()->signatures[entity].size() <= NIT_MAX_COMPONENT_TYPES + 1, "Components per entity out of range!");
-        ComponentPool* component_pool = entity_find_component_pool<T>();
-        NIT_CHECK_MSG(component_pool, "Invalid component type!");
-        T* element = pool_insert_data_with_id(&component_pool->data_pool, entity, data);
-        EntitySignature& signature = entity_registry_get_instance()->signatures[entity]; 
-        signature.set(entity_component_type_index<T>(), true);
-        entity_signature_changed(entity, signature);
-        return *element;
-    }
 
     EntitySignature entity_build_signature(const Array<u64>& type_hashes);
 
@@ -174,7 +159,7 @@ namespace nit
     }
 
     template <typename T>
-    T& entity_add(Entity entity, const T& data = {})
+    T& entity_add(Entity entity, const T& data, bool invoke_add_event)
     {
         NIT_CHECK_MSG(entity_valid(entity), "Invalid entity!");
         NIT_CHECK_MSG(entity_registry_get_instance()->signatures[entity].size() <= NIT_MAX_COMPONENT_TYPES + 1,
@@ -188,7 +173,11 @@ namespace nit
         ComponentAddedArgs args;
         args.entity = entity;
         args.type = component_pool->data_pool.type;
-        event_broadcast<const ComponentAddedArgs&>(entity_registry_get_instance()->component_added_event, args);
+
+        if (invoke_add_event)
+        {
+            event_broadcast<const ComponentAddedArgs&>(entity_registry_get_instance()->component_added_event, args);
+        }
         return *element;
     }
 

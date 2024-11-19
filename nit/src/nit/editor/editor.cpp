@@ -695,7 +695,7 @@ namespace nit
                         if (ImGui::MenuItem(pool->data_pool.type->name.c_str()))
                         {
                             void* null_data = nullptr;
-                            delegate_invoke(pool->fn_add_to_entity, selected_entity, null_data);
+                            delegate_invoke(pool->fn_add_to_entity, selected_entity, null_data, true);
                         }
                     }
                     ImGui::EndPopup();

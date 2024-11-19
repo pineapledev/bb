@@ -58,7 +58,7 @@ namespace nit
         Pool* data_pool = &pool->data_pool;
         Type* type = data_pool->type;
         u32 data_id; pool_insert_data(data_pool, data_id, data);
-        UUID asset_id = GenerateID();
+        UUID asset_id = uuid_generate();
         asset_get_instance()->id_to_data_id.insert({asset_id, data_id});
         AssetInfo info{type, name, path, asset_id, asset_get_last_version<T>(), false, 0, data_id };
         asset_push_info(info,  pool_index_of(data_pool, data_id), true);

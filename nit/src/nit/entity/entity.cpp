@@ -49,7 +49,7 @@ namespace nit
                 continue;
             }
             void* component_data = delegate_invoke(pool->fn_get_from_entity, entity);
-            delegate_invoke(pool->fn_add_to_entity, cloned_entity, component_data);
+            delegate_invoke(pool->fn_add_to_entity, cloned_entity, component_data, true);
         }
 
         return cloned_entity;
@@ -219,7 +219,7 @@ namespace nit
             if (ComponentPool* pool = entity_find_component_pool(GetType(type_hash)))
             {
                 void* null_data = nullptr;
-                delegate_invoke(pool->fn_add_to_entity, entity, null_data);
+                delegate_invoke(pool->fn_add_to_entity, entity, null_data, true);
             }
         }
 
@@ -269,7 +269,7 @@ namespace nit
             auto* component_pool = entity_find_component_pool(GetType(type_name));
             auto& data_pool = component_pool->data_pool;
             void* null_data = nullptr;
-            delegate_invoke(component_pool->fn_add_to_entity, entity, null_data);
+            delegate_invoke(component_pool->fn_add_to_entity, entity, null_data, false);
             void* component_data = delegate_invoke(component_pool->fn_get_from_entity, entity);
             deserialize(data_pool.type, component_data, component_node);
             ComponentAddedArgs args;

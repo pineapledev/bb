@@ -8,11 +8,11 @@ namespace nit
         explicit operator u64() const { return data; }
     };
 
-    bool IsValid(const UUID& uuid);
+    bool uuid_valid(const UUID& uuid);
     bool operator==(const UUID& a, const UUID& b);
     bool operator!=(const UUID& a, const UUID& b);
     
-    inline UUID GenerateID()
+    inline UUID uuid_generate()
     {
         static std::random_device random_device;
         static std::mt19937_64 random_engine(random_device());
