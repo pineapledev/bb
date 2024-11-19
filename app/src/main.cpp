@@ -47,6 +47,14 @@ void spawn_entity()
 
 void init();
 
+
+
+struct Box
+{
+    Vector3 position;
+    Vector3 scale;
+};
+
 int main(int argc, char** argv)
 {
     engine_init(init);

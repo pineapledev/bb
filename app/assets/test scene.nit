@@ -45,7 +45,7 @@ Scene:
       BoxCollider2D:
         size: [1, 1]
         center: [0, 0]
-        physic_material: ["", "", 0]
+        physic_material: [test ph material, PhysicMaterial, 17295311971134077511]
     Entity:
       Name:
         data: circle

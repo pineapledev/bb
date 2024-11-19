@@ -1,5 +1,6 @@
 ﻿#include "nit_pch.h"
 #include "box_collider_2d.h"
+#include "physic_material.h"
 #include "entity/entity.h"
 
 #ifdef NIT_EDITOR_ENABLED
@@ -25,9 +26,9 @@ namespace nit
 #ifdef NIT_EDITOR_ENABLED
     void draw_editor(BoxCollider2D* collider)
     {
-        editor_draw_drag_vector2("size", collider->size);
-        editor_draw_drag_vector2("center", collider->center);
-        //editor_draw_asset_combo("size", type_get<PhysicMaterial>(), collider->physic_material);
+        editor_draw_drag_vector2("Size", collider->size);
+        editor_draw_drag_vector2("Center", collider->center);
+        editor_draw_asset_combo("Physic Mat", type_get<PhysicMaterial>(), &collider->physic_material);
     }
 #endif
 
