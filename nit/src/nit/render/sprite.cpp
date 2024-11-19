@@ -42,10 +42,23 @@ namespace nit
     {
         editor_draw_asset_combo("Texture", GetType<Texture2D>(), &sprite->texture);
         
-        editor_draw_input_text("Sub Texture", sprite->sub_texture);
-
         if (asset_valid(sprite->texture))
         {
+            Texture2D* texture = asset_get_data<Texture2D>(sprite->texture);
+
+            if (texture->sub_texture_count > 0)
+            {
+                String        sub_texture = sprite->sub_texture;
+                Array<String> sub_textures;
+
+                sub_textures.emplace_back("None");
+                for (u32 i = 0; i < texture->sub_texture_count; ++i) sub_textures.push_back(texture->sub_textures[i].name);
+                editor_draw_combo("Sub Texture", sub_texture, sub_textures);
+                
+                sub_texture = sub_texture == "None" ? "" : sub_texture; 
+                sprite->sub_texture = sub_texture;
+            }
+            
             sprite_set_sub_texture(*sprite, sprite->sub_texture);
         }
         else
