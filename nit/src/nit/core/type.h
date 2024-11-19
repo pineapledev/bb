@@ -127,13 +127,13 @@ namespace nit
     void InitEnumType(EnumType& enum_type);
 
     template <typename T>
-    void RegisterEnumValue(EnumType* enum_type, const String& value_name, T value);
+    void enum_register_value(EnumType* enum_type, const String& value_name, T value);
 
     template <typename T>
-    T GetEnumValueFromString(EnumType* enum_type, const String& value_name);
+    T enum_from_string(EnumType* enum_type, const String& value_name);
 
     template <typename T>
-    String GetStringFromEnumValue(EnumType* enum_type, T value);
+    String enum_to_string(EnumType* enum_type, T value);
     
     void          type_registry_set_instance(TypeRegistry* type_registry_instance);
     TypeRegistry* type_registry_get_instance();
@@ -144,26 +144,26 @@ namespace nit
     void type_register(const TypeArgs<T>& args = {});
 
     template <typename T>
-    void RegisterEnumType();
+    void enum_register();
 
-    bool IsEnumTypeRegistered(u64 type_hash);
-
-    template <typename T>
-    bool IsEnumTypeRegistered();
-
-    EnumType* GetEnumType(u64 type_hash);
+    bool enum_registered(u64 type_hash);
 
     template <typename T>
-    EnumType* GetEnumType();
+    bool enum_registered();
+
+    EnumType* enum_type_get(u64 type_hash);
+
+    template <typename T>
+    EnumType* enum_type_get();
 
     template <typename EType, typename T>
-    void RegisterEnumValue(const String& value_name, T value);
+    void enum_register_value(const String& value_name, T value);
     
     template <typename T>
-    T GetEnumValueFromString(const String& value_name);
+    T enum_from_string(const String& value_name);
     
     template <typename EType, typename T>
-    String GetStringFromEnumValue(T value);
+    String enum_to_string(T value);
     
     bool type_exists(u64 type_hash);
     bool type_exists(const String& name);
@@ -171,12 +171,12 @@ namespace nit
     template <typename T>
     bool type_exists();
     
-    Type* GetType(u64 type_hash);
+    Type* type_get(u64 type_hash);
     
-    Type* GetType(const String& name);
+    Type* type_get(const String& name);
     
     template <typename T>
-    Type* GetType();
+    Type* type_get();
 }
 
 #include "type.inl"

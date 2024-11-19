@@ -9,7 +9,7 @@
 
 namespace nit
 {
-    void serialize_sprite(const Sprite* sprite, YAML::Emitter& emitter)
+    void serialize(const Sprite* sprite, YAML::Emitter& emitter)
     {                                         
         emitter << YAML::Key << "texture"       << YAML::Value << sprite->texture;
         emitter << YAML::Key << "sub_texture"   << YAML::Value << sprite->sub_texture;
@@ -23,7 +23,7 @@ namespace nit
         emitter << YAML::Key << "draw_layer"    << YAML::Value << sprite->draw_layer;
     }
     
-    void deserialize_sprite(Sprite* sprite, const YAML::Node& node)
+    void deserialize(Sprite* sprite, const YAML::Node& node)
     {
         sprite->texture       = node["texture"]       .as<AssetHandle>();
         sprite->sub_texture   = node["sub_texture"]   .as<String>();
@@ -38,9 +38,9 @@ namespace nit
     }
 
 #ifdef NIT_EDITOR_ENABLED
-    void draw_editor_sprite(Sprite* sprite)
+    void draw_editor(Sprite* sprite)
     {
-        editor_draw_asset_combo("Texture", GetType<Texture2D>(), &sprite->texture);
+        editor_draw_asset_combo("Texture", type_get<Texture2D>(), &sprite->texture);
         
         if (asset_valid(sprite->texture))
         {
@@ -80,9 +80,9 @@ namespace nit
     void register_sprite_component()
     {
         component_register<Sprite>({
-            .fn_serialize   = serialize_sprite,
-            .fn_deserialize = deserialize_sprite,
-            NIT_IF_EDITOR_ENABLED(.fn_draw_editor = draw_editor_sprite)
+            .fn_serialize   = serialize,
+            .fn_deserialize = deserialize,
+            NIT_IF_EDITOR_ENABLED(.fn_draw_editor = draw_editor)
         });
     }
 

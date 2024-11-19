@@ -32,7 +32,7 @@ namespace nit
 #ifdef NIT_EDITOR_ENABLED
     void DrawEditorText(Text* text)
     {
-        editor_draw_asset_combo("font", GetType<Font>(), &text->font);
+        editor_draw_asset_combo("font", type_get<Font>(), &text->font);
         editor_draw_input_text("text", text->text);
         editor_draw_bool("visible", text->visible);
         editor_draw_color_palette("tint", text->tint);

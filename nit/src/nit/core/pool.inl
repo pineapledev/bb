@@ -16,7 +16,7 @@ namespace nit
             type_register<T>();
         }
         
-        pool->type = GetType<T>();
+        pool->type = type_get<T>();
         pool->elements  = new T[max_element_count];
         
         sparse_load(&pool->sparse_set, max_element_count);
@@ -46,7 +46,7 @@ namespace nit
             pool_resize(pool, pool->sparse_set.max * 2);
         }
         
-        NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");
+        NIT_CHECK_MSG(pool->type == type_get<T>(), "Type mismatch!");
         return SetArrayData(pool->elements, sparse_insert(&pool->sparse_set, element_id), data);
     }
 
@@ -73,7 +73,7 @@ namespace nit
             return nullptr;
         }
 
-        NIT_CHECK_MSG(pool->type == GetType<T>(), "Type mismatch!");
+        NIT_CHECK_MSG(pool->type == type_get<T>(), "Type mismatch!");
 
         if (!pool_is_valid(pool, element_id))
         {

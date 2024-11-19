@@ -38,8 +38,8 @@ namespace nit
     {
         using namespace ImGui;
         
-        EnumType* type = GetEnumType<T>();
-        String selected = GetStringFromEnumValue<T>(enum_data);
+        EnumType* type = enum_type_get<T>();
+        String selected = enum_to_string<T>(enum_data);
 
         editor_begin_property(label);
 
@@ -61,7 +61,7 @@ namespace nit
             EndCombo();
         }
 
-        enum_data = GetEnumValueFromString<T>(selected);
+        enum_data = enum_from_string<T>(selected);
         
         editor_end_property();
     }

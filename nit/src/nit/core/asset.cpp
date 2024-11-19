@@ -180,7 +180,7 @@ namespace nit
         if (YAML::Node asset_info_node = node["AssetInfo"])
         {
             AssetInfo asset_info;
-            asset_info.type    = GetType(asset_info_node["type"].as<String>());
+            asset_info.type    = type_get(asset_info_node["type"].as<String>());
             asset_info.name    = asset_info_node["name"].as<String>();
             asset_info.path    = asset_info_node["path"].as<String>();
             asset_info.id      = { static_cast<UUID>(asset_info_node["id"].as<nit::u64>()) };
@@ -315,7 +315,7 @@ namespace nit
 
     u32 asset_get_last_version(const String& type_name)
     {
-        return asset_get_last_version(GetType(type_name));
+        return asset_get_last_version(type_get(type_name));
     }
 
     void asset_find_by_name(const String& name, Array<AssetHandle>& assets)

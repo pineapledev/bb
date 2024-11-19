@@ -9,7 +9,7 @@ namespace nit
 {
      void SerializeCamera(const Camera* camera, YAML::Emitter& emitter)
     {
-        emitter << YAML::Key << "projection" << YAML::Value << GetStringFromEnumValue<CameraProjection>(camera->projection);
+        emitter << YAML::Key << "projection" << YAML::Value << enum_to_string<CameraProjection>(camera->projection);
         emitter << YAML::Key << "fov"        << YAML::Value << camera->fov;
         emitter << YAML::Key << "near_clip"  << YAML::Value << camera->near_clip;
         emitter << YAML::Key << "far_clip"   << YAML::Value << camera->far_clip;
@@ -18,7 +18,7 @@ namespace nit
 
     void DeserializeCamera(Camera* camera, const YAML::Node& node)
     {
-        camera->projection = GetEnumValueFromString<CameraProjection>(node["projection"].as<String>());
+        camera->projection = enum_from_string<CameraProjection>(node["projection"].as<String>());
         camera->fov        = node["fov"]        .as<f32>();
         camera->near_clip  = node["near_clip"]  .as<f32>();
         camera->far_clip   = node["far_clip"]   .as<f32>();
@@ -39,9 +39,9 @@ namespace nit
     
     void register_camera_component()
     {
-        RegisterEnumType<CameraProjection>();
-        RegisterEnumValue<CameraProjection>("Orthographic", CameraProjection::Orthographic);
-        RegisterEnumValue<CameraProjection>("Perspective", CameraProjection::Perspective);
+        enum_register<CameraProjection>();
+        enum_register_value<CameraProjection>("Orthographic", CameraProjection::Orthographic);
+        enum_register_value<CameraProjection>("Perspective", CameraProjection::Perspective);
         
         TypeArgs<Camera> args;
         args.fn_serialize   = SerializeCamera;

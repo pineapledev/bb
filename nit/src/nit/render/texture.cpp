@@ -72,21 +72,21 @@ namespace nit
 
     void register_texture_2d_asset()
     {
-        RegisterEnumType<MinFilter>();
-        RegisterEnumValue<MinFilter>("Linear", MinFilter::Linear);
-        RegisterEnumValue<MinFilter>("Nearest",MinFilter::Nearest);
+        enum_register<MinFilter>();
+        enum_register_value<MinFilter>("Linear", MinFilter::Linear);
+        enum_register_value<MinFilter>("Nearest",MinFilter::Nearest);
         
-        RegisterEnumType<MagFilter>();
-        RegisterEnumValue<MagFilter>("Linear", MagFilter::Linear);
-        RegisterEnumValue<MagFilter>("Nearest",MagFilter::Nearest);
+        enum_register<MagFilter>();
+        enum_register_value<MagFilter>("Linear", MagFilter::Linear);
+        enum_register_value<MagFilter>("Nearest",MagFilter::Nearest);
 
-        RegisterEnumType<WrapMode>();
-        RegisterEnumValue<WrapMode>("Repeat",     WrapMode::Repeat);
-        RegisterEnumValue<WrapMode>("ClampToEdge",WrapMode::ClampToEdge);
+        enum_register<WrapMode>();
+        enum_register_value<WrapMode>("Repeat",     WrapMode::Repeat);
+        enum_register_value<WrapMode>("ClampToEdge",WrapMode::ClampToEdge);
         
-        RegisterEnumType<TextureCoordinate>();
-        RegisterEnumValue<TextureCoordinate>("U",TextureCoordinate::U);
-        RegisterEnumValue<TextureCoordinate>("V",TextureCoordinate::V);
+        enum_register<TextureCoordinate>();
+        enum_register_value<TextureCoordinate>("U",TextureCoordinate::U);
+        enum_register_value<TextureCoordinate>("V",TextureCoordinate::V);
         
         asset_register_type<Texture2D>({
               texture_2d_load
@@ -118,10 +118,10 @@ namespace nit
         using namespace YAML;
         
         emitter << Key << "image_path"        << Value << texture->image_path;
-        emitter << Key << "mag_filter"        << Value << GetStringFromEnumValue<MagFilter> (texture->mag_filter);
-        emitter << Key << "min_filter"        << Value << GetStringFromEnumValue<MinFilter> (texture->min_filter);
-        emitter << Key << "wrap_mode_u"       << Value << GetStringFromEnumValue<WrapMode>  (texture->wrap_mode_u);
-        emitter << Key << "wrap_mode_u"       << Value << GetStringFromEnumValue<WrapMode>  (texture->wrap_mode_v);
+        emitter << Key << "mag_filter"        << Value << enum_to_string<MagFilter> (texture->mag_filter);
+        emitter << Key << "min_filter"        << Value << enum_to_string<MinFilter> (texture->min_filter);
+        emitter << Key << "wrap_mode_u"       << Value << enum_to_string<WrapMode>  (texture->wrap_mode_u);
+        emitter << Key << "wrap_mode_u"       << Value << enum_to_string<WrapMode>  (texture->wrap_mode_v);
         emitter << Key << "sub_texture_count" << Value << texture->sub_texture_count;
         
         if (texture->sub_textures)
@@ -141,10 +141,10 @@ namespace nit
     void texture_2d_deserialize(Texture2D* texture, const YAML::Node& node)
     {
         texture->image_path        = node["image_path"]                                     .as<String>();
-        texture->mag_filter        = GetEnumValueFromString<MagFilter> (node["mag_filter"]  .as<String>());
-        texture->min_filter        = GetEnumValueFromString<MinFilter> (node["min_filter"]  .as<String>());
-        texture->wrap_mode_u       = GetEnumValueFromString<WrapMode>  (node["wrap_mode_u"] .as<String>());
-        texture->wrap_mode_u       = GetEnumValueFromString<WrapMode>  (node["wrap_mode_u"] .as<String>());
+        texture->mag_filter        = enum_from_string<MagFilter> (node["mag_filter"]  .as<String>());
+        texture->min_filter        = enum_from_string<MinFilter> (node["min_filter"]  .as<String>());
+        texture->wrap_mode_u       = enum_from_string<WrapMode>  (node["wrap_mode_u"] .as<String>());
+        texture->wrap_mode_u       = enum_from_string<WrapMode>  (node["wrap_mode_u"] .as<String>());
         texture->sub_texture_count = node["sub_texture_count"]                              .as<u32>();
         
         const YAML::Node& sub_textures_node = node["sub_textures"];

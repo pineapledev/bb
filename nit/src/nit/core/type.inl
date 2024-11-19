@@ -169,7 +169,7 @@ namespace nit
     }
 
     template <typename T>
-    void RegisterEnumValue(EnumType* enum_type, const String& value_name, T value)
+    void enum_register_value(EnumType* enum_type, const String& value_name, T value)
     {
         NIT_CHECK(enum_type);
         u8 index = (u8) value;
@@ -178,14 +178,14 @@ namespace nit
     }
 
     template <typename T>
-    T GetEnumValueFromString(EnumType* enum_type, const String& value_name)
+    T enum_from_string(EnumType* enum_type, const String& value_name)
     {
         NIT_CHECK(enum_type && enum_type->name_to_index.count(value_name) != 0);
         return (T) enum_type->name_to_index.at(value_name);
     }
 
     template <typename T>
-    String GetStringFromEnumValue(EnumType* enum_type, T value)
+    String enum_to_string(EnumType* enum_type, T value)
     {
         u8 index = (u8) value;
         NIT_CHECK(enum_type && enum_type->index_to_name.count(index) != 0);
@@ -212,7 +212,7 @@ namespace nit
     }
 
     template <typename T>
-    void RegisterEnumType()
+    void enum_register()
     {
         TypeRegistry* type_registry = type_registry_get_instance();
         if (type_registry->enum_count >= type_registry->max_enum_types)
@@ -229,36 +229,36 @@ namespace nit
     }
 
     template <typename T>
-    bool IsEnumTypeRegistered()
+    bool enum_registered()
     {
-        return IsEnumTypeRegistered(get_type_hash<T>());
+        return enum_registered(get_type_hash<T>());
     }
 
     template <typename T>
-    EnumType* GetEnumType()
+    EnumType* enum_type_get()
     {
-        return GetEnumType(get_type_hash<T>());
+        return enum_type_get(get_type_hash<T>());
     }
 
     template <typename EType, typename T>
-    void RegisterEnumValue(const String& value_name, T value)
+    void enum_register_value(const String& value_name, T value)
     {
-        EnumType* enum_type = GetEnumType<EType>();
+        EnumType* enum_type = enum_type_get<EType>();
         u8 index = (u8) value;
         enum_type->name_to_index.insert({ value_name, index });
         enum_type->index_to_name.insert({ index, value_name });
     }
     
     template <typename T>
-    T GetEnumValueFromString(const String& value_name)
+    T enum_from_string(const String& value_name)
     {
-        return GetEnumValueFromString<T>(GetEnumType<T>(), value_name);
+        return enum_from_string<T>(enum_type_get<T>(), value_name);
     }
     
     template <typename EType, typename T>
-    String GetStringFromEnumValue(T value)
+    String enum_to_string(T value)
     {
-        return GetStringFromEnumValue(GetEnumType<EType>(), value);
+        return enum_to_string(enum_type_get<EType>(), value);
     }
 
     template <typename T>
@@ -268,8 +268,8 @@ namespace nit
     }
 
     template <typename T>
-    Type* GetType()
+    Type* type_get()
     {
-        return GetType(get_type_hash<T>());
+        return type_get(get_type_hash<T>());
     }
 }

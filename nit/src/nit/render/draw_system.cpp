@@ -86,11 +86,11 @@ namespace nit
     
     static ListenerAction on_asset_destroyed(const AssetDestroyedArgs& args)
     {
-        if (args.asset_handle.type == GetType<Texture2D>())
+        if (args.asset_handle.type == type_get<Texture2D>())
         {
             
         }
-        else if (args.asset_handle.type == GetType<Font>())
+        else if (args.asset_handle.type == type_get<Font>())
         {
             
         }
@@ -100,7 +100,7 @@ namespace nit
 
     static ListenerAction on_component_added(const ComponentAddedArgs& args)
     {
-        if (args.type == GetType<Sprite>())
+        if (args.type == type_get<Sprite>())
         {
             auto& sprite = entity_get<Sprite>(args.entity); 
             auto& asset = sprite.texture;
@@ -123,7 +123,7 @@ namespace nit
                 sprite.sub_texture_index = -1;
             }
         }
-        else if (args.type == GetType<Text>())
+        else if (args.type == type_get<Text>())
         {
             auto& asset = entity_get<Text>(args.entity).font;
             asset_retarget_handle(asset);
@@ -137,7 +137,7 @@ namespace nit
 
     static ListenerAction on_component_removed(const ComponentRemovedArgs& args)
     {
-        if (args.type == GetType<Sprite>())
+        if (args.type == type_get<Sprite>())
         {
             auto& sprite = entity_get<Sprite>(args.entity); 
             auto& asset = sprite.texture;
@@ -148,7 +148,7 @@ namespace nit
                 asset_release(asset);
             }
         }
-        else if (args.type == GetType<Text>())
+        else if (args.type == type_get<Text>())
         {
             auto& asset = entity_get<Text>(args.entity).font;
             asset_retarget_handle(asset);

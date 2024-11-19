@@ -37,6 +37,11 @@ Scene:
         tiling_factor: [1, 1]
         keep_aspect: true
         draw_layer: 0
+      Rigidbody2D:
+        enabled: true
+        body_type: Dynamic
+        mass: 1
+        gravity_scale: 1
     Entity:
       Name:
         data: circle

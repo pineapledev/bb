@@ -13,7 +13,7 @@ namespace nit
             type_register<T>();
         }
         
-        Type* type = GetType<T>();
+        Type* type = type_get<T>();
         
         set_invoke_load_function  (type,  args.fn_load);
         set_invoke_free_function  (type,  args.fn_free);
@@ -29,32 +29,32 @@ namespace nit
     template<typename T>
     AssetPool* asset_get_pool()
     {
-        return asset_get_pool(GetType<T>());
+        return asset_get_pool(type_get<T>());
     }
     
     template<typename T>
     bool asset_type_registered()
     {
-        return asset_type_registered(GetType<T>());
+        return asset_type_registered(type_get<T>());
     }
     
     template<typename T>
     u32 asset_get_last_version()
     {
-        return asset_get_last_version(GetType<T>());
+        return asset_get_last_version(type_get<T>());
     }
     
     template<typename T>
     T* asset_get_data(AssetHandle& asset)
     {
-        AssetPool* pool = asset_get_pool_safe(GetType<T>());
+        AssetPool* pool = asset_get_pool_safe(type_get<T>());
         return pool_get_data<T>(&pool->data_pool, asset.data_id);
     }
     
     template<typename T>
     AssetHandle asset_create(const String& name, const String& path, const T& data)
     {
-        AssetPool* pool = asset_get_pool_safe(GetType<T>());
+        AssetPool* pool = asset_get_pool_safe(type_get<T>());
         Pool* data_pool = &pool->data_pool;
         Type* type = data_pool->type;
         u32 data_id; pool_insert_data(data_pool, data_id, data);
@@ -87,7 +87,7 @@ struct YAML::convert<nit::AssetHandle>
             return false;
 
         h.name    = node[0].as<nit::String>();
-        h.type    = nit::GetType(node[1].as<nit::String>());
+        h.type    = nit::type_get(node[1].as<nit::String>());
         h.id      = (nit::UUID) node[2].as<nit::u64>();
         return true;
     }

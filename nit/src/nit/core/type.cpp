@@ -113,13 +113,13 @@ namespace nit
     }
 #endif
 
-    bool IsEnumTypeRegistered(u64 type_hash)
+    bool enum_registered(u64 type_hash)
     {
         NIT_CHECK(type_registry);
         return type_registry->hash_to_enum_index.count(type_hash) != 0;
     }
 
-    EnumType* GetEnumType(u64 type_hash)
+    EnumType* enum_type_get(u64 type_hash)
     {
         NIT_CHECK(type_registry && type_registry->enum_types);
         return &type_registry->enum_types[type_registry->hash_to_enum_index.at(type_hash)];
@@ -137,13 +137,13 @@ namespace nit
         return type_registry->name_to_index.count(name) != 0;
     }
 
-    Type* GetType(u64 type_hash)
+    Type* type_get(u64 type_hash)
     {
         NIT_CHECK(type_registry && type_registry->types);
         return &type_registry->types[type_registry->hash_to_index.at(type_hash)];
     }
 
-    Type* GetType(const String& name)
+    Type* type_get(const String& name)
     {
         NIT_CHECK(type_registry && type_registry->types);
         if (type_registry->name_to_index.count(name) == 0)

@@ -89,7 +89,7 @@ namespace nit
         }
         
         ComponentPool& component_pool  = entity_registry->component_pool[entity_registry->next_component_type_index - 1];
-        component_pool.data_pool.type  = GetType<T>();
+        component_pool.data_pool.type  = type_get<T>();
         component_pool.type_index      = entity_registry->next_component_type_index;
 
         void (*fn_add_to_entity)(Entity, void*, bool) = [](Entity entity, void* data, bool invoke_add_event) {
@@ -146,7 +146,7 @@ namespace nit
     template<typename T>
     ComponentPool* entity_find_component_pool()
     {
-        return entity_find_component_pool(GetType<T>());
+        return entity_find_component_pool(type_get<T>());
     }
 
     EntitySignature entity_build_signature(const Array<u64>& type_hashes);

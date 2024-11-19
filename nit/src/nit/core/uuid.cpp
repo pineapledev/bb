@@ -42,7 +42,7 @@ namespace nit
 
     ListenerAction on_component_added(const ComponentAddedArgs& args)
     {
-        if (args.type != GetType<UUID>())
+        if (args.type != type_get<UUID>())
         {
             return ListenerAction::StayListening;
         }

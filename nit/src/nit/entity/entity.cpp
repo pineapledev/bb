@@ -186,7 +186,7 @@ namespace nit
         group_signature.set(0, true);
         for (u64 type_hash : type_hashes)
         {
-            if (ComponentPool* pool = entity_find_component_pool(GetType(type_hash)))
+            if (ComponentPool* pool = entity_find_component_pool(type_get(type_hash)))
             {
                 group_signature.set(pool->type_index, true);
             }
@@ -216,7 +216,7 @@ namespace nit
         
         for (u64 type_hash : type_hashes)
         {
-            if (ComponentPool* pool = entity_find_component_pool(GetType(type_hash)))
+            if (ComponentPool* pool = entity_find_component_pool(type_get(type_hash)))
             {
                 void* null_data = nullptr;
                 delegate_invoke(pool->fn_add_to_entity, entity, null_data, true);
@@ -266,7 +266,7 @@ namespace nit
         {
             const YAML::Node& component_node = entity_node_child.second;
             String type_name = entity_node_child.first.as<String>();
-            auto* component_pool = entity_find_component_pool(GetType(type_name));
+            auto* component_pool = entity_find_component_pool(type_get(type_name));
             auto& data_pool = component_pool->data_pool;
             void* null_data = nullptr;
             delegate_invoke(component_pool->fn_add_to_entity, entity, null_data, false);
