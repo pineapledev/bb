@@ -6,6 +6,7 @@
 #include "nit/entity/entity.h"
 #include "nit/render/render_objects.h"
 #include "nit/audio/audio.h"
+#include "nit/physics/physics_2d.h"
 
 #ifdef NIT_EDITOR_ENABLED
 #include "nit/editor/editor.h"
@@ -29,7 +30,7 @@ namespace nit
 
     using EngineEvent    = Event<>;
     using EngineListener = Listener<>;
-
+    
     struct Engine
     {
         EngineEvent    events[(u8) Stage::Count];
@@ -41,6 +42,7 @@ namespace nit
         AssetRegistry  asset_registry;
         EntityRegistry entity_registry;
         AudioRegistry  audio_registry;
+        Physics2D      physics_2d;
         
         NIT_IF_EDITOR_ENABLED(ImGuiRenderer  im_gui_renderer);
         NIT_IF_EDITOR_ENABLED(Editor editor);

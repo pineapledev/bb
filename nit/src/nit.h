@@ -22,6 +22,7 @@
 #include "nit/audio/audio_clip.h"
 #include "nit/audio/audio.h"
 
+#include "nit/physics/physics_2d.h"
 #include "nit/physics/rigidbody_2d.h"
 #include "nit/physics/box_collider_2d.h"
 #include "nit/physics/physic_material.h"

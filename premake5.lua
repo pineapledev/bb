@@ -44,7 +44,8 @@ project "nit"
         "3rd/openal/src/common",
         "3rd/yaml/include",
         --"3rd/assimp/include",
-        "3rd/imgui/src"
+        "3rd/imgui/src",
+        "3rd/box2d/include"
     }
     
     links
@@ -54,7 +55,8 @@ project "nit"
         "openal",
         "yaml",
         --"assimp",
-        "imgui"
+        "imgui",
+        "box2d"
     }
 
     files { "nit/src/**.h", "nit/src/**.cpp", "nit/src/**.inl" }
@@ -420,6 +422,42 @@ project "yaml"
 
     filter "system:windows"
         systemversion "latest"
+
+project "box2d"
+    kind "StaticLib"
+    language "C++"
+    cppdialect "C++20"
+    staticruntime "off"
+    targetdir (binariesdir)
+    objdir (intermediatesdir)
+    
+    files
+    {
+        "3rd/box2d/src/**.h",
+        "3rd/box2d/src/**.cpp",
+        "3rd/box2d/include/**.h"
+    }
+    
+    includedirs
+    {
+        "3rd/box2d/include",
+        "3rd/box2d/src"
+    }
+    
+    filter "configurations:Debug"
+        symbols "On"
+        runtime "Debug"
+        defines "NIT_DEBUG"
+
+    filter "configurations:Release"
+        optimize "On"
+        runtime "Release"
+        defines "NIT_RELEASE"
+
+    filter "configurations:Dist"
+		runtime "Release"
+		optimize "On"
+        defines "NIT_DIST"
 
 -- project "assimp"
 
