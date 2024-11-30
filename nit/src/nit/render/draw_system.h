@@ -4,5 +4,5 @@
 namespace nit
 {
     void   register_draw_system();
-    Entity get_main_camera();
+    EntityID get_main_camera();
 }

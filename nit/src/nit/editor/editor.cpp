@@ -341,7 +341,7 @@ namespace nit
                         ->viewport_size.y)
                     {
                         i32 entity_id = read_frame_buffer_pixel(&editor->frame_buffer, 1, mouse_x, mouse_y);
-                        Entity selected = (Entity) entity_id;
+                        EntityID selected = (EntityID) entity_id;
                         bool valid_entity = entity_valid(selected);
                         editor->selection = valid_entity ? Editor::Selection::Entity : Editor::Selection::None;
                         editor->selected_entity = valid_entity ? selected : U32_MAX;
@@ -352,10 +352,10 @@ namespace nit
 
                 if (!camera_group.entities.empty())
                 {
-                    Entity camera_entity = get_main_camera();
+                    EntityID camera_entity = get_main_camera();
 
                     // Gizmo stuff
-                    Entity selected_entity = editor->selected_entity;
+                    EntityID selected_entity = editor->selected_entity;
                     
                     if (entity_valid(selected_entity) && editor->selection == Editor::Selection::Entity && entity_valid(camera_entity) && entity_has<Transform>(selected_entity))
                     {
@@ -493,7 +493,7 @@ namespace nit
                     {
                         if (ImGui::MenuItem("Empty entity"))
                         {
-                            Entity entity = entity_create();
+                            EntityID entity = entity_create();
                             scene->entities.push_back(entity);
                         }
 
@@ -501,7 +501,7 @@ namespace nit
                         {
                             if (ImGui::MenuItem(name.c_str()))
                             {
-                                Entity entity = entity_create_from_preset(name);
+                                EntityID entity = entity_create_from_preset(name);
                                 if (entity_has<Name>(entity))
                                 {
                                     auto& created_entity_name = entity_get<Name>(entity);
@@ -543,9 +543,9 @@ namespace nit
                 
                 for (u32 j = 0; j < num_of_entities; ++j)
                 {
-                    Entity entity = scene->entities[j];
+                    EntityID entity = scene->entities[j];
 
-                    Entity selected_entity = editor->selected_entity;
+                    EntityID selected_entity = editor->selected_entity;
 
                     String name = std::to_string(entity);
 
@@ -620,7 +620,7 @@ namespace nit
             
             if (editor->selection == Editor::Selection::Entity)
             {
-                Entity selected_entity = editor->selected_entity;
+                EntityID selected_entity = editor->selected_entity;
 
                 for (u32 i = 0; i < engine_get_instance()->entity_registry.next_component_type_index - 1; ++i)
                 {

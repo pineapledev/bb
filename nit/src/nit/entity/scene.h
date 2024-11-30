@@ -6,7 +6,7 @@ namespace nit
     struct Scene
     {
         String cached_scene;
-        Array<Entity> entities;
+        Array<EntityID> entities;
     };
     
     void register_scene_asset();

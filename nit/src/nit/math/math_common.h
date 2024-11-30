@@ -5,8 +5,8 @@ namespace nit
     inline constexpr f32 DEGREES_TO_RADIANS_FACTOR = 0.0174533f;
     inline constexpr f32 RADIANS_TO_DEGREES_FACTOR = 57.2958f;
 
-    inline f32 ToRadians(f32 degrees) { return degrees * DEGREES_TO_RADIANS_FACTOR; }
-    inline f32 ToDegrees(f32 radians) { return radians * RADIANS_TO_DEGREES_FACTOR; }
+    inline f32 to_radians(f32 degrees) { return degrees * DEGREES_TO_RADIANS_FACTOR; }
+    inline f32 to_degrees(f32 radians) { return radians * RADIANS_TO_DEGREES_FACTOR; }
     
     template<typename T>
     T Clamp(const T& value, const T& min, const T& max)

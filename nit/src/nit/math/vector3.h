@@ -41,9 +41,9 @@ namespace nit
 
     Vector3 LookRotation(const Vector3& rotation, const Vector3& dir);
     
-    inline Vector3 ToDegrees(const Vector3& radians) { return radians * RADIANS_TO_DEGREES_FACTOR; }
+    inline Vector3 to_degrees(const Vector3& radians) { return radians * RADIANS_TO_DEGREES_FACTOR; }
     
-    inline Vector3 ToRadians(const Vector3& degrees) { return degrees * DEGREES_TO_RADIANS_FACTOR; }
+    inline Vector3 to_radians(const Vector3& degrees) { return degrees * DEGREES_TO_RADIANS_FACTOR; }
 
     f32 Lenght(const Vector3& val);
     

@@ -78,7 +78,7 @@ namespace nit
     Matrix4 CreateTransform(const Vector3& position, const Vector3& rotation /*= V3_ZERO*/, const Vector3& scale /*= V3_ONE*/)
     {
         const Matrix4 identity;
-        Matrix4 rotation_matrix = (rotation != V3_ZERO) ? Rotate(identity, ToRadians(rotation)) : identity;
+        Matrix4 rotation_matrix = (rotation != V3_ZERO) ? Rotate(identity, to_radians(rotation)) : identity;
         Matrix4 translation = Translate(rotation_matrix, position);
         Matrix4 scale_matrix = Scale(translation, scale);
         return scale_matrix;
@@ -279,7 +279,7 @@ namespace nit
     {
         NIT_CHECK(abs(aspect - std::numeric_limits<f32>::epsilon()) > static_cast<f32>(0));
 
-        f32 const tan_half_fov = tan(ToRadians(fov) / static_cast<f32>(2));
+        f32 const tan_half_fov = tan(to_radians(fov) / static_cast<f32>(2));
 
         Matrix4 result;
         SetZero(result);
@@ -336,7 +336,7 @@ namespace nit
             rotation.z = 0.0f;
         }
 
-        rotation = ToDegrees(rotation);
+        rotation = to_degrees(rotation);
         return true;
     }
 

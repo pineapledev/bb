@@ -77,20 +77,8 @@ namespace nit
         type_registry_set_instance(&engine->type_registry);
         type_registry_init();
 
-        render_objects_set_instance(&engine->render_objects);
-        render_objects_init();
-        
-        renderer_2d_set_instance(&engine->renderer_2d);
-        renderer_2d_init();
-        
         entity_registry_set_instance(&engine->entity_registry);
         entity_registry_init();
-
-        audio_set_instance(&engine->audio_registry);
-        audio_init();
-
-        physics_2d_set_instance(&engine->physics_2d);
-        physics_2d_init();
         
         register_name_component();
         register_uuid_component();
@@ -103,6 +91,18 @@ namespace nit
         register_rigidbody_2d_component();
         register_box_collider_2d_component();
         register_circle_collider_component();
+
+        render_objects_set_instance(&engine->render_objects);
+        render_objects_init();
+        
+        renderer_2d_set_instance(&engine->renderer_2d);
+        renderer_2d_init();
+
+        audio_set_instance(&engine->audio_registry);
+        audio_init();
+
+        //physics_2d_set_instance(&engine->physics_2d);
+        //physics_2d_init();
 
         NIT_IF_EDITOR_ENABLED(register_editor());
         

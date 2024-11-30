@@ -36,8 +36,8 @@ namespace nit
         };
         
         bool        enabled              = true;
-        Entity      editor_camera_entity = NULL_ENTITY;
-        Entity      selected_entity      = NULL_ENTITY;
+        EntityID      editor_camera_entity = NULL_ENTITY;
+        EntityID      selected_entity      = NULL_ENTITY;
         AssetHandle selected_asset       = {};
         Selection   selection            = Selection::None;
         bool        show_viewport        = true;

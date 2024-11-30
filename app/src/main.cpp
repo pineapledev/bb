@@ -33,7 +33,7 @@ void reset_movement(Transform& transform, Move& move)
 
 void spawn_entity()
 {
-    Entity entity = entity_create();
+    EntityID entity = entity_create();
     Vector3 position = ToVector3(RandomPointInSquare(RECT_LEFT.x, RECT_RIGHT.y, RECT_RIGHT.x, RECT_LEFT.y)); 
     entity_add<Transform>(entity).position = position;
     //add<Transform>(entity).position = V3_ZERO;
@@ -93,13 +93,15 @@ ListenerAction start()
 
 ListenerAction update()
 {
-    spawn_entity();
-    
-    for (Entity entity : entity_get_group<Transform, Sprite, Move>().entities)
+    //spawn_entity();
+
+    f32 speed = 3.f;
+
+    for (EntityID entity : entity_get_group<Transform, Sprite, Move>().entities)
     {
         auto& transform = entity_get<Transform>(entity);
         auto& move      = entity_get<Move>(entity);
-
+        
         if (Distance(ToVector2(transform.position), move.destination) < 0.1f)
         {
             reset_movement(transform, move);

@@ -26,7 +26,7 @@ namespace nit
     static ListenerAction on_component_added(const ComponentAddedArgs& args);
     static ListenerAction on_component_removed(const ComponentRemovedArgs& args);
 
-    Entity get_main_camera()
+    EntityID get_main_camera()
     {
         auto& camera_group = entity_get_group<Camera, Transform>();
         
@@ -39,7 +39,7 @@ namespace nit
 
         if (!engine_get_instance()->editor.enabled)
         {
-            for (Entity entity : camera_group.entities)
+            for (EntityID entity : camera_group.entities)
             {
                 if (!entity_has<EditorCameraController>(entity))
                 {
@@ -166,14 +166,14 @@ namespace nit
         // Sprite sorting
 
         auto& sprite_group = entity_get_group<Sprite, Transform>().entities;
-        Array<Entity> sorted_sprite_group(sprite_group.begin(), sprite_group.end());
-        std::ranges::sort(sorted_sprite_group, [](Entity a, Entity b) ->bool {
+        Array<EntityID> sorted_sprite_group(sprite_group.begin(), sprite_group.end());
+        std::ranges::sort(sorted_sprite_group, [](EntityID a, EntityID b) ->bool {
             return entity_get<Sprite>(a).draw_layer < entity_get<Sprite>(b).draw_layer; 
         });
         
         clear_screen();
         
-        Entity main_camera = get_main_camera();
+        EntityID main_camera = get_main_camera();
 
         Camera& camera = entity_get<Camera>(main_camera);
 
@@ -202,7 +202,7 @@ namespace nit
         
         begin_scene_2d(camera_proj_view(camera, entity_get<Transform>(main_camera)));
         {
-            for (Entity entity : sorted_sprite_group)
+            for (EntityID entity : sorted_sprite_group)
             {
                 auto& transform = entity_get<Transform>(entity);
                 auto& sprite = entity_get<Sprite>(entity);
@@ -273,7 +273,7 @@ namespace nit
                 draw_quad(texture_data, vertex_positions, vertex_uvs, vertex_colors, (i32) entity);
             }
 
-            for (Entity entity : entity_get_group<Line2D, Transform>().entities)
+            for (EntityID entity : entity_get_group<Line2D, Transform>().entities)
             {
                 auto& transform = entity_get<Transform>(entity);
                 auto& line = entity_get<Line2D>(entity);
@@ -290,7 +290,7 @@ namespace nit
             }
 
             
-            for (Entity entity : entity_get_group<Text, Transform>().entities)
+            for (EntityID entity : entity_get_group<Text, Transform>().entities)
             {
                 auto& transform = entity_get<Transform>(entity);
                 auto& text = entity_get<Text>(entity);
@@ -317,7 +317,7 @@ namespace nit
                 );
             }
 
-            for (Entity entity : entity_get_group<Circle, Transform>().entities)
+            for (EntityID entity : entity_get_group<Circle, Transform>().entities)
             {
                 auto& transform = entity_get<Transform>(entity);
                 auto& circle = entity_get<Circle>(entity);

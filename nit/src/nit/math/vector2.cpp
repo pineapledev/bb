@@ -68,8 +68,8 @@ namespace nit
 
     Vector2 RotateAround(Vector2 pivot, f32 angle, Vector2 point)
     {
-        const f32 s = sin(ToRadians(angle));
-        const f32 c = cos(ToRadians(angle));
+        const f32 s = sin(to_radians(angle));
+        const f32 c = cos(to_radians(angle));
 
         // translate point back to origin:
         point.x -= pivot.x;

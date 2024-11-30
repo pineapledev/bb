@@ -8,7 +8,7 @@ namespace nit
 {
     inline constexpr u32 NULL_ENTITY = U32_MAX;
     
-    using Entity = u32;
+    using EntityID = u32;
 
     // First bit of the signature would be used to know if the entity is valid or not
     using EntitySignature = Bitset<NIT_MAX_COMPONENT_TYPES + 1>;
@@ -18,27 +18,27 @@ namespace nit
         u32                           type_index  = 0;
         Pool                          data_pool;
         
-        Delegate<void(Entity, void*, bool)> fn_add_to_entity;
-        Delegate<void(Entity)>              fn_remove_from_entity;
-        Delegate<bool(Entity)>              fn_is_in_entity;
-        Delegate<void*(Entity)>             fn_get_from_entity;
+        Delegate<void(EntityID, void*, bool)> fn_add_to_entity;
+        Delegate<void(EntityID)>              fn_remove_from_entity;
+        Delegate<bool(EntityID)>              fn_is_in_entity;
+        Delegate<void*(EntityID)>             fn_get_from_entity;
     };
     
     struct EntityGroup
     {
         EntitySignature signature;
-        Set<Entity>     entities;
+        Set<EntityID>     entities;
     };
 
     struct ComponentAddedArgs
     {
-        Entity entity = 0;
+        EntityID entity = 0;
         Type*  type   = nullptr;
     };
 
     struct ComponentRemovedArgs
     {
-        Entity entity = 0;
+        EntityID entity = 0;
         Type*  type   = nullptr;
     };
     
@@ -49,7 +49,7 @@ namespace nit
     
     struct EntityRegistry
     {
-        Queue<Entity>                     available_entities;
+        Queue<EntityID>                   available_entities;
         EntitySignature*                  signatures;
         u32                               entity_count = 0;
         Map<EntitySignature, EntityGroup> entity_groups;
@@ -66,16 +66,16 @@ namespace nit
     
     
     template<typename T>
-    void entity_remove(Entity entity);
+    void entity_remove(EntityID entity);
 
     template<typename T>
-    T* entity_get_ptr(Entity entity);
+    T* entity_get_ptr(EntityID entity);
         
     template<typename T>
-    bool entity_has(Entity entity);
+    bool entity_has(EntityID entity);
 
     template<typename T>
-    T& entity_add(Entity entity, const T& data = {}, bool invoke_add_event = true);
+    T& entity_add(EntityID entity, const T& data = {}, bool invoke_add_event = true);
     
     template<typename T>
     void component_register(const TypeArgs<T>& args = {})
@@ -92,7 +92,7 @@ namespace nit
         component_pool.data_pool.type  = type_get<T>();
         component_pool.type_index      = entity_registry->next_component_type_index;
 
-        void (*fn_add_to_entity)(Entity, void*, bool) = [](Entity entity, void* data, bool invoke_add_event) {
+        void (*fn_add_to_entity)(EntityID, void*, bool) = [](EntityID entity, void* data, bool invoke_add_event) {
 
             if (!data)
             {
@@ -104,15 +104,15 @@ namespace nit
             entity_add<T>(entity, *casted_data, invoke_add_event);
         };
 
-        void (*fn_remove_from_entity)(Entity) = [](Entity entity){
+        void (*fn_remove_from_entity)(EntityID) = [](EntityID entity){
             entity_remove<T>(entity);
         };
 
-        bool (*fn_is_in_entity)(Entity) = [](Entity entity){
+        bool (*fn_is_in_entity)(EntityID) = [](EntityID entity){
             return entity_has<T>(entity);
         };
 
-        void* (*fn_get_from_entity)(Entity) = [](Entity entity) -> void* {
+        void* (*fn_get_from_entity)(EntityID) = [](EntityID entity) -> void* {
             return entity_get_ptr<T>(entity);
         };
         
@@ -135,13 +135,13 @@ namespace nit
     
     void            entity_registry_init();
     void            entity_registry_finish();
-    Entity          entity_create();
-    void            entity_destroy(Entity entity);
-    bool            entity_valid(Entity entity);
-    EntitySignature entity_get_signature(Entity entity);
-    void            entity_signature_changed(Entity entity, EntitySignature new_entity_signature);
+    EntityID          entity_create();
+    void            entity_destroy(EntityID entity);
+    bool            entity_valid(EntityID entity);
+    EntitySignature entity_get_signature(EntityID entity);
+    void            entity_signature_changed(EntityID entity, EntitySignature new_entity_signature);
     ComponentPool*  entity_find_component_pool(const Type* type);
-    Entity          entity_clone(Entity entity);
+    EntityID          entity_clone(EntityID entity);
     
     template<typename T>
     ComponentPool* entity_find_component_pool()
@@ -159,7 +159,7 @@ namespace nit
     }
 
     template <typename T>
-    T& entity_add(Entity entity, const T& data, bool invoke_add_event)
+    T& entity_add(EntityID entity, const T& data, bool invoke_add_event)
     {
         NIT_CHECK_MSG(entity_valid(entity), "Invalid entity!");
         NIT_CHECK_MSG(entity_registry_get_instance()->signatures[entity].size() <= NIT_MAX_COMPONENT_TYPES + 1,
@@ -182,7 +182,7 @@ namespace nit
     }
 
     template <typename T>
-    void entity_remove(Entity entity)
+    void entity_remove(EntityID entity)
     {
         NIT_CHECK_MSG(entity_valid(entity), "Invalid entity!");
         NIT_CHECK_MSG(entity < entity_registry_get_instance()->max_entities, "Entity out of range!");
@@ -201,7 +201,7 @@ namespace nit
     }
 
     template <typename T>
-    T& entity_get(Entity entity)
+    T& entity_get(EntityID entity)
     {
         NIT_CHECK_MSG(entity_valid(entity), "Invalid entity!");
         ComponentPool* component_pool = entity_find_component_pool<T>();
@@ -210,7 +210,7 @@ namespace nit
     }
 
     template <typename T>
-    T* entity_get_ptr(Entity entity)
+    T* entity_get_ptr(EntityID entity)
     {
         NIT_CHECK_MSG(entity_valid(entity), "Invalid entity!");
         ComponentPool* component_pool = entity_find_component_pool<T>();
@@ -219,7 +219,7 @@ namespace nit
     }
 
     template <typename T>
-    bool entity_has(Entity entity)
+    bool entity_has(EntityID entity)
     {
         NIT_CHECK_MSG(entity_valid(entity), "Invalid entity!");
         return entity_registry_get_instance()->signatures[entity].test(entity_component_type_index<T>());
@@ -252,8 +252,8 @@ namespace nit
         entity_create_preset(name, type_hashes);
     }
 
-    Entity entity_create_from_preset(const String& name);
+    EntityID entity_create_from_preset(const String& name);
 
-    void   entity_serialize(Entity entity, YAML::Emitter& emitter);
-    Entity entity_deserialize(const YAML::Node& node);
+    void   entity_serialize(EntityID entity, YAML::Emitter& emitter);
+    EntityID entity_deserialize(const YAML::Node& node);
 }

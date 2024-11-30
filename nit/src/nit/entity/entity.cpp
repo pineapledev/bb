@@ -32,14 +32,14 @@ namespace nit
         return nullptr;
     }
 
-    Entity entity_clone(Entity entity)
+    EntityID entity_clone(EntityID entity)
     {
         if (!entity_valid(entity))
         {
             return NULL_ENTITY;
         }
 
-        Entity cloned_entity = entity_create();
+        EntityID cloned_entity = entity_create();
 
         for (u32 i = 0; i < entity_registry->next_component_type_index - 1; ++i)
         {
@@ -55,7 +55,7 @@ namespace nit
         return cloned_entity;
     }
 
-    EntitySignature entity_get_signature(Entity entity)
+    EntitySignature entity_get_signature(EntityID entity)
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         if (entity_valid(entity))
@@ -89,18 +89,18 @@ namespace nit
         }
     }
 
-    Entity entity_create()
+    EntityID entity_create()
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         NIT_CHECK_MSG(entity_registry->entity_count < entity_registry->max_entities, "Entity limit reached!");
-        Entity entity = entity_registry->available_entities.front();
+        EntityID entity = entity_registry->available_entities.front();
         entity_registry->available_entities.pop();
         ++entity_registry->entity_count;
         entity_registry->signatures[entity].set(0, true);
         return entity;
     }
 
-    void entity_destroy(Entity entity)
+    void entity_destroy(EntityID entity)
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         NIT_CHECK_MSG(entity_valid(entity), "Entity is not valid!");
@@ -130,13 +130,13 @@ namespace nit
         }
     }
 
-    bool entity_valid(const Entity entity)
+    bool entity_valid(const EntityID entity)
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         return entity < entity_registry->max_entities && entity_registry->signatures[entity].test(0);
     }
 
-    void entity_signature_changed(Entity entity, EntitySignature new_entity_signature)
+    void entity_signature_changed(EntityID entity, EntitySignature new_entity_signature)
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         for (auto& [signature, group] : entity_registry->entity_groups)
@@ -200,7 +200,7 @@ namespace nit
         return entity_registry->entity_groups[signature];
     }
 
-    Entity entity_create_from_preset(const String& name)
+    EntityID entity_create_from_preset(const String& name)
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
 
@@ -212,7 +212,7 @@ namespace nit
         
         auto& type_hashes = entity_registry->entity_presets[name];
 
-        Entity entity = entity_create();
+        EntityID entity = entity_create();
         
         for (u64 type_hash : type_hashes)
         {
@@ -226,7 +226,7 @@ namespace nit
         return entity;
     }
 
-    void entity_serialize(Entity entity, YAML::Emitter& emitter)
+    void entity_serialize(EntityID entity, YAML::Emitter& emitter)
     {
         emitter << YAML::Key << "Entity" << YAML::Value << YAML::BeginMap;
         
@@ -253,14 +253,14 @@ namespace nit
         emitter << YAML::EndMap;
     }
 
-    Entity entity_deserialize(const YAML::Node& node)
+    EntityID entity_deserialize(const YAML::Node& node)
     {
         if (!node)
         {
             return 0;
         }
 
-        Entity entity = entity_create();
+        EntityID entity = entity_create();
         
         for (const auto& entity_node_child : node)
         {

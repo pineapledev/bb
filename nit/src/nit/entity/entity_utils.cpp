@@ -2,9 +2,9 @@
 
 namespace nit
 {
-    Entity entity_find_by_name(const String& name)
+    EntityID entity_find_by_name(const String& name)
     {
-        for (Entity entity : entity_get_group<Name>().entities)
+        for (EntityID entity : entity_get_group<Name>().entities)
         {
             if (entity_get<Name>(entity).data == name)
             {
@@ -15,9 +15,9 @@ namespace nit
         return NULL_ENTITY;
     }
 
-    void entity_find_by_name(Array<Entity>& entities, const String& name)
+    void entity_find_by_name(Array<EntityID>& entities, const String& name)
     {
-        for (Entity entity : entity_get_group<Name>().entities)
+        for (EntityID entity : entity_get_group<Name>().entities)
         {
             if (entity_get<Name>(entity).data == name)
             {
@@ -26,9 +26,9 @@ namespace nit
         }
     }
 
-    Entity FindEntityByUUID(UUID uuid)
+    EntityID entity_find_by_uuid(UUID uuid)
     {
-        for (Entity entity : entity_get_group<UUID>().entities)
+        for (EntityID entity : entity_get_group<UUID>().entities)
         {
             if (entity_get<UUID>(entity) == uuid)
             {
@@ -39,9 +39,9 @@ namespace nit
         return NULL_ENTITY;
     }
 
-    void FindEntitiesByUUID(Array<Entity>& entities, UUID uuid)
+    void entity_find_by_uuid(Array<EntityID>& entities, UUID uuid)
     {
-        for (Entity entity : entity_get_group<UUID>().entities)
+        for (EntityID entity : entity_get_group<UUID>().entities)
         {
             if (entity_get<UUID>(entity) == uuid)
             {
