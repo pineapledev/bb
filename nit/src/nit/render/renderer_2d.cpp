@@ -285,6 +285,26 @@ namespace nit
         start_batch();
     }
 
+    void begin_scene_2d(const Scene2D& scene)
+    {
+        set_clear_color(scene.clear_color);
+        
+        clear_screen();
+        set_viewport(scene.window_size);
+        
+        Scene2D& non_const_scene = const_cast<Scene2D&>(scene);
+        
+        non_const_scene.camera.aspect = scene.window_size.x / scene.window_size.y;   
+        
+        if (isnan(scene.camera.aspect))
+        {
+            non_const_scene.camera.aspect = 1280.f / 720.f;
+        }
+
+        set_depth_test_enabled(scene.camera.projection == CameraProjection::Perspective);
+        begin_scene_2d(camera_proj_view(scene.camera, scene.camera_transform));
+    }
+
     void begin_scene_2d(const Matrix4& pv_matrix)
     {
         NIT_CHECK_RENDERER_2D_CREATED

@@ -65,6 +65,27 @@ namespace nit
         return (f32) engine->fixed_delta_seconds;
     }
 
+    Vector2 engine_window_size()
+    {
+        NIT_CHECK_ENGINE_CREATED
+
+        i32 width, height;
+        window_retrieve_size(&width, &height);
+        
+#ifdef NIT_EDITOR_ENABLED
+        if (engine_get_instance()->editor.enabled && engine_get_instance()->editor.show_viewport)
+        {
+            clear_attachment(&engine_get_instance()->editor.frame_buffer, 1, -1);
+            width  = engine_get_instance()->editor.frame_buffer.width;
+            height = engine_get_instance()->editor.frame_buffer.height;
+
+            return { (f32) width, (f32) height };
+        }
+#endif
+
+        return { (f32) width, (f32) height };
+    }
+
     EngineEvent& engine_event(Stage stage)
     {
         engine_try_lazy_create();

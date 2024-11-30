@@ -1,6 +1,7 @@
 #pragma once
 #include "primitives_2d.h"
 #include "texture.h"
+#include "camera.h"
 
 namespace nit
 {
@@ -62,7 +63,10 @@ namespace nit
 
     struct Scene2D
     {
-        
+        Camera    camera           = {};
+        Transform camera_transform = {};
+        Vector2   window_size      = { 1920.f, 1080.f };
+        Vector4   clear_color      = V4_COLOR_DARK_GRAY;
     };
 
     void        renderer_2d_set_instance(struct Renderer2D* renderer_2d_instance);
@@ -76,8 +80,8 @@ namespace nit
     
     void next_batch();
     
+    void begin_scene_2d(const Scene2D& scene = {});
     void begin_scene_2d(const Matrix4& pv_matrix);
-    
     void push_material_2d(const SharedPtr<Material>& material);
     
     void pop_material_2d();

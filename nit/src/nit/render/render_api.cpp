@@ -110,7 +110,12 @@ namespace nit
         default: return nullptr;
         }
     }
-    
+
+    void set_viewport(const Vector2& size)
+    {
+        glViewport(0, 0, (i32) size.x, (i32) size.y);
+    }
+
     void set_viewport(u32 x, u32 y, u32 width, u32 height)
     {
         glViewport(x, y, width, height);

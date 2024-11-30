@@ -272,5 +272,24 @@ namespace nit
         return ListenerAction::StayListening;
     }
     
-    ListenerAction draw() { return ListenerAction::StayListening; }
+    ListenerAction draw()
+    {
+        
+        
+        for (EntityID entity : entity_get_group<Transform, Rigidbody2D, BoxCollider2D>().entities)
+        {
+            auto& transform  = entity_get<Transform>(entity);
+            auto& rb= entity_get<Rigidbody2D>(entity);
+            auto& collider   = entity_get<BoxCollider2D>(entity);
+        }
+
+        for (EntityID entity : entity_get_group<Transform, Rigidbody2D, CircleCollider>().entities)
+        {
+            auto& transform  = entity_get<Transform>(entity);
+            auto& rb= entity_get<Rigidbody2D>(entity);
+            auto& collider   = entity_get<CircleCollider>(entity);
+        }
+        
+        return ListenerAction::StayListening;
+    }
 }

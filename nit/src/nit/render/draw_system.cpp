@@ -5,6 +5,7 @@
 #include "primitives_2d.h"
 #include "renderer_2d.h"
 #include "render_api.h"
+#include "entity/entity_utils.h"
 #include "nit/core/engine.h"
 #include "nit/entity/entity.h"
 #include "nit/render/texture.h"
@@ -25,35 +26,6 @@ namespace nit
     static ListenerAction on_asset_destroyed(const AssetDestroyedArgs& args);
     static ListenerAction on_component_added(const ComponentAddedArgs& args);
     static ListenerAction on_component_removed(const ComponentRemovedArgs& args);
-
-    EntityID get_main_camera()
-    {
-        auto& camera_group = entity_get_group<Camera, Transform>();
-        
-        if (camera_group.entities.empty())
-        {
-            return NULL_ENTITY;
-        }
-
-#ifdef NIT_EDITOR_ENABLED
-
-        if (!engine_get_instance()->editor.enabled)
-        {
-            for (EntityID entity : camera_group.entities)
-            {
-                if (!entity_has<EditorCameraController>(entity))
-                {
-                    return entity;
-                }
-            }
-        }
-
-        return engine_get_instance()->editor.editor_camera_entity;
-        
-#else
-        return *camera_group.entities.begin();
-#endif
-    }
 
     void register_draw_system()
     {
@@ -162,7 +134,6 @@ namespace nit
     
     ListenerAction draw()
     {
-
         // Sprite sorting
 
         auto& sprite_group = entity_get_group<Sprite, Transform>().entities;
@@ -171,36 +142,14 @@ namespace nit
             return entity_get<Sprite>(a).draw_layer < entity_get<Sprite>(b).draw_layer; 
         });
         
-        clear_screen();
-        
-        EntityID main_camera = get_main_camera();
-
-        Camera& camera = entity_get<Camera>(main_camera);
-
-        i32 width, height;
-        window_retrieve_size(&width, &height);
-        
-#ifdef NIT_EDITOR_ENABLED
-        if (engine_get_instance()->editor.enabled && engine_get_instance()->editor.show_viewport)
+        Scene2D scene_2d
         {
-            clear_attachment(&engine_get_instance()->editor.frame_buffer, 1, -1);
-            width  = engine_get_instance()->editor.frame_buffer.width;
-            height = engine_get_instance()->editor.frame_buffer.height;
-        }
-#endif
-
-        set_viewport(0, 0, width, height);
+            .camera           = entity_get<Camera>(get_main_camera()),
+            .camera_transform = entity_get<Transform>(get_main_camera()),
+            .window_size      = engine_window_size()
+        };
         
-        camera.aspect = (f32) width / (f32) height;   
-        
-        if (isnan(camera.aspect))
-        {
-            return ListenerAction::StayListening;;
-        }
-
-        set_depth_test_enabled(camera.projection == CameraProjection::Perspective);
-        
-        begin_scene_2d(camera_proj_view(camera, entity_get<Transform>(main_camera)));
+        begin_scene_2d(scene_2d);
         {
             for (EntityID entity : sorted_sprite_group)
             {

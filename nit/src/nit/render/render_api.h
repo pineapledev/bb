@@ -24,6 +24,7 @@ namespace nit
     u32            get_component_count_from_shader_data_type(ShaderDataType type);
     void*          create_from_shader_data_type(ShaderDataType type);
     
+    void  set_viewport(const Vector2& size);
     void  set_viewport(u32 x, u32 y, u32 width, u32 height);
     void  set_clear_color(const Vector4& clear_color);
     void  clear_screen();

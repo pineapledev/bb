@@ -1,22 +1,18 @@
-﻿#include "editor.h"
+﻿#ifdef NIT_EDITOR_ENABLED
 
+#include "editor.h"
+#include "entity/entity_utils.h"
 #include "physics/rigidbody_2d.h"
 #include "render/circle.h"
 #include "render/line_2d.h"
 #include "render/sprite.h"
 #include "render/text.h"
-#ifdef NIT_EDITOR_ENABLED
-
 #include "core/engine.h"
-
-#include "render/draw_system.h"
 #include "render/transform.h"
 #include "render/camera.h"
 #include "entity/scene.h"
 #include "render/texture.h"
-
 #include "editor_utils.h"
-
 #include <ImGuizmo.h>
 
 #define NIT_CHECK_EDITOR_CREATED NIT_CHECK_MSG(editor, "Forget to call SetEditorInstance!");

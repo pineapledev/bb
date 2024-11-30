@@ -64,4 +64,5 @@ namespace nit
     f32          fixed_delta_seconds();
     EngineEvent& engine_event(Stage stage);
     void         engine_init(VoidFunc on_init = nullptr);
+    Vector2      engine_window_size();
 }
