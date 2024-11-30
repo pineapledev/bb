@@ -148,7 +148,7 @@ namespace nit
             const f64 time_between_frames = current_time - engine->last_time;
             engine->last_time = current_time;
             engine->seconds += time_between_frames;
-            engine->delta_seconds = (f32) Clamp(time_between_frames, 0., engine->max_delta_time);
+            engine->delta_seconds = (f32) clamp(time_between_frames, 0., engine->max_delta_time);
 
             event_broadcast(engine_event(Stage::Update));
 

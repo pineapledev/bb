@@ -19,56 +19,44 @@ namespace nit
     inline constexpr Vector3 V3_BACK    = { 0,  0, -1 };
     inline constexpr Vector3 V3_FRONT   = { 0,  0,  1 };
     
-    bool operator==(const Vector3& a, const Vector3& b);
-    
-    bool operator!=(const Vector3& a, const Vector3& b);
-    
-    Vector3 operator+(const Vector3& a, const Vector3& b);
-    
-    Vector3 operator-(const Vector3& a, const Vector3& b);
-    
-    Vector3 operator*(const Vector3& vector, f32 num);
-    
-    Vector3 operator/(const Vector3& vector, f32 num);
-
+    bool     operator==(const Vector3& a, const Vector3& b);
+    bool     operator!=(const Vector3& a, const Vector3& b);
+    Vector3  operator+(const Vector3& a, const Vector3& b);
+    Vector3  operator-(const Vector3& a, const Vector3& b);
+    Vector3  operator*(const Vector3& vector, f32 num);
+    Vector3  operator/(const Vector3& vector, f32 num);
     Vector3& operator+=(Vector3& left, const Vector3& right);
-    
     Vector3& operator-=(Vector3& left, const Vector3& right);
-
     Vector3& operator*=(Vector3& left, f32 num);
-
     Vector3& operator/=(Vector3& left, f32 num);
-
-    Vector3 LookRotation(const Vector3& rotation, const Vector3& dir);
     
+    Vector3        look_rotation(const Vector3& rotation, const Vector3& dir);
     inline Vector3 to_degrees(const Vector3& radians) { return radians * RADIANS_TO_DEGREES_FACTOR; }
-    
     inline Vector3 to_radians(const Vector3& degrees) { return degrees * DEGREES_TO_RADIANS_FACTOR; }
-
-    f32 Lenght(const Vector3& val);
+    f32            lenght(const Vector3& val);
     
     template<>
-    inline Vector3 Abs(const Vector3& val) { return { Abs(val.x), Abs(val.y), Abs(val.z)  }; }
+    inline Vector3 abs(const Vector3& val) { return { abs(val.x), abs(val.y), abs(val.z)  }; }
 
     template<>
-    f32 Magnitude(const Vector3& val);
+    f32 magnitude(const Vector3& val);
 
     template<>
-    Vector3 Normalize(const Vector3& val);
+    Vector3 normalize(const Vector3& val);
 
     template<>
-    Vector3 Multiply(const Vector3& a, const Vector3& b);
+    Vector3 multiply(const Vector3& a, const Vector3& b);
 
     template<>
-    Vector3 Divide(const Vector3& a, const Vector3& b);
+    Vector3 divide(const Vector3& a, const Vector3& b);
 
     template<>
-    f32 Dot(const Vector3& a, const Vector3& b);
+    f32 dot(const Vector3& a, const Vector3& b);
 
     template<>
-    f32 Distance(const Vector3& a, const Vector3& b);
+    f32 distance(const Vector3& a, const Vector3& b);
 
-    Vector3 ToVector3(const struct Vector2& value);
+    Vector3 to_v3(const struct Vector2& value);
 }
 
 template<>

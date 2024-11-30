@@ -24,9 +24,9 @@ AssetHandle test_texture;
 
 void reset_movement(Transform& transform, Move& move)
 {
-    float speed      = GetRandomValue(MIN_SPEED, MAX_SPEED);
-    move.destination = RandomPointInSquare(RECT_LEFT.x, RECT_RIGHT.y, RECT_RIGHT.x, RECT_LEFT.y);
-    move.velocity    = Normalize(move.destination - ToVector2(transform.position)) * speed;
+    float speed      = random_value(MIN_SPEED, MAX_SPEED);
+    move.destination = random_point_in_square(RECT_LEFT.x, RECT_RIGHT.y, RECT_RIGHT.x, RECT_LEFT.y);
+    move.velocity    = normalize(move.destination - to_v2(transform.position)) * speed;
 }
 
 // -----------------------------------------------------------------
@@ -34,7 +34,7 @@ void reset_movement(Transform& transform, Move& move)
 void spawn_entity()
 {
     EntityID entity = entity_create();
-    Vector3 position = ToVector3(RandomPointInSquare(RECT_LEFT.x, RECT_RIGHT.y, RECT_RIGHT.x, RECT_LEFT.y)); 
+    Vector3 position = to_v3(random_point_in_square(RECT_LEFT.x, RECT_RIGHT.y, RECT_RIGHT.x, RECT_LEFT.y)); 
     entity_add<Transform>(entity).position = position;
     //add<Transform>(entity).position = V3_ZERO;
     entity_add<Sprite>(entity).tint = GetRandomColor();
@@ -102,13 +102,13 @@ ListenerAction update()
         auto& transform = entity_get<Transform>(entity);
         auto& move      = entity_get<Move>(entity);
         
-        if (Distance(ToVector2(transform.position), move.destination) < 0.1f)
+        if (distance(to_v2(transform.position), move.destination) < 0.1f)
         {
             reset_movement(transform, move);
         }
         else
         {
-            transform.position += ToVector3(move.velocity * delta_seconds());
+            transform.position += to_v3(move.velocity * delta_seconds());
         }
     }
 

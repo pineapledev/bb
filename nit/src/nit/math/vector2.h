@@ -16,54 +16,44 @@ namespace nit
     inline constexpr Vector2 V2_UP      = { 0,  1, };
     inline constexpr Vector2 V2_DOWN    = { 0, -1, };
     
-    bool operator==(const Vector2& a, const Vector2& b);
+    bool      operator==  (const Vector2& a, const Vector2& b);
+    bool      operator!=  (const Vector2& a, const Vector2& b);
+    Vector2   operator+   (const Vector2& a, const Vector2& b);
+    Vector2   operator-   (const Vector2& a, const Vector2& b);
+    Vector2   operator*   (const Vector2& vector, f32 num);
+    Vector2   operator/   (const Vector2& vector, f32 num);
+    Vector2&  operator+=  (Vector2& left, const Vector2& right);
+    Vector2&  operator-=  (Vector2& left, const Vector2& right);
+    Vector2&  operator*=  (Vector2& left, f32 num);
+    Vector2&  operator/=  (Vector2& left, f32 num);
     
-    bool operator!=(const Vector2& a, const Vector2& b);
-    
-    Vector2 operator+(const Vector2& a, const Vector2& b);
-    
-    Vector2 operator-(const Vector2& a, const Vector2& b);
-    
-    Vector2 operator*(const Vector2& vector, f32 num);
-    
-    Vector2 operator/(const Vector2& vector, f32 num);
-
-    Vector2& operator+=(Vector2& left, const Vector2& right);
-    
-    Vector2& operator-=(Vector2& left, const Vector2& right);
-
-    Vector2& operator*=(Vector2& left, f32 num);
-
-    Vector2& operator/=(Vector2& left, f32 num);
-    
-    f32 Angle(const Vector2& a, const Vector2& b);
-    
-    Vector2 RotateAround(Vector2 pivot, f32 angle, Vector2 point);
+    f32     angle(const Vector2& a, const Vector2& b);
+    Vector2 rotate_around(Vector2 pivot, f32 angle, Vector2 point);
+    Vector2 to_v2(const struct Vector3& value);
+    Vector2 random_point_in_square(f32 x_min, f32 y_min, f32 x_max, f32 y_max);
     
     template<>
-    Vector2 Abs(const Vector2& val);
+    Vector2 abs(const Vector2& val);
 
     template<>
-    f32 Magnitude(const Vector2& val);
+    f32 magnitude(const Vector2& val);
 
     template<>
-    Vector2 Normalize(const Vector2& val);
+    Vector2 normalize(const Vector2& val);
 
     template<>
-    Vector2 Multiply(const Vector2& a, const Vector2& b);
+    Vector2 multiply(const Vector2& a, const Vector2& b);
 
     template<>
-    Vector2 Divide(const Vector2& a, const Vector2& b);
+    Vector2 divide(const Vector2& a, const Vector2& b);
 
     template<>
-    f32 Dot(const Vector2& a, const Vector2& b);
+    f32 dot(const Vector2& a, const Vector2& b);
 
     template<>
-    f32 Distance(const Vector2& a, const Vector2& b);
+    f32 distance(const Vector2& a, const Vector2& b);
 
-    Vector2 ToVector2(const struct Vector3& value);
-
-    Vector2 RandomPointInSquare(f32 x_min, f32 y_min, f32 x_max, f32 y_max);
+    
 }
 
 template<>

@@ -5,10 +5,10 @@ namespace nit
 {
     bool operator==(const Vector4& a, const Vector4& b)
     {
-        return (Abs(a.x - b.x) <= F32_EPSILON) &&
-               (Abs(a.y - b.y) <= F32_EPSILON) &&
-               (Abs(a.z - b.z) <= F32_EPSILON) &&
-               (Abs(a.w - b.w) <= F32_EPSILON);
+        return (abs(a.x - b.x) <= F32_EPSILON) &&
+               (abs(a.y - b.y) <= F32_EPSILON) &&
+               (abs(a.z - b.z) <= F32_EPSILON) &&
+               (abs(a.w - b.w) <= F32_EPSILON);
     }
 
     bool operator!=(const Vector4& a, const Vector4& b)
@@ -82,20 +82,20 @@ namespace nit
     }
     
     template <>
-    f32 Magnitude<Vector4>(const Vector4& val)
+    f32 magnitude<Vector4>(const Vector4& val)
     {
         return std::sqrt(std::powf(val.x, 2) + std::powf(val.y, 2) + std::powf(val.z, 2) + std::powf(val.w, 2));
     }
 
     template <>
-    Vector4 Normalize<Vector4>(const Vector4& val)
+    Vector4 normalize<Vector4>(const Vector4& val)
     {
-        f32 mag = Magnitude(val);
+        f32 mag = magnitude(val);
         return { val.x / mag, val.y / mag, val.z / mag, val.w / mag };
     }
 
     template <>
-    Vector4 Multiply<Vector4>(const Vector4& a, const Vector4& b)
+    Vector4 multiply<Vector4>(const Vector4& a, const Vector4& b)
     {
         Vector4 r;
         r.x = a.x * b.x;
@@ -106,7 +106,7 @@ namespace nit
     }
 
     template <>
-    Vector4 Divide<Vector4>(const Vector4& a, const Vector4& b)
+    Vector4 divide<Vector4>(const Vector4& a, const Vector4& b)
     {
         Vector4 r;
         r.x = a.x / b.x;
@@ -119,9 +119,9 @@ namespace nit
     Vector4 GetRandomColor()
     {
         return {
-            GetRandomValue(0.f, 1.f),
-            GetRandomValue(0.f, 1.f),
-            GetRandomValue(0.f, 1.f),
+            random_value(0.f, 1.f),
+            random_value(0.f, 1.f),
+            random_value(0.f, 1.f),
             1.f
         };
     }

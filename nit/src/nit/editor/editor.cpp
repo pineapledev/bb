@@ -188,7 +188,7 @@ namespace nit
             
             // Zoom stuff
 
-            if (!controller.is_zooming && Abs(ImGui::GetIO().MouseWheel) > F32_EPSILON)
+            if (!controller.is_zooming && abs(ImGui::GetIO().MouseWheel) > F32_EPSILON)
             {
                 controller.is_zooming = true;
             }

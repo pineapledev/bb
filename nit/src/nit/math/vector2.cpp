@@ -4,7 +4,7 @@ namespace nit
 {
     bool operator==(const Vector2& a, const Vector2& b)
     {
-        return (Abs(a.x - b.x) <= F32_EPSILON) && (Abs(a.y - b.y) <= F32_EPSILON);
+        return (abs(a.x - b.x) <= F32_EPSILON) && (abs(a.y - b.y) <= F32_EPSILON);
     }
 
     bool operator!=(const Vector2& a, const Vector2& b)
@@ -60,13 +60,13 @@ namespace nit
         return left;
     }
 
-    f32 Angle(const Vector2& a, const Vector2& b)
+    f32 angle(const Vector2& a, const Vector2& b)
     {
-        const f32 cos_angle = Dot(a, b) / (Magnitude(a) * Magnitude(b));
+        const f32 cos_angle = dot(a, b) / (magnitude(a) * magnitude(b));
         return std::acosf(cos_angle);
     }
 
-    Vector2 RotateAround(Vector2 pivot, f32 angle, Vector2 point)
+    Vector2 rotate_around(Vector2 pivot, f32 angle, Vector2 point)
     {
         const f32 s = sin(to_radians(angle));
         const f32 c = cos(to_radians(angle));
@@ -86,26 +86,26 @@ namespace nit
     }
 
     template<>
-    Vector2 Abs<Vector2>(const Vector2& val)
+    Vector2 abs<Vector2>(const Vector2& val)
     {
-        return { Abs(val.x), Abs(val.y)  };
+        return { abs(val.x), abs(val.y)  };
     }
 
     template<>
-    f32 Magnitude<Vector2>(const Vector2& val)
+    f32 magnitude<Vector2>(const Vector2& val)
     {
         return std::sqrt(std::powf(val.x, 2) + std::powf(val.y, 2));
     }
 
     template<>
-    Vector2 Normalize<Vector2>(const Vector2& val)
+    Vector2 normalize<Vector2>(const Vector2& val)
     {
-        f32 mag = Magnitude(val);
+        f32 mag = magnitude(val);
         return { val.x / mag, val.y / mag };
     }
 
     template<>
-    Vector2 Multiply(const Vector2& a, const Vector2& b)
+    Vector2 multiply(const Vector2& a, const Vector2& b)
     {
         Vector2 r;
         r.x = a.x * b.x;
@@ -114,7 +114,7 @@ namespace nit
     }
 
     template<>
-    Vector2 Divide<Vector2>(const Vector2& a, const Vector2& b)
+    Vector2 divide<Vector2>(const Vector2& a, const Vector2& b)
     {
         Vector2 r;
         r.x = a.x / b.x;
@@ -123,23 +123,23 @@ namespace nit
     }
     
     template<>
-    f32 Dot<Vector2>(const Vector2& a, const Vector2& b)
+    f32 dot<Vector2>(const Vector2& a, const Vector2& b)
     {
         return a.x * b.x + a.y * b.y;
     }
 
     template<>
-    f32 Distance<Vector2>(const Vector2& a, const Vector2& b)
+    f32 distance<Vector2>(const Vector2& a, const Vector2& b)
     {
         return std::sqrtf(std::powf(a.x - b.x, 2) + std::powf(a.y - b.y, 2));
     }
 
-    Vector2 ToVector2(const Vector3& value)
+    Vector2 to_v2(const Vector3& value)
     {
         return { value.x, value.y };
     }
 
-    Vector2 RandomPointInSquare(f32 x_min, f32 y_min, f32 x_max, f32 y_max)
+    Vector2 random_point_in_square(f32 x_min, f32 y_min, f32 x_max, f32 y_max)
     {
         std::random_device random_device;
         std::mt19937 random_engine(random_device());

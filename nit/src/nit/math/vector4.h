@@ -56,19 +56,19 @@ namespace nit
     Vector4& operator*(Vector4& left, const Matrix4& matrix);
     
     template<>
-    inline Vector4 Abs(const Vector4& val) { return { Abs(val.x), Abs(val.y), Abs(val.z), Abs(val.w)  }; }
+    inline Vector4 abs(const Vector4& val) { return { abs(val.x), abs(val.y), abs(val.z), abs(val.w)  }; }
 
     template<>
-    f32 Magnitude(const Vector4& val);
+    f32 magnitude(const Vector4& val);
     
     template<>
-    Vector4 Normalize(const Vector4& val);
+    Vector4 normalize(const Vector4& val);
 
     template<>
-    Vector4 Multiply(const Vector4& a, const Vector4& b);
+    Vector4 multiply(const Vector4& a, const Vector4& b);
 
     template<>
-    Vector4 Divide(const Vector4& a, const Vector4& b);
+    Vector4 divide(const Vector4& a, const Vector4& b);
 
     Vector4 GetRandomColor();
 }

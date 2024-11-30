@@ -24,13 +24,13 @@ namespace nit
 
     void fill_quad_vertex_positions(const Vector2& size, V4Verts2D& vertex_positions)
     {
-        if (Abs(size.x - size.y) <= F32_EPSILON)
+        if (abs(size.x - size.y) <= F32_EPSILON)
         {
             vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
             return;
         }
         
-        Vector2 pos = Normalize(size) / 2;;
+        Vector2 pos = normalize(size) / 2;;
         
         vertex_positions[0] = { -pos.x, -pos.y, 0.f, 1.f };
         vertex_positions[1] = {  pos.x, -pos.y, 0.f, 1.f };
@@ -120,7 +120,7 @@ namespace nit
     {
         const Vector3 v3_start  = { start.x, start.y };
         const Vector3 v3_end    = { end.x, end.y };
-        const Vector3 v3_dir    = Normalize(v3_end - v3_start);
+        const Vector3 v3_dir    = normalize(v3_end - v3_start);
         const Vector3 v3_normal = {v3_dir.y, -v3_dir.x, 0}; // Perpendicular clockwise 
 
         Vector3 v_pos_0 = v3_start + v3_normal *  thickness / 2.f;

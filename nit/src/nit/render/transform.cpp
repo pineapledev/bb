@@ -14,17 +14,17 @@ namespace nit
 
     Vector3 transform_up(const Transform& transform)
     {
-        return LookRotation(transform.rotation, V3_UP);
+        return look_rotation(transform.rotation, V3_UP);
     }
 
     Vector3 transform_right(const Transform& transform)
     {
-        return LookRotation(transform.rotation, V3_RIGHT);
+        return look_rotation(transform.rotation, V3_RIGHT);
     }
 
     Vector3 transform_front(const Transform& transform)
     {
-        return LookRotation(transform.rotation, V3_FRONT);
+        return look_rotation(transform.rotation, V3_FRONT);
     }
     
     void serialize(const Transform* transform, YAML::Emitter& emitter)

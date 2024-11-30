@@ -11,7 +11,7 @@ namespace nit
         {
             for (u32 j = 0; j < 4; j++)
             {
-                if (Abs(a.m[i][j] - b.m[i][j]) <= F32_EPSILON)
+                if (abs(a.m[i][j] - b.m[i][j]) <= F32_EPSILON)
                 {
                     continue;
                 }
@@ -295,12 +295,12 @@ namespace nit
     {
         Matrix4 local_matrix = matrix;
         
-        if (Abs(local_matrix.m[3][3]) < F32_EPSILON)
+        if (abs(local_matrix.m[3][3]) < F32_EPSILON)
         {
             return false;
         }
 
-        if (Abs(local_matrix.m[0][3]) > F32_EPSILON || Abs(local_matrix.m[1][3]) > F32_EPSILON || Abs(local_matrix.m[2][3]) > F32_EPSILON)
+        if (abs(local_matrix.m[0][3]) > F32_EPSILON || abs(local_matrix.m[1][3]) > F32_EPSILON || abs(local_matrix.m[2][3]) > F32_EPSILON)
         {
             local_matrix.m[0][3] = local_matrix.m[1][3] = local_matrix.m[2][3] = 0.0f;
             local_matrix.m[3][3] = 1.0f;
@@ -315,13 +315,13 @@ namespace nit
             { local_matrix.m[2][0], local_matrix.m[2][1], local_matrix.m[2][2] }
         };
 
-        scale.x = Lenght(row[0]);
-        scale.y = Lenght(row[1]);
-        scale.z = Lenght(row[2]);
+        scale.x = lenght(row[0]);
+        scale.y = lenght(row[1]);
+        scale.z = lenght(row[2]);
 
-        row[0] = Normalize(row[0]);
-        row[1] = Normalize(row[1]);
-        row[2] = Normalize(row[2]);
+        row[0] = normalize(row[0]);
+        row[1] = normalize(row[1]);
+        row[2] = normalize(row[2]);
 
         rotation.y = std::asin(-row[0].z); // Pitch
         
