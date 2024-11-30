@@ -55,8 +55,6 @@ namespace nit
         
         finish_renderer_2d();
 
-        set_clear_color(V4_COLOR_DARK_GRAY);
-        
         NIT_LOG_TRACE("Creating Renderer2D...");
 
         // We create the index buffer shared across all the 2D Primitives
@@ -287,9 +285,6 @@ namespace nit
 
     void begin_scene_2d(const Scene2D& scene)
     {
-        set_clear_color(scene.clear_color);
-        
-        clear_screen();
         set_viewport(scene.window_size);
         
         Scene2D& non_const_scene = const_cast<Scene2D&>(scene);
@@ -475,6 +470,24 @@ namespace nit
     }
 
     void draw_circle(
+          const Vector3&              position         
+        , const Vector3&              rotation         
+        , const Vector3&              scale            
+        , const Vector4&              tint             
+        , f32                         thickness        
+        , f32                         fade             
+        , i32                         entity_id        
+    )
+    {
+        V4Verts2D vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
+        V4Verts2D vertex_colors    = DEFAULT_VERTEX_COLORS_2D;
+
+        transform_vertex_positions(vertex_positions, mat_create_transform(position, rotation, scale));
+        fill_vertex_colors(vertex_colors, tint);
+        draw_circle(vertex_positions, vertex_colors, thickness, fade, entity_id);
+    }
+
+    void draw_circle(
           const V4Verts2D& vertex_positions
         , const V4Verts2D& vertex_colors          
         , f32              thickness              
@@ -506,6 +519,26 @@ namespace nit
 
         renderer_2d->circle_index_count += INDICES_PER_PRIMITIVE;
         renderer_2d->circle_count++;
+    }
+
+    void draw_line_2d(
+          const Vector3&              position  
+        , const Vector3&              rotation  
+        , const Vector3&              scale     
+        , const Vector2&              start     
+        , const Vector2&              end       
+        , const Vector4&              tint      
+        , f32                         thickness 
+        , i32                         entity_id 
+    )
+    {
+        V4Verts2D vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
+        V4Verts2D vertex_colors    = DEFAULT_VERTEX_COLORS_2D;
+
+        fill_line_2d_vertex_positions(vertex_positions, start, end, thickness);
+        transform_vertex_positions(vertex_positions, mat_create_transform(position, rotation, scale));
+        fill_vertex_colors(vertex_colors, tint);
+        draw_line_2d(vertex_positions, vertex_colors, entity_id);
     }
 
     void draw_line_2d(

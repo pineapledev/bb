@@ -10,6 +10,7 @@
 #include "box2d/b2_polygon_shape.h"
 #include "box2d/b2_world.h"
 #include "core/engine.h"
+#include "entity/entity_utils.h"
 #include "render/transform.h"
 
 namespace nit
@@ -274,21 +275,49 @@ namespace nit
     
     ListenerAction draw()
     {
-        
-        
-        for (EntityID entity : entity_get_group<Transform, Rigidbody2D, BoxCollider2D>().entities)
+        Scene2D scene_2d
         {
-            auto& transform  = entity_get<Transform>(entity);
-            auto& rb= entity_get<Rigidbody2D>(entity);
-            auto& collider   = entity_get<BoxCollider2D>(entity);
-        }
+            .camera           = entity_get<Camera>(get_main_camera()),
+            .camera_transform = entity_get<Transform>(get_main_camera()),
+            .window_size      = engine_window_size()
+        };
 
-        for (EntityID entity : entity_get_group<Transform, Rigidbody2D, CircleCollider>().entities)
+        begin_scene_2d(scene_2d);
         {
-            auto& transform  = entity_get<Transform>(entity);
-            auto& rb= entity_get<Rigidbody2D>(entity);
-            auto& collider   = entity_get<CircleCollider>(entity);
+            auto collider_color = V4_COLOR_LIGHT_GREEN;
+            collider_color.w = 0.2f;
+            
+            for (EntityID entity : entity_get_group<Transform, Rigidbody2D, BoxCollider2D>().entities)
+            {
+                auto& transform  = entity_get<Transform>(entity);
+                auto& collider   = entity_get<BoxCollider2D>(entity);
+
+                Vector3 position = transform.position + to_v3(collider.center); 
+                Vector3 rotation = transform.rotation; 
+
+                draw_line_2d(position, rotation, { collider.size.x, collider.size.y, 1.f },  { -0.5, -0.5 }, {0.5, -0.5 }, V4_COLOR_LIGHT_GREEN, 0.05f, entity);
+                draw_line_2d(position, rotation, { collider.size.x, collider.size.y, 1.f },  { 0.5, -0.5 }, {0.5, 0.5 }, V4_COLOR_LIGHT_GREEN, 0.05f, entity);
+                draw_line_2d(position, rotation, { collider.size.x, collider.size.y, 1.f },  { 0.5, 0.5 }, {-0.5, 0.5 }, V4_COLOR_LIGHT_GREEN, 0.05f, entity);
+                draw_line_2d(position, rotation, { collider.size.x, collider.size.y, 1.f },  { -0.5, 0.5 }, {-0.5, -0.5 }, V4_COLOR_LIGHT_GREEN, 0.05f, entity);
+            }
+        
+            for (EntityID entity : entity_get_group<Transform, Rigidbody2D, CircleCollider>().entities)
+            {
+                auto& transform  = entity_get<Transform>(entity);
+                auto& collider   = entity_get<CircleCollider>(entity);
+        
+                draw_circle(
+                     transform.position + to_v3(collider.center),
+                     transform.rotation,
+                     {collider.radius * 2.f, collider.radius * 2.f, 1.f},
+                     V4_COLOR_LIGHT_GREEN,
+                     .05f,
+                     .01f,
+                     entity
+                );
+            }
         }
+        end_scene_2d();
         
         return ListenerAction::StayListening;
     }

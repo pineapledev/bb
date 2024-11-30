@@ -23,9 +23,9 @@ Scene:
       Name:
         data: quad
       Transform:
-        position: [-0.524030983, 0.576903939, 0]
-        rotation: [0, 0, -37.666256]
-        scale: [1, 1, 1]
+        position: [-1.98721564, 0.775518119, 0]
+        rotation: [0, 0, 1.06388104]
+        scale: [0.999991059, 0.999991059, 1]
       Sprite:
         texture: ["", "", 0]
         sub_texture: "null"
@@ -50,9 +50,9 @@ Scene:
       Name:
         data: circle
       Transform:
-        position: [-0.549019158, -1.12285793, -6.10351562e-05]
-        rotation: [0, 0, -1.34710288]
-        scale: [0.99998951, 0.99998951, 1]
+        position: [-2.06809831, -0.231156692, -6.10351562e-05]
+        rotation: [0, 0, 98.4317856]
+        scale: [0.999969006, 0.999969006, 1]
       Circle:
         visible: true
         tint: [0.300000012, 1, 0.300000012, 1]
@@ -65,7 +65,7 @@ Scene:
         mass: 1
         gravity_scale: 0
       CircleCollider:
-        radius: 1
+        radius: 0.5
         center: [0, 0]
         physic_material: [test ph material, PhysicMaterial, 17295311971134077511]
     Entity:

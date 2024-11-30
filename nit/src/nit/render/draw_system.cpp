@@ -4,7 +4,6 @@
 #include "text.h"
 #include "primitives_2d.h"
 #include "renderer_2d.h"
-#include "render_api.h"
 #include "entity/entity_utils.h"
 #include "nit/core/engine.h"
 #include "nit/entity/entity.h"

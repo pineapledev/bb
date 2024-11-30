@@ -66,7 +66,6 @@ namespace nit
         Camera    camera           = {};
         Transform camera_transform = {};
         Vector2   window_size      = { 1920.f, 1080.f };
-        Vector4   clear_color      = V4_COLOR_DARK_GRAY;
     };
 
     void        renderer_2d_set_instance(struct Renderer2D* renderer_2d_instance);
@@ -102,6 +101,16 @@ namespace nit
         , Texture2D*                  texture_2d       = nullptr
         , i32                         entity_id        = -1
     );
+
+    void draw_circle(
+          const Vector3&              position         = V3_ZERO
+        , const Vector3&              rotation         = V3_ZERO
+        , const Vector3&              scale            = V3_ONE
+        , const Vector4&              tint             = V4_ONE
+        , f32                         thickness         = .05f
+        , f32                         fade              = .01f
+        , i32                         entity_id        = -1
+    );
     
     void draw_circle(                                    
           const V4Verts2D&            vertex_positions  = DEFAULT_VERTEX_POSITIONS_2D
@@ -115,7 +124,18 @@ namespace nit
           const V4Verts2D&            vertex_positions  = DEFAULT_VERTEX_POSITIONS_2D
         , const V4Verts2D&            vertex_colors     = DEFAULT_VERTEX_COLORS_2D
         , i32                         entity_id         = -1
-    );                                                  
+    );
+
+    void draw_line_2d(
+          const Vector3&              position         = V3_ZERO
+        , const Vector3&              rotation         = V3_ZERO
+        , const Vector3&              scale            = V3_ONE
+        , const Vector2&              start            = V2_ZERO
+        , const Vector2&              end              = V2_ZERO
+        , const Vector4&              tint             = V4_ONE
+        , f32                         thickness        = .05f
+        , i32                         entity_id        = -1
+    ); 
                                                         
     void draw_char(                                      
           const Font*                 font             = nullptr

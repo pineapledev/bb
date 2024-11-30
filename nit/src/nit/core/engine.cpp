@@ -192,14 +192,17 @@ namespace nit
             }
             
             event_broadcast(engine_event(Stage::LateUpdate));
-
-            clear_screen();
             
             NIT_IF_EDITOR_ENABLED(im_gui_begin());
             NIT_IF_EDITOR_ENABLED(editor_begin());
             
             event_broadcast(engine_event(Stage::PreDraw));
+
+            set_clear_color(V4_COLOR_DARK_GRAY);
+            clear_screen();
+            
             event_broadcast(engine_event(Stage::Draw));
+
             event_broadcast(engine_event(Stage::PostDraw));
 
             NIT_IF_EDITOR_ENABLED(editor_end());

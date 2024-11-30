@@ -5,10 +5,10 @@ namespace nit
 {
     struct CircleCollider
     {
-        f32         radius          = 1.f;
+        f32         radius          = .5f;
         Vector2     center          = V2_ZERO;
         AssetHandle physic_material = {};
-        f32         prev_radius     = 1.f;
+        f32         prev_radius     = .5f;
         void*       fixture_ptr     = nullptr;
     };
 
