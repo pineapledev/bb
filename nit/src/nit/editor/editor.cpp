@@ -899,7 +899,7 @@ namespace nit
             String stats_text;
             stats_text.append("\nTime: "     + std::to_string(engine_get_instance()->seconds));
             stats_text.append("\nFrames: "   + std::to_string(engine_get_instance()->frame_count));
-            stats_text.append("\nFPS: "      + std::to_string(engine_get_instance()->frame_count / engine_get_instance()->seconds));
+            stats_text.append("\nFPS: "      + std::to_string(1.f / delta_seconds()));
             stats_text.append("\nEntities: " + std::to_string(engine_get_instance()->entity_registry.entity_count));
             stats_text.append("\nDelta: "    + std::to_string(delta_seconds()));
             ImGui::Text(stats_text.c_str());

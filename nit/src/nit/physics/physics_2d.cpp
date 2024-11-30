@@ -47,7 +47,6 @@ namespace nit
     // Pre-declared listeners
     static ListenerAction start();
     static ListenerAction fixed_update();
-    static ListenerAction draw();
     
     
     void physics_2d_init() 
@@ -63,7 +62,6 @@ namespace nit
         
         engine_event(Stage::Start)       += EngineListener::create(start);
         engine_event(Stage::FixedUpdate) += EngineListener::create(fixed_update);
-        engine_event(Stage::Draw)        += EngineListener::create(draw);
     }
 
     void physics_2d_finish()
@@ -270,55 +268,6 @@ namespace nit
         world()->SetGravity((const b2Vec2&) physics_2d->gravity);
         world()->Step(fixed_delta_seconds(), physics_2d->velocity_iterations, physics_2d->position_iterations);
         update_bodies();
-        return ListenerAction::StayListening;
-    }
-    
-    ListenerAction draw()
-    {
-        Scene2D scene_2d
-        {
-            .camera           = entity_get<Camera>(get_main_camera()),
-            .camera_transform = entity_get<Transform>(get_main_camera()),
-            .window_size      = engine_window_size()
-        };
-
-        begin_scene_2d(scene_2d);
-        {
-            auto collider_color = V4_COLOR_LIGHT_GREEN;
-            collider_color.w = 0.2f;
-            
-            for (EntityID entity : entity_get_group<Transform, Rigidbody2D, BoxCollider2D>().entities)
-            {
-                auto& transform  = entity_get<Transform>(entity);
-                auto& collider   = entity_get<BoxCollider2D>(entity);
-
-                Vector3 position = transform.position + to_v3(collider.center); 
-                Vector3 rotation = transform.rotation; 
-
-                draw_line_2d(position, rotation, { collider.size.x, collider.size.y, 1.f },  { -0.5, -0.5 }, {0.5, -0.5 }, V4_COLOR_LIGHT_GREEN, 0.05f, entity);
-                draw_line_2d(position, rotation, { collider.size.x, collider.size.y, 1.f },  { 0.5, -0.5 }, {0.5, 0.5 }, V4_COLOR_LIGHT_GREEN, 0.05f, entity);
-                draw_line_2d(position, rotation, { collider.size.x, collider.size.y, 1.f },  { 0.5, 0.5 }, {-0.5, 0.5 }, V4_COLOR_LIGHT_GREEN, 0.05f, entity);
-                draw_line_2d(position, rotation, { collider.size.x, collider.size.y, 1.f },  { -0.5, 0.5 }, {-0.5, -0.5 }, V4_COLOR_LIGHT_GREEN, 0.05f, entity);
-            }
-        
-            for (EntityID entity : entity_get_group<Transform, Rigidbody2D, CircleCollider>().entities)
-            {
-                auto& transform  = entity_get<Transform>(entity);
-                auto& collider   = entity_get<CircleCollider>(entity);
-        
-                draw_circle(
-                     transform.position + to_v3(collider.center),
-                     transform.rotation,
-                     {collider.radius * 2.f, collider.radius * 2.f, 1.f},
-                     V4_COLOR_LIGHT_GREEN,
-                     .05f,
-                     .01f,
-                     entity
-                );
-            }
-        }
-        end_scene_2d();
-        
         return ListenerAction::StayListening;
     }
 }
