@@ -67,7 +67,7 @@ namespace nit
     Vector3 LookRotation(const Vector3& rotation, const Vector3& dir)
     {
         Matrix4 rotation_mat;
-        rotation_mat = Rotate(rotation_mat, rotation);
+        rotation_mat = mat_rotate(rotation_mat, rotation);
         Vector4 v4_dir = { dir.x, dir.y, dir.z, 1.f };
         Vector4 look_rot = rotation_mat *  v4_dir; 
         return { look_rot.x, look_rot.y, look_rot.z };

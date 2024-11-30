@@ -449,7 +449,7 @@ namespace nit
             vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
         }
 
-        transform_vertex_positions(vertex_positions, CreateTransform(position, rotation, scale));
+        transform_vertex_positions(vertex_positions, mat_create_transform(position, rotation, scale));
         fill_vertex_colors(vertex_colors, tint);
         draw_quad(texture_2d, vertex_positions, vertex_uvs, vertex_colors, entity_id);
     }

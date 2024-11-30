@@ -9,7 +9,7 @@ namespace nit
 {
     Matrix4 transform_to_matrix(const Transform& transform)
     {
-        return CreateTransform(transform.position, transform.rotation, transform.scale);
+        return mat_create_transform(transform.position, transform.rotation, transform.scale);
     }
 
     Vector3 transform_up(const Transform& transform)

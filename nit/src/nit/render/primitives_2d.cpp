@@ -108,7 +108,7 @@ namespace nit
     void fill_circle_vertex_positions(V4Verts2D& vertex_positions, f32 radius)
     {
         radius *= 2.f;
-        const Matrix4 scale_mat = Scale(Matrix4(), {radius, radius, 1.f});
+        const Matrix4 scale_mat = mat_scale(Matrix4(), {radius, radius, 1.f});
 
         vertex_positions[0] = scale_mat * DEFAULT_VERTEX_POSITIONS_2D[0];
         vertex_positions[1] = scale_mat * DEFAULT_VERTEX_POSITIONS_2D[1];
@@ -141,8 +141,8 @@ namespace nit
         
         static constexpr f32 SCALE = 0.002f;
 
-        Matrix4 transform_offset = Translate(transform, { offset.x, offset.y });
-        transform_offset *= Scale({}, { SCALE * size, -SCALE * size, SCALE });
+        Matrix4 transform_offset = mat_translate(transform, { offset.x, offset.y });
+        transform_offset *= mat_scale({}, { SCALE * size, -SCALE * size, SCALE });
 
         vertex_positions[0] = {d.x0, d.y1, 0.f, 1.f};
         vertex_positions[1] = {d.x1, d.y1, 0.f, 1.f};

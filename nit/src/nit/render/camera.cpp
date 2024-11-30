@@ -66,12 +66,12 @@ namespace nit
         {
         case CameraProjection::Perspective:
             {
-                proj = PerspectiveProjection(camera.fov, camera.aspect, camera.near_clip, camera.far_clip);
+                proj = mat_perspective_projection(camera.fov, camera.aspect, camera.near_clip, camera.far_clip);
             }
             break;
         case CameraProjection::Orthographic:
             {
-                proj = ortho_projection(camera.aspect, camera.size, camera.near_clip, camera.far_clip);
+                proj = mat_ortho_projection(camera.aspect, camera.size, camera.near_clip, camera.far_clip);
             }
             break;
         default:
@@ -84,6 +84,6 @@ namespace nit
 
     Matrix4 camera_view(const Transform& transform)
     {
-        return Inverse(transform_to_matrix(transform));
+        return mat_inverse(transform_to_matrix(transform));
     }
 }

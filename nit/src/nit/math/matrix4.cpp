@@ -61,7 +61,7 @@ namespace nit
         return v;
     }
 
-    void SetIdentity(Matrix4& matrix)
+    void mat_set_identity(Matrix4& matrix)
     {
         memset(matrix.m, 0, sizeof(f32) * 16);
         matrix.m[0][0] = 1;
@@ -70,21 +70,21 @@ namespace nit
         matrix.m[3][3] = 1;
     }
 
-    void SetZero(Matrix4& matrix)
+    void mat_set_zero(Matrix4& matrix)
     {
         memset(matrix.m, 0, sizeof(f32) * 16);
     }
 
-    Matrix4 CreateTransform(const Vector3& position, const Vector3& rotation /*= V3_ZERO*/, const Vector3& scale /*= V3_ONE*/)
+    Matrix4 mat_create_transform(const Vector3& position, const Vector3& rotation /*= V3_ZERO*/, const Vector3& scale /*= V3_ONE*/)
     {
         const Matrix4 identity;
-        Matrix4 rotation_matrix = (rotation != V3_ZERO) ? Rotate(identity, to_radians(rotation)) : identity;
-        Matrix4 translation = Translate(rotation_matrix, position);
-        Matrix4 scale_matrix = Scale(translation, scale);
+        Matrix4 rotation_matrix = (rotation != V3_ZERO) ? mat_rotate(identity, to_radians(rotation)) : identity;
+        Matrix4 translation = mat_translate(rotation_matrix, position);
+        Matrix4 scale_matrix = mat_scale(translation, scale);
         return scale_matrix;
     }
 
-    Matrix4 Translate(const Matrix4& matrix, const Vector3& translation)
+    Matrix4 mat_translate(const Matrix4& matrix, const Vector3& translation)
     {
         Matrix4 translate_matrix;
         translate_matrix.m[3][0] = translation.x;
@@ -93,7 +93,7 @@ namespace nit
         return translate_matrix * matrix;
     }
 
-    Matrix4 RotateX(const Matrix4& matrix, f32 x)
+    Matrix4 mat_rotate_x(const Matrix4& matrix, f32 x)
     {
         Matrix4 rotate_matrix;
         rotate_matrix.n[5] =  cosf(x);
@@ -103,7 +103,7 @@ namespace nit
         return rotate_matrix * matrix;
     }
 
-    Matrix4 RotateY(const Matrix4& matrix, f32 y)
+    Matrix4 mat_rotate_y(const Matrix4& matrix, f32 y)
     {
         Matrix4 rotate_matrix;
         rotate_matrix.n[0] =  cosf(y);
@@ -113,7 +113,7 @@ namespace nit
         return rotate_matrix * matrix;
     }
 
-    Matrix4 RotateZ(const Matrix4& matrix, f32 z)
+    Matrix4 mat_rotate_z(const Matrix4& matrix, f32 z)
     {
         Matrix4 rotate_matrix;
         rotate_matrix.n[0] =  cosf(z);
@@ -123,12 +123,12 @@ namespace nit
         return rotate_matrix * matrix;
     }
 
-    Matrix4 Rotate(const Matrix4& matrix, const Vector3& rotation)
+    Matrix4 mat_rotate(const Matrix4& matrix, const Vector3& rotation)
     {
-        return RotateZ(RotateY(RotateX(matrix, rotation.x), rotation.y), rotation.z);
+        return mat_rotate_z(mat_rotate_y(mat_rotate_x(matrix, rotation.x), rotation.y), rotation.z);
     }
 
-    Matrix4 Scale(const Matrix4& matrix, const Vector3& scale)
+    Matrix4 mat_scale(const Matrix4& matrix, const Vector3& scale)
     {
         Matrix4 scale_matrix;
 
@@ -139,7 +139,7 @@ namespace nit
         return matrix * scale_matrix;
     }
 
-    f32 Determinant(const Matrix4& matrix)
+    f32 mat_determinant(const Matrix4& matrix)
     {
         return matrix.n[12] * matrix.n[9]  * matrix.n[6]  * matrix.n[3] -
                matrix.n[8]  * matrix.n[13] * matrix.n[6]  * matrix.n[3] -
@@ -167,7 +167,7 @@ namespace nit
                matrix.n[0]  * matrix.n[5]  * matrix.n[10] * matrix.n[15];
     }
 
-    Matrix4 Transpose(const Matrix4& matrix)
+    Matrix4 mat_transpose(const Matrix4& matrix)
     {
         Matrix4 transposed;
         transposed.m[0][1] = matrix.m[1][0];
@@ -185,11 +185,11 @@ namespace nit
         return transposed;
     }
 
-    Matrix4 Inverse(const Matrix4& matrix)
+    Matrix4 mat_inverse(const Matrix4& matrix)
     {
         Matrix4 inverse;
 
-        const f32 det = Determinant(matrix);
+        const f32 det = mat_determinant(matrix);
 
         if (0.0f == det) {
             NIT_LOG_WARN("Matrix has no determinant. Can not invert\n");
@@ -250,7 +250,7 @@ namespace nit
         return inverse;
     }
 
-    Matrix4 ortho_projection(f32 left, f32 right, f32 bottom, f32 top, f32 near_plane, f32 far_plane)
+    Matrix4 mat_ortho_projection(f32 left, f32 right, f32 bottom, f32 top, f32 near_plane, f32 far_plane)
     {
         Matrix4 mat;
         mat.m[0][0] = 2 / (right - left);
@@ -262,27 +262,27 @@ namespace nit
         return mat;
     }
 
-    Matrix4 ortho_projection(const f32 aspect_ratio, const f32 size, f32 near_plane, f32 far_plane)
+    Matrix4 mat_ortho_projection(const f32 aspect_ratio, const f32 size, f32 near_plane, f32 far_plane)
     {
         const f32 right = aspect_ratio * size;
         const f32 left = -right;
-        return ortho_projection(left, right, -size, size, near_plane, far_plane);
+        return mat_ortho_projection(left, right, -size, size, near_plane, far_plane);
     }
 
-    Matrix4 ViewProjection(const Vector3& position, const Vector3& rotation)
+    Matrix4 mat_view_projection(const Vector3& position, const Vector3& rotation)
     {
-        const Matrix4 view_matrix = CreateTransform(position, rotation);
-        return Inverse(view_matrix);
+        const Matrix4 view_matrix = mat_create_transform(position, rotation);
+        return mat_inverse(view_matrix);
     }
 
-    Matrix4 PerspectiveProjection(f32 fov, f32 aspect, f32 near_clip, f32 far_clip)
+    Matrix4 mat_perspective_projection(f32 fov, f32 aspect, f32 near_clip, f32 far_clip)
     {
         NIT_CHECK(abs(aspect - std::numeric_limits<f32>::epsilon()) > static_cast<f32>(0));
 
         f32 const tan_half_fov = tan(to_radians(fov) / static_cast<f32>(2));
 
         Matrix4 result;
-        SetZero(result);
+        mat_set_zero(result);
         result.m[0][0] = static_cast<f32>(1) / (aspect * tan_half_fov);
         result.m[1][1] = static_cast<f32>(1) / (tan_half_fov);
         result.m[2][2] = - (far_clip + near_clip) / (far_clip - near_clip);
@@ -291,7 +291,7 @@ namespace nit
         return result;
     }
 
-    bool Decompose(const Matrix4& matrix, Vector3& position, Vector3& rotation, Vector3& scale)
+    bool mat_decompose(const Matrix4& matrix, Vector3& position, Vector3& rotation, Vector3& scale)
     {
         Matrix4 local_matrix = matrix;
         
@@ -340,12 +340,12 @@ namespace nit
         return true;
     }
 
-    Vector3 ScreenToWorldPoint(const Matrix4& projection_view_matrix, const Vector2& screen_point,
+    Vector3 mat_screen_to_world(const Matrix4& projection_view_matrix, const Vector2& screen_point,
         const Vector2& window_size)
     {
         const float half_screen_width = window_size.x / 2.f;
         const float half_screen_height = window_size.y / 2.f;
-        const Matrix4 inverse_mv = Inverse(projection_view_matrix);
+        const Matrix4 inverse_mv = mat_inverse(projection_view_matrix);
         const float near_plane_x = (screen_point.x - half_screen_width) / half_screen_width;
         const float near_plane_y = -((screen_point.y - half_screen_height) / half_screen_height);
         const Vector4 near_plane = { near_plane_x, near_plane_y, -1, 1 };

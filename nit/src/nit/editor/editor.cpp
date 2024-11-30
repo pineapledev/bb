@@ -230,7 +230,7 @@ namespace nit
             {
                 controller.mouse_down = true;
                 Matrix4 camera_matrix = camera_proj_view(camera, { controller.aux_position });
-                Vector3 mouse_world   = ScreenToWorldPoint(camera_matrix, cursor_pos, window_size);
+                Vector3 mouse_world   = mat_screen_to_world(camera_matrix, cursor_pos, window_size);
                 controller.offset_pos = mouse_world + controller.aux_position;
             }
 
@@ -245,7 +245,7 @@ namespace nit
             if (is_right_mouse_pressed)
             {
                 Matrix4 camera_matrix = camera_proj_view(camera, { controller.aux_position });
-                Vector3 mouse_world   = ScreenToWorldPoint(camera_matrix, cursor_pos, window_size) * -1;
+                Vector3 mouse_world   = mat_screen_to_world(camera_matrix, cursor_pos, window_size) * -1;
                 transform.position = Vector3{ mouse_world.x, mouse_world.y, transform.position.z } + Vector3{ controller.offset_pos.x, controller.offset_pos.y, 0 };
             }
         }        
@@ -381,14 +381,14 @@ namespace nit
 
                         Transform& transform = entity_get<Transform>(selected_entity);
                         
-                        Matrix4 gizmo_matrix = CreateTransform(transform.position, transform.rotation, transform.scale);
+                        Matrix4 gizmo_matrix = mat_create_transform(transform.position, transform.rotation, transform.scale);
                         
                         ImGuizmo::Manipulate(view, projection, operation, mode, &gizmo_matrix.n[0], nullptr, snap_enabled ? &snap : nullptr);
 
                         if (ImGuizmo::IsUsing())
                         {
                             Vector3 position, rotation, scale;
-                            Decompose(gizmo_matrix, position, rotation, scale);
+                            mat_decompose(gizmo_matrix, position, rotation, scale);
                             Vector3 delta_rotation = rotation - transform.rotation; 
                             
                             transform.position = position;
