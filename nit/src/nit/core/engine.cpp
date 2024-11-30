@@ -59,6 +59,12 @@ namespace nit
         return engine->delta_seconds;
     }
 
+    f32 fixed_delta_seconds()
+    {
+        NIT_CHECK_ENGINE_CREATED
+        return (f32) engine->fixed_delta_seconds;
+    }
+
     EngineEvent& engine_event(Stage stage)
     {
         engine_try_lazy_create();
@@ -80,17 +86,19 @@ namespace nit
         entity_registry_set_instance(&engine->entity_registry);
         entity_registry_init();
         
-        register_name_component();
-        register_uuid_component();
-        register_transform_component();
-        register_camera_component();
-        register_text_component();
-        register_sprite_component();
-        register_circle_component();
-        register_line_2d_component();
-        register_rigidbody_2d_component();
-        register_box_collider_2d_component();
-        register_circle_collider_component();
+        {
+            register_name_component();
+            register_uuid_component();
+            register_transform_component();
+            register_camera_component();
+            register_text_component();
+            register_sprite_component();
+            register_circle_component();
+            register_line_2d_component();
+            register_rigidbody_2d_component();
+            register_box_collider_2d_component();
+            register_circle_collider_component();
+        }
 
         render_objects_set_instance(&engine->render_objects);
         render_objects_init();
@@ -100,9 +108,9 @@ namespace nit
 
         audio_set_instance(&engine->audio_registry);
         audio_init();
-
-        //physics_2d_set_instance(&engine->physics_2d);
-        //physics_2d_init();
+        
+        physics_2d_set_instance(&engine->physics_2d);
+        physics_2d_init();
 
         NIT_IF_EDITOR_ENABLED(register_editor());
         
@@ -110,11 +118,13 @@ namespace nit
         
         asset_registry_set_instance(&engine->asset_registry);
         
-        register_texture_2d_asset();
-        register_font_asset();
-        register_scene_asset();
-        register_clip_asset();
-        register_physic_material_asset();
+        {
+            register_texture_2d_asset();
+            register_font_asset();
+            register_scene_asset();
+            register_clip_asset();
+            register_physic_material_asset();
+        }
 
         if (on_init)
         {

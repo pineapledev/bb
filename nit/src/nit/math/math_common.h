@@ -84,4 +84,10 @@ namespace nit
         std::uniform_real_distribution distribution(left, right);
         return distribution(random_engine);
     }
+
+    template <typename T>
+    bool epsilon_equal(T a, T b, T epsilon = static_cast<T>(F32_EPSILON))
+    {
+        return std::fabs(a - b) <= epsilon;
+    }
 }

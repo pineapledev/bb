@@ -45,9 +45,9 @@ namespace nit
 
     // Pre-declared listeners
     static ListenerAction start();
-    static ListenerAction update();
     static ListenerAction fixed_update();
     static ListenerAction draw();
+    
     
     void physics_2d_init() 
     {
@@ -61,7 +61,6 @@ namespace nit
         entity_create_group<Transform, Rigidbody2D, CircleCollider>();
         
         engine_event(Stage::Start)       += EngineListener::create(start);
-        engine_event(Stage::Update)      += EngineListener::create(update);
         engine_event(Stage::FixedUpdate) += EngineListener::create(fixed_update);
         engine_event(Stage::Draw)        += EngineListener::create(draw);
     }
@@ -83,7 +82,7 @@ namespace nit
 
     static b2World* world()
     {
-        if (physics_2d_has_instance())
+        if (!physics_2d_has_instance())
         {
             NIT_CHECK(false);
             return nullptr;
@@ -94,7 +93,7 @@ namespace nit
             physics_2d->world = new b2World((b2Vec2&) physics_2d->gravity);
         }
 
-        return (b2World*) physics_2d;
+        return (b2World*) physics_2d->world;
     }
 
     static void rigidbody_init(Rigidbody2D& rb, const Vector2& position, f32 angle)
@@ -137,18 +136,18 @@ namespace nit
             return;
         }
         
-        b2Body& body = (b2Body&) rb.body_ptr;
+        b2Body* body = (b2Body*) rb.body_ptr;
         
         if (collider.fixture_ptr)
         {
-            body.DestroyFixture((b2Fixture*) collider.fixture_ptr);
+            body->DestroyFixture((b2Fixture*) collider.fixture_ptr);
         }
 
         b2PolygonShape shape;
         shape.SetAsBox(collider.size.x / 2.f, collider.size.y / 2.f);
         b2FixtureDef fixture_def;
         fixture_def_init(fixture_def, shape, collider.physic_material);
-        collider.fixture_ptr = body.CreateFixture(&fixture_def);
+        collider.fixture_ptr = body->CreateFixture(&fixture_def);
         collider.prev_size = collider.size;
     }
 
@@ -160,18 +159,18 @@ namespace nit
             return;
         }
         
-        b2Body& body = (b2Body&) rb.body_ptr;
+        b2Body* body = (b2Body*) rb.body_ptr;
         
         if (collider.fixture_ptr)
         {
-            body.DestroyFixture((b2Fixture*) collider.fixture_ptr);
+            body->DestroyFixture((b2Fixture*) collider.fixture_ptr);
         }
 
         b2CircleShape shape;
         shape.m_radius = collider.radius;
         b2FixtureDef fixture_def;
         fixture_def_init(fixture_def, shape, collider.physic_material);
-        collider.fixture_ptr = body.CreateFixture(&fixture_def);
+        collider.fixture_ptr = body->CreateFixture(&fixture_def);
         collider.prev_radius = collider.radius;
     }
 
@@ -183,9 +182,9 @@ namespace nit
             return;
         }
 
-        b2Body& body = (b2Body&) rb.body_ptr;
+        b2Body* body = (b2Body*) rb.body_ptr;
         
-        body.SetEnabled(rb.enabled);
+        body->SetEnabled(rb.enabled);
         
         if (!rb.enabled)
         {
@@ -194,28 +193,28 @@ namespace nit
 
         if (rb.body_type != rb.prev_body_type)
         {
-            body.SetType( (b2BodyType) rb.body_type);
+            body->SetType( (b2BodyType) rb.body_type);
             
             if (rb.body_type == BodyType::Kinematic)
             {
-                body.SetLinearVelocity((const b2Vec2&) V2_ZERO);
+                body->SetLinearVelocity((const b2Vec2&) V2_ZERO);
             }
         }
 
-        body.SetAwake(rb.follow_transform);
+        body->SetAwake(!rb.follow_transform);
         
         if (rb.follow_transform)
         {
-            body.SetTransform((const b2Vec2&) transform.position, to_radians(transform.rotation.z));
+            body->SetTransform((const b2Vec2&) transform.position, to_radians(transform.rotation.z));
         }
         else
         {
-            Vector2 body_pos     = (const Vector2&) body.GetTransform().p - center;
+            Vector2 body_pos     = (const Vector2&) body->GetTransform().p - center;
             transform.position = { body_pos.x, body_pos.y, transform.position.z };
-            transform.rotation.z = to_degrees(body.GetAngle());
+            transform.rotation.z = to_degrees(body->GetAngle());
         }
 
-        body.SetGravityScale(rb.gravity_scale);
+        body->SetGravityScale(rb.gravity_scale);
     }
 
     static void update_bodies()
@@ -239,28 +238,39 @@ namespace nit
             rigidbody_update(rb, transform, collider.center);
         }
 
-        for (EntityID entity : entity_get_group<Transform, Rigidbody2D, BoxCollider2D>().entities)
+        for (EntityID entity : entity_get_group<Transform, Rigidbody2D, CircleCollider>().entities)
         {
             auto& transform  = entity_get<Transform>(entity);
             auto& rb= entity_get<Rigidbody2D>(entity);
-            auto& collider   = entity_get<BoxCollider2D>(entity);
+            auto& collider   = entity_get<CircleCollider>(entity);
             
             if (!rb.body_ptr)
             {
                 rigidbody_init(rb, (const Vector2&) transform.position + collider.center, transform.rotation.z);
             }
-
-            if (!collider.fixture_ptr || collider.size != collider.prev_size)
+        
+            if (!collider.fixture_ptr || !epsilon_equal(collider.radius, collider.prev_radius))
             {
-                box_collider_init(rb, collider);
+                circle_collider_init(rb, collider);
             }
-
+        
             rigidbody_update(rb, transform, collider.center);
         }
     }
     
-    ListenerAction start()        { return ListenerAction::StayListening; }
-    ListenerAction update()       { return ListenerAction::StayListening; }
-    ListenerAction fixed_update() { return ListenerAction::StayListening; }
-    ListenerAction draw()         { return ListenerAction::StayListening; }
+    ListenerAction start()
+    {
+        update_bodies();
+        return ListenerAction::StayListening;
+    }
+    
+    ListenerAction fixed_update()
+    {
+        world()->SetGravity((const b2Vec2&) physics_2d->gravity);
+        world()->Step(fixed_delta_seconds(), physics_2d->velocity_iterations, physics_2d->position_iterations);
+        update_bodies();
+        return ListenerAction::StayListening;
+    }
+    
+    ListenerAction draw() { return ListenerAction::StayListening; }
 }

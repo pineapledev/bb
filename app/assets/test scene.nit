@@ -23,8 +23,8 @@ Scene:
       Name:
         data: quad
       Transform:
-        position: [-1.06095123, 0.959213257, 0]
-        rotation: [0, 0, 0]
+        position: [-0.524030983, 0.576903939, 0]
+        rotation: [0, 0, -37.666256]
         scale: [1, 1, 1]
       Sprite:
         texture: ["", "", 0]
@@ -41,7 +41,7 @@ Scene:
         enabled: true
         body_type: Dynamic
         mass: 1
-        gravity_scale: 1
+        gravity_scale: 0.00999999978
       BoxCollider2D:
         size: [1, 1]
         center: [0, 0]
@@ -50,15 +50,20 @@ Scene:
       Name:
         data: circle
       Transform:
-        position: [-0.0318238884, -0.656334341, -6.10351562e-05]
-        rotation: [0, 0, 0]
-        scale: [1, 1, 1]
+        position: [-0.549019158, -1.12285793, -6.10351562e-05]
+        rotation: [0, 0, -1.34710288]
+        scale: [0.99998951, 0.99998951, 1]
       Circle:
         visible: true
         tint: [0.300000012, 1, 0.300000012, 1]
         radius: 0.5
         thickness: 0.400000006
         fade: 0.230000004
+      Rigidbody2D:
+        enabled: true
+        body_type: Dynamic
+        mass: 1
+        gravity_scale: 0
       CircleCollider:
         radius: 1
         center: [0, 0]

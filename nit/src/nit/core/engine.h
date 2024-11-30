@@ -61,6 +61,7 @@ namespace nit
     Engine*      engine_get_instance();
     bool         engine_has_instance();
     f32          delta_seconds();
+    f32          fixed_delta_seconds();
     EngineEvent& engine_event(Stage stage);
     void         engine_init(VoidFunc on_init = nullptr);
 }

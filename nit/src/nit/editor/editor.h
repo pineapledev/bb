@@ -35,17 +35,18 @@ namespace nit
             Stop  
         };
         
-        bool        enabled              = true;
+        bool          enabled              = true;
         EntityID      editor_camera_entity = NULL_ENTITY;
         EntityID      selected_entity      = NULL_ENTITY;
-        AssetHandle selected_asset       = {};
-        Selection   selection            = Selection::None;
-        bool        show_viewport        = true;
-        bool        show_sprite_packer   = false;
-        bool        show_scene_entities  = true;
-        bool        show_properties      = true;
-        bool        show_assets          = true;
-        bool        show_stats           = false;
+        AssetHandle   selected_asset       = {};
+        Selection     selection            = Selection::None;
+        bool          show_viewport        = true;
+        bool          show_sprite_packer   = false;
+        bool          show_scene_entities  = true;
+        bool          show_properties      = true;
+        bool          show_assets          = true;
+        bool          show_stats           = false;
+        bool          is_using_gizmo       = false;
         
         Pool             asset_nodes;
         u32              root_node = U32_MAX;

@@ -1,5 +1,6 @@
 ﻿#include "editor.h"
 
+#include "physics/rigidbody_2d.h"
 #include "render/circle.h"
 #include "render/line_2d.h"
 #include "render/sprite.h"
@@ -385,6 +386,26 @@ namespace nit
                         
                         ImGuizmo::Manipulate(view, projection, operation, mode, &gizmo_matrix.n[0], nullptr, snap_enabled ? &snap : nullptr);
 
+
+                        if (ImGuizmo::IsUsing() && !editor->is_using_gizmo)
+                        {
+                            if (entity_has<Rigidbody2D>(selected_entity))
+                            {
+                                entity_get<Rigidbody2D>(selected_entity).follow_transform = true;
+                            }
+                            
+                            editor->is_using_gizmo = true;
+                        }
+                        else if (!ImGuizmo::IsUsing() && editor->is_using_gizmo)
+                        {
+                            if (entity_has<Rigidbody2D>(selected_entity))
+                            {
+                                entity_get<Rigidbody2D>(selected_entity).follow_transform = false;
+                            }
+                            
+                            editor->is_using_gizmo = false;
+                        }
+                        
                         if (ImGuizmo::IsUsing())
                         {
                             Vector3 position, rotation, scale;

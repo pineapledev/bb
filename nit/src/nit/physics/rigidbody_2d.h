@@ -9,7 +9,7 @@ namespace nit
         bool      enabled          = true;
         BodyType  body_type        = BodyType::Dynamic;
         float     mass             = 1.f;
-        float     gravity_scale    = 1.f;
+        float     gravity_scale    = 0.f;
         bool      follow_transform = false;
         void*     body_ptr         = nullptr;
         BodyType  prev_body_type   = BodyType::Dynamic;
