@@ -88,6 +88,6 @@ namespace nit
     template <typename T>
     bool epsilon_equal(T a, T b, T epsilon = static_cast<T>(F32_EPSILON))
     {
-        return std::fabs(a - b) <= epsilon;
+        return abs(a - b) <= epsilon;
     }
 }

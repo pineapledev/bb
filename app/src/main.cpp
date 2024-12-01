@@ -65,12 +65,8 @@ int main(int argc, char** argv)
 ListenerAction start();
 ListenerAction update();
 
-Event<int, int> jaja;
-
 void init()
 {
-    event_broadcast(jaja, 3, 4);
-    
     //Create game system
     engine_event(Stage::Start)  += EngineListener::create(start);
     engine_event(Stage::Update) += EngineListener::create(update);

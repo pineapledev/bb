@@ -47,6 +47,9 @@ namespace nit
     // Pre-declared listeners
     static ListenerAction start();
     static ListenerAction fixed_update();
+    static ListenerAction end();
+    static ListenerAction on_component_added(const ComponentAddedArgs& args);
+    static ListenerAction on_component_removed(const ComponentRemovedArgs& args);
     
     
     void physics_2d_init() 
@@ -62,6 +65,7 @@ namespace nit
         
         engine_event(Stage::Start)       += EngineListener::create(start);
         engine_event(Stage::FixedUpdate) += EngineListener::create(fixed_update);
+        engine_event(Stage::End)         += EngineListener::create(end);
     }
 
     void physics_2d_finish()
@@ -259,7 +263,81 @@ namespace nit
     
     ListenerAction start()
     {
-        update_bodies();
+        engine_get_instance()->entity_registry.component_added_event   += ComponentAddedListener::create(on_component_added);
+        engine_get_instance()->entity_registry.component_removed_event += ComponentRemovedListener::create(on_component_removed);
+        
+        return ListenerAction::StayListening;
+    }
+
+    ListenerAction end()
+    {
+        engine_get_instance()->entity_registry.component_added_event   -= ComponentAddedListener::create(on_component_added);
+        engine_get_instance()->entity_registry.component_removed_event -= ComponentRemovedListener::create(on_component_removed);
+        return ListenerAction::StayListening;
+    }
+
+    ListenerAction on_component_added(const ComponentAddedArgs& args)
+    {
+        if (args.type == type_get<BoxCollider2D>() && entity_has<CircleCollider>(args.entity))
+        {
+            entity_remove<CircleCollider>(args.entity); 
+        }
+        else if (args.type == type_get<CircleCollider>() && entity_has<BoxCollider2D>(args.entity))
+        {
+            entity_remove<BoxCollider2D>(args.entity);
+        }
+        
+        return ListenerAction::StayListening;
+    }
+
+    ListenerAction on_component_removed(const ComponentRemovedArgs& args)
+    {
+        if (args.type == type_get<Rigidbody2D>())
+        {
+            auto& rb = entity_get<Rigidbody2D>(args.entity); 
+
+            world()->DestroyBody((b2Body*) rb.body_ptr);
+            rb.body_ptr = nullptr;
+            
+            if (entity_has<BoxCollider2D>(args.entity))
+            {
+                entity_get<BoxCollider2D>(args.entity).fixture_ptr = nullptr;
+            }
+            else if (entity_has<CircleCollider>(args.entity))
+            {
+                entity_get<CircleCollider>(args.entity).fixture_ptr = nullptr;
+            } 
+        }
+        else if (args.type == type_get<BoxCollider2D>())
+        {
+            auto& collider = entity_get<BoxCollider2D>(args.entity);
+            auto& name = entity_get<Name>(args.entity);
+            
+            if (entity_has<Rigidbody2D>(args.entity))
+            {
+                auto& rb = entity_get<Rigidbody2D>(args.entity);
+                if (!rb.body_ptr || !collider.fixture_ptr)
+                {
+                    return ListenerAction::StayListening;
+                }
+
+                ((b2Body*) rb.body_ptr)->DestroyFixture((b2Fixture*) collider.fixture_ptr);
+            }
+        }
+        else if (args.type == type_get<CircleCollider>())
+        {
+            auto& collider = entity_get<CircleCollider>(args.entity);
+            if (entity_has<Rigidbody2D>(args.entity))
+            {
+                auto& rb = entity_get<Rigidbody2D>(args.entity);
+                if (!rb.body_ptr || !collider.fixture_ptr)
+                {
+                    return ListenerAction::StayListening;
+                }
+
+                ((b2Body*) rb.body_ptr)->DestroyFixture((b2Fixture*) collider.fixture_ptr);
+            }
+        }
         return ListenerAction::StayListening;
     }
     

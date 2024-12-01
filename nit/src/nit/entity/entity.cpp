@@ -115,6 +115,17 @@ namespace nit
             }
 
             event_broadcast<const ComponentRemovedArgs&>(entity_registry->component_removed_event, {entity, component_pool.data_pool.type});
+        }
+        
+        for (u32 i = 0; i < entity_registry->next_component_type_index; ++i)
+        {
+            ComponentPool& component_pool = entity_registry->component_pool[i];
+
+            if (!entity_registry->signatures[entity].test(i + 1))
+            {
+                continue;
+            }
+
             pool_delete_data(&component_pool.data_pool, entity);
         }
 
