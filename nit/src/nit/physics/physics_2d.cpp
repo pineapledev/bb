@@ -201,7 +201,10 @@ namespace nit
             if (rb.body_type == BodyType::Kinematic)
             {
                 body->SetLinearVelocity((const b2Vec2&) V2_ZERO);
+                body->SetAngularVelocity(0.f);
             }
+
+            rb.prev_body_type = rb.body_type;
         }
 
         body->SetAwake(!rb.follow_transform);
