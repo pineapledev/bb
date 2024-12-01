@@ -5,6 +5,7 @@ namespace nit
 {
     struct BoxCollider2D
     {
+        bool        is_trigger      = false;
         Vector2     size            = V2_ONE;
         Vector2     center          = V2_ZERO;
         AssetHandle physic_material = {};

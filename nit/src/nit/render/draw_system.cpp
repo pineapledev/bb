@@ -288,33 +288,32 @@ namespace nit
 #ifdef NIT_EDITOR_ENABLED
             if (engine_get_instance()->editor.enabled)
             {
-                auto collider_color = V4_COLOR_LIGHT_GREEN;
-                collider_color.w = 0.2f;
-            
                 for (EntityID entity : entity_get_group<Transform, Rigidbody2D, BoxCollider2D>().entities)
                 {
                     auto& transform  = entity_get<Transform>(entity);
                     auto& collider   = entity_get<BoxCollider2D>(entity);
+                    auto collider_color = collider.is_trigger ? V4_COLOR_CYAN : V4_COLOR_LIGHT_GREEN;
 
                     Vector3 position = transform.position + to_v3(collider.center); 
                     Vector3 rotation = transform.rotation;
                 
-                    draw_line_2d(position, rotation, V3_ONE,  { -0.5f * collider.size.x, -0.5f * collider.size.y }, { 0.5f * collider.size.x, -0.5f * collider.size.y }, V4_COLOR_LIGHT_GREEN, 0.05f / 2.f, entity);
-                    draw_line_2d(position, rotation, V3_ONE,  {  0.5f * collider.size.x, -0.5f * collider.size.y }, { 0.5f * collider.size.x,  0.5f * collider.size.y }, V4_COLOR_LIGHT_GREEN, 0.05f / 2.f, entity);
-                    draw_line_2d(position, rotation, V3_ONE,  {  0.5f * collider.size.x,  0.5f * collider.size.y }, {-0.5f * collider.size.x,  0.5f * collider.size.y }, V4_COLOR_LIGHT_GREEN, 0.05f / 2.f, entity);
-                    draw_line_2d(position, rotation, V3_ONE,  { -0.5f * collider.size.x,  0.5f * collider.size.y }, {-0.5f * collider.size.x, -0.5f * collider.size.y }, V4_COLOR_LIGHT_GREEN, 0.05f / 2.f, entity);
+                    draw_line_2d(position, rotation, V3_ONE,  { -0.5f * collider.size.x, -0.5f * collider.size.y }, { 0.5f * collider.size.x, -0.5f * collider.size.y }, collider_color, 0.05f / 2.f, entity);
+                    draw_line_2d(position, rotation, V3_ONE,  {  0.5f * collider.size.x, -0.5f * collider.size.y }, { 0.5f * collider.size.x,  0.5f * collider.size.y }, collider_color, 0.05f / 2.f, entity);
+                    draw_line_2d(position, rotation, V3_ONE,  {  0.5f * collider.size.x,  0.5f * collider.size.y }, {-0.5f * collider.size.x,  0.5f * collider.size.y }, collider_color, 0.05f / 2.f, entity);
+                    draw_line_2d(position, rotation, V3_ONE,  { -0.5f * collider.size.x,  0.5f * collider.size.y }, {-0.5f * collider.size.x, -0.5f * collider.size.y }, collider_color, 0.05f / 2.f, entity);
                 }
         
                 for (EntityID entity : entity_get_group<Transform, Rigidbody2D, CircleCollider>().entities)
                 {
                     auto& transform  = entity_get<Transform>(entity);
                     auto& collider   = entity_get<CircleCollider>(entity);
-        
+                    auto collider_color = collider.is_trigger ? V4_COLOR_LIGHT_BLUE : V4_COLOR_LIGHT_GREEN;
+                    
                     draw_circle(
                          transform.position + to_v3(collider.center),
                          transform.rotation,
                          {collider.radius * 2.f, collider.radius * 2.f, 1.f},
-                         V4_COLOR_LIGHT_GREEN,
+                         collider_color,
                          .05f,
                          .01f,
                          entity

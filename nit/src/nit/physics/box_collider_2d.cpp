@@ -11,6 +11,7 @@ namespace nit
 {
     void serialize(const BoxCollider2D* collider, YAML::Emitter& emitter)
     {
+        emitter << YAML::Key << "is_trigger"      << YAML::Value << collider->is_trigger;
         emitter << YAML::Key << "size"            << YAML::Value << collider->size;
         emitter << YAML::Key << "center"          << YAML::Value << collider->center;
         emitter << YAML::Key << "physic_material" << YAML::Value << collider->physic_material;
@@ -18,6 +19,7 @@ namespace nit
     
     void deserialize(BoxCollider2D* collider, const YAML::Node& node)
     {
+        collider->is_trigger      = node["is_trigger"]      .as<bool>();
         collider->size            = node["size"]            .as<Vector2>();
         collider->center          = node["center"]          .as<Vector2>();
         collider->physic_material = node["physic_material"] .as<AssetHandle>();
@@ -26,6 +28,7 @@ namespace nit
 #ifdef NIT_EDITOR_ENABLED
     void draw_editor(BoxCollider2D* collider)
     {
+        editor_draw_bool("Is Trigger", collider->is_trigger);
         editor_draw_drag_vector2("Size", collider->size);
         editor_draw_drag_vector2("Center", collider->center);
         editor_draw_asset_combo("Physic Mat", type_get<PhysicMaterial>(), &collider->physic_material);

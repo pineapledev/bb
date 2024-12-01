@@ -30,6 +30,7 @@ Scene:
         mass: 1
         gravity_scale: 0
       BoxCollider2D:
+        is_trigger: false
         size: [7.25, 1]
         center: [0, 0]
         physic_material: ["", "", 0]
@@ -57,6 +58,7 @@ Scene:
         mass: 1
         gravity_scale: 1
       BoxCollider2D:
+        is_trigger: false
         size: [1, 1]
         center: [0, 0]
         physic_material: ["", "", 0]
@@ -84,6 +86,7 @@ Scene:
         mass: 1
         gravity_scale: 1
       BoxCollider2D:
+        is_trigger: false
         size: [1, 1]
         center: [0, 0]
         physic_material: ["", "", 0]
@@ -106,6 +109,7 @@ Scene:
         mass: 1
         gravity_scale: 1
       CircleCollider:
+        is_trigger: false
         radius: 0.5
         center: [0, 0]
         physic_material: ["", "", 0]
@@ -128,6 +132,7 @@ Scene:
         mass: 1
         gravity_scale: 1
       CircleCollider:
+        is_trigger: false
         radius: 0.400000006
         center: [0, 0]
         physic_material: ["", "", 0]
@@ -155,6 +160,7 @@ Scene:
         mass: 1
         gravity_scale: 1
       BoxCollider2D:
+        is_trigger: false
         size: [2.79999995, 0.400000006]
         center: [0, 0]
         physic_material: ["", "", 0]

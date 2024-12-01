@@ -238,6 +238,9 @@ namespace nit
                 box_collider_init(rb, collider);
             }
 
+            //collider update
+            ((b2Fixture*) collider.fixture_ptr)->SetSensor(collider.is_trigger);
+            
             rigidbody_update(rb, transform, collider.center);
         }
 
@@ -256,6 +259,8 @@ namespace nit
             {
                 circle_collider_init(rb, collider);
             }
+
+            ((b2Fixture*) collider.fixture_ptr)->SetSensor(collider.is_trigger);
         
             rigidbody_update(rb, transform, collider.center);
         }

@@ -5,6 +5,7 @@ namespace nit
 {
     struct CircleCollider
     {
+        bool        is_trigger      = false;
         f32         radius          = .5f;
         Vector2     center          = V2_ZERO;
         AssetHandle physic_material = {};

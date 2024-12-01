@@ -23,8 +23,8 @@ Scene:
       Name:
         data: quad
       Transform:
-        position: [-1.98721564, 0.775518119, 0]
-        rotation: [0, 0, 1.06388104]
+        position: [-0.854475617, 1.76605392, 0]
+        rotation: [0, 0, 51.8273888]
         scale: [0.999991059, 0.999991059, 1]
       Sprite:
         texture: ["", "", 0]
@@ -43,6 +43,7 @@ Scene:
         mass: 1
         gravity_scale: 0.00999999978
       BoxCollider2D:
+        is_trigger: false
         size: [1, 1]
         center: [0, 0]
         physic_material: [test ph material, PhysicMaterial, 17295311971134077511]
@@ -50,9 +51,9 @@ Scene:
       Name:
         data: circle
       Transform:
-        position: [-2.06809831, -0.231156692, -6.10351562e-05]
-        rotation: [0, 0, 98.4317856]
-        scale: [0.999969006, 0.999969006, 1]
+        position: [-1.24156487, 0.791888177, -6.10351562e-05]
+        rotation: [0, 0, 177.998535]
+        scale: [0.999957681, 0.999957681, 1]
       Circle:
         visible: true
         tint: [0.300000012, 1, 0.300000012, 1]
@@ -65,6 +66,7 @@ Scene:
         mass: 1
         gravity_scale: 0
       CircleCollider:
+        is_trigger: false
         radius: 0.5
         center: [0, 0]
         physic_material: [test ph material, PhysicMaterial, 17295311971134077511]
