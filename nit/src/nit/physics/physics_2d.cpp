@@ -242,7 +242,17 @@ namespace nit
             }
 
             //collider update
-            ((b2Fixture*) collider.fixture_ptr)->SetSensor(collider.is_trigger);
+            b2Fixture* fixture = ((b2Fixture*) collider.fixture_ptr); 
+            fixture->SetSensor(collider.is_trigger);
+
+            if (asset_valid(collider.physic_material))
+            {
+                PhysicMaterial* physic_material = asset_get_data<PhysicMaterial>(collider.physic_material);
+                fixture->SetDensity(physic_material->density);
+                fixture->SetFriction(physic_material->friction);
+                fixture->SetRestitution(physic_material->bounciness);
+                fixture->SetRestitutionThreshold(physic_material->threshold);
+            }
             
             rigidbody_update(rb, transform, collider.center);
         }
