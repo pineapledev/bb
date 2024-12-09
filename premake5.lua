@@ -425,16 +425,16 @@ project "yaml"
 
 project "box2d"
     kind "StaticLib"
-    language "C++"
-    cppdialect "C++20"
+    language "C"
     staticruntime "off"
     targetdir (binariesdir)
     objdir (intermediatesdir)
+    buildoptions { "-std=c11" }
     
     files
     {
         "3rd/box2d/src/**.h",
-        "3rd/box2d/src/**.cpp",
+        "3rd/box2d/src/**.c",
         "3rd/box2d/include/**.h"
     }
     
@@ -443,6 +443,9 @@ project "box2d"
         "3rd/box2d/include",
         "3rd/box2d/src"
     }
+
+    filter { "system:linux or system:windows", "toolset:gcc or clang" }
+        buildoptions { "-std=c11" }
     
     filter "configurations:Debug"
         symbols "On"

@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "physics_2d.h"
 #include "nit/core/asset.h"
 
 namespace nit
@@ -9,8 +10,8 @@ namespace nit
         f32         radius          = .5f;
         Vector2     center          = V2_ZERO;
         AssetHandle physic_material = {};
-        f32         prev_radius     = .5f;
-        void*       fixture_ptr     = nullptr;
+        ShapeHandle handle          = {};
+        bool        invalidated     = false;
     };
 
     void register_circle_collider_component();

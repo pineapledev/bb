@@ -1,14 +1,9 @@
 #include "physics_2d.h"
-
 #include "box_collider_2d.h"
 #include "circle_collider.h"
 #include "physic_material.h"
 #include "rigidbody_2d.h"
-#include "box2d/b2_body.h"
-#include "box2d/b2_circle_shape.h"
-#include "box2d/b2_fixture.h"
-#include "box2d/b2_polygon_shape.h"
-#include "box2d/b2_world.h"
+#include "box2d/box2d.h"
 #include "core/engine.h"
 #include "entity/entity_utils.h"
 #include "render/transform.h"
@@ -44,13 +39,62 @@ namespace nit
         return physics_2d;
     }
 
+    static b2WorldId to_box2d(const WorldHandle& handle)
+    {
+        return (const b2WorldId&) handle;
+    }
+
+    static b2BodyId to_box2d(const BodyHandle& handle)
+    {
+        return (const b2BodyId&) handle;
+    }
+
+    static b2ShapeId to_box2d(const ShapeHandle& handle)
+    {
+        return (const b2ShapeId&) handle;
+    }
+
+    static b2Vec2 to_box2d(const Vector2& vec)
+    {
+        return (const b2Vec2&) vec;
+    }
+
+    static b2BodyType to_box2d(BodyType type)
+    {
+        return (b2BodyType) type;
+    }
+    
+    static WorldHandle from_box2d(const b2WorldId& handle)
+    {
+        return (const WorldHandle&) handle;
+    }
+
+    static BodyHandle from_box2d(const b2BodyId& handle)
+    {
+        return (const BodyHandle&) handle;
+    }
+
+    static ShapeHandle from_box2d(const b2ShapeId& handle)
+    {
+        return (const ShapeHandle&) handle;
+    }
+
+    static Vector2 from_box2d(const b2Vec2& vec)
+    {
+        return (const Vector2&) vec;
+    }
+
+    static BodyType from_box2d(b2BodyType type)
+    {
+        return (BodyType) type;
+    }
+    
     // Pre-declared listeners
     static ListenerAction start();
     static ListenerAction fixed_update();
     static ListenerAction end();
     static ListenerAction on_component_added(const ComponentAddedArgs& args);
     static ListenerAction on_component_removed(const ComponentRemovedArgs& args);
-    
     
     void physics_2d_init() 
     {
@@ -76,41 +120,48 @@ namespace nit
             return;
         }
 
-        if (physics_2d->world)
+        if (auto world_id = to_box2d(physics_2d->world_handle); b2World_IsValid(world_id))
         {
-            delete (b2World*) physics_2d->world;
-            physics_2d->world = nullptr;
+            b2DestroyWorld(world_id);
+            physics_2d->world_handle = {};
         }
     }
 
-    static b2World* world()
+    static b2WorldId world()
     {
         if (!physics_2d_has_instance())
         {
             NIT_CHECK(false);
-            return nullptr;
+            return {};
         }
 
-        if (!physics_2d->world)
+        if (auto world = to_box2d(physics_2d->world_handle); !b2World_IsValid(world))
         {
-            physics_2d->world = new b2World((b2Vec2&) physics_2d->gravity);
+            b2WorldDef def = b2DefaultWorldDef();
+            def.gravity = to_box2d(physics_2d->gravity);
+            physics_2d->world_handle = from_box2d(b2CreateWorld(&def));
         }
 
-        return (b2World*) physics_2d->world;
+        return to_box2d(physics_2d->world_handle);
     }
 
-    static void rigidbody_init(Rigidbody2D& rb, const Vector2& position, f32 angle)
+    static void rigidbody_invalidate(Rigidbody2D& rb, const Vector2& position, f32 angle)
     {
-        b2BodyDef def;
-        def.type     = (b2BodyType) rb.body_type;
-        def.position = (const b2Vec2&) position;
-        def.angle    = angle;
+        if (b2Body_IsValid(to_box2d(rb.handle)))
+        {
+            b2DestroyBody(to_box2d(rb.handle));
+            rb.handle = {};
+        }
         
-        rb.prev_body_type = rb.body_type; 
-        rb.body_ptr       = world()->CreateBody(&def);
+        b2BodyDef def = b2DefaultBodyDef();
+        def.type      = to_box2d(rb.body_type);
+        def.position  = to_box2d(position);
+        def.rotation  = b2MakeRot(angle);
+        
+        rb.handle      = from_box2d(b2CreateBody(world(), &def));
     }
 
-    static void fixture_def_init(b2FixtureDef& def, const b2Shape& shape, AssetHandle& material_handle)
+    static void shape_def_init(b2ShapeDef& def, AssetHandle& material_handle, bool is_sensor)
     {
         PhysicMaterial* physic_material;
         
@@ -124,159 +175,108 @@ namespace nit
             physic_material = &default_physic_material;
         }
 
-        def.shape                = &shape;
-        def.density              = physic_material->density;
-        def.friction             = physic_material->friction;
-        def.restitution          = physic_material->bounciness;
-        def.restitutionThreshold = physic_material->threshold;
+        def             = b2DefaultShapeDef();
+        def.density     = physic_material->density;
+        def.friction    = physic_material->friction;
+        def.restitution = physic_material->bounciness;
+        def.isSensor    = is_sensor;
     }
-
-    void box_collider_init(Rigidbody2D& rb, BoxCollider2D& collider)
+    
+    static void box_collider_invalidate(Rigidbody2D& rb, BoxCollider2D& collider)
     {
-        if (!rb.body_ptr)
+        auto body = to_box2d(rb.handle);
+        
+        if (!b2Body_IsValid(body))
         {
             NIT_CHECK(false);
             return;
         }
+
+        auto shape = to_box2d(collider.handle);
         
-        b2Body* body = (b2Body*) rb.body_ptr;
-        
-        if (collider.fixture_ptr)
+        if (b2Shape_IsValid(shape))
         {
-            body->DestroyFixture((b2Fixture*) collider.fixture_ptr);
+            b2DestroyShape(shape, true);
         }
 
-        b2PolygonShape shape;
-        shape.SetAsBox(collider.size.x / 2.f, collider.size.y / 2.f);
-        b2FixtureDef fixture_def;
-        fixture_def_init(fixture_def, shape, collider.physic_material);
-        collider.fixture_ptr = body->CreateFixture(&fixture_def);
-        collider.prev_size = collider.size;
+        b2ShapeDef def;
+        shape_def_init(def, collider.physic_material, collider.is_trigger);
+        b2Polygon poly = b2MakeBox(collider.size.x, collider.size.y);
+        collider.handle = from_box2d(b2CreatePolygonShape(body, &def, &poly));
     }
-
-    void circle_collider_init(Rigidbody2D& rb, CircleCollider& collider)
+    
+    static void circle_collider_invalidate(Rigidbody2D& rb, CircleCollider& collider)
     {
-        if (!rb.body_ptr)
+        auto body = to_box2d(rb.handle);
+        
+        if (!b2Body_IsValid(body))
         {
             NIT_CHECK(false);
             return;
         }
+
+        auto shape = to_box2d(collider.handle);
         
-        b2Body* body = (b2Body*) rb.body_ptr;
-        
-        if (collider.fixture_ptr)
+        if (b2Shape_IsValid(shape))
         {
-            body->DestroyFixture((b2Fixture*) collider.fixture_ptr);
+            b2DestroyShape(shape, true);
         }
 
-        b2CircleShape shape;
-        shape.m_radius = collider.radius;
-        b2FixtureDef fixture_def;
-        fixture_def_init(fixture_def, shape, collider.physic_material);
-        collider.fixture_ptr = body->CreateFixture(&fixture_def);
-        collider.prev_radius = collider.radius;
+        b2ShapeDef def;
+        shape_def_init(def, collider.physic_material, collider.is_trigger);
+        b2Circle circle {
+            .center = to_box2d(collider.center),
+            .radius = collider.radius
+        };
+        collider.handle = from_box2d(b2CreateCircleShape(body, &def, &circle));
     }
-
+    
     static void rigidbody_update(Rigidbody2D& rb, Transform& transform, const Vector2& center)
     {
-        if (!rb.body_ptr)
+        auto body = to_box2d(rb.handle);
+        
+        if (!b2Body_IsValid(body))
         {
             NIT_CHECK(false);
             return;
         }
 
-        b2Body* body = (b2Body*) rb.body_ptr;
-        
-        body->SetEnabled(rb.enabled);
-        
-        if (!rb.enabled)
+        if (rb.enabled && !b2Body_IsEnabled(body))
         {
-            return;
+            b2Body_Enable(body);
         }
-
-        if (rb.body_type != rb.prev_body_type)
+        else if (!rb.enabled && b2Body_IsEnabled(body))
         {
-            body->SetType( (b2BodyType) rb.body_type);
+            b2Body_Disable(body);
+        }
+        
+        if (rb.invalidated)
+        {
+            // recreate
+            b2Body_SetType(body, (b2BodyType) rb.body_type);
             
             if (rb.body_type == BodyType::Kinematic)
             {
-                body->SetLinearVelocity((const b2Vec2&) V2_ZERO);
-                body->SetAngularVelocity(0.f);
+                b2Body_SetLinearVelocity(body, to_box2d(V2_ZERO));
+                b2Body_SetAngularVelocity(body, 0.f);   
             }
 
-            rb.prev_body_type = rb.body_type;
+            rb.invalidated = true;
         }
 
-        body->SetAwake(!rb.follow_transform);
-        
         if (rb.follow_transform)
         {
-            body->SetTransform((const b2Vec2&) transform.position, to_radians(transform.rotation.z));
+            b2Body_SetTransform(body, to_box2d((const Vector2&) transform.position), b2MakeRot(to_radians(transform.rotation.z)));
         }
         else
         {
-            Vector2 body_pos     = (const Vector2&) body->GetTransform().p - center;
+            Vector2 body_pos = from_box2d(b2Body_GetPosition(body)) - center;
             transform.position = { body_pos.x, body_pos.y, transform.position.z };
-            transform.rotation.z = to_degrees(body->GetAngle());
+            const auto rot = b2Body_GetRotation(body);
+            transform.rotation.z = to_degrees(atan2(rot.s, rot.c));
         }
 
-        body->SetGravityScale(rb.gravity_scale);
-    }
-
-    static void update_bodies()
-    {
-        for (EntityID entity : entity_get_group<Transform, Rigidbody2D, BoxCollider2D>().entities)
-        {
-            auto& transform  = entity_get<Transform>(entity);
-            auto& rb= entity_get<Rigidbody2D>(entity);
-            auto& collider   = entity_get<BoxCollider2D>(entity);
-            
-            if (!rb.body_ptr)
-            {
-                rigidbody_init(rb, (const Vector2&) transform.position + collider.center, transform.rotation.z);
-            }
-
-            if (!collider.fixture_ptr || collider.size != collider.prev_size)
-            {
-                box_collider_init(rb, collider);
-            }
-
-            //collider update
-            b2Fixture* fixture = ((b2Fixture*) collider.fixture_ptr); 
-            fixture->SetSensor(collider.is_trigger);
-
-            if (asset_valid(collider.physic_material))
-            {
-                PhysicMaterial* physic_material = asset_get_data<PhysicMaterial>(collider.physic_material);
-                fixture->SetDensity(physic_material->density);
-                fixture->SetFriction(physic_material->friction);
-                fixture->SetRestitution(physic_material->bounciness);
-                fixture->SetRestitutionThreshold(physic_material->threshold);
-            }
-            
-            rigidbody_update(rb, transform, collider.center);
-        }
-
-        for (EntityID entity : entity_get_group<Transform, Rigidbody2D, CircleCollider>().entities)
-        {
-            auto& transform  = entity_get<Transform>(entity);
-            auto& rb= entity_get<Rigidbody2D>(entity);
-            auto& collider   = entity_get<CircleCollider>(entity);
-            
-            if (!rb.body_ptr)
-            {
-                rigidbody_init(rb, (const Vector2&) transform.position + collider.center, transform.rotation.z);
-            }
-        
-            if (!collider.fixture_ptr || !epsilon_equal(collider.radius, collider.prev_radius))
-            {
-                circle_collider_init(rb, collider);
-            }
-
-            ((b2Fixture*) collider.fixture_ptr)->SetSensor(collider.is_trigger);
-        
-            rigidbody_update(rb, transform, collider.center);
-        }
+        b2Body_SetGravityScale(body, rb.gravity_scale);
     }
     
     ListenerAction start()
@@ -310,60 +310,103 @@ namespace nit
 
     ListenerAction on_component_removed(const ComponentRemovedArgs& args)
     {
-        if (args.type == type_get<Rigidbody2D>())
-        {
-            auto& rb = entity_get<Rigidbody2D>(args.entity); 
-
-            world()->DestroyBody((b2Body*) rb.body_ptr);
-            rb.body_ptr = nullptr;
-            
-            if (entity_has<BoxCollider2D>(args.entity))
-            {
-                entity_get<BoxCollider2D>(args.entity).fixture_ptr = nullptr;
-            }
-            else if (entity_has<CircleCollider>(args.entity))
-            {
-                entity_get<CircleCollider>(args.entity).fixture_ptr = nullptr;
-            } 
-        }
-        else if (args.type == type_get<BoxCollider2D>())
-        {
-            auto& collider = entity_get<BoxCollider2D>(args.entity);
-            auto& name = entity_get<Name>(args.entity);
-            
-            if (entity_has<Rigidbody2D>(args.entity))
-            {
-                auto& rb = entity_get<Rigidbody2D>(args.entity);
-                if (!rb.body_ptr || !collider.fixture_ptr)
-                {
-                    return ListenerAction::StayListening;
-                }
-
-                ((b2Body*) rb.body_ptr)->DestroyFixture((b2Fixture*) collider.fixture_ptr);
-            }
-        }
-        else if (args.type == type_get<CircleCollider>())
-        {
-            auto& collider = entity_get<CircleCollider>(args.entity);
-            if (entity_has<Rigidbody2D>(args.entity))
-            {
-                auto& rb = entity_get<Rigidbody2D>(args.entity);
-                if (!rb.body_ptr || !collider.fixture_ptr)
-                {
-                    return ListenerAction::StayListening;
-                }
-
-                ((b2Body*) rb.body_ptr)->DestroyFixture((b2Fixture*) collider.fixture_ptr);
-            }
-        }
+        // if (args.type == type_get<Rigidbody2D>())
+        // {
+        //     auto& rb = entity_get<Rigidbody2D>(args.entity); 
+        //
+        //     world()->DestroyBody((b2Body*) rb.body_ptr);
+        //     rb.body_ptr = nullptr;
+        //     
+        //     if (entity_has<BoxCollider2D>(args.entity))
+        //     {
+        //         entity_get<BoxCollider2D>(args.entity).fixture_ptr = nullptr;
+        //     }
+        //     else if (entity_has<CircleCollider>(args.entity))
+        //     {
+        //         entity_get<CircleCollider>(args.entity).fixture_ptr = nullptr;
+        //     } 
+        // }
+        // else if (args.type == type_get<BoxCollider2D>())
+        // {
+        //     auto& collider = entity_get<BoxCollider2D>(args.entity);
+        //     auto& name = entity_get<Name>(args.entity);
+        //     
+        //     if (entity_has<Rigidbody2D>(args.entity))
+        //     {
+        //         auto& rb = entity_get<Rigidbody2D>(args.entity);
+        //         if (!rb.body_ptr || !collider.fixture_ptr)
+        //         {
+        //             return ListenerAction::StayListening;
+        //         }
+        //
+        //         ((b2Body*) rb.body_ptr)->DestroyFixture((b2Fixture*) collider.fixture_ptr);
+        //     }
+        // }
+        // else if (args.type == type_get<CircleCollider>())
+        // {
+        //     auto& collider = entity_get<CircleCollider>(args.entity);
+        //     if (entity_has<Rigidbody2D>(args.entity))
+        //     {
+        //         auto& rb = entity_get<Rigidbody2D>(args.entity);
+        //         if (!rb.body_ptr || !collider.fixture_ptr)
+        //         {
+        //             return ListenerAction::StayListening;
+        //         }
+        //
+        //         ((b2Body*) rb.body_ptr)->DestroyFixture((b2Fixture*) collider.fixture_ptr);
+        //     }
+        // }
         return ListenerAction::StayListening;
     }
     
     ListenerAction fixed_update()
     {
-        world()->SetGravity((const b2Vec2&) physics_2d->gravity);
-        world()->Step(fixed_delta_seconds(), physics_2d->velocity_iterations, physics_2d->position_iterations);
-        update_bodies();
+        //TODO: check groups before start ticking this
+        
+        for (EntityID entity : entity_get_group<Transform, Rigidbody2D>().entities)
+        {
+            auto& rb= entity_get<Rigidbody2D>(entity);
+
+            if (!rb.invalidated)
+            {
+                auto& transform = entity_get<Transform>(entity);
+                
+                rigidbody_invalidate(rb, (const Vector2&) transform.position, transform.rotation.z);
+                rb.invalidated = true;
+            }
+        }
+        
+        for (EntityID entity : entity_get_group<Transform, Rigidbody2D, BoxCollider2D>().entities)
+        {
+            auto& collider = entity_get<BoxCollider2D>(entity);
+
+            if (!collider.invalidated)
+            {
+                auto& rb = entity_get<Rigidbody2D>(entity);
+                
+                box_collider_invalidate(rb, collider);
+                collider.invalidated = true;
+            }
+        }
+
+        for (EntityID entity : entity_get_group<Transform, Rigidbody2D, CircleCollider>().entities)
+        {
+            auto& collider = entity_get<CircleCollider>(entity);
+
+            if (!collider.invalidated)
+            {
+                auto& rb= entity_get<Rigidbody2D>(entity);
+                
+                circle_collider_invalidate(rb, collider);
+                collider.invalidated = true;
+            }
+        }
+
+        b2World_SetGravity(world() , to_box2d(physics_2d->gravity));
+        b2World_Step(world(), fixed_delta_seconds(), physics_2d->sub_steps);
+
+        //TODO: Update the entity transforms
+        
         return ListenerAction::StayListening;
     }
 }
