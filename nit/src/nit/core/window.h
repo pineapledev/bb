@@ -1,5 +1,5 @@
 #pragma once
-#include "key_codes.h"
+#include "nit/input/input_keycodes.h"
 
 struct GLFWwindow;
 

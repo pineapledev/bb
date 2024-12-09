@@ -45,7 +45,9 @@ project "nit"
         "3rd/yaml/include",
         --"3rd/assimp/include",
         "3rd/imgui/src",
-        "3rd/box2d/include"
+        "3rd/box2d/include",
+        "3rd/hidapi/include",
+        "3rd/JoyShockLibrary/include",
     }
     
     links
@@ -56,7 +58,9 @@ project "nit"
         "yaml",
         --"assimp",
         "imgui",
-        "box2d"
+        "box2d",
+        "JoyShockLibrary",
+        "hidapi",
     }
 
     files { "nit/src/**.h", "nit/src/**.cpp", "nit/src/**.inl" }
@@ -70,7 +74,8 @@ project "nit"
     filter "system:linux"
         links
         {
-            "OpenGL"        
+            "OpenGL",
+            "hidapi-hidraw",   
         }
 
     filter "configurations:Debug"
@@ -193,6 +198,8 @@ project "glfw"
             "3rd/glfw/src/xkb_unicode.c",
             "3rd/glfw/src/posix_time.c",
             "3rd/glfw/src/posix_thread.c",
+            "3rd/glfw/src/posix_module.c",
+            "3rd/glfw/src/posix_poll.c",
             "3rd/glfw/src/glx_context.c",
             "3rd/glfw/src/egl_context.c",
             "3rd/glfw/src/osmesa_context.c",
@@ -677,5 +684,159 @@ project "imgui"
 		runtime "Release"
 		optimize "On"
         defines "NIT_DIST"
+  
+project "hidapi"
+    
+    kind          "StaticLib"
+    language      "C++"
+    cppdialect    "C++20"
+    location      "3rd/hidapi"
+    staticruntime "off"
+
+    targetdir (binariesdir)
+    objdir    (intermediatesdir)
+
+    disablewarnings 
+    { 
+
+    }
+
+    includedirs
+    {
+        "3rd/hidapi/include",
+    }
+
+    files
+    {
+        "3rd/hidapi/include/hidapi.h"
+    }
+        
+    filter "system:windows"
+        systemversion "latest"
+
+        defines
+        {
+            "WIN32",
+            "_WINDOWS",
+            "_USRDLL",
+            "HIDAPI_EXPORTS"
+        }
+
+        links
+        {
+            "hid"
+        }
+        
+        files 
+        {
+            "3rd/hidapi/src/windows/hid.c",
+            "3rd/hidapi/src/windows/hidapi_cfgmgr32.h",
+            "3rd/hidapi/src/windows/hidapi_descriptor_reconstruct.c",
+            "3rd/hidapi/src/windows/hidapi_descriptor_reconstruct.h",
+            "3rd/hidapi/src/windows/hidapi_hidclass.h",
+            "3rd/hidapi/src/windows/hidapi_hidpi.h",
+            "3rd/hidapi/src/windows/hidapi_hidsdi.h"
+        }
+
+    filter "configurations:Debug"
+        symbols "On"
+        runtime "Debug"
+        defines "NIT_DEBUG"
+
+    filter "configurations:Release"
+        optimize "On"
+        runtime "Release"
+        defines "NIT_RELEASE"
+
+    filter "configurations:Dist"
+        runtime "Release"
+        optimize "On"
+        defines "NIT_DIST"
+
+project "JoyShockLibrary"
+
+    kind          "StaticLib"
+    language      "C++"
+    cppdialect    "C++20"
+    location      "3rd/JoyShockLibrary"
+    staticruntime "off"
+    
+    targetdir (binariesdir)
+    objdir    (intermediatesdir)
+
+    disablewarnings 
+    { 
+        
+    }
+    
+    includedirs
+    {
+        "3rd/hidapi/include",
+        "3rd/JoyShockLibrary/include"
+    }
+    
+    files
+    {
+        "3rd/JoyShockLibrary/include/JoyShockLibrary.h",
+        "3rd/JoyShockLibrary/src/JoyShockLibrary.cpp",
+    }
+
+    links
+    {
+        "hidapi"
+    }
+    
+    
+    filter "system:windows"
+        systemversion "latest"
+
+        defines
+        {
+            "WIN32",
+            "_WINDOWS",
+            "GYROCONTROLLERLIBRARY_EXPORTS",
+            "UNICODE",
+            "_UNICODE",
+            "NOMINMAX",
+            "WIN32_LEAN_AND_MEAN",
+            "_CRT_SECURE_NO_WARNINGS",
+            "_USRDLL",
+            "JoyShockLibrary_EXPORTS"
+        }
+
+    filter "system:linux"
+        systemversion "latest"
+
+        defines
+        {
+            "GYROCONTROLLERLIBRARY_EXPORTS",
+            "UNICODE",
+            "_UNICODE",
+            "NOMINMAX",
+            "_CRT_SECURE_NO_WARNINGS",
+            "_USRDLL",
+            "JoyShockLibrary_EXPORTS"
+        }
+
+        links
+        {
+            "m"
+        }
+
+    filter "configurations:Debug"
+        symbols "On"
+        runtime "Debug"
+        defines "NIT_DEBUG"
+
+    filter "configurations:Release"
+        optimize "On"
+        runtime "Release"
+        defines "NIT_RELEASE"
+
+    filter "configurations:Dist"
+        runtime "Release"
+        optimize "On"
+        defines "NIT_DIST"
+    
 
 group ""

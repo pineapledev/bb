@@ -4,6 +4,7 @@
 #include "nit/render/renderer_2d.h"
 #include "nit/render/imgui_renderer.h"
 #include "nit/entity/entity.h"
+#include "nit/input/input_registry.h"
 #include "nit/render/render_objects.h"
 #include "nit/audio/audio.h"
 #include "nit/physics/physics_2d.h"
@@ -41,6 +42,7 @@ namespace nit
         Renderer2D     renderer_2d;
         AssetRegistry  asset_registry;
         EntityRegistry entity_registry;
+        InputRegistry  input_registry;
         AudioRegistry  audio_registry;
         Physics2D      physics_2d;
         

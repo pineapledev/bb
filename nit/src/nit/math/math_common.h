@@ -90,4 +90,23 @@ namespace nit
     {
         return abs(a - b) <= epsilon;
     }
+
+    template<class T>
+    T sign(const T a)
+    {
+        return (a > (T)0) ? (T)1 : ((a < (T)0) ? (T)-1 : (T)0);
+    }
+
+    template<class T>
+    T min(const T a, const T b)
+    {
+        return (a < b) ? a : b;
+    }
+
+    template<class T>
+    T max(const T a, const T b)
+    {
+        return (a > b) ? a : b;
+    }
+
 }

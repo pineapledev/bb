@@ -54,6 +54,14 @@ namespace nit
     Vector4& operator/=(Vector4& left, f32 num);
 
     Vector4& operator*(Vector4& left, const Matrix4& matrix);
+
+    Vector4 operator*(const Vector4& left, const Vector4& other);
+
+    Vector4 operator/(const Vector4& left, const Vector4& other);
+
+    Vector4& operator*=(Vector4& left, const Vector4& other);
+
+    Vector4& operator/=(Vector4& left, const Vector4& other);
     
     template<>
     inline Vector4 abs(const Vector4& val) { return { abs(val.x), abs(val.y), abs(val.z), abs(val.w)  }; }

@@ -31,6 +31,7 @@ namespace nit
         return { vector.x * num, vector.y * num, vector.z * num, vector.w * num };
     }
 
+
     Vector4 operator/(const Vector4& vector, f32 num)
     {
         return { vector.x / num, vector.y / num, vector.z / num, vector.w / num };
@@ -80,7 +81,38 @@ namespace nit
         left.w = left.x * matrix.m[0][3] + left.y * matrix.m[1][3] + left.z * matrix.m[2][3] + left.w * matrix.m[3][3];
         return left;
     }
-    
+
+    Vector4 operator*(const Vector4& left, const Vector4& other)
+    {
+        return { left.x * other.x, left.y * other.y, left.z * other.y, left.w * other.y };
+    }
+
+    Vector4 operator/(const Vector4& left, const Vector4& other)
+    {
+        return { left.x / other.x, left.y / other.y, left.z / other.y, left.w / other.y };
+    }
+
+    Vector4& operator*=(Vector4& left, const Vector4& other)
+    {
+        left.x = left.x * other.x;
+        left.y = left.y * other.y;
+        left.z = left.z * other.z;
+        left.w = left.w * other.w;
+
+        return left;
+    }
+
+    Vector4& operator/=(Vector4& left, const Vector4& other)
+    {
+        left.x = left.x / other.x;
+        left.y = left.y / other.y;
+        left.z = left.z / other.z;
+        left.w = left.w / other.w;
+
+        return left;
+    }
+
+
     template <>
     f32 magnitude<Vector4>(const Vector4& val)
     {
