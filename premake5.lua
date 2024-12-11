@@ -426,10 +426,11 @@ project "yaml"
 project "box2d"
     kind "StaticLib"
     language "C"
+    cdialect "C17"
     staticruntime "off"
+    location      "3rd/box2d"
     targetdir (binariesdir)
     objdir (intermediatesdir)
-    buildoptions { "-std=c11" }
     
     files
     {
@@ -444,9 +445,14 @@ project "box2d"
         "3rd/box2d/src"
     }
 
-    filter { "system:linux or system:windows", "toolset:gcc or clang" }
-        buildoptions { "-std=c11" }
-    
+	filter "system:windows"
+		systemversion "latest"
+		
+		buildoptions
+		{
+			"/experimental:c11atomics",
+		}
+
     filter "configurations:Debug"
         symbols "On"
         runtime "Debug"
