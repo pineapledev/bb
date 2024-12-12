@@ -104,6 +104,7 @@ namespace nit
             physics_2d_set_instance(&instance);
         }
 
+        entity_create_group<Transform, Rigidbody2D>();
         entity_create_group<Transform, Rigidbody2D, BoxCollider2D>();
         entity_create_group<Transform, Rigidbody2D, CircleCollider>();
         
@@ -231,54 +232,6 @@ namespace nit
         collider.handle = from_box2d(b2CreateCircleShape(body, &def, &circle));
     }
     
-    static void rigidbody_update(Rigidbody2D& rb, Transform& transform, const Vector2& center)
-    {
-        auto body = to_box2d(rb.handle);
-        
-        if (!b2Body_IsValid(body))
-        {
-            NIT_CHECK(false);
-            return;
-        }
-
-        if (rb.enabled && !b2Body_IsEnabled(body))
-        {
-            b2Body_Enable(body);
-        }
-        else if (!rb.enabled && b2Body_IsEnabled(body))
-        {
-            b2Body_Disable(body);
-        }
-        
-        if (rb.invalidated)
-        {
-            // recreate
-            b2Body_SetType(body, (b2BodyType) rb.body_type);
-            
-            if (rb.body_type == BodyType::Kinematic)
-            {
-                b2Body_SetLinearVelocity(body, to_box2d(V2_ZERO));
-                b2Body_SetAngularVelocity(body, 0.f);   
-            }
-
-            rb.invalidated = true;
-        }
-
-        if (rb.follow_transform)
-        {
-            b2Body_SetTransform(body, to_box2d((const Vector2&) transform.position), b2MakeRot(to_radians(transform.rotation.z)));
-        }
-        else
-        {
-            Vector2 body_pos = from_box2d(b2Body_GetPosition(body)) - center;
-            transform.position = { body_pos.x, body_pos.y, transform.position.z };
-            const auto rot = b2Body_GetRotation(body);
-            transform.rotation.z = to_degrees(atan2(rot.s, rot.c));
-        }
-
-        b2Body_SetGravityScale(body, rb.gravity_scale);
-    }
-    
     ListenerAction start()
     {
         engine_get_instance()->entity_registry.component_added_event   += ComponentAddedListener::create(on_component_added);
@@ -404,8 +357,67 @@ namespace nit
 
         b2World_SetGravity(world() , to_box2d(physics_2d->gravity));
         b2World_Step(world(), fixed_delta_seconds(), physics_2d->sub_steps);
+        
+        for (EntityID entity : entity_get_group<Transform, Rigidbody2D>().entities)
+        {
+            const bool has_box_collider    = entity_has<BoxCollider2D>(entity); 
+            const bool has_circle_collider = entity_has<CircleCollider>(entity); 
+            
+            if (!has_box_collider && !has_circle_collider)
+            {
+                continue;
+            }
+            
+            auto& rb = entity_get<Rigidbody2D>(entity);
+            auto& transform = entity_get<Transform>(entity);  
+            
+            auto body = to_box2d(rb.handle);
+        
+            if (!b2Body_IsValid(body))
+            {
+                NIT_CHECK(false);
+                continue;
+            }
 
-        //TODO: Update the entity transforms
+            if (rb.enabled && !b2Body_IsEnabled(body))
+            {
+                b2Body_Enable(body);
+            }
+            else if (!rb.enabled && b2Body_IsEnabled(body))
+            {
+                b2Body_Disable(body);
+            }
+
+            if (rb.follow_transform)
+            {
+                b2Body_SetTransform(body, to_box2d((const Vector2&) transform.position), b2MakeRot(to_radians(transform.rotation.z)));
+            }
+            else
+            {
+                Vector2 center;
+                
+                if (has_box_collider)
+                {
+                    center = entity_get<BoxCollider2D>(entity).center;
+                }
+                else if (has_circle_collider)
+                {
+                    center = entity_get<CircleCollider>(entity).center;
+                }
+                else
+                {
+                    NIT_CHECK(false);
+                    continue;
+                }
+                
+                Vector2 body_pos = from_box2d(b2Body_GetPosition(body)) - center;
+                transform.position = { body_pos.x, body_pos.y, transform.position.z };
+                const auto rot = b2Body_GetRotation(body);
+                transform.rotation.z = to_degrees(atan2(rot.s, rot.c));
+            }
+
+            b2Body_SetGravityScale(body, rb.gravity_scale);
+        }
         
         return ListenerAction::StayListening;
     }

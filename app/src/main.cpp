@@ -81,10 +81,10 @@ ListenerAction start()
 {
     AssetHandle test_scene = asset_find_by_name("test scene");
 
-    if (asset_valid(test_scene))
-    {
-        asset_load(test_scene);
-    }
+    // if (asset_valid(test_scene))
+    // {
+    //     asset_load(test_scene);
+    // }
 
     test_texture = asset_find_by_name("test sheet");
 
