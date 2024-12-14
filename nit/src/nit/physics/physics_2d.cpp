@@ -264,52 +264,43 @@ namespace nit
 
     ListenerAction on_component_removed(const ComponentRemovedArgs& args)
     {
-        // if (args.type == type_get<Rigidbody2D>())
-        // {
-        //     auto& rb = entity_get<Rigidbody2D>(args.entity); 
-        //
-        //     world()->DestroyBody((b2Body*) rb.body_ptr);
-        //     rb.body_ptr = nullptr;
-        //     
-        //     if (entity_has<BoxCollider2D>(args.entity))
-        //     {
-        //         entity_get<BoxCollider2D>(args.entity).fixture_ptr = nullptr;
-        //     }
-        //     else if (entity_has<CircleCollider>(args.entity))
-        //     {
-        //         entity_get<CircleCollider>(args.entity).fixture_ptr = nullptr;
-        //     } 
-        // }
-        // else if (args.type == type_get<BoxCollider2D>())
-        // {
-        //     auto& collider = entity_get<BoxCollider2D>(args.entity);
-        //     auto& name = entity_get<Name>(args.entity);
-        //     
-        //     if (entity_has<Rigidbody2D>(args.entity))
-        //     {
-        //         auto& rb = entity_get<Rigidbody2D>(args.entity);
-        //         if (!rb.body_ptr || !collider.fixture_ptr)
-        //         {
-        //             return ListenerAction::StayListening;
-        //         }
-        //
-        //         ((b2Body*) rb.body_ptr)->DestroyFixture((b2Fixture*) collider.fixture_ptr);
-        //     }
-        // }
-        // else if (args.type == type_get<CircleCollider>())
-        // {
-        //     auto& collider = entity_get<CircleCollider>(args.entity);
-        //     if (entity_has<Rigidbody2D>(args.entity))
-        //     {
-        //         auto& rb = entity_get<Rigidbody2D>(args.entity);
-        //         if (!rb.body_ptr || !collider.fixture_ptr)
-        //         {
-        //             return ListenerAction::StayListening;
-        //         }
-        //
-        //         ((b2Body*) rb.body_ptr)->DestroyFixture((b2Fixture*) collider.fixture_ptr);
-        //     }
-        // }
+        if (args.type == type_get<Rigidbody2D>())
+        {
+            auto& rb = entity_get<Rigidbody2D>(args.entity); 
+            b2DestroyBody(to_box2d(rb.handle));
+        }
+        else if (args.type == type_get<BoxCollider2D>())
+        {
+            auto& collider = entity_get<BoxCollider2D>(args.entity);
+            
+            if (entity_has<Rigidbody2D>(args.entity))
+            {
+                auto& rb = entity_get<Rigidbody2D>(args.entity);
+                
+                if (!b2Body_IsValid(to_box2d(rb.handle)) || !b2Shape_IsValid(to_box2d(collider.handle)))
+                {
+                    return ListenerAction::StayListening;
+                }
+
+                b2DestroyShape(to_box2d(collider.handle), true);
+            }
+        }
+        else if (args.type == type_get<CircleCollider>())
+        {
+            auto& collider = entity_get<CircleCollider>(args.entity);
+            
+            if (entity_has<Rigidbody2D>(args.entity))
+            {
+                auto& rb = entity_get<Rigidbody2D>(args.entity);
+                
+                if (!b2Body_IsValid(to_box2d(rb.handle)) || !b2Shape_IsValid(to_box2d(collider.handle)))
+                {
+                    return ListenerAction::StayListening;
+                }
+
+                b2DestroyShape(to_box2d(collider.handle), true);
+            }
+        }
         return ListenerAction::StayListening;
     }
     
