@@ -141,6 +141,7 @@ namespace nit
             b2WorldDef def = b2DefaultWorldDef();
             def.gravity = to_box2d(physics_2d->gravity);
             physics_2d->world_handle = from_box2d(b2CreateWorld(&def));
+            b2World_EnableSleeping(to_box2d(physics_2d->world_handle), false);
         }
 
         return to_box2d(physics_2d->world_handle);
@@ -202,7 +203,7 @@ namespace nit
 
         b2ShapeDef def;
         shape_def_init(def, collider.physic_material, collider.is_trigger);
-        b2Polygon poly = b2MakeBox(collider.size.x, collider.size.y);
+        b2Polygon poly = b2MakeBox(collider.size.x / 2.f, collider.size.y / 2.f);
         collider.handle = from_box2d(b2CreatePolygonShape(body, &def, &poly));
     }
     

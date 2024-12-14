@@ -34,13 +34,14 @@ namespace nit
     void editor_draw_resource_combo(const char* label, const Array<String>& extensions, String& selected);
     
     template<typename T>
-    void editor_draw_enum_combo(const char* label, T& enum_data)
+    bool editor_draw_enum_combo(const char* label, T& enum_data)
     {
         using namespace ImGui;
         
         EnumType* type = enum_type_get<T>();
         String selected = enum_to_string<T>(enum_data);
-
+        String prev     = selected;
+        
         editor_begin_property(label);
 
         if (BeginCombo("##combo", selected.c_str()))
@@ -64,6 +65,8 @@ namespace nit
         enum_data = enum_from_string<T>(selected);
         
         editor_end_property();
+
+        return prev != selected;
     }
 }
 
