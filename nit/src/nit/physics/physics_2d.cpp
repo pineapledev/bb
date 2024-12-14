@@ -327,6 +327,16 @@ namespace nit
                 
                 rigidbody_invalidate(rb, (const Vector2&) transform.position, transform.rotation.z);
                 rb.invalidated = true;
+
+                if (entity_has<BoxCollider2D>(entity))
+                {
+                    entity_get<BoxCollider2D>(entity).invalidated = false;
+                }
+
+                if (entity_has<CircleCollider>(entity))
+                {
+                    entity_get<CircleCollider>(entity).invalidated = false;
+                }
             }
         }
         

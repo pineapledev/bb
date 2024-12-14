@@ -30,7 +30,7 @@ namespace nit
     bool editor_draw_drag_vector3(const char* label, Vector3& vector, const Vector3& reset_value = V3_ZERO, f32 speed = 0.05f);
     bool editor_draw_drag_vector4(const char* label, Vector4& vector, const Vector4& reset_value = V4_ZERO, f32 speed = 0.05f);
     bool editor_draw_color_palette(const char* label, Vector4& color);
-    auto editor_draw_asset_combo(const char* label, Type* type, AssetHandle* asset) -> void;
+    bool editor_draw_asset_combo(const char* label, Type* type, AssetHandle* asset);
     void editor_draw_resource_combo(const char* label, const Array<String>& extensions, String& selected);
     
     template<typename T>

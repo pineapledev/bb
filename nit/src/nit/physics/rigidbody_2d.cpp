@@ -28,7 +28,6 @@ namespace nit
     void draw_editor(Rigidbody2D* rigidbody)
     {
         bool changed = false;
-
         changed |= editor_draw_bool("Enabled", rigidbody->enabled);
         changed |= editor_draw_bool("Follow Transform", rigidbody->follow_transform);
         changed |= editor_draw_enum_combo("Body Type", rigidbody->body_type);
