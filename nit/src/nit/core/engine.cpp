@@ -18,6 +18,7 @@
 #include "physics/box_collider_2d.h"
 #include "physics/circle_collider.h"
 #include "physics/physic_material.h"
+#include "physics/trigger_events.h"
 
 #define NIT_CHECK_ENGINE_CREATED NIT_CHECK_MSG(nit::engine, "Forget to call SetAppInstance!");
 
@@ -119,6 +120,7 @@ namespace nit
             register_rigidbody_2d_component();
             register_box_collider_2d_component();
             register_circle_collider_component();
+            register_trigger_events_component();
         }
 
         render_objects_set_instance(&engine->render_objects);

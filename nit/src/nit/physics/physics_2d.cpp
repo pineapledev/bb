@@ -3,6 +3,7 @@
 #include "circle_collider.h"
 #include "physic_material.h"
 #include "rigidbody_2d.h"
+#include "trigger_events.h"
 #include "box2d/box2d.h"
 #include "core/engine.h"
 #include "entity/entity_utils.h"
@@ -104,6 +105,15 @@ namespace nit
             physics_2d_set_instance(&instance);
         }
 
+        u32 entity_count = entity_registry_get_instance()->max_entities;
+
+        physics_2d->all_entity_ids = new EntityID[entity_count];
+
+        for (EntityID i = 0; i < entity_count; ++i)
+        {
+            physics_2d->all_entity_ids[i] = i;
+        }
+
         entity_create_group<Transform, Rigidbody2D>();
         entity_create_group<Transform, Rigidbody2D, BoxCollider2D>();
         entity_create_group<Transform, Rigidbody2D, CircleCollider>();
@@ -184,7 +194,7 @@ namespace nit
         def.isSensor    = is_sensor;
     }
     
-    static void box_collider_invalidate(Rigidbody2D& rb, BoxCollider2D& collider)
+    static void box_collider_invalidate(EntityID entity, Rigidbody2D& rb, BoxCollider2D& collider)
     {
         auto body = to_box2d(rb.handle);
         
@@ -204,10 +214,12 @@ namespace nit
         b2ShapeDef def;
         shape_def_init(def, collider.physic_material, collider.is_trigger);
         b2Polygon poly = b2MakeBox(collider.size.x / 2.f, collider.size.y / 2.f);
-        collider.handle = from_box2d(b2CreatePolygonShape(body, &def, &poly));
+        b2ShapeId shape_id = b2CreatePolygonShape(body, &def, &poly);
+        b2Shape_SetUserData(shape_id, &physics_2d->all_entity_ids[entity]);
+        collider.handle = from_box2d(shape_id);
     }
     
-    static void circle_collider_invalidate(Rigidbody2D& rb, CircleCollider& collider)
+    static void circle_collider_invalidate(EntityID entity, Rigidbody2D& rb, CircleCollider& collider)
     {
         auto body = to_box2d(rb.handle);
         
@@ -230,7 +242,10 @@ namespace nit
             .center = to_box2d(collider.center),
             .radius = collider.radius
         };
-        collider.handle = from_box2d(b2CreateCircleShape(body, &def, &circle));
+        
+        b2ShapeId shape_id = b2CreateCircleShape(body, &def, &circle);
+        b2Shape_SetUserData(shape_id, &physics_2d->all_entity_ids[entity]);
+        collider.handle = from_box2d(shape_id);
     }
     
     ListenerAction start()
@@ -339,7 +354,7 @@ namespace nit
             {
                 auto& rb = entity_get<Rigidbody2D>(entity);
                 
-                box_collider_invalidate(rb, collider);
+                box_collider_invalidate(entity, rb, collider);
                 collider.invalidated = true;
             }
         }
@@ -352,7 +367,7 @@ namespace nit
             {
                 auto& rb= entity_get<Rigidbody2D>(entity);
                 
-                circle_collider_invalidate(rb, collider);
+                circle_collider_invalidate(entity, rb, collider);
                 collider.invalidated = true;
             }
         }
@@ -419,6 +434,44 @@ namespace nit
             }
 
             b2Body_SetGravityScale(body, rb.gravity_scale);
+        }
+
+        b2SensorEvents sensor_events = b2World_GetSensorEvents(to_box2d(physics_2d->world_handle));
+
+        for (i32 i = 0; i < sensor_events.beginCount; ++i)
+        {
+            b2SensorBeginTouchEvent* begin_touch = sensor_events.beginEvents + i;
+            
+            EntityID visitor_entity = *(EntityID*) b2Shape_GetUserData(begin_touch->visitorShapeId);
+            EntityID trigger_entity = *(EntityID*) b2Shape_GetUserData(begin_touch->sensorShapeId);
+            
+            if (entity_has<TriggerEvents>(visitor_entity))
+            {
+                TriggerEnterArgs args {
+                    .trigger_entity = trigger_entity,
+                    .visitor_entity = visitor_entity
+                };
+                
+                event_broadcast<const TriggerEnterArgs&>(entity_get<TriggerEvents>(visitor_entity).enter_event, args);
+            }
+        }
+
+        for (i32 i = 0; i < sensor_events.endCount; ++i)
+        {
+            b2SensorEndTouchEvent* end_touch = sensor_events.endEvents + i;
+            
+            EntityID visitor_entity = *(EntityID*) b2Shape_GetUserData(end_touch->visitorShapeId);
+            EntityID trigger_entity = *(EntityID*) b2Shape_GetUserData(end_touch->sensorShapeId);
+            
+            if (entity_has<TriggerEvents>(visitor_entity))
+            {
+                TriggerExitArgs args {
+                    .trigger_entity = trigger_entity,
+                    .visitor_entity = visitor_entity
+                };
+                
+                event_broadcast<const TriggerExitArgs&>(entity_get<TriggerEvents>(visitor_entity).exit_event, args);
+            }
         }
         
         return ListenerAction::StayListening;

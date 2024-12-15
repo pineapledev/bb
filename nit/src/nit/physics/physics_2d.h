@@ -1,4 +1,5 @@
 #pragma once
+#include "nit/entity/entity.h"
 
 namespace nit
 {
@@ -27,6 +28,7 @@ namespace nit
         WorldHandle world_handle        = {};
         Vector2     gravity             = { 0.f, -9.8f };
         u32         sub_steps           = 6u;
+        EntityID*   all_entity_ids      = nullptr;
     };
 
     void       physics_2d_set_instance(Physics2D* instance);
