@@ -1,11 +1,11 @@
 AssetInfo:
   type: Texture2D
-  name: Nave
-  path: Nave.nit
+  name: ShipTexture
+  path: ShipTexture.nit
   id: 16847963267852121044
   version: 0
 Texture2D:
-  image_path: Nave_01_Render_Test_03.png
+  image_path: ShipImage.png
   mag_filter: Linear
   min_filter: Linear
   wrap_mode_u: Repeat

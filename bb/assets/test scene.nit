@@ -21,13 +21,13 @@ Scene:
         size: 9.19999981
     Entity:
       Name:
-        data: 2
+        data: Player
       Transform:
         position: [0, 0, 0]
         rotation: [0, 0, 0]
         scale: [1, 1, 1]
       Sprite:
-        texture: [Nave, Texture2D, 16847963267852121044]
+        texture: [ShipTexture, Texture2D, 16847963267852121044]
         sub_texture: ""
         visible: true
         tint: [1, 1, 1, 1]
