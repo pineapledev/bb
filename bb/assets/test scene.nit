@@ -37,3 +37,17 @@ Scene:
         tiling_factor: [1, 1]
         keep_aspect: true
         draw_layer: 0
+      Movement:
+        speed: [0, 0]
+      Health:
+        max: 1
+        current: 1
+      Player:
+        firerate_gun_1: 1
+        firerate_gun_2: 1
+        firerate_gun_3: 1
+        firerate_gun_max: 1
+        firerate_sword_1: 1
+        firerate_sword_2: 1
+        firerate_sword_3: 1
+        firerate_sword_max: 1
