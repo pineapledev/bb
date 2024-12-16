@@ -292,8 +292,12 @@ namespace nit
     {
         if (args.type == type_get<Rigidbody2D>())
         {
-            auto& rb = entity_get<Rigidbody2D>(args.entity); 
-            b2DestroyBody(to_box2d(rb.handle));
+            auto& rb = entity_get<Rigidbody2D>(args.entity);
+            
+            if (b2Body_IsValid(to_box2d(rb.handle)))
+            {
+                b2DestroyBody(to_box2d(rb.handle));
+            }
         }
         else if (args.type == type_get<BoxCollider2D>())
         {

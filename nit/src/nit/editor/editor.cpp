@@ -296,6 +296,9 @@ namespace nit
 
                     asset_find_by_type(type_get<Scene>(), all_scenes);
 
+                    editor->selection = Editor::Selection::None;
+                    editor->selected_entity = NULL_ENTITY;
+                    
                     for (AssetHandle& handle : all_scenes)
                     {
                         if (!asset_loaded(handle))
