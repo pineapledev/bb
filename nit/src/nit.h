@@ -27,3 +27,4 @@
 #include "nit/physics/box_collider_2d.h"
 #include "nit/physics/physic_material.h"
 #include "nit/physics/circle_collider.h"
+#include "nit/physics/trigger_events.h"

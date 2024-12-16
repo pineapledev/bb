@@ -266,10 +266,11 @@ namespace nit
         return changed;
     }
 
-    void editor_draw_asset_combo(const char* label, Type* type, AssetHandle* asset)
+    bool editor_draw_asset_combo(const char* label, Type* type, AssetHandle* asset)
     {
         String selected = asset->name;
-
+        String prev = selected;
+        
         Array<AssetHandle> assets;
         asset_find_by_type(type, assets);
         
@@ -300,6 +301,8 @@ namespace nit
         *asset = asset_find_by_name(selected);
         
         editor_end_property();
+
+        return prev != selected;
     }
 
     void editor_draw_resource_combo(const char* label, const Array<String>& extensions, String& selected)

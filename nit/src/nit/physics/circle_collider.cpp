@@ -28,10 +28,16 @@ namespace nit
 #ifdef NIT_EDITOR_ENABLED
     void draw_editor(CircleCollider* collider)
     {
-        editor_draw_bool("Is Trigger", collider->is_trigger);
-        editor_draw_drag_f32("Radius", collider->radius);
-        editor_draw_drag_vector2("Center", collider->center);
-        editor_draw_asset_combo("Physic Mat", type_get<PhysicMaterial>(), &collider->physic_material);
+        bool changed = false;
+        changed |= editor_draw_bool("Is Trigger", collider->is_trigger);
+        changed |= editor_draw_drag_f32("Radius", collider->radius);
+        changed |= editor_draw_drag_vector2("Center", collider->center);
+        changed |= editor_draw_asset_combo("Physic Mat", type_get<PhysicMaterial>(), &collider->physic_material);
+
+        if (changed)
+        {
+            collider->invalidated = false;
+        }
     }
 #endif
 

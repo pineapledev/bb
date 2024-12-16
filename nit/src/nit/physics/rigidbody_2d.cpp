@@ -27,11 +27,17 @@ namespace nit
 #ifdef NIT_EDITOR_ENABLED
     void draw_editor(Rigidbody2D* rigidbody)
     {
-        editor_draw_bool("Enabled", rigidbody->enabled);
-        editor_draw_bool("Follow Transform", rigidbody->follow_transform);
-        editor_draw_enum_combo("Body Type", rigidbody->body_type);
-        editor_draw_drag_f32("Mass", rigidbody->mass);
-        editor_draw_drag_f32("Gravity Scale", rigidbody->gravity_scale);
+        bool changed = false;
+        changed |= editor_draw_bool("Enabled", rigidbody->enabled);
+        changed |= editor_draw_bool("Follow Transform", rigidbody->follow_transform);
+        changed |= editor_draw_enum_combo("Body Type", rigidbody->body_type);
+        changed |= editor_draw_drag_f32("Mass", rigidbody->mass);
+        changed |= editor_draw_drag_f32("Gravity Scale", rigidbody->gravity_scale);
+
+        if (changed)
+        {
+            rigidbody->invalidated = false;
+        }
     }
 #endif
 

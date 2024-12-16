@@ -582,9 +582,13 @@ namespace nit
                         {
                             editor->selection = Editor::Selection::None;
                             editor->selected_entity = U32_MAX;
-                            entity_destroy(selected_entity);
-                            num_of_entities--;
-                            scene->entities.erase(std::ranges::find(scene->entities, selected_entity));
+                            
+                            if (entity_valid(selected_entity))
+                            {
+                                entity_destroy(selected_entity);
+                                num_of_entities--;
+                                scene->entities.erase(std::ranges::find(scene->entities, selected_entity));
+                            }
                         }
                         if (ImGui::MenuItem("Clone Entity"))
                         {

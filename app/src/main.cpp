@@ -77,13 +77,27 @@ void init()
 
 // -----------------------------------------------------------------
 
+AssetHandle test_scene;
+EntityID    visitor;
+EntityID    trigger;
+
+ListenerAction trigger_enter(const TriggerEnterArgs& args)
+{
+    
+    return ListenerAction::StayListening;
+}
+
 ListenerAction start()
 {
-    AssetHandle test_scene = asset_find_by_name("test scene");
+    test_scene = asset_find_by_name("physics scene");
 
     if (asset_valid(test_scene))
     {
         asset_load(test_scene);
+        visitor = entity_find_by_name("visitor");
+        trigger = entity_find_by_name("trigger");
+        
+        entity_get<TriggerEvents>(trigger).enter_event += Listener<const TriggerEnterArgs&>::create(trigger_enter);
     }
 
     test_texture = asset_find_by_name("test sheet");
@@ -93,8 +107,14 @@ ListenerAction start()
 
 ListenerAction update()
 {
-    //spawn_entity();
-
+    static bool first_frame = true;
+    
+    if (first_frame)
+    {
+        rigidbody_add_force(entity_get<Rigidbody2D>(visitor), V2_LEFT * 30.f, to_v2(entity_get<Transform>(visitor).position));
+        first_frame = false;
+    }
+    
     f32 speed = 3.f;
 
     for (EntityID entity : entity_get_group<Transform, Sprite, Move>().entities)

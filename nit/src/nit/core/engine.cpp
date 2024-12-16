@@ -19,6 +19,7 @@
 #include "physics/circle_collider.h"
 #include "physics/physic_material.h"
 #include "input/input_action.h"
+#include "physics/trigger_events.h"
 
 #define NIT_CHECK_ENGINE_CREATED NIT_CHECK_MSG(nit::engine, "Forget to call SetAppInstance!");
 
@@ -120,6 +121,7 @@ namespace nit
             register_rigidbody_2d_component();
             register_box_collider_2d_component();
             register_circle_collider_component();
+            register_trigger_events_component();
         }
 
         input_registry_set_instance(&engine->input_registry);
@@ -170,7 +172,7 @@ namespace nit
         // Init time
         engine->seconds          = 0;
         engine->frame_count      = 0;
-        engine->acc_fixed_delta  = 0;
+        engine->acc_fixed_delta  = engine->fixed_delta_seconds;
         engine->last_time = window_get_time();
         
         NIT_LOG_TRACE("Application created!");
@@ -185,9 +187,6 @@ namespace nit
             engine->last_time = current_time;
             engine->seconds += time_between_frames;
             engine->delta_seconds = (f32) clamp(time_between_frames, 0., engine->max_delta_time);
-
-            event_broadcast(engine_event(Stage::Update));
-
             engine->acc_fixed_delta += engine->delta_seconds;
             
             while (engine->acc_fixed_delta >= engine->fixed_delta_seconds)
@@ -196,6 +195,7 @@ namespace nit
                 engine->acc_fixed_delta -= engine->fixed_delta_seconds;
             }
             
+            event_broadcast(engine_event(Stage::Update));
             event_broadcast(engine_event(Stage::LateUpdate));
             
             NIT_IF_EDITOR_ENABLED(im_gui_begin());

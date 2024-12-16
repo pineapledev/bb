@@ -432,16 +432,17 @@ project "yaml"
 
 project "box2d"
     kind "StaticLib"
-    language "C++"
-    cppdialect "C++20"
+    language "C"
+    cdialect "C17"
     staticruntime "off"
+    location      "3rd/box2d"
     targetdir (binariesdir)
     objdir (intermediatesdir)
     
     files
     {
         "3rd/box2d/src/**.h",
-        "3rd/box2d/src/**.cpp",
+        "3rd/box2d/src/**.c",
         "3rd/box2d/include/**.h"
     }
     
@@ -450,7 +451,15 @@ project "box2d"
         "3rd/box2d/include",
         "3rd/box2d/src"
     }
-    
+
+	filter "system:windows"
+		systemversion "latest"
+		
+		buildoptions
+		{
+			"/experimental:c11atomics",
+		}
+
     filter "configurations:Debug"
         symbols "On"
         runtime "Debug"

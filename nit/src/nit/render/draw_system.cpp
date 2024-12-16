@@ -307,7 +307,7 @@ namespace nit
                 {
                     auto& transform  = entity_get<Transform>(entity);
                     auto& collider   = entity_get<CircleCollider>(entity);
-                    auto collider_color = collider.is_trigger ? V4_COLOR_LIGHT_BLUE : V4_COLOR_LIGHT_GREEN;
+                    auto collider_color = collider.is_trigger ? V4_COLOR_CYAN : V4_COLOR_LIGHT_GREEN;
                     
                     draw_circle(
                          transform.position + to_v3(collider.center),
