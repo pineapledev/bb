@@ -25,7 +25,7 @@ Scene:
       Transform:
         position: [0, 0, 0]
         rotation: [0, 0, 0]
-        scale: [1, 1, 1]
+        scale: [1, 1, 0]
       Sprite:
         texture: [ShipTexture, Texture2D, 16847963267852121044]
         sub_texture: ""
@@ -38,7 +38,7 @@ Scene:
         keep_aspect: true
         draw_layer: 0
       Movement:
-        speed: [0, 0]
+        speed: [7, 7]
       Health:
         max: 1
         current: 1

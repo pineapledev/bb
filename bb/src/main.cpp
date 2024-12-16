@@ -28,7 +28,19 @@ ListenerAction update()
 {
     if (input_is_key_pressed(KeyD))
     {
-        //entity_get<Transform>(player).position.x += Player.x_speed * delta_seconds();
+        entity_get<Transform>(player).position.x += entity_get<Movement>(player).speed.x * delta_seconds();
+    }
+    if (input_is_key_pressed(KeyA))
+    {
+        entity_get<Transform>(player).position.x -= entity_get<Movement>(player).speed.x * delta_seconds();
+    }
+    if (input_is_key_pressed(KeyW))
+    {
+        entity_get<Transform>(player).position.y += entity_get<Movement>(player).speed.y * delta_seconds();
+    }
+    if (input_is_key_pressed(KeyS))
+    {
+        entity_get<Transform>(player).position.y -= entity_get<Movement>(player).speed.y * delta_seconds();
     }
     
     return ListenerAction::StayListening;
