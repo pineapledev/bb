@@ -333,6 +333,8 @@ namespace nit
     ListenerAction fixed_update()
     {
         //TODO: check groups before start ticking this
+
+        NIT_IF_EDITOR_ENABLED(if ((editor_get_instance()->is_paused && !editor_get_instance()->next_frame) || editor_get_instance()->is_stopped) return ListenerAction::StayListening;)
         
         for (EntityID entity : entity_get_group<Transform, Rigidbody2D>().entities)
         {

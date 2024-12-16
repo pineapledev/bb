@@ -1,4 +1,5 @@
-﻿#ifdef NIT_EDITOR_ENABLED
+﻿#include <ObjectArray.h>
+#ifdef NIT_EDITOR_ENABLED
 
 #include "editor.h"
 #include "entity/entity_utils.h"
@@ -263,31 +264,84 @@ namespace nit
         }
 
         // Play / Pause screen
-        /*{
+        {
             ImGuiWindowFlags flags = 0;
             flags |= ImGuiWindowFlags_NoTitleBar;
             flags |= ImGuiWindowFlags_AlwaysAutoResize;
             flags |= ImGuiWindowFlags_NoFocusOnAppearing;
             ImGui::SetNextWindowBgAlpha(0.35f);
             ImGui::Begin("#PlayPauseScreen", nullptr, flags);
+
             if (draw_image_button(Editor::Icon::Play, 16, "play", V4_COLOR_LIGHT_GREEN))
             {
+                if (!editor->is_stopped && editor->is_paused)
+                {
+                    editor->is_paused = false;
+                }
                 
+                if (editor->is_stopped)
+                {
+                    editor->is_stopped = false;
+                }
             }
 
             ImGui::SameLine();
-            if (draw_image_button(Editor::Icon::Pause, 16, "pause"))
-            {
-                
-            }
 
-            ImGui::SameLine();
             if (draw_image_button(Editor::Icon::Stop, 16, "stop", V4_COLOR_LIGHT_RED))
             {
-                
+                if (!editor->is_stopped)
+                {
+                    Array<AssetHandle> all_scenes;
+                    Array<AssetHandle> scenes;
+
+                    asset_find_by_type(type_get<Scene>(), all_scenes);
+
+                    for (AssetHandle& handle : all_scenes)
+                    {
+                        if (!asset_loaded(handle))
+                        {
+                            continue;
+                        }
+
+                        scenes.push_back(handle);
+                        asset_free(handle);
+                    }
+
+                    for (AssetHandle& handle : scenes)
+                    {
+                        asset_load(handle);
+                    }
+
+                    editor->is_stopped = true;
+                }
             }
+
+            ImGui::SameLine();
+
+            if (draw_image_button(Editor::Icon::Pause, 16, "pause"))
+            {
+                editor->is_paused = true;
+            }
+
+            ImGui::SameLine();
+
+            if (editor->next_frame)
+            {
+                editor->next_frame = false;
+            }
+            
+            if (draw_image_button(Editor::Icon::Next, 16, "next"))
+            {
+                if (editor->is_paused && !editor->next_frame)
+                {
+                    editor->next_frame = true;
+                }
+            }
+
+            ImGui::SameLine();
+
             ImGui::End();
-        }*/
+        }
         
         if (editor->show_viewport)
         {

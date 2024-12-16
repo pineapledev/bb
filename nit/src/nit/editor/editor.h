@@ -47,6 +47,9 @@ namespace nit
         bool          show_assets          = true;
         bool          show_stats           = false;
         bool          is_using_gizmo       = false;
+        bool          is_paused            = false;
+        bool          is_stopped           = true;
+        bool          next_frame           = false;
         
         Pool             asset_nodes;
         u32              root_node = U32_MAX;
