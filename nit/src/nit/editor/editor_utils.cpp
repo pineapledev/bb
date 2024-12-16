@@ -10,7 +10,7 @@ namespace nit
 {
     using namespace ImGui;
     
-    constexpr f32 COLUMN_WIDTH   = 100.f;
+    constexpr f32 COLUMN_WIDTH     = 200.f;
     constexpr Vector2 ITEM_SPACING = { 0.f, 6.f };
     constexpr Vector4 V4_COLOR_X   = {1.f, 0.3f, 0.3f, 1.f};
     constexpr Vector4 V4_COLOR_Y   = {0.368f, 0.737f, 0.521f, 1};
