@@ -96,58 +96,7 @@ project "nit"
     filter "system:windows"
         systemversion "latest"
 
-project "app"
-
-    kind          "ConsoleApp"
-    language      "C++"
-    cppdialect    "C++20"
-    location      "app"
-    targetdir     (binariesdir)
-    objdir        (intermediatesdir)
-    pchheader     "app_pch.h"
-    pchsource     "app/src/app_pch.cpp"
-    forceincludes { "app_pch.h" }
-    
-    defines
-    {
-    }
-
-    disablewarnings 
-    {
-    }
-
-    includedirs 
-    {
-        "nit/src",
-        "app/src",
-        "3rd/imgui/src",
-        "3rd/yaml/include"
-    }
-    
-    links
-    {
-        "nit"
-    }
-
-    files { "app/src/**.h", "app/src/**.cpp" }
-
-    filter "configurations:Debug"
-        symbols "On"
-        runtime "Debug"
-        defines "NIT_DEBUG"
-
-    filter "configurations:Release"
-        optimize "On"
-        runtime "Release"
-        defines "NIT_RELEASE"
-
-    filter "configurations:Dist"
-		runtime "Release"
-		optimize "On"
-        defines "NIT_DIST"
-
-    filter "system:windows"
-        systemversion "latest"
+include "apps.lua"
 
 group "3rd"
 
