@@ -6,7 +6,7 @@ workspace "nit"
 
     architecture   "x86_64"
     configurations { "Debug", "Release", "Dist" }
-    startproject   "app"
+    startproject   "bb"
 
 project "nit"
 
