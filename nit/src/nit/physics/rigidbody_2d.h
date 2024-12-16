@@ -15,6 +15,6 @@ namespace nit
         BodyHandle handle           = {};
         bool       invalidated      = false;
     };
-
+    
     void register_rigidbody_2d_component();
 }

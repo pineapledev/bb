@@ -138,6 +138,14 @@ namespace nit
         }
     }
 
+    void rigidbody_add_force(Rigidbody2D& rb, const Vector2& force, const Vector2& point)
+    {
+        if (b2BodyId body_id = to_box2d(rb.handle); b2Body_IsValid(body_id))
+        {
+            b2Body_ApplyForce(body_id, to_box2d(force), to_box2d(point), false);
+        }
+    }
+
     static b2WorldId world()
     {
         if (!physics_2d_has_instance())
@@ -165,10 +173,12 @@ namespace nit
             rb.handle = {};
         }
         
-        b2BodyDef def = b2DefaultBodyDef();
-        def.type      = to_box2d(rb.body_type);
-        def.position  = to_box2d(position);
-        def.rotation  = b2MakeRot(angle);
+        b2BodyDef def    = b2DefaultBodyDef();
+        def.type         = to_box2d(rb.body_type);
+        def.position     = to_box2d(position);
+        def.rotation     = b2MakeRot(angle);
+        def.isAwake      = true;
+        def.gravityScale = rb.gravity_scale;
         
         rb.handle      = from_box2d(b2CreateBody(world(), &def));
     }
@@ -188,6 +198,7 @@ namespace nit
         }
 
         def             = b2DefaultShapeDef();
+        def.density     = physic_material->density;
         def.density     = physic_material->density;
         def.friction    = physic_material->friction;
         def.restitution = physic_material->bounciness;
@@ -374,6 +385,54 @@ namespace nit
 
         b2World_SetGravity(world() , to_box2d(physics_2d->gravity));
         b2World_Step(world(), fixed_delta_seconds(), physics_2d->sub_steps);
+
+        b2SensorEvents sensor_events = b2World_GetSensorEvents(to_box2d(physics_2d->world_handle));
+
+        for (i32 i = 0; i < sensor_events.beginCount; ++i)
+        {
+            b2SensorBeginTouchEvent* begin_touch = sensor_events.beginEvents + i;
+            
+            EntityID visitor_entity = *(EntityID*) b2Shape_GetUserData(begin_touch->visitorShapeId);
+            EntityID trigger_entity = *(EntityID*) b2Shape_GetUserData(begin_touch->sensorShapeId);
+
+            TriggerEnterArgs args {
+                .trigger_entity = trigger_entity,
+                .visitor_entity = visitor_entity
+            };
+            
+            if (entity_has<TriggerEvents>(trigger_entity))
+            {
+                event_broadcast<const TriggerEnterArgs&>(entity_get<TriggerEvents>(trigger_entity).enter_event, args);
+            }
+
+            if (entity_has<TriggerEvents>(visitor_entity))
+            {
+                event_broadcast<const TriggerEnterArgs&>(entity_get<TriggerEvents>(visitor_entity).enter_event, args);
+            }
+        }
+
+        for (i32 i = 0; i < sensor_events.endCount; ++i)
+        {
+            b2SensorEndTouchEvent* end_touch = sensor_events.endEvents + i;
+            
+            EntityID visitor_entity = *(EntityID*) b2Shape_GetUserData(end_touch->visitorShapeId);
+            EntityID trigger_entity = *(EntityID*) b2Shape_GetUserData(end_touch->sensorShapeId);
+            
+            TriggerExitArgs args {
+                .trigger_entity = trigger_entity,
+                .visitor_entity = visitor_entity
+            };
+            
+            if (entity_has<TriggerEvents>(trigger_entity))
+            {
+                event_broadcast<const TriggerExitArgs&>(entity_get<TriggerEvents>(trigger_entity).exit_event, args);
+            }
+
+            if (entity_has<TriggerEvents>(visitor_entity))
+            {
+                event_broadcast<const TriggerExitArgs&>(entity_get<TriggerEvents>(visitor_entity).exit_event, args);
+            }
+        }
         
         for (EntityID entity : entity_get_group<Transform, Rigidbody2D>().entities)
         {
@@ -434,44 +493,6 @@ namespace nit
             }
 
             b2Body_SetGravityScale(body, rb.gravity_scale);
-        }
-
-        b2SensorEvents sensor_events = b2World_GetSensorEvents(to_box2d(physics_2d->world_handle));
-
-        for (i32 i = 0; i < sensor_events.beginCount; ++i)
-        {
-            b2SensorBeginTouchEvent* begin_touch = sensor_events.beginEvents + i;
-            
-            EntityID visitor_entity = *(EntityID*) b2Shape_GetUserData(begin_touch->visitorShapeId);
-            EntityID trigger_entity = *(EntityID*) b2Shape_GetUserData(begin_touch->sensorShapeId);
-            
-            if (entity_has<TriggerEvents>(visitor_entity))
-            {
-                TriggerEnterArgs args {
-                    .trigger_entity = trigger_entity,
-                    .visitor_entity = visitor_entity
-                };
-                
-                event_broadcast<const TriggerEnterArgs&>(entity_get<TriggerEvents>(visitor_entity).enter_event, args);
-            }
-        }
-
-        for (i32 i = 0; i < sensor_events.endCount; ++i)
-        {
-            b2SensorEndTouchEvent* end_touch = sensor_events.endEvents + i;
-            
-            EntityID visitor_entity = *(EntityID*) b2Shape_GetUserData(end_touch->visitorShapeId);
-            EntityID trigger_entity = *(EntityID*) b2Shape_GetUserData(end_touch->sensorShapeId);
-            
-            if (entity_has<TriggerEvents>(visitor_entity))
-            {
-                TriggerExitArgs args {
-                    .trigger_entity = trigger_entity,
-                    .visitor_entity = visitor_entity
-                };
-                
-                event_broadcast<const TriggerExitArgs&>(entity_get<TriggerEvents>(visitor_entity).exit_event, args);
-            }
         }
         
         return ListenerAction::StayListening;

@@ -3,6 +3,8 @@
 
 namespace nit
 {
+    struct Rigidbody2D;
+    
     struct WorldHandle
     {
         i16 index1   = 0;
@@ -36,4 +38,7 @@ namespace nit
     Physics2D* physics_2d_get_instance();
     void       physics_2d_init();
     void       physics_2d_finish();
+
+    void rigidbody_add_force(Rigidbody2D& rb, const Vector2& force, const Vector2& point);
+
 }
