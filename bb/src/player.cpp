@@ -31,14 +31,14 @@ void deserialize(Player* player, const YAML::Node& node)
 #ifdef NIT_EDITOR_ENABLED
 void draw_editor(Player* player)
 {
-    editor_draw_drag_f32("L1 GunRate", player->firerate_gun_1);
-    editor_draw_drag_f32("L2 GunRate", player->firerate_gun_2);
-    editor_draw_drag_f32("L3 GunRate", player->firerate_gun_3);
-    editor_draw_drag_f32("LMAX GunRate", player->firerate_gun_max);
-    editor_draw_drag_f32("L1 SwrdRate", player->firerate_sword_1);
-    editor_draw_drag_f32("L2 SwrdRate", player->firerate_sword_2);
-    editor_draw_drag_f32("L3 SwrdRate", player->firerate_sword_3);
-    editor_draw_drag_f32("LMAX SwrdRate", player->firerate_sword_max);
+    editor_draw_drag_f32("L.1 GunRate", player->firerate_gun_1);
+    editor_draw_drag_f32("L.2 GunRate", player->firerate_gun_2);
+    editor_draw_drag_f32("L.3 GunRate", player->firerate_gun_3);
+    editor_draw_drag_f32("L.MAX GunRate", player->firerate_gun_max);
+    editor_draw_drag_f32("L.1 SwordRate", player->firerate_sword_1);
+    editor_draw_drag_f32("L.2 SwordRate", player->firerate_sword_2);
+    editor_draw_drag_f32("L.3 SwordRate", player->firerate_sword_3);
+    editor_draw_drag_f32("L.MAX SwordRate", player->firerate_sword_max);
 }
 #endif
 void register_player_component()
