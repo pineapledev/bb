@@ -178,9 +178,7 @@ namespace nit
 
         context.controllerId = 1;
 
-        //event_broadcast<const InputActionContext&>(input_action->input_performed_event, context);
-
-        //m_InputPerformedEvent.Broadcast(context);
+        event_broadcast<const InputActionContext&>(input_action->input_performed_event, context);
     }
 
     void on_controller_vector2(InputAction* input_action, const Vector2& vector2_value)
@@ -197,7 +195,7 @@ namespace nit
         */
 
         context.controllerId = 1;
-        //event_broadcast<const InputActionContext&>(input_action->input_performed_event, context);
+        event_broadcast<const InputActionContext&>(input_action->input_performed_event, context);
     }
 
     void on_controller_vector3(InputAction* input_action, const Vector3& vector3_value)
@@ -214,7 +212,7 @@ namespace nit
         */
 
         context.controllerId = 1;
-        //event_broadcast<const InputActionContext&>(input_action->input_performed_event, context);
+        event_broadcast<const InputActionContext&>(input_action->input_performed_event, context);
     }
 
     void on_controller_vector4(InputAction* input_action, const Vector4& vector4_value)
@@ -231,7 +229,7 @@ namespace nit
         */
 
         context.controllerId = 1;
-        //event_broadcast<const InputActionContext&>(input_action->input_performed_event, context);
+        event_broadcast<const InputActionContext&>(input_action->input_performed_event, context);
     }
 
     void on_controller_button_pressed(InputAction* input_action, bool is_repeat)
