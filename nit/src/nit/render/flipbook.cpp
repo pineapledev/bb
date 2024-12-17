@@ -63,7 +63,7 @@ namespace nit
     {
         const bool texture_changed = editor_draw_asset_combo("texture", type_get<Texture2D>(), &flipbook->texture);
         
-        if (texture_changed)
+        if (texture_changed && asset_valid(flipbook->texture))
         {
             Texture2D* texture = asset_get_data<Texture2D>(flipbook->texture);
             
@@ -87,6 +87,9 @@ namespace nit
 
         bool should_sort = false;
         
+        bool pending_remove = false;
+        u32  remove_index = 0.f;
+        
         for (u32 i = 0; i < flipbook->key_count; ++i)
         {
             FlipBook::Key* key = flipbook->keys + i;
@@ -104,12 +107,57 @@ namespace nit
                     should_sort = true;
                 }
 
+                if (ImGui::Button("Remove"))
+                {
+                    remove_index = i;
+                    pending_remove = true;
+                }
+                
                 ImGui::Separator();
                 ImGui::Spacing();
                 ImGui::TreePop();
             }
             
             ImGui::PopID();
+        }
+
+        if (asset_valid(flipbook->texture) && flipbook->key_count < FlipBook::MAX_KEYS)
+        {
+            if (editor_draw_centered_button("Add Key"))
+            {
+                ImGui::OpenPopup("Add Key");
+            }
+
+            if (ImGui::BeginPopup("Add Key"))
+            {
+                Texture2D* texture = asset_get_data<Texture2D>(flipbook->texture);
+                
+                for (u32 i = 0; i < texture->sub_texture_count; ++i)
+                {
+                    SubTexture2D* sub_texture = texture->sub_textures + i;
+                    
+                    if (ImGui::MenuItem(sub_texture->name.c_str()))
+                    {
+                        FlipBook::Key* new_key = flipbook->keys + flipbook->key_count;
+                        new_key->index = flipbook->key_count;
+                        new_key->name  = sub_texture->name;
+                        new_key->time  = 0.f;
+                        ++flipbook->key_count;
+                    }
+                }
+                ImGui::EndPopup();
+            }
+        }
+
+        if (pending_remove)
+        {
+            for (u32 i = remove_index; i < flipbook->key_count - 1; ++i)
+            {
+                flipbook->keys[i] = flipbook->keys[i + 1];
+            }
+
+            --flipbook->key_count;
+            pending_remove = false;
         }
 
         if (should_sort)
