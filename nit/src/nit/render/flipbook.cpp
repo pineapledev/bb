@@ -67,13 +67,17 @@ namespace nit
         {
             Texture2D* texture = asset_get_data<Texture2D>(flipbook->texture);
             
-            flipbook->key_count = std::min(texture->sub_texture_count, FlipBook::MAX_KEYS);
+            flipbook->key_count = std::min(texture->sub_texture_count + 1, FlipBook::MAX_KEYS);
             
-            for (u32 i = 0; i < flipbook->key_count; ++i)
+            for (u32 i = 0; i < flipbook->key_count - 1; ++i)
             {
                 SubTexture2D* sub_texture = texture->sub_textures + i;
                 flipbook->keys[i] = { .name = sub_texture->name, .index = (i32) i, .time = 0.f };
             }
+            
+            // Por consistencia, añadimos una última clave, que será un duplicado de la primera
+            SubTexture2D* sub_texture = texture->sub_textures;
+            flipbook->keys[flipbook->key_count - 1] = { .name = sub_texture->name, .index = (i32) flipbook->key_count - 1, .time = 0.f };
         }
         
         if (editor_draw_drag_f32("duration", flipbook->duration) || texture_changed)

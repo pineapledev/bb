@@ -17,7 +17,7 @@ namespace nit
         AssetHandle texture;
         Key keys[MAX_KEYS];
         u32 key_count = 0u;
-        f32 duration = 0.f;
+        f32 duration = 1.f;
     };
     
     void flipbook_sort(FlipBook* flipbook);
