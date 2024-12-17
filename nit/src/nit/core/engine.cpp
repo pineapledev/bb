@@ -20,6 +20,7 @@
 #include "physics/physic_material.h"
 #include "input/input_action.h"
 #include "physics/trigger_events.h"
+#include "render/flipbook.h"
 
 #define NIT_CHECK_ENGINE_CREATED NIT_CHECK_MSG(nit::engine, "Forget to call SetAppInstance!");
 
@@ -122,6 +123,7 @@ namespace nit
             register_box_collider_2d_component();
             register_circle_collider_component();
             register_trigger_events_component();
+            register_flipbook_animation_component();
         }
 
         input_registry_set_instance(&engine->input_registry);
@@ -152,6 +154,7 @@ namespace nit
             register_clip_asset();
             register_physic_material_asset();
             register_input_action_asset();
+            register_flipbook_asset();
         }
 
         if (on_init)

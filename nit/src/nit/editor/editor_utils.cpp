@@ -161,10 +161,10 @@ namespace nit
         return changed;
     }
 
-    bool editor_draw_drag_f32(const char* label, f32& num, f32 speed /*= 0.1f*/)
+    bool editor_draw_drag_f32(const char* label, f32& num, f32 speed, f32 min, f32 max)
     {
         editor_begin_property(label);
-        bool changed = DragFloat("##", &num, speed, 0, 0, "%.3f");
+        bool changed = DragFloat("##", &num, speed, min, max, "%.3f");
         if (property_in_context)
             PopItemWidth();
         editor_end_property();

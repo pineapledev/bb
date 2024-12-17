@@ -1,4 +1,5 @@
 ﻿#include "circle.h"
+#include "flipbook.h"
 #include "line_2d.h"
 #include "sprite.h"
 #include "text.h"
@@ -23,6 +24,7 @@ namespace nit
     
     ListenerAction start();
     ListenerAction end();
+    ListenerAction update();
     ListenerAction draw();
     
     static ListenerAction on_asset_destroyed(const AssetDestroyedArgs& args);
@@ -33,6 +35,7 @@ namespace nit
     {
         engine_event(Stage::Start)  += EngineListener::create(start);
         engine_event(Stage::End)    += EngineListener::create(end);
+        engine_event(Stage::Update) += EngineListener::create(update);
         engine_event(Stage::Draw)   += EngineListener::create(draw);
         
         entity_create_group<Sprite, Transform>();
@@ -40,6 +43,7 @@ namespace nit
         entity_create_group<Circle, Transform>();
         entity_create_group<Line2D, Transform>();
         entity_create_group<Text,   Transform>();
+        entity_create_group<Sprite, Transform, FlipBookAnimation>();
     }
     
     ListenerAction start()
@@ -55,6 +59,50 @@ namespace nit
         engine_get_instance()->asset_registry.asset_destroyed_event    -= AssetDestroyedListener::create(on_asset_destroyed);
         engine_get_instance()->entity_registry.component_added_event   -= ComponentAddedListener::create(on_component_added);
         engine_get_instance()->entity_registry.component_removed_event -= ComponentRemovedListener::create(on_component_removed);
+        return ListenerAction::StayListening;
+    }
+
+    ListenerAction update()
+    {
+        for (EntityID entity : entity_get_group<Sprite, Transform, FlipBookAnimation>().entities)
+        {
+            auto& animation = entity_get<FlipBookAnimation>(entity);
+
+            if (!asset_valid(animation.flipbook) || !animation.playing)
+            {
+                continue;
+            }
+
+            FlipBook* flipbook = asset_get_data<FlipBook>(animation.flipbook);
+
+            if (flipbook->key_count == 0)
+            {
+                continue;
+            }
+
+            animation.time += delta_seconds();
+
+            const FlipBook::Key& current_key = flipbook->keys[animation.current_key];
+
+            if (animation.time >= current_key.time)
+            {
+                auto& sprite = entity_get<Sprite>(entity);
+                sprite.sub_texture = current_key.name;
+                sprite.sub_texture_index = current_key.index;
+                ++animation.current_key;
+
+                if (animation.current_key == flipbook->key_count)
+                {
+                    animation.time = 0.f;
+                    animation.current_key = 0u;
+
+                    if (!animation.loop)
+                    {
+                        animation.playing = false;
+                    }
+                }
+            }
+        }
         return ListenerAction::StayListening;
     }
     
