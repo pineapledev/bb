@@ -10,6 +10,7 @@
 #include "nit/render/sprite.h"
 #include "nit/render/line_2d.h"
 #include "nit/render/draw_system.h"
+#include "nit/render/flipbook.h"
 
 #include "nit/core/engine.h"
 #include "nit/core/window.h"

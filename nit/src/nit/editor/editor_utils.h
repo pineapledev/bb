@@ -23,7 +23,7 @@ namespace nit
     bool editor_draw_bool(const char* label, bool& enabled);
     bool editor_draw_drag_i32(const char* label, i32& num, f32 speed = 1.f);
     bool editor_draw_drag_u32(const char* label, u32& num, f32 speed = 1.f);
-    bool editor_draw_drag_f32(const char* label, f32& num, f32 speed = 0.1f);
+    bool editor_draw_drag_f32(const char* label, f32& num, f32 speed = 0.1f, f32 min = 0.f, f32 max = 0.f);
     void editor_draw_combo(const char* label, String& selected, const Array<String>& options);
     bool editor_draw_drag_f32_with_button(const char* label, f32& value, const Vector4& reset_color = V4_COLOR_LIGHT_RED, f32 reset_value = 0.f, f32 speed = 0.05f);
     bool editor_draw_drag_vector2(const char* label, Vector2& vector, const Vector2& reset_value = V2_ZERO, f32 speed = 0.05f);
