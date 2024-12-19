@@ -1,5 +1,5 @@
 #pragma once
-#include "entity/entity.h"
+#include "nit/entity/entity.h"
 
 #ifdef NIT_IMGUI_ENABLED
 
