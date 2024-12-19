@@ -1,4 +1,6 @@
 ﻿#include "player.h"
+
+#include "bullet.h"
 #include "game.h"
 #include "movement.h"
 
@@ -110,5 +112,6 @@ ListenerAction input_callback_move(const InputActionContext& context)
 
 ListenerAction input_callback_shoot(const InputActionContext& context)
 {
+    bullet_spawn(entity_get<Transform>(game->entity_player).position);
     return ListenerAction::StayListening;
 }

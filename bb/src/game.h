@@ -4,8 +4,9 @@
 
 struct Game
 {
-    EntityID    entity_player  = NULL_ENTITY;
-    AssetHandle test_scene     = {};
+    EntityID    entity_player        = NULL_ENTITY;
+    EntityID    entity_bullet_preset = NULL_ENTITY;
+    AssetHandle test_scene           = {};
 };
 
 inline Game* game = nullptr;

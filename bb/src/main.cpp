@@ -1,3 +1,4 @@
+#include "bullet.h"
 #include "nit.h"
 #include "game.h"
 #include "health.h"
@@ -22,4 +23,5 @@ void game_init()
     register_movement_component();
     register_health_component();
     register_player_component();
+    register_bullet_component();
 }

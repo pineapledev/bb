@@ -1,4 +1,6 @@
 ﻿#include "game.h"
+
+#include "bullet.h"
 #include "player.h"
 
 ListenerAction game_start()
@@ -21,6 +23,13 @@ ListenerAction game_start()
         {
             player_start();    
         }
+
+        game->entity_bullet_preset = entity_find_by_name(ENTITY_NAME_BULLET_PRESET);
+
+        if (entity_valid(game->entity_bullet_preset))
+        {
+            bullet_start();
+        }
     }
     
     return ListenerAction::StayListening;
@@ -35,5 +44,6 @@ ListenerAction game_update()
     }
 
     player_update();
+    bullet_update();
     return ListenerAction::StayListening;
 }
