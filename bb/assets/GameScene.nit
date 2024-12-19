@@ -8,11 +8,12 @@ Scene:
   Entities:
     Entity:
       Name:
-        data: camera
+        data: Camera
       Transform:
         position: [0, 0, 2.95000005]
         rotation: [0, 0, 0]
         scale: [1, 1, 1]
+        parent_uuid: 0
       Camera:
         projection: Orthographic
         fov: 100
@@ -25,7 +26,8 @@ Scene:
       Transform:
         position: [0, 0, 0]
         rotation: [0, 0, 0]
-        scale: [1, 1, 0]
+        scale: [1, 1, 1]
+        parent_uuid: 0
       Sprite:
         texture: [ShipTexture, Texture2D, 16847963267852121044]
         sub_texture: ""

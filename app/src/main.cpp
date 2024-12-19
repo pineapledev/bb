@@ -41,14 +41,14 @@ int main(int argc, char** argv)
 
 // -----------------------------------------------------------------
 
-ListenerAction start();
-ListenerAction update();
+ListenerAction game_start();
+ListenerAction game_update();
 
 void init()
 {
     //Create game system
-    engine_event(Stage::Start)  += EngineListener::create(start);
-    engine_event(Stage::Update) += EngineListener::create(update);
+    engine_event(Stage::Start)  += EngineListener::create(game_start);
+    engine_event(Stage::Update) += EngineListener::create(game_update);
 
     component_register<Move>();
     entity_create_group<Transform, Sprite, Move>();
@@ -56,7 +56,7 @@ void init()
 
 AssetHandle test_scene;
 
-ListenerAction start()
+ListenerAction game_start()
 {
     test_scene = asset_find_by_name("test scene");
 
@@ -68,7 +68,7 @@ ListenerAction start()
     return ListenerAction::StayListening;
 }
 
-ListenerAction update()
+ListenerAction game_update()
 {
     //spawn_entity();
     
