@@ -53,7 +53,7 @@ namespace nit
         component_register<Camera>();
     }
 
-    Matrix4 camera_proj_view(const Camera& camera, const Transform& transform)
+    Matrix4 camera_proj_view(const Camera& camera, Transform transform)
     {
         return camera_proj(camera) * camera_view(transform);
     }
@@ -82,7 +82,7 @@ namespace nit
         return proj;
     }
 
-    Matrix4 camera_view(const Transform& transform)
+    Matrix4 camera_view(Transform& transform)
     {
         return mat_inverse(transform_to_matrix(transform));
     }

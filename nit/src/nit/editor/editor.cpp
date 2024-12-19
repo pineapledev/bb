@@ -418,8 +418,7 @@ namespace nit
                         
                         ImGuizmo::SetOrthographic(camera_data.projection == CameraProjection::Orthographic);
                         ImGuizmo::SetDrawlist();
-                        const auto& window_pos = ImGui::GetWindowPos();
-                        ImGuizmo::SetRect(window_pos.x, window_pos.y, window_size.x, window_size.y);
+                        ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
                         
                         static ImGuizmo::OPERATION operation = ImGuizmo::TRANSLATE;
                         static ImGuizmo::MODE mode = ImGuizmo::LOCAL;
@@ -438,8 +437,7 @@ namespace nit
                         Matrix4 gizmo_matrix = mat_create_transform(transform.position, transform.rotation, transform.scale);
                         
                         ImGuizmo::Manipulate(view, projection, operation, mode, &gizmo_matrix.n[0], nullptr, snap_enabled ? &snap : nullptr);
-
-
+                        
                         if (ImGuizmo::IsUsing() && !editor->is_using_gizmo)
                         {
                             if (entity_has<Rigidbody2D>(selected_entity))
