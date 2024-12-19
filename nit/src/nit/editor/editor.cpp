@@ -195,7 +195,7 @@ namespace nit
             {
                 controller.desired_zoom -= ImGui::GetIO().MouseWheel * controller.zoom_step;
                 controller.desired_zoom = std::clamp(controller.desired_zoom, 0.f, F32_MAX);
-                
+
                 if (std::abs(controller.desired_zoom - camera.size) > .01f)
                 {
                     const float dir = camera.size < controller.desired_zoom ? 1.f : -1.f;
@@ -414,11 +414,18 @@ namespace nit
                     if (entity_valid(selected_entity) && editor->selection == Editor::Selection::Entity && entity_valid(camera_entity) && entity_has<Transform>(selected_entity))
                     {
                         auto& camera_data      = entity_get<Camera>(camera_entity);
+                        camera_data.aspect = engine_window_size().x / engine_window_size().y;
+                        
                         auto& camera_transform = entity_get<Transform>(camera_entity);
                         
                         ImGuizmo::SetOrthographic(camera_data.projection == CameraProjection::Orthographic);
                         ImGuizmo::SetDrawlist();
                         ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, ImGui::GetWindowWidth(), ImGui::GetWindowHeight());
+
+                        if (ImGui::GetWindowWidth() < 1024)
+                        {
+                            printf("");
+                        }
                         
                         static ImGuizmo::OPERATION operation = ImGuizmo::TRANSLATE;
                         static ImGuizmo::MODE mode = ImGuizmo::LOCAL;
