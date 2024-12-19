@@ -2,7 +2,8 @@
 
 struct Bullet
 {
-    bool enabled = true;
+    bool    enabled = true;
+    Vector3 dir; 
 };
 
 #define BULLET_GROUP_SIGNATURE Transform, Sprite, Movement, Bullet, Rigidbody2D, CircleCollider
@@ -10,6 +11,6 @@ struct Bullet
 
 void register_bullet_component();
 
-EntityID bullet_spawn(const Vector3& pos);
+EntityID bullet_spawn(const Vector3& pos, const Vector3& dir = V3_UP);
 void     bullet_start();
 void     bullet_update();

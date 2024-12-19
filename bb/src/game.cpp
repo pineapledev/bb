@@ -7,11 +7,18 @@ ListenerAction game_start()
 {
     // Scene assets
     {
-        game->test_scene = asset_find_by_name(SCENE_NAME_GAME);
+        game->scene_game = asset_find_by_name(SCENE_NAME_GAME);
     
-        if (asset_valid(game->test_scene))
+        if (asset_valid(game->scene_game))
         {
-            asset_load(game->test_scene);
+            asset_load(game->scene_game);
+        }
+
+        game->scene_presets = asset_find_by_name(SCENE_NAME_PRESETS);
+    
+        if (asset_valid(game->scene_presets))
+        {
+            asset_load(game->scene_presets);
         }
     }
     
@@ -23,7 +30,7 @@ ListenerAction game_start()
         {
             player_start();    
         }
-
+        
         game->entity_bullet_preset = entity_find_by_name(ENTITY_NAME_BULLET_PRESET);
 
         if (entity_valid(game->entity_bullet_preset))

@@ -20,7 +20,7 @@ void register_bullet_component()
     entity_create_group<BULLET_GROUP_SIGNATURE>();
 }
 
-EntityID bullet_spawn(const Vector3& pos)
+EntityID bullet_spawn(const Vector3& pos, const Vector3& dir)
 {
     if (!entity_valid(game->entity_bullet_preset))
     {
@@ -31,6 +31,8 @@ EntityID bullet_spawn(const Vector3& pos)
     EntityID instance = entity_clone(game->entity_bullet_preset);
 
     auto& bullet  = entity_get<Bullet>(instance);
+    bullet.dir = dir;
+    
     auto& rb = entity_get<Rigidbody2D>(instance);
     auto& sprite = entity_get<Sprite>(instance);
     auto& transform = entity_get<Transform>(instance);
@@ -69,6 +71,6 @@ void bullet_update()
         auto& movement  = entity_get<Movement>(entity);
         auto& transform = entity_get<Transform>(entity);
         
-        transform.position += to_v3(multiply(movement.speed, V2_UP) * delta_seconds());
+        transform.position += to_v3(multiply(movement.speed, to_v2(bullet.dir)) * delta_seconds());
     }
 }
