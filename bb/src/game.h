@@ -1,25 +1,11 @@
 ﻿#pragma once
 
-#include "nit.h"
-#include "health.h"
-#include "movement.h"
-#include "player.h"
-
-//TODO: remove nit namespace from engine
-using AssetHandle    = nit::AssetHandle;
-using EntityID       = nit::EntityID;
-using ListenerAction = nit::ListenerAction;
-using InputListener  = nit::Listener<const nit::InputActionContext&>;
-
-#define ENTITY_NAME_PLAYER          "Player"
-#define SCENE_NAME_GAME             "GameScene"
-#define INPUT_NAME_PLAYER_MOVEMENT  "PlayerMoveInput"
+#define SCENE_NAME_GAME    "GameScene"
 
 struct Game
 {
-    EntityID    player            = nit::NULL_ENTITY;
-    AssetHandle test_scene        = {};
-    AssetHandle player_input_move = {};
+    EntityID    entity_player  = NULL_ENTITY;
+    AssetHandle test_scene     = {};
 };
 
 inline Game* game = nullptr;

@@ -1,7 +1,7 @@
-﻿#include "bb_pch.h"
-#include "player.h"
-#include "nit.h"
-#include "nit/editor/editor_utils.h"
+﻿#include "player.h"
+#include "game.h"
+#include "movement.h"
+
 using namespace nit;
 
 void serialize(const Player* player, YAML::Emitter& emitter)
@@ -41,6 +41,7 @@ void draw_editor(Player* player)
     editor_draw_drag_f32("L.MAX SwordRate", player->firerate_sword_max);
 }
 #endif
+
 void register_player_component()
 {
     TypeArgs<Player> args;
@@ -48,4 +49,66 @@ void register_player_component()
     args.fn_deserialize = deserialize;
     args.fn_draw_editor = draw_editor;
     component_register<Player>(args);
+}
+
+static ListenerAction input_callback_move(const InputActionContext& context);
+static ListenerAction input_callback_shoot(const InputActionContext& context);
+
+void player_start()
+{
+    auto& player = entity_get<Player>(game->entity_player);
+    
+    // Input assets
+    {
+        player.input_move = asset_find_by_name(INPUT_NAME_PLAYER_MOVEMENT);
+
+        if (asset_valid(player.input_move))
+        {
+            InputAction* input = asset_get_data<InputAction>(player.input_move);
+            input->input_performed_event += InputListener::create(input_callback_move);
+        }
+
+        player.input_shoot = asset_find_by_name(INPUT_NAME_PLAYER_SHOOT);
+    
+        if (asset_valid(player.input_move))
+        {
+            InputAction* input = asset_get_data<InputAction>(player.input_shoot);
+            input->input_performed_event += InputListener::create(input_callback_shoot);
+        }
+    }
+}
+
+void player_update()
+{
+}
+
+ListenerAction input_callback_move(const InputActionContext& context)
+{
+    if (!entity_valid(game->entity_player))
+    {
+        NIT_CHECK(false);
+        return ListenerAction::StopListening;
+    }
+    
+    Vector2 input_value = (const Vector2&) context.inputValue;
+
+    auto dead_zone_lambda = [](const f32 axis_val)
+    {
+        return min(1.f, (max(0.f, abs(axis_val) - 0.1f) / (1.f - 0.1f))) * sign(axis_val);
+    };
+
+    Vector2 new_value = Vector2(input_value.x, input_value.y);
+    new_value = new_value.x == 0.f && new_value.y == 0.f ? new_value : normalize(new_value);
+    new_value = new_value * dead_zone_lambda(magnitude(input_value));
+    input_value.x = new_value.x;
+    input_value.y = new_value.y;
+        
+    entity_get<Transform>(game->entity_player).position += to_v3(multiply(entity_get<Movement>(game->entity_player).speed, input_value) * delta_seconds());
+    
+    return ListenerAction::StayListening;
+}
+
+ListenerAction input_callback_shoot(const InputActionContext& context)
+{
+    return ListenerAction::StayListening;
 }

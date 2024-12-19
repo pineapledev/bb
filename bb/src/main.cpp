@@ -1,5 +1,8 @@
 #include "nit.h"
 #include "game.h"
+#include "health.h"
+#include "movement.h"
+#include "player.h"
 
 using namespace nit;
 
