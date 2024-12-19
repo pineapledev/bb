@@ -1,4 +1,5 @@
 #pragma once
+#include "entity/entity.h"
 
 #ifdef NIT_IMGUI_ENABLED
 
@@ -32,6 +33,7 @@ namespace nit
     bool editor_draw_color_palette(const char* label, Vector4& color);
     bool editor_draw_asset_combo(const char* label, Type* type, AssetHandle* asset);
     void editor_draw_resource_combo(const char* label, const Array<String>& extensions, String& selected);
+    bool editor_draw_uuid_combo(const char* label, EntityID& entity_id, UUID& entity_uuid);
     
     template<typename T>
     bool editor_draw_enum_combo(const char* label, T& enum_data)

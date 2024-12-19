@@ -17,7 +17,7 @@ namespace nit
 
     void register_camera_component();
     
-    Matrix4 camera_proj_view(const Camera& camera, const Transform& transform= { {0.f, 0.f, 3.f} });
+    Matrix4 camera_proj_view(const Camera& camera, Transform transform = { {0.f, 0.f, 3.f} });
     Matrix4 camera_proj(const Camera& camera);
-    Matrix4 camera_view(const Transform& transform);
+    Matrix4 camera_view(Transform& transform);
 }
