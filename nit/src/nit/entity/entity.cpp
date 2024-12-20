@@ -3,6 +3,7 @@
 #include "physics/box_collider_2d.h"
 #include "physics/circle_collider.h"
 #include "physics/rigidbody_2d.h"
+#include "render/transform.h"
 
 namespace nit
 {
@@ -36,7 +37,7 @@ namespace nit
         return nullptr;
     }
 
-    EntityID entity_clone(EntityID entity)
+    EntityID entity_clone(EntityID entity, const Vector3& position)
     {
         if (!entity_valid(entity))
         {
@@ -59,7 +60,12 @@ namespace nit
             delegate_invoke(pool->fn_add_to_entity, cloned_entity, component_data, true);
             
             //Turbo hack
-            if (pool->data_pool.type == type_get<Rigidbody2D>())
+            if (pool->data_pool.type == type_get<Transform>())
+            {
+                auto& transform = entity_get<Transform>(cloned_entity);
+                transform.position = position;
+            }
+            else if (pool->data_pool.type == type_get<Rigidbody2D>())
             {
                 auto& rb = entity_get<Rigidbody2D>(cloned_entity);
                 rb.invalidated = false;
