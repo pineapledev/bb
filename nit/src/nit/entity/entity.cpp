@@ -1,5 +1,9 @@
 ﻿#include "entity.h"
 
+#include "physics/box_collider_2d.h"
+#include "physics/circle_collider.h"
+#include "physics/rigidbody_2d.h"
+
 namespace nit
 {
 #define NIT_CHECK_ENTITY_REGISTRY_CREATED NIT_CHECK(entity_registry)
@@ -48,8 +52,30 @@ namespace nit
             {
                 continue;
             }
+            
             void* component_data = delegate_invoke(pool->fn_get_from_entity, entity);
+            
             delegate_invoke(pool->fn_add_to_entity, cloned_entity, component_data, true);
+            
+            //Turbo hack
+            if (pool->data_pool.type == type_get<Rigidbody2D>())
+            {
+                auto& rb = entity_get<Rigidbody2D>(cloned_entity);
+                rb.invalidated = false;
+                rb.handle = {};
+            }
+            else if (pool->data_pool.type == type_get<BoxCollider2D>())
+            {
+                auto& collider = entity_get<BoxCollider2D>(cloned_entity);
+                collider.invalidated = false;
+                collider.handle = {};
+            }
+            else if (pool->data_pool.type == type_get<CircleCollider>())
+            {
+                auto& collider = entity_get<CircleCollider>(cloned_entity);
+                collider.invalidated = false;
+                collider.handle = {};
+            }
         }
 
         return cloned_entity;
