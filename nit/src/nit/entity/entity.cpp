@@ -79,7 +79,7 @@ namespace nit
             }
 
             ComponentAddedArgs args;
-            args.entity = entity;
+            args.entity = cloned_entity;
             args.type = pool->data_pool.type;
             event_broadcast<const ComponentAddedArgs&>(entity_registry_get_instance()->component_added_event, args);
         }
