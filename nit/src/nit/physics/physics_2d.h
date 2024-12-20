@@ -40,5 +40,7 @@ namespace nit
     void       physics_2d_finish();
 
     void rigidbody_add_force(Rigidbody2D& rb, const Vector2& force, const Vector2& point);
+    void rigidbody_set_velocity(Rigidbody2D& rb, const Vector2& velocity);
+    void rigidbody_set_angular_velocity(Rigidbody2D& rb, f32 velocity);
 
 }
