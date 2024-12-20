@@ -258,6 +258,29 @@ namespace nit
         b2Shape_SetUserData(shape_id, &physics_2d->all_entity_ids[entity]);
         collider.handle = from_box2d(shape_id);
     }
+
+    static void physics_entity_invalidate(EntityID entity)
+    {
+        auto& rb = entity_get<Rigidbody2D>(entity);
+
+        if (!rb.invalidated)
+        {
+            auto& transform = entity_get<Transform>(entity);
+                
+            rigidbody_invalidate(rb, (const Vector2&) transform.position, transform.rotation.z);
+            rb.invalidated = true;
+
+            if (entity_has<BoxCollider2D>(entity))
+            {
+                entity_get<BoxCollider2D>(entity).invalidated = false;
+            }
+
+            if (entity_has<CircleCollider>(entity))
+            {
+                entity_get<CircleCollider>(entity).invalidated = false;
+            }
+        }
+    }
     
     ListenerAction start()
     {
@@ -283,6 +306,11 @@ namespace nit
         else if (args.type == type_get<CircleCollider>() && entity_has<BoxCollider2D>(args.entity))
         {
             entity_remove<BoxCollider2D>(args.entity);
+        }
+
+        if (args.type == type_get<Rigidbody2D>())
+        {
+            physics_entity_invalidate(args.entity);
         }
         
         return ListenerAction::StayListening;
@@ -342,25 +370,7 @@ namespace nit
         
         for (EntityID entity : entity_get_group<Transform, Rigidbody2D>().entities)
         {
-            auto& rb= entity_get<Rigidbody2D>(entity);
-
-            if (!rb.invalidated)
-            {
-                auto& transform = entity_get<Transform>(entity);
-                
-                rigidbody_invalidate(rb, (const Vector2&) transform.position, transform.rotation.z);
-                rb.invalidated = true;
-
-                if (entity_has<BoxCollider2D>(entity))
-                {
-                    entity_get<BoxCollider2D>(entity).invalidated = false;
-                }
-
-                if (entity_has<CircleCollider>(entity))
-                {
-                    entity_get<CircleCollider>(entity).invalidated = false;
-                }
-            }
+            physics_entity_invalidate(entity);
         }
         
         for (EntityID entity : entity_get_group<Transform, Rigidbody2D, BoxCollider2D>().entities)
