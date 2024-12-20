@@ -48,6 +48,7 @@ namespace nit
         for (u32 i = 0; i < entity_registry->next_component_type_index - 1; ++i)
         {
             ComponentPool* pool = &entity_registry->component_pool[i];
+            
             if (!delegate_invoke(pool->fn_is_in_entity, entity))
             {
                 continue;
@@ -76,6 +77,11 @@ namespace nit
                 collider.invalidated = false;
                 collider.handle = {};
             }
+
+            ComponentAddedArgs args;
+            args.entity = entity;
+            args.type = pool->data_pool.type;
+            event_broadcast<const ComponentAddedArgs&>(entity_registry_get_instance()->component_added_event, args);
         }
 
         return cloned_entity;
