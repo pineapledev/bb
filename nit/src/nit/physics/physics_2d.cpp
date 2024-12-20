@@ -146,6 +146,22 @@ namespace nit
         }
     }
 
+    void rigidbody_set_velocity(Rigidbody2D& rb, const Vector2& velocity)
+    {
+        if (b2BodyId body_id = to_box2d(rb.handle); b2Body_IsValid(body_id))
+        {
+            b2Body_SetLinearVelocity(body_id, to_box2d(velocity));
+        }
+    }
+
+    void rigidbody_set_angular_velocity(Rigidbody2D& rb, f32 velocity)
+    {
+        if (b2BodyId body_id = to_box2d(rb.handle); b2Body_IsValid(body_id))
+        {
+            b2Body_SetAngularVelocity(body_id, velocity);
+        }
+    }
+
     static b2WorldId world()
     {
         if (!physics_2d_has_instance())
