@@ -22,6 +22,7 @@ void game_init()
     
     register_movement_component();
     register_health_component();
+    register_hittable_component();
     register_player_component();
     register_bullet_component();
 }

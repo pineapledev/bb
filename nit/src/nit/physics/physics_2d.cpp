@@ -317,7 +317,7 @@ namespace nit
     }
 
     ListenerAction on_component_removed(const ComponentRemovedArgs& args)
-    {
+    {   
         if (args.type == type_get<Rigidbody2D>())
         {
             auto& rb = entity_get<Rigidbody2D>(args.entity);

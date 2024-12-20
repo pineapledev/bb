@@ -40,8 +40,10 @@ EntityID bullet_spawn(const Vector3& pos, const Vector3& dir)
     transform.position  = pos;
     bullet.enabled      = true;
     rb.enabled          = true;
-    rb.follow_transform = true;
+    rb.follow_transform = false;
     sprite.visible      = true;
+
+    rigidbody_add_force(rb, to_v2(dir * 3.f), to_v2(pos));
     
     return instance;
 }
@@ -71,6 +73,6 @@ void bullet_update()
         auto& movement  = entity_get<Movement>(entity);
         auto& transform = entity_get<Transform>(entity);
         
-        transform.position += to_v3(multiply(movement.speed, to_v2(bullet.dir)) * delta_seconds());
+        //transform.position += to_v3(multiply(movement.speed, to_v2(bullet.dir)) * delta_seconds());
     }
 }
