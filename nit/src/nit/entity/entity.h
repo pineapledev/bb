@@ -135,13 +135,13 @@ namespace nit
     
     void            entity_registry_init();
     void            entity_registry_finish();
-    EntityID          entity_create();
+    EntityID        entity_create();
     void            entity_destroy(EntityID entity);
     bool            entity_valid(EntityID entity);
     EntitySignature entity_get_signature(EntityID entity);
     void            entity_signature_changed(EntityID entity, EntitySignature new_entity_signature);
     ComponentPool*  entity_find_component_pool(const Type* type);
-    EntityID          entity_clone(EntityID entity);
+    EntityID        entity_clone(EntityID entity, const Vector3& position = V3_ZERO);
     
     template<typename T>
     ComponentPool* entity_find_component_pool()
