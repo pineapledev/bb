@@ -28,22 +28,21 @@ EntityID bullet_spawn(const Vector3& pos, const Vector3& dir)
         return NULL_ENTITY;
     }
     
-    EntityID instance = entity_clone(game->entity_bullet_preset);
+    EntityID instance = entity_clone(game->entity_bullet_preset, pos);
 
     auto& bullet  = entity_get<Bullet>(instance);
     bullet.dir = dir;
     
     auto& rb = entity_get<Rigidbody2D>(instance);
     auto& sprite = entity_get<Sprite>(instance);
-    auto& transform = entity_get<Transform>(instance);
     
-    transform.position  = pos;
     bullet.enabled      = true;
     rb.enabled          = true;
-    rb.follow_transform = false;
+    rb.follow_transform = true;
     sprite.visible      = true;
-
-    rigidbody_add_force(rb, to_v2(dir * 3.f), to_v2(pos));
+    
+    //rigidbody_add_force(rb, to_v2(dir * 20.f), to_v2(pos));
+    rigidbody_set_velocity(rb, to_v2(dir * .0001f));
     
     return instance;
 }
@@ -73,6 +72,6 @@ void bullet_update()
         auto& movement  = entity_get<Movement>(entity);
         auto& transform = entity_get<Transform>(entity);
         
-        //transform.position += to_v3(multiply(movement.speed, to_v2(bullet.dir)) * delta_seconds());
+        transform.position += to_v3(multiply(movement.speed, to_v2(bullet.dir)) * delta_seconds());
     }
 }

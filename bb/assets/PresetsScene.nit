@@ -12,7 +12,7 @@ Scene:
       UUID:
         data: 14570836660667367363
       Transform:
-        position: [0, 1, 0]
+        position: [-3.7252903e-09, 1, 0]
         rotation: [0, 0, 0]
         scale: [0.200000003, 0.200000003, 1]
         parent_uuid: 0
@@ -47,7 +47,7 @@ Scene:
       UUID:
         data: 6974000574263080879
       Transform:
-        position: [0.0158021152, 2.02931023, 0]
+        position: [0.0158021152, 2.02931023, 2.00006104]
         rotation: [0, 0, 0]
         scale: [0.200000003, 0.200000003, 1]
         parent_uuid: 0
