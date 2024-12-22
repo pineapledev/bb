@@ -74,5 +74,8 @@ Scene:
         physic_material: ["", "", 0]
       TriggerEvents:
         {}
+      Health:
+        max: 100
+        current: 100
       Hittable:
         {}

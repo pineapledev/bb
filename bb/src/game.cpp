@@ -1,7 +1,7 @@
 ﻿#include "game.h"
-
 #include "bullet.h"
 #include "health.h"
+#include "hittable.h"
 #include "player.h"
 
 ListenerAction game_start()
@@ -39,6 +39,8 @@ ListenerAction game_start()
             bullet_start();
         }
     }
+
+    hittable_start();
     
     return ListenerAction::StayListening;
 }
@@ -53,5 +55,6 @@ ListenerAction game_update()
 
     player_update();
     bullet_update();
+    hittable_update();
     return ListenerAction::StayListening;
 }

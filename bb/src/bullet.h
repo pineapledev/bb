@@ -3,7 +3,8 @@
 struct Bullet
 {
     bool    enabled = true;
-    Vector3 dir; 
+    Vector3 dir     = V3_UP;
+    f32     damage  = 10.f;
 };
 
 #define BULLET_GROUP_SIGNATURE Transform, Sprite, Movement, Bullet, Rigidbody2D, CircleCollider

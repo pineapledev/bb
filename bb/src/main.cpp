@@ -2,6 +2,7 @@
 #include "nit.h"
 #include "game.h"
 #include "health.h"
+#include "hittable.h"
 #include "movement.h"
 #include "player.h"
 

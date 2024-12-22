@@ -1,5 +1,7 @@
 ﻿#include "bb_pch.h"
 #include "health.h"
+
+#include "bullet.h"
 #include "nit.h"
 #include "nit/editor/editor_utils.h"
 using namespace nit;
@@ -33,52 +35,4 @@ void register_health_component()
     args.fn_deserialize = health_deserialize;
     args.fn_draw_editor = draw_editor;
     component_register<Health>(args);
-}
-
-void hittable_serialize(const Hittable* hittable, YAML::Emitter& emitter)
-{
-}
-
-void hittable_deserialize(Hittable* hittable, const YAML::Node& node)
-{
-}
-
-ListenerAction on_hittable_trigger_enter(const TriggerEnterArgs& args)
-{
-    return ListenerAction::StayListening;
-}
-
-ListenerAction on_component_added(const ComponentAddedArgs& args)
-{
-    if (entity_has<Hittable>(args.entity) && entity_has<TriggerEvents>(args.entity))
-    {
-        auto& trigger_events = entity_get<TriggerEvents>(args.entity);
-        trigger_events.enter_event += Listener<const TriggerEnterArgs&>::create(on_hittable_trigger_enter);
-    }
-    return ListenerAction::StayListening;
-}
-
-ListenerAction on_component_removed(const ComponentRemovedArgs& args)
-{
-    if (entity_has<Hittable>(args.entity))
-    {
-        
-    }
-    return ListenerAction::StayListening;
-}
-
-void register_hittable_component()
-{
-    component_register<Hittable>({
-        .fn_serialize = hittable_serialize,
-        .fn_deserialize = hittable_deserialize,
-    });
-
-    engine_get_instance()->entity_registry.component_added_event   += ComponentAddedListener::create(on_component_added);
-    engine_get_instance()->entity_registry.component_removed_event += ComponentRemovedListener::create(on_component_removed);
-}
-
-void hittable_start()
-{
-    
 }
