@@ -3,13 +3,13 @@
 
 namespace nit
 {
-    struct TriggerEnterArgs
+    struct TriggerEnterEvent
     {
         EntityID trigger_entity;
         EntityID visitor_entity;
     };
 
-    struct TriggerExitArgs
+    struct TriggerExitEvent
     {
         EntityID trigger_entity;
         EntityID visitor_entity;
@@ -17,8 +17,8 @@ namespace nit
     
     struct TriggerEvents
     {
-        Event<const TriggerEnterArgs&> enter_event;
-        Event<const TriggerExitArgs&>  exit_event;
+        Array<TriggerEnterEvent> enter_events;
+        Array<TriggerExitEvent>  exit_events;
     };
 
     void register_trigger_events_component();
