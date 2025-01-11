@@ -190,4 +190,20 @@ namespace nit
 #else
         return "";
 #endif
+
+        bool StringContains(const String& text, const String& contain)
+        {
+            if (contain.empty()) return true;
+
+            String lower_text = text;
+            String lower_contain = contain;
+            auto to_lower = [](unsigned char c) { return std::tolower(c); };
+            std::transform(lower_text.begin(), lower_text.end(), lower_text.begin(),
+                to_lower);
+            std::transform(lower_contain.begin(), lower_contain.end(), lower_contain.begin(),
+                to_lower);
+
+            return lower_text.find(lower_contain) != String::npos;
+        }
+
 }

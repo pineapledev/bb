@@ -6,7 +6,9 @@
 
 namespace nit
 {
-    InputRegistry* input = nullptr;
+#define NIT_CHECK_INPUT_REGISTRY_CREATED NIT_CHECK(input_registry)
+
+    InputRegistry* input_registry = nullptr;
 
 
     // ------------------------
@@ -14,12 +16,17 @@ namespace nit
     // ------------------------
 
     Map<GamepadKeys, InputContent> controller_state;
+    Map<GamepadKeys, InputActionContext> input_action_context_map;
+
     void handle_button_press(bool pressed, GamepadKeys key, i32 player_id);
-
-
-
-
     void handle_axis(f32 value, GamepadKeys key, i32 player_id);
+    void on_controller_analog(InputAction* input_action, f32 analog_value);
+    void on_controller_vector2(InputAction* input_action, const Vector2& vector2_value);
+    void on_controller_vector3(InputAction* input_action, const Vector3& vector3_value);
+    void on_controller_vector4(InputAction* input_action, const Vector4& vector4_value);
+    void on_controller_button_pressed(InputAction* input_action, bool is_repeat);
+    void on_controller_button_released(InputAction* input_action, bool is_repeat);
+
 
     // ------------------------
     // JOYSHOCK 
@@ -47,35 +54,64 @@ namespace nit
 
     void input_registry_set_instance(InputRegistry* input_registry_instance)
     {
-        if (input)
+        if (input_registry)
         {
             NIT_CHECK_MSG(false, "InputRegistry already created!");
             return;
         }
         if (!input_registry_instance)
         {
-            NIT_CHECK_MSG(false, "InputRegistry is ass!");
+            NIT_CHECK_MSG(false, "InputRegistry null!");
             return;
         }
-        input = input_registry_instance;
+        input_registry = input_registry_instance;
     }
 
     InputRegistry* input_registry_get_instance()
     {
-        if (!input)
-        {
-            NIT_CHECK_MSG(false, "InputRegistry not created!");
-            return nullptr;
-        }
+        NIT_CHECK_INPUT_REGISTRY_CREATED
 
-        return input;
+        return input_registry;
     }
 
     void input_registry_init()
     {
+        NIT_CHECK_INPUT_REGISTRY_CREATED
         // create_input
+        input_registry->input_modifier_pool = new InputModifierPool[NIT_MAX_INPUT_MODIFIER_TYPES];
+
+        for (u32 i = 0; i < input_registry->max_input_actions; ++i)
+        {
+            input_registry->available_input_actions.push(i);
+        }
+
         engine_event(Stage::Start) += EngineListener::create(start);
         engine_event(Stage::Update) += EngineListener::create(update);
+    }
+
+    void input_registry_finish()
+    {
+        NIT_CHECK_INPUT_REGISTRY_CREATED
+
+        for (u32 i = 0; i < input_registry->next_input_modifier_type_index; ++i)
+        {
+            InputModifierPool& data = input_registry->input_modifier_pool[i];
+            pool_free(&data.data_pool);
+        }
+    }
+
+    InputModifierPool* input_find_modifier_pool(const Type* type)
+    {
+        NIT_CHECK_INPUT_REGISTRY_CREATED
+        for (u32 i = 0; i < input_registry->next_input_modifier_type_index; ++i)
+        {
+            InputModifierPool& input_modifier_pool = input_registry->input_modifier_pool[i];
+            if (input_modifier_pool.data_pool.type == type)
+            {
+                return &input_modifier_pool;
+            }
+        }
+        return nullptr;
     }
 
     bool m_IsEnabled = true;
@@ -96,6 +132,18 @@ namespace nit
         else
         {
             input_content = InputContent();
+        }
+    }
+
+    void get_input_action_context(GamepadKeys key, InputActionContext& input_action_context)
+    {
+        if (input_action_context_map.contains(key))
+        {
+            input_action_context = input_action_context_map[key];
+        }
+        else
+        {
+            input_action_context = InputActionContext();
         }
     }
 
@@ -416,14 +464,16 @@ namespace nit
     ListenerAction start()
     {
         init_joyshock();
-        input->input_actions = asset_get_pool<InputAction>();
+        input_registry->input_actions = asset_get_pool<InputAction>();
 
         return ListenerAction::StayListening;
     }
 
     ListenerAction update()
     {
-        
+        // -------------------------
+        // GAMEPAD STATE
+        // -------------------------
         for (i32 i = 0; i < joyShockDevices.size(); ++i)
         {
             handle_joyshock_controller_events(joyShockDevices[i].playerId, joyShockDevices[i].deviceId, joyShockDevices[i].deviceType, joyShockDevices[i].bIsJoyconPair, joyShockDevices[i].lastButtonData);
@@ -432,10 +482,14 @@ namespace nit
                 handle_joyshock_controller_events(joyShockDevices[i].playerId, joyShockDevices[i].deviceId2, joyShockDevices[i].deviceType2, joyShockDevices[i].bIsJoyconPair, joyShockDevices[i].lastButtonData2);
             }
         }
-        if (!input->input_actions) return ListenerAction::StayListening;
+        if (!input_registry->input_actions) return ListenerAction::StayListening;
 
-        InputAction* input_action_pool = (InputAction*)(input->input_actions->data_pool.elements);
-        for (u32 i = 0; i < input->input_actions->data_pool.sparse_set.count; ++i)
+        // -------------------------
+        // INPUT ACTIONS
+        // -------------------------
+
+        InputAction* input_action_pool = (InputAction*)(input_registry->input_actions->data_pool.elements);
+        for (u32 i = 0; i < input_registry->input_actions->data_pool.sparse_set.count; ++i)
         {
             if (!&input_action_pool[i]) continue;
 
@@ -515,9 +569,106 @@ namespace nit
             }
         }
 
+        // -------------------------
+        // INPUT MODIFIERS
+        // -------------------------
+
+        for (u32 i = 0; i < input_registry->next_input_modifier_type_index; ++i)
+        {
+            InputModifierPool& input_modifier_data = input_registry->input_modifier_pool[i];
+            if(input_modifier_data.type_index == 0) continue;
+            for (u32 j = 0; j < input_modifier_data.data_pool.sparse_set.count; ++j)
+            {
+                GamepadKeys action_key = input_modifier_data.modifier_info[j].action_key;
+                void* data = pool_get_raw_data(&input_modifier_data.data_pool, j);
+
+                if (!input_action_context_map.contains(action_key)) continue;
+
+                InputActionContext context = input_action_context_map[action_key];
+
+                input_modifier_data.fn_invoke_modify(data, context.inputValue, context.inputType);
+
+                input_action_context_map[action_key] = context;
+            }
+        }
+
+        // -------------------------
+        // INPUT ACTIONS
+        // -------------------------
+        input_action_pool = (InputAction*)(input_registry->input_actions->data_pool.elements);
+        for (u32 i = 0; i < input_registry->input_actions->data_pool.sparse_set.count; ++i)
+        {
+            if (!&input_action_pool[i]) continue;
+
+            InputActionContext context;
+            get_input_action_context(input_action_pool[i].m_Key, context);
+            event_broadcast<const InputActionContext&>(input_action_pool[i].input_performed_event, context);
+        }
+
         return ListenerAction::StayListening;
     }
 
+    void on_controller_analog(InputAction* input_action, f32 analog_value)
+    {
+        InputActionContext& input_context = input_action_context_map[input_action->m_Key];
+        input_context.inputType = InputType::Axis1D;
+        input_context.inputValue = Vector4(analog_value, 0.f, 0.f, 0.f);
+
+        input_context.controllerId = 1;
+    }
+
+    void on_controller_vector2(InputAction* input_action, const Vector2& vector2_value)
+    {
+        InputActionContext& input_context = input_action_context_map[input_action->m_Key];
+        input_context.inputType = InputType::Axis2D;
+        input_context.inputValue = Vector4(vector2_value.x, vector2_value.y, 0.f, 0.f);
+
+        input_context.controllerId = 1;
+    }
+
+    void on_controller_vector3(InputAction* input_action, const Vector3& vector3_value)
+    {
+        InputActionContext& input_context = input_action_context_map[input_action->m_Key];
+        input_context.inputType = InputType::Axis3D;
+        input_context.inputValue = Vector4(vector3_value.x, vector3_value.y, vector3_value.z, 0.f);
+
+        input_context.controllerId = 1;
+    }
+
+    void on_controller_vector4(InputAction* input_action, const Vector4& vector4_value)
+    {
+        InputActionContext& input_context = input_action_context_map[input_action->m_Key];
+        input_context.inputType = InputType::Axis4D;
+        input_context.inputValue = Vector4(vector4_value.x, vector4_value.y, vector4_value.z, vector4_value.w);
+
+        input_context.controllerId = 1;
+    }
+
+    void on_controller_button_pressed(InputAction* input_action, bool is_repeat)
+    {
+        if ((input_action->m_TriggerType == TriggerType::Pressed && is_repeat) || input_action->m_TriggerType == TriggerType::Released) return;
+
+        InputActionContext& input_context = input_action_context_map[input_action->m_Key];
+        input_context.inputType = InputType::Digital;
+        input_context.inputValue = Vector4(1.f, 0.f, 0.f, 0.f);
+
+        input_context.bIsPressed = true;
+        input_context.bIsRepeat = is_repeat;
+        input_context.controllerId = 1;
+    }
+
+    void on_controller_button_released(InputAction* input_action, bool is_repeat)
+    {
+        if (input_action->m_TriggerType == TriggerType::Pressed || input_action->m_TriggerType == TriggerType::Down) return;
+
+        InputActionContext& input_context = input_action_context_map[input_action->m_Key];
+        input_context.inputType = InputType::Digital;
+        input_context.inputValue = Vector4(0.f, 0.f, 0.f, 0.f);
+
+        input_context.bIsPressed = false;
+        input_context.bIsRepeat = is_repeat;
+        input_context.controllerId = 1;
+    }
 
     void handle_button_press(bool pressed, GamepadKeys key, i32 player_id)
     {

@@ -12,3 +12,5 @@ InputAction:
   paired_input_key_w: GamepadButtonNONE
   input_type: Digital
   trigger_type: Pressed
+  input_modifiers:
+    {}

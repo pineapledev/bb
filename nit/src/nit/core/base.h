@@ -194,6 +194,8 @@ namespace nit
     String SaveFile(const Window* window, const String& filter);
     String SelectFolder(const Window* window, const String& title = "", const String& path = "");
     String ExecuteCMD(const char* cmd);
+
+    bool StringContains(const String& text, const String& contain);
 }
 
 
