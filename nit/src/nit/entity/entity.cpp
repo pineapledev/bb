@@ -100,6 +100,7 @@ namespace nit
             entity_set_parent(cloned_child, cloned_entity);
         }
 
+        entity_set_enabled(cloned_entity, entity_enabled(entity));
         return cloned_entity;
     }
 
