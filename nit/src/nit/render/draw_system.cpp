@@ -66,6 +66,11 @@ namespace nit
     {
         for (EntityID entity : entity_get_group<Sprite, Transform, FlipBookAnimation>().entities)
         {
+            if (!entity_global_enabled(entity))
+            {
+                continue;
+            }
+            
             auto& animation = entity_get<FlipBookAnimation>(entity);
 
             if (!asset_valid(animation.flipbook) || !animation.playing)
@@ -203,6 +208,11 @@ namespace nit
         {
             for (EntityID entity : sorted_sprite_group)
             {
+                if (!entity_global_enabled(entity))
+                {
+                    continue;
+                }
+                
                 auto& transform = entity_get<Transform>(entity);
                 auto& sprite = entity_get<Sprite>(entity);
 
@@ -260,12 +270,12 @@ namespace nit
                         vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
                     }
                     
-                    transform_vertex_positions(vertex_positions, transform_to_matrix(transform));
+                    transform_vertex_positions(vertex_positions, transform_to_matrix(transform, entity));
                 }
                 else
                 {
                     vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
-                    transform_vertex_positions(vertex_positions, transform_to_matrix(transform));
+                    transform_vertex_positions(vertex_positions, transform_to_matrix(transform, entity));
                 }
                 
                 fill_vertex_colors(vertex_colors, sprite.tint);
@@ -274,6 +284,11 @@ namespace nit
 
             for (EntityID entity : entity_get_group<Line2D, Transform>().entities)
             {
+                if (!entity_global_enabled(entity))
+                {
+                    continue;
+                }
+                
                 auto& transform = entity_get<Transform>(entity);
                 auto& line = entity_get<Line2D>(entity);
 
@@ -283,14 +298,18 @@ namespace nit
                 }
                 
                 fill_line_2d_vertex_positions(vertex_positions, line.start, line.end, line.thickness);
-                transform_vertex_positions(vertex_positions, transform_to_matrix(transform));
+                transform_vertex_positions(vertex_positions, transform_to_matrix(transform, entity));
                 fill_vertex_colors(vertex_colors, line.tint);
                 draw_line_2d(vertex_positions, vertex_colors, (i32) entity);
             }
-
             
             for (EntityID entity : entity_get_group<Text, Transform>().entities)
             {
+                if (!entity_global_enabled(entity))
+                {
+                    continue;
+                }
+                
                 auto& transform = entity_get<Transform>(entity);
                 auto& text = entity_get<Text>(entity);
                 Font* font_data = asset_valid(text.font) ? asset_get_data<Font>(text.font) : nullptr;
@@ -308,7 +327,7 @@ namespace nit
                 draw_text(
                       font_data
                     , text.text
-                    , transform_to_matrix(transform)
+                    , transform_to_matrix(transform, entity)
                     , text.tint
                     , text.spacing
                     , text.size
@@ -318,6 +337,11 @@ namespace nit
 
             for (EntityID entity : entity_get_group<Circle, Transform>().entities)
             {
+                if (!entity_global_enabled(entity))
+                {
+                    continue;
+                }
+                
                 auto& transform = entity_get<Transform>(entity);
                 auto& circle = entity_get<Circle>(entity);
 
@@ -327,7 +351,7 @@ namespace nit
                 }
                 
                 fill_circle_vertex_positions(vertex_positions, circle.radius);
-                transform_vertex_positions(vertex_positions, transform_to_matrix(transform));
+                transform_vertex_positions(vertex_positions, transform_to_matrix(transform, entity));
                 fill_vertex_colors(vertex_colors, circle.tint);
                 draw_circle(vertex_positions, vertex_colors, circle.thickness, circle.fade, (i32) entity);
             }
@@ -338,6 +362,11 @@ namespace nit
             {
                 for (EntityID entity : entity_get_group<Transform, Rigidbody2D, BoxCollider2D>().entities)
                 {
+                    if (!entity_global_enabled(entity))
+                    {
+                        continue;
+                    }
+                    
                     auto& transform  = entity_get<Transform>(entity);
                     auto& collider   = entity_get<BoxCollider2D>(entity);
                     auto collider_color = collider.is_trigger ? V4_COLOR_CYAN : V4_COLOR_LIGHT_GREEN;
@@ -353,6 +382,11 @@ namespace nit
         
                 for (EntityID entity : entity_get_group<Transform, Rigidbody2D, CircleCollider>().entities)
                 {
+                    if (!entity_global_enabled(entity))
+                    {
+                        continue;
+                    }
+                    
                     auto& transform  = entity_get<Transform>(entity);
                     auto& collider   = entity_get<CircleCollider>(entity);
                     auto collider_color = collider.is_trigger ? V4_COLOR_CYAN : V4_COLOR_LIGHT_GREEN;

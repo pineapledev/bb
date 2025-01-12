@@ -26,7 +26,7 @@ namespace nit
     ComponentPool* entity_find_component_pool(const Type* type)
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
-        for (u32 i = 0; i < entity_registry->next_component_type_index; ++i)
+        for (u32 i = 0; i < entity_registry->next_component_type_index - 1; ++i)
         {
             ComponentPool& component_pool = entity_registry->component_pool[i];
             if (component_pool.data_pool.type == type)
@@ -43,9 +43,11 @@ namespace nit
         {
             return NULL_ENTITY;
         }
-
-        EntityID cloned_entity = entity_create();
-
+        
+        String original_name = entity_get_name(entity);
+        String name = entity_valid(entity_get_parent(entity)) ? original_name : original_name.append(" (clone)"); 
+        EntityID cloned_entity = entity_create(name);
+        
         for (u32 i = 0; i < entity_registry->next_component_type_index - 1; ++i)
         {
             ComponentPool* pool = &entity_registry->component_pool[i];
@@ -83,11 +85,19 @@ namespace nit
                 collider.invalidated = false;
                 collider.handle = {};
             }
-
+            
             ComponentAddedArgs args;
             args.entity = cloned_entity;
             args.type = pool->data_pool.type;
             event_broadcast<const ComponentAddedArgs&>(entity_registry_get_instance()->component_added_event, args);
+        }
+        
+        Array<EntityID> children; entity_get_children(entity, children);
+        
+        for (EntityID child : children)
+        {
+            EntityID cloned_child = entity_clone(child, entity_get<Transform>(child).position);
+            entity_set_parent(cloned_child, cloned_entity);
         }
 
         return cloned_entity;
@@ -101,40 +111,39 @@ namespace nit
             NIT_CHECK_MSG(false, "Trying to get signature from non existent entity!");
             return {};
         }
-        return entity_registry->signatures[entity];
+
+        return pool_get_data<EntityData>(&entity_registry->entities, entity)->signature;
     }
 
     void entity_registry_init()
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
 
-        entity_registry->signatures = new EntitySignature[entity_registry->max_entities];
+        pool_load<EntityData>(&entity_registry->entities, entity_registry->max_entities);
         entity_registry->component_pool = new ComponentPool[NIT_MAX_COMPONENT_TYPES];
-        
-        for (u32 i = 0; i < entity_registry->max_entities; ++i)
-        {
-            entity_registry->available_entities.push(i);
-        }
     }
 
     void entity_registry_finish()
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
-        for (u32 i = 0; i < entity_registry->next_component_type_index; ++i)
+        for (u32 i = 0; i < entity_registry->next_component_type_index - 1; ++i)
         {
             ComponentPool& data = entity_registry->component_pool[i];
             pool_free(&data.data_pool);
         }
     }
 
-    EntityID entity_create()
+    EntityID entity_create(const String& name)
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         NIT_CHECK_MSG(entity_registry->entity_count < entity_registry->max_entities, "Entity limit reached!");
-        EntityID entity = entity_registry->available_entities.front();
-        entity_registry->available_entities.pop();
+        EntityID entity; pool_insert_data(&entity_registry->entities, entity);
         ++entity_registry->entity_count;
-        entity_registry->signatures[entity].set(0, true);
+        EntityData* data = pool_get_data<EntityData>(&entity_registry->entities, entity);
+        data->id = entity;
+        data->name = name.empty() ? String("Entity ").append(std::to_string(entity)) : name;
+        data->uuid = uuid_generate();
+        data->signature.set(0, true);
         return entity;
     }
 
@@ -143,11 +152,11 @@ namespace nit
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         NIT_CHECK_MSG(entity_valid(entity), "Entity is not valid!");
 
-        for (u32 i = 0; i < entity_registry->next_component_type_index; ++i)
+        for (u32 i = 0; i < entity_registry->next_component_type_index - 1; ++i)
         {
             ComponentPool& component_pool = entity_registry->component_pool[i];
 
-            if (!entity_registry->signatures[entity].test(i + 1))
+            if (!pool_get_data<EntityData>(&entity_registry->entities, entity)->signature.test(i + 1))
             {
                 continue;
             }
@@ -155,23 +164,22 @@ namespace nit
             event_broadcast<const ComponentRemovedArgs&>(entity_registry->component_removed_event, {entity, component_pool.data_pool.type});
         }
         
-        for (u32 i = 0; i < entity_registry->next_component_type_index; ++i)
+        for (u32 i = 0; i < entity_registry->next_component_type_index - 1; ++i)
         {
             ComponentPool& component_pool = entity_registry->component_pool[i];
 
-            if (!entity_registry->signatures[entity].test(i + 1))
+            if (!pool_get_data<EntityData>(&entity_registry->entities, entity)->signature.test(i + 1))
             {
                 continue;
             }
 
             pool_delete_data(&component_pool.data_pool, entity);
         }
-
-        entity_registry->signatures[entity].reset();
-        entity_registry->available_entities.push(entity);
+        
+        *pool_get_data<EntityData>(&entity_registry->entities, entity) = {};
+        pool_delete_data(&entity_registry->entities, entity);
         
         --entity_registry->entity_count;
-        entity_registry->signatures[entity].set(0, false);
 
         for (auto& [signature, group] : entity_registry->entity_groups)
         {
@@ -182,7 +190,7 @@ namespace nit
     bool entity_valid(const EntityID entity)
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
-        return entity < entity_registry->max_entities && entity_registry->signatures[entity].test(0);
+        return entity < entity_registry->max_entities && pool_is_valid(&entity_registry->entities, entity);
     }
 
     void entity_signature_changed(EntityID entity, EntitySignature new_entity_signature)
@@ -243,6 +251,141 @@ namespace nit
         return group_signature;
     }
 
+    bool entity_enabled(EntityID entity)
+    {
+        NIT_CHECK_ENTITY_REGISTRY_CREATED
+        EntityData* data = pool_get_data<EntityData>(&entity_registry->entities, entity);
+        return data->enabled;
+    }
+
+    bool entity_global_enabled(EntityID entity)
+    {
+        NIT_CHECK_ENTITY_REGISTRY_CREATED
+        EntityData* data = pool_get_data<EntityData>(&entity_registry->entities, entity);
+        return data->global_enabled;
+    }
+
+    static void compute_enabled_iterative(EntityID entity)
+    {
+        Stack<EntityID> stack;
+        stack.push(entity);
+        
+        while (!stack.empty())
+        {
+            EntityID current = stack.top();
+            stack.pop();
+
+            EntityData* data = pool_get_data<EntityData>(&entity_registry->entities, current);
+
+            EntityID parent = data->parent;
+            
+            bool parent_enabled = entity_valid(parent) ? entity_global_enabled(parent) : true;
+
+            bool new_global_enabled = data->enabled && parent_enabled;
+            
+            if (data->global_enabled != new_global_enabled)
+            {
+                data->global_enabled = new_global_enabled;
+
+                for (EntityID child : data->children)
+                {
+                    stack.push(child);
+                }
+            }
+        }
+    }
+
+    void entity_set_enabled(EntityID entity, bool enabled)
+    {
+        EntityData* data = pool_get_data<EntityData>(&entity_registry->entities, entity);
+        
+        if (data->enabled == enabled)
+        {
+            return;
+        }
+        
+        data->enabled = enabled;
+        compute_enabled_iterative(entity);
+    }
+
+    const String& entity_get_name(EntityID entity)
+    {
+        NIT_CHECK_ENTITY_REGISTRY_CREATED
+        EntityData* data = pool_get_data<EntityData>(&entity_registry->entities, entity);
+        return data->name;
+    }
+
+    void entity_set_name(EntityID entity, const String& name)
+    {
+        NIT_CHECK_ENTITY_REGISTRY_CREATED
+        EntityData* data = pool_get_data<EntityData>(&entity_registry->entities, entity);
+        data->name = name;
+    }
+
+    UUID entity_get_uuid(EntityID entity)
+    {
+        NIT_CHECK_ENTITY_REGISTRY_CREATED
+        EntityData* data = pool_get_data<EntityData>(&entity_registry->entities, entity);
+        return data->uuid;
+    }
+
+    void entity_add_child(EntityID entity, EntityID child)
+    {
+        NIT_CHECK_ENTITY_REGISTRY_CREATED
+        EntityData* data = pool_get_data<EntityData>(&entity_registry->entities, entity);
+        auto it = std::ranges::find(data->children, child);
+        if (it != data->children.end())
+        {
+            return;
+        }
+        data->children.push_back(child);
+        compute_enabled_iterative(child);
+    }
+
+    void entity_get_children(EntityID entity, Array<EntityID>& children)
+    {
+        NIT_CHECK_ENTITY_REGISTRY_CREATED
+        EntityData* data = pool_get_data<EntityData>(&entity_registry->entities, entity);
+        children = data->children;
+    }
+
+    void entity_set_parent(EntityID entity, EntityID parent)
+    {
+        NIT_CHECK_ENTITY_REGISTRY_CREATED
+        EntityData* data = pool_get_data<EntityData>(&entity_registry->entities, entity);
+        if (entity_valid(data->parent))
+        {
+            entity_remove_child(data->parent, entity);
+        }
+        data->parent = parent;
+        entity_add_child(parent, entity);
+    }
+
+    EntityID entity_get_parent(EntityID entity)
+    {
+        NIT_CHECK_ENTITY_REGISTRY_CREATED
+        EntityData* data = pool_get_data<EntityData>(&entity_registry->entities, entity);
+        return data->parent;
+    }
+
+    void entity_remove_child(EntityID entity, EntityID child)
+    {
+        NIT_CHECK_ENTITY_REGISTRY_CREATED
+        EntityData* data = pool_get_data<EntityData>(&entity_registry->entities, entity);
+        auto it = std::ranges::find(data->children, child);
+        if (it != data->children.end())
+        {
+            data->children.erase(it);
+        }
+        compute_enabled_iterative(child);
+    }
+
+    EntityArray entity_get_alive_entities()
+    {
+        NIT_CHECK_ENTITY_REGISTRY_CREATED
+        return { (EntityData*) entity_registry->entities.elements, entity_registry->entity_count };
+    }
+
     EntityGroup& entity_get_group(EntitySignature signature)
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
@@ -278,6 +421,10 @@ namespace nit
     void entity_serialize(EntityID entity, YAML::Emitter& emitter)
     {
         emitter << YAML::Key << "Entity" << YAML::Value << YAML::BeginMap;
+
+        emitter << YAML::Key << "Enabled" << YAML::Value << entity_enabled(entity);
+        emitter << YAML::Key << "Name"    << YAML::Value << entity_get_name(entity);
+        emitter << YAML::Key << "UUID"    << YAML::Value << (u64) entity_get_uuid(entity);
         
         for (u8 i = 0; i < entity_registry->next_component_type_index - 1; ++i)
         {
@@ -298,11 +445,26 @@ namespace nit
                 
             emitter << YAML::EndMap;
         }
+        
+        Array<EntityID> children;
+        entity_get_children(entity, children);
+        
+        if (!children.empty())
+        {
+            emitter << YAML::Key << "Children" << YAML::Value << YAML::BeginMap;
+
+            for (EntityID child : children)
+            {
+                entity_serialize(child, emitter);
+            }
+
+            emitter << YAML::EndMap;
+        }
 
         emitter << YAML::EndMap;
     }
 
-    EntityID entity_deserialize(const YAML::Node& node)
+    EntityID entity_deserialize(const YAML::Node& node, EntityID parent)
     {
         if (!node)
         {
@@ -310,11 +472,51 @@ namespace nit
         }
 
         EntityID entity = entity_create();
+
+        EntityData* data = pool_get_data<EntityData>(&entity_registry->entities, entity);
+        
+        if (node["Name"])
+        {
+            data->name = node["Name"].as<String>();
+        }
+
+        if (node["UUID"])
+        {
+            data->uuid = { node["UUID"].as<u64>() };
+        }
+        
+        if (node["Enabled"])
+        {
+            data->enabled = node["Enabled"].as<bool>();
+        }
+
+        data->parent = parent;
+
+        if (entity_valid(parent))
+        {
+            entity_add_child(parent, entity);
+        }
         
         for (const auto& entity_node_child : node)
         {
             const YAML::Node& component_node = entity_node_child.second;
             String type_name = entity_node_child.first.as<String>();
+            
+            if (type_name == "Name" || type_name == "UUID" || type_name == "Enabled")
+            {
+                continue;
+            }
+
+            if (type_name == "Children")
+            {
+                for (const auto& child : entity_node_child.second)
+                {
+                    entity_deserialize(child.second, entity);
+                }
+                
+                continue;
+            }
+            
             auto* component_pool = entity_find_component_pool(type_get(type_name));
             auto& data_pool = component_pool->data_pool;
             void* null_data = nullptr;

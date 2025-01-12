@@ -21,6 +21,7 @@
 #include "input/input_action.h"
 #include "physics/trigger_events.h"
 #include "render/flipbook.h"
+#include "input/input_modifiers.h"
 
 #define NIT_CHECK_ENGINE_CREATED NIT_CHECK_MSG(nit::engine, "Forget to call SetAppInstance!");
 
@@ -111,8 +112,6 @@ namespace nit
         entity_registry_init();
         
         {
-            register_name_component();
-            register_uuid_component();
             register_transform_component();
             register_camera_component();
             register_text_component();
@@ -128,6 +127,13 @@ namespace nit
 
         input_registry_set_instance(&engine->input_registry);
         input_registry_init();
+        {
+            register_deadzone_input_modifier(); 
+            register_scalar_input_modifier();
+            register_add_input_modifier();
+            register_negate_input_modifier();
+            register_swizzle_input_modifier();
+        }
 
         render_objects_set_instance(&engine->render_objects);
         render_objects_init();

@@ -19,6 +19,10 @@ namespace nit
         emitter << YAML::Key << "Entities" << YAML::Value << YAML::BeginMap;
         for (EntityID entity : scene->entities)
         {
+            if (entity_valid(entity_get_parent(entity)))
+            {
+                continue;
+            }
             entity_serialize(entity, emitter);
         }
         emitter << YAML::EndMap;

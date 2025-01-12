@@ -2,6 +2,11 @@
 
 #include "input_enums.h"
 #include "input_keycodes.h"
+#include "input_modifiers.h"
+
+#ifndef NIT_MAX_INPUT_MODIFIER_TYPES
+#define NIT_MAX_INPUT_MODIFIER_TYPES 5
+#endif
 
 namespace nit
 {
@@ -28,6 +33,9 @@ namespace nit
     //DECLARE_EVENT_ONE_PARAM(class InputActionInternal, InputPerformedEvent, const InputActionContext&, context)
 
 
+    // First bit of the signature would be used to know if the entity is valid or not
+    using InputActionSignature = Bitset<NIT_MAX_INPUT_MODIFIER_TYPES + 1>;
+
     struct InputAction
     {
         Event<const InputActionContext&> input_performed_event;
@@ -39,20 +47,13 @@ namespace nit
         bool m_IsKeyPressed = false;
         InputType m_InputType = InputType::Digital;
         TriggerType m_TriggerType = TriggerType::Pressed;
-        //Array<SharedPtr<InputModifier>> m_InputModifiers;
-        u64 id = ++lastId;
-        inline static u64 lastId = 0;
+        InputActionSignature signature;
+        u32 id = -1;
     };
 
     void print_key(InputAction* input_action);
     void register_input_action_asset();
 
-    void on_controller_analog(InputAction* input_action, f32 analog_value);
-    void on_controller_vector2(InputAction* input_action, const Vector2& vector2_value);
-    void on_controller_vector3(InputAction* input_action, const Vector3& vector3_value);
-    void on_controller_vector4(InputAction* input_action, const Vector4& vector4_value);
-    void on_controller_button_pressed(InputAction* input_action, bool is_repeat);
-    void on_controller_button_released(InputAction* input_action, bool is_repeat);
     /*
     class InputAction
     {

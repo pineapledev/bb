@@ -5,6 +5,7 @@
 #ifdef NIT_EDITOR_ENABLED
 #include "editor/editor_utils.h"
 #endif
+#include "input_registry.h"
 
 namespace nit
 {
@@ -17,11 +18,39 @@ namespace nit
         emitter << YAML::Key << "paired_input_key_w" << YAML::Value << enum_to_string<GamepadKeys>(input_action->m_PairedInputKeyW);
         emitter << YAML::Key << "input_type" <<         YAML::Value << enum_to_string<InputType>(input_action->m_InputType);
         emitter << YAML::Key << "trigger_type" <<       YAML::Value << enum_to_string<TriggerType>(input_action->m_TriggerType);
-        //emitter << YAML::Key << "input_modifiers" << YAML::Value << material->threshold;
+
+        emitter << YAML::Key << "input_modifiers" << YAML::Value << YAML::BeginMap;
+
+        InputRegistry* input_registry = input_registry_get_instance();
+        for (u8 i = 0; i < input_registry->next_input_modifier_type_index - 1; ++i)
+        {
+            auto& input_modifier_pool = input_registry->input_modifier_pool[i];
+            auto& data_pool = input_modifier_pool.data_pool;
+
+            if (!data_pool.type->fn_invoke_deserialize
+                || !data_pool.type->fn_invoke_serialize
+                || !delegate_invoke(input_modifier_pool.fn_is_in_input_action, input_action))
+            {
+                continue;
+            }
+
+            emitter << YAML::Key << data_pool.type->name << YAML::Value << YAML::BeginMap;
+
+            void* raw_data = pool_get_raw_data(&data_pool, input_action->id);
+            serialize(data_pool.type, raw_data, emitter);
+
+            emitter << YAML::EndMap;
+        }
+
+        emitter << YAML::EndMap;
     }
 
     void deserialize(InputAction* input_action, const YAML::Node& node)
     {
+        InputRegistry* input_registry = input_registry_get_instance();
+
+        input_action->id = input_registry->available_input_actions.front(); 
+        input_registry->available_input_actions.pop();
         input_action->m_Key =             enum_from_string<GamepadKeys>(node["key"].as<String>());
         input_action->m_PairedInputKeyX = enum_from_string<GamepadKeys>(node["paired_input_key_x"].as<String>());
         input_action->m_PairedInputKeyY = enum_from_string<GamepadKeys>(node["paired_input_key_y"].as<String>());
@@ -29,11 +58,31 @@ namespace nit
         input_action->m_PairedInputKeyW = enum_from_string<GamepadKeys>(node["paired_input_key_w"].as<String>());
         input_action->m_InputType =       enum_from_string<InputType>(node["input_type"].as<String>());
         input_action->m_TriggerType =     enum_from_string<TriggerType>(node["trigger_type"].as<String>());
+
+        const YAML::Node& modifiers_node = node["input_modifiers"];
+
+        const InputAction* const_input_action = input_action;
+        for (const auto& action_node_child : modifiers_node)
+        {
+            const YAML::Node& modifier_node = action_node_child.second;
+            String type_name = action_node_child.first.as<String>();
+            auto* input_modifier_pool = input_find_modifier_pool(type_get(type_name));
+            auto& data_pool = input_modifier_pool->data_pool;
+            void* null_data = nullptr;
+            delegate_invoke(input_modifier_pool->fn_add_to_input_action, input_action, null_data, false);
+            void* modifier_data = delegate_invoke(input_modifier_pool->fn_get_from_input_action, const_input_action);
+            deserialize(data_pool.type, modifier_data, modifier_node);
+            InputModifierAddedArgs args;
+            args.input_action = input_action;
+            args.type = input_modifier_pool->data_pool.type;
+            event_broadcast<const InputModifierAddedArgs&>(input_registry->input_modifier_added_event, args);
+        }
     }
 
 #ifdef NIT_EDITOR_ENABLED
     void draw_editor(InputAction* input_action)
     {
+
         editor_draw_enum_combo("Key", input_action->m_Key);
         editor_draw_enum_combo("Paired Key X", input_action->m_PairedInputKeyX);
         editor_draw_enum_combo("Paired Key Y", input_action->m_PairedInputKeyY);
@@ -41,6 +90,88 @@ namespace nit
         editor_draw_enum_combo("Paired Key W", input_action->m_PairedInputKeyW);
         editor_draw_enum_combo("Input Type", input_action->m_InputType);
         editor_draw_enum_combo("Trigger Type", input_action->m_TriggerType);
+
+        InputRegistry* input_registry = input_registry_get_instance();
+
+        // if delegate needs a const InputAction* using a non const doesnt compile
+        const InputAction* const_input_action = (const InputAction*)input_action;
+        for (u32 i = 0; i < input_registry->next_input_modifier_type_index - 1; ++i)
+        {
+            InputModifierPool* modifier_pool = &input_registry->input_modifier_pool[i];
+            if (!delegate_invoke(modifier_pool->fn_is_in_input_action, const_input_action))
+            {
+                continue;
+            }
+
+            Type* modifier_type = modifier_pool->data_pool.type;
+
+            bool is_expanded = ImGui::TreeNodeEx(modifier_type->name.c_str(), ImGuiTreeNodeFlags_DefaultOpen);
+
+            ImGui::SameLine();
+
+            ImGui::PushID(i);
+            if (ImGui::Button("+"))
+            {
+                ImGui::OpenPopup("Input Modifier Settings");
+            }
+
+            bool remove_input_modifier = false;
+
+            if (ImGui::BeginPopup("Input Modifier Settings"))
+            {
+                if (ImGui::MenuItem("Remove Input Modifier"))
+                {
+                    remove_input_modifier = true;
+                }
+
+                ImGui::EndPopup();
+            }
+            ImGui::PopID();
+
+            if (is_expanded)
+            {
+                ImGui::Spacing();
+
+                if (modifier_pool->data_pool.type->fn_invoke_draw_editor)
+                {
+                    void* data = pool_get_raw_data(&modifier_pool->data_pool, input_action->id);
+                    NIT_CHECK(data);
+                    type_draw_editor(modifier_type, data);
+                }
+
+                ImGui::Separator();
+                ImGui::Spacing();
+                ImGui::TreePop();
+            }
+
+            if (remove_input_modifier)
+            {
+                delegate_invoke(modifier_pool->fn_remove_from_input_action, input_action);
+            }
+        }
+        if (editor_draw_centered_button("Add Input Modifier"))
+        {
+            ImGui::OpenPopup("Add Input Modifier");
+        }
+
+        if (ImGui::BeginPopup("Add Input Modifier"))
+        {
+            for (u32 i = 0; i < input_registry_get_instance()->next_input_modifier_type_index - 1; ++i)
+            {
+                InputModifierPool* pool = &input_registry_get_instance()->input_modifier_pool[i];
+                if (delegate_invoke(pool->fn_is_in_input_action, const_input_action))
+                {
+                    continue;
+                }
+
+                if (ImGui::MenuItem(pool->data_pool.type->name.c_str()))
+                {
+                    void* null_data = nullptr;
+                    delegate_invoke(pool->fn_add_to_input_action, input_action, null_data, true);
+                }
+            }
+            ImGui::EndPopup();
+        }
     }
 #endif
 
@@ -155,124 +286,15 @@ namespace nit
         enum_register_value<TriggerType>("Pressed", TriggerType::Pressed);
         enum_register_value<TriggerType>("Released", TriggerType::Released);
 
+        u32 max_input_actions = input_registry_get_instance()->max_input_actions;
         asset_register_type<InputAction>({
             .fn_serialize = serialize,
             .fn_deserialize = deserialize,
-            NIT_IF_EDITOR_ENABLED(.fn_draw_editor = draw_editor)
+            NIT_IF_EDITOR_ENABLED(.fn_draw_editor = draw_editor),
+            .max_elements = max_input_actions,
             });
     }
 
-
-    void on_controller_analog(InputAction* input_action, f32 analog_value)
-    {
-        InputActionContext context;
-        context.inputType = InputType::Axis1D;
-        context.inputValue = Vector4(analog_value, 0.f, 0.f, 0.f);
-        
-        /*
-        for (const auto inputModifier : m_InputModifiers)
-        {
-            inputModifier->Modify(context.inputValue, context.inputType);
-        }
-        */
-
-        context.controllerId = 1;
-
-        event_broadcast<const InputActionContext&>(input_action->input_performed_event, context);
-    }
-
-    void on_controller_vector2(InputAction* input_action, const Vector2& vector2_value)
-    {
-        InputActionContext context;
-        context.inputType = InputType::Axis2D;
-        context.inputValue = Vector4(vector2_value.x, vector2_value.y, 0.f, 0.f);
-
-        /*
-        for (const auto inputModifier : m_InputModifiers)
-        {
-            inputModifier->Modify(context.inputValue, context.inputType);
-        }
-        */
-
-        context.controllerId = 1;
-        event_broadcast<const InputActionContext&>(input_action->input_performed_event, context);
-    }
-
-    void on_controller_vector3(InputAction* input_action, const Vector3& vector3_value)
-    {
-        InputActionContext context;
-        context.inputType = InputType::Axis3D;
-        context.inputValue = Vector4(vector3_value.x, vector3_value.y, vector3_value.z, 0.f);
-        
-        /*
-        for (const auto inputModifier : m_InputModifiers)
-        {
-            inputModifier->Modify(context.inputValue, context.inputType);
-        }
-        */
-
-        context.controllerId = 1;
-        event_broadcast<const InputActionContext&>(input_action->input_performed_event, context);
-    }
-
-    void on_controller_vector4(InputAction* input_action, const Vector4& vector4_value)
-    {
-        InputActionContext context;
-        context.inputType = InputType::Axis4D;
-        context.inputValue = Vector4(vector4_value.x, vector4_value.y, vector4_value.z, vector4_value.w);
-
-        /*
-        for (const auto inputModifier : m_InputModifiers)
-        {
-            inputModifier->Modify(context.inputValue, context.inputType);
-        }
-        */
-
-        context.controllerId = 1;
-        event_broadcast<const InputActionContext&>(input_action->input_performed_event, context);
-    }
-
-    void on_controller_button_pressed(InputAction* input_action, bool is_repeat)
-    {
-        if ((input_action->m_TriggerType == TriggerType::Pressed && is_repeat) || input_action->m_TriggerType == TriggerType::Released) return;
-
-        InputActionContext context;
-        context.inputType = InputType::Digital;
-        context.inputValue = Vector4(1.f, 0.f, 0.f, 0.f);
-
-        /*
-        for (const auto inputModifier : m_InputModifiers)
-        {
-            inputModifier->Modify(context.inputValue, context.inputType);
-        }
-        */
-
-        context.bIsPressed = true;
-        context.bIsRepeat = is_repeat;
-        context.controllerId = 1;
-        
-        event_broadcast<const InputActionContext&>(input_action->input_performed_event, context);
-    }
-
-    void on_controller_button_released(InputAction* input_action, bool is_repeat)
-    {
-        if (input_action->m_TriggerType == TriggerType::Pressed || input_action->m_TriggerType == TriggerType::Down) return;
-
-        InputActionContext context;
-        context.inputType = InputType::Digital;
-        context.inputValue = Vector4(0.f, 0.f, 0.f, 0.f);
-
-        /*
-        for (const auto inputModifier : m_InputModifiers)
-        {
-            inputModifier->Modify(context.inputValue, context.inputType);
-        }
-        */
-
-        context.bIsPressed = false;
-        context.bIsRepeat = is_repeat;
-        context.controllerId = 1;
-        event_broadcast<const InputActionContext&>(input_action->input_performed_event, context);
-    }
+    
 }
 

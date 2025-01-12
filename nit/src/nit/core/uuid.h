@@ -19,9 +19,6 @@ namespace nit
         static std::uniform_int_distribution<u64> distribution(random_device());
         return { distribution(random_engine) };
     }
-
-    void register_uuid_component();
-
 }
 
 template <>

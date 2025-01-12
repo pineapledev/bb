@@ -387,11 +387,21 @@ namespace nit
         
         for (EntityID entity : entity_get_group<Transform, Rigidbody2D>().entities)
         {
+            if (!entity_global_enabled(entity))
+            {
+                continue;
+            }
+            
             physics_entity_invalidate(entity);
         }
         
         for (EntityID entity : entity_get_group<Transform, Rigidbody2D, BoxCollider2D>().entities)
         {
+            if (!entity_global_enabled(entity))
+            {
+                continue;
+            }
+            
             auto& collider = entity_get<BoxCollider2D>(entity);
 
             if (!collider.invalidated)
@@ -405,6 +415,11 @@ namespace nit
 
         for (EntityID entity : entity_get_group<Transform, Rigidbody2D, CircleCollider>().entities)
         {
+            if (!entity_global_enabled(entity))
+            {
+                continue;
+            }
+            
             auto& collider = entity_get<CircleCollider>(entity);
 
             if (!collider.invalidated)
@@ -421,6 +436,11 @@ namespace nit
 
         for (EntityID entity : entity_get_group<TriggerEvents>().entities)
         {
+            if (!entity_global_enabled(entity))
+            {
+                continue;
+            }
+            
             auto& events = entity_get<TriggerEvents>(entity);
             events.enter_events.clear();
             events.exit_events.clear();
@@ -476,6 +496,11 @@ namespace nit
         
         for (EntityID entity : entity_get_group<Transform, Rigidbody2D>().entities)
         {
+            if (!entity_global_enabled(entity))
+            {
+                continue;
+            }
+            
             const bool has_box_collider    = entity_has<BoxCollider2D>(entity); 
             const bool has_circle_collider = entity_has<CircleCollider>(entity); 
             

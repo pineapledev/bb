@@ -28,7 +28,6 @@
 #include "nit/core/event.h"
 #include "nit/core/type.h"
 #include "nit/core/uuid.h"
-#include "nit/core/name.h"
 #include "nit/core/sparse_set.h"
 #include "nit/core/pool.h"
 
