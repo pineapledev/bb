@@ -103,14 +103,14 @@ namespace nit
     InputModifierPool* input_find_modifier_pool(const Type* type)
     {
         NIT_CHECK_INPUT_REGISTRY_CREATED
-        for (u32 i = 0; i < input_registry->next_input_modifier_type_index - 1; ++i)
-        {
-            InputModifierPool& input_modifier_pool = input_registry->input_modifier_pool[i];
-            if (input_modifier_pool.data_pool.type == type)
+            for (u32 i = 0; i < input_registry->next_input_modifier_type_index - 1; ++i)
             {
-                return &input_modifier_pool;
+                InputModifierPool& input_modifier_pool = input_registry->input_modifier_pool[i];
+                if (input_modifier_pool.data_pool.type == type)
+                {
+                    return &input_modifier_pool;
+                }
             }
-        }
         return nullptr;
     }
 
@@ -598,10 +598,11 @@ namespace nit
         input_action_pool = (InputAction*)(input_registry->input_actions->data_pool.elements);
         for (u32 i = 0; i < input_registry->input_actions->data_pool.sparse_set.count; ++i)
         {
-            if (!&input_action_pool[i]) continue;
+            if (!&input_action_pool[i] || input_action_pool[i].m_InputType == InputType::Digital) continue;
 
             InputActionContext context;
             get_input_action_context(input_action_pool[i].m_Key, context);
+
             event_broadcast<const InputActionContext&>(input_action_pool[i].input_performed_event, context);
         }
 
@@ -655,6 +656,8 @@ namespace nit
         input_context.bIsPressed = true;
         input_context.bIsRepeat = is_repeat;
         input_context.controllerId = 1;
+
+        event_broadcast<const InputActionContext&>(input_action->input_performed_event, input_context);
     }
 
     void on_controller_button_released(InputAction* input_action, bool is_repeat)
@@ -668,6 +671,8 @@ namespace nit
         input_context.bIsPressed = false;
         input_context.bIsRepeat = is_repeat;
         input_context.controllerId = 1;
+
+        event_broadcast<const InputActionContext&>(input_action->input_performed_event, input_context);
     }
 
     void handle_button_press(bool pressed, GamepadKeys key, i32 player_id)
