@@ -230,9 +230,15 @@ namespace nit
 
                     if (entity_valid(selected_entity))
                     {
-                        entity_destroy(selected_entity);
-                        num_of_entities--;
-                        scene->entities.erase(std::ranges::find(scene->entities, selected_entity));
+                        EntityDestroyResult result;
+                        entity_destroy(selected_entity, &result);
+                        num_of_entities -= result.count;
+                        children.clear();
+                        
+                        for (EntityID destroyed_entity : result.entities)
+                        {
+                            scene->entities.erase(std::ranges::find(scene->entities, destroyed_entity));
+                        }
                     }
                 }
                 if (ImGui::MenuItem("Clone Entity"))
