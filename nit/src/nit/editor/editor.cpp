@@ -732,7 +732,19 @@ namespace nit
             if (editor->selection == Editor::Selection::Entity)
             {
                 EntityID selected_entity = editor->selected_entity;
+                
+                String name = entity_get_name(selected_entity);
+                
+                if (editor_draw_input_text("Name", name))
+                {
+                    entity_set_name(selected_entity, name);
+                }
 
+                editor_draw_text("UUID", "%llu", (u64) entity_get_uuid(selected_entity));
+                editor_draw_text("Entity ID", "%u", selected_entity);
+                ImGui::Separator();
+                ImGui::Spacing();
+                
                 for (u32 i = 0; i < engine_get_instance()->entity_registry.next_component_type_index - 1; ++i)
                 {
                     ComponentPool* pool = &engine_get_instance()->entity_registry.component_pool[i];
