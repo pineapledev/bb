@@ -146,12 +146,15 @@ namespace nit
     void            entity_registry_init();
     void            entity_registry_finish();
     EntityID        entity_create(const String& name = "");
-    void            entity_destroy(EntityID entity);
-    bool            entity_valid(EntityID entity);
-    EntitySignature entity_get_signature(EntityID entity);
-    void            entity_signature_changed(EntityID entity, EntitySignature new_entity_signature);
-    ComponentPool*  entity_find_component_pool(const Type* type);
-    EntityID        entity_clone(EntityID entity, const Vector3& position = V3_ZERO);
+
+    struct EntityDestroyResult { Array<EntityID> entities; u32 count = 0; };
+    
+    void                entity_destroy(EntityID entity, EntityDestroyResult* result = nullptr);
+    bool                entity_valid(EntityID entity);
+    EntitySignature     entity_get_signature(EntityID entity);
+    void                entity_signature_changed(EntityID entity, EntitySignature new_entity_signature);
+    ComponentPool*      entity_find_component_pool(const Type* type);
+    EntityID            entity_clone(EntityID entity, const Vector3& position = V3_ZERO);
     
     template<typename T>
     ComponentPool* entity_find_component_pool()

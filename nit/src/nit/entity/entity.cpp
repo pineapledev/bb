@@ -148,7 +148,7 @@ namespace nit
         return entity;
     }
 
-    void entity_destroy(EntityID entity)
+    void entity_destroy(EntityID entity, EntityDestroyResult* result)
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         NIT_CHECK_MSG(entity_valid(entity), "Entity is not valid!");
@@ -176,8 +176,25 @@ namespace nit
 
             pool_delete_data(&component_pool.data_pool, entity);
         }
+
+        EntityData* entity_data = pool_get_data<EntityData>(&entity_registry->entities, entity); 
+
+        if (entity_valid(entity_data->parent))
+        {
+            entity_remove_child(entity_data->parent, entity);
+        }
+
+        if (result)
+        {
+            result->entities.push_back(entity);
+            ++result->count;
+        }
         
-        *pool_get_data<EntityData>(&entity_registry->entities, entity) = {};
+        for (EntityID child : entity_data->children)
+        {
+            entity_destroy(child);
+        }
+        
         pool_delete_data(&entity_registry->entities, entity);
         
         --entity_registry->entity_count;
