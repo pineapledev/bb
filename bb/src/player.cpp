@@ -63,16 +63,40 @@ void player_start()
     // Input assets
     {
         player.input_move = asset_find_by_name(INPUT_NAME_PLAYER_MOVEMENT);
-
         if (asset_valid(player.input_move))
         {
             InputAction* input = asset_get_data<InputAction>(player.input_move);
             input->input_performed_event += InputListener::create(input_callback_move);
         }
 
+        player.input_move_left = asset_find_by_name(INPUT_NAME_PLAYER_MOVEMENT_LEFT);
+        if (asset_valid(player.input_move_left))
+        {
+            InputAction* input = asset_get_data<InputAction>(player.input_move_left);
+            input->input_performed_event += InputListener::create(input_callback_move);
+        }
+        player.input_move_right = asset_find_by_name(INPUT_NAME_PLAYER_MOVEMENT_RIGHT);
+        if (asset_valid(player.input_move_right))
+        {
+            InputAction* input = asset_get_data<InputAction>(player.input_move_right);
+            input->input_performed_event += InputListener::create(input_callback_move);
+        }
+        player.input_move_up = asset_find_by_name(INPUT_NAME_PLAYER_MOVEMENT_UP);
+        if (asset_valid(player.input_move_up))
+        {
+            InputAction* input = asset_get_data<InputAction>(player.input_move_up);
+            input->input_performed_event += InputListener::create(input_callback_move);
+        }
+        player.input_move_down = asset_find_by_name(INPUT_NAME_PLAYER_MOVEMENT_DOWN);
+        if (asset_valid(player.input_move_down))
+        {
+            InputAction* input = asset_get_data<InputAction>(player.input_move_down);
+            input->input_performed_event += InputListener::create(input_callback_move);
+        }
+
         player.input_shoot = asset_find_by_name(INPUT_NAME_PLAYER_SHOOT);
     
-        if (asset_valid(player.input_move))
+        if (asset_valid(player.input_shoot))
         {
             InputAction* input = asset_get_data<InputAction>(player.input_shoot);
             input->input_performed_event += InputListener::create(input_callback_shoot);
@@ -94,17 +118,6 @@ ListenerAction input_callback_move(const InputActionContext& context)
     
     Vector2 input_value = (const Vector2&) context.inputValue;
 
-    auto dead_zone_lambda = [](const f32 axis_val)
-    {
-        return min(1.f, (max(0.f, abs(axis_val) - 0.1f) / (1.f - 0.1f))) * sign(axis_val);
-    };
-
-    Vector2 new_value = Vector2(input_value.x, input_value.y);
-    new_value = new_value.x == 0.f && new_value.y == 0.f ? new_value : normalize(new_value);
-    new_value = new_value * dead_zone_lambda(magnitude(input_value));
-    input_value.x = new_value.x;
-    input_value.y = new_value.y;
-        
     entity_get<Transform>(game->entity_player).position += to_v3(multiply(entity_get<Movement>(game->entity_player).speed, input_value) * delta_seconds());
     
     return ListenerAction::StayListening;
