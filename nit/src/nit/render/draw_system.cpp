@@ -66,6 +66,11 @@ namespace nit
     {
         for (EntityID entity : entity_get_group<Sprite, Transform, FlipBookAnimation>().entities)
         {
+            if (!entity_global_enabled(entity))
+            {
+                continue;
+            }
+            
             auto& animation = entity_get<FlipBookAnimation>(entity);
 
             if (!asset_valid(animation.flipbook) || !animation.playing)
@@ -203,6 +208,11 @@ namespace nit
         {
             for (EntityID entity : sorted_sprite_group)
             {
+                if (!entity_global_enabled(entity))
+                {
+                    continue;
+                }
+                
                 auto& transform = entity_get<Transform>(entity);
                 auto& sprite = entity_get<Sprite>(entity);
 
@@ -274,6 +284,11 @@ namespace nit
 
             for (EntityID entity : entity_get_group<Line2D, Transform>().entities)
             {
+                if (!entity_global_enabled(entity))
+                {
+                    continue;
+                }
+                
                 auto& transform = entity_get<Transform>(entity);
                 auto& line = entity_get<Line2D>(entity);
 
@@ -287,10 +302,14 @@ namespace nit
                 fill_vertex_colors(vertex_colors, line.tint);
                 draw_line_2d(vertex_positions, vertex_colors, (i32) entity);
             }
-
             
             for (EntityID entity : entity_get_group<Text, Transform>().entities)
             {
+                if (!entity_global_enabled(entity))
+                {
+                    continue;
+                }
+                
                 auto& transform = entity_get<Transform>(entity);
                 auto& text = entity_get<Text>(entity);
                 Font* font_data = asset_valid(text.font) ? asset_get_data<Font>(text.font) : nullptr;
@@ -318,6 +337,11 @@ namespace nit
 
             for (EntityID entity : entity_get_group<Circle, Transform>().entities)
             {
+                if (!entity_global_enabled(entity))
+                {
+                    continue;
+                }
+                
                 auto& transform = entity_get<Transform>(entity);
                 auto& circle = entity_get<Circle>(entity);
 
@@ -338,6 +362,11 @@ namespace nit
             {
                 for (EntityID entity : entity_get_group<Transform, Rigidbody2D, BoxCollider2D>().entities)
                 {
+                    if (!entity_global_enabled(entity))
+                    {
+                        continue;
+                    }
+                    
                     auto& transform  = entity_get<Transform>(entity);
                     auto& collider   = entity_get<BoxCollider2D>(entity);
                     auto collider_color = collider.is_trigger ? V4_COLOR_CYAN : V4_COLOR_LIGHT_GREEN;
@@ -353,6 +382,11 @@ namespace nit
         
                 for (EntityID entity : entity_get_group<Transform, Rigidbody2D, CircleCollider>().entities)
                 {
+                    if (!entity_global_enabled(entity))
+                    {
+                        continue;
+                    }
+                    
                     auto& transform  = entity_get<Transform>(entity);
                     auto& collider   = entity_get<CircleCollider>(entity);
                     auto collider_color = collider.is_trigger ? V4_COLOR_CYAN : V4_COLOR_LIGHT_GREEN;

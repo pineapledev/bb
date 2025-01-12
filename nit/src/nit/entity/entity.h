@@ -15,12 +15,14 @@ namespace nit
     
     struct EntityData
     {
-        EntityID         id        = NULL_ENTITY;
-        EntitySignature  signature = {};
+        EntityID         id             = NULL_ENTITY;
+        bool             enabled        = true;
+        bool             global_enabled = true;
+        EntitySignature  signature      = {};
         String           name;
-        UUID             uuid      = {0};
-        EntityID         parent    = NULL_ENTITY;
-        Array<EntityID>  children  = {};
+        UUID             uuid           = {0};
+        EntityID         parent         = NULL_ENTITY;
+        Array<EntityID>  children       = {};
     };
     
     struct ComponentPool
@@ -215,7 +217,10 @@ namespace nit
         NIT_CHECK_MSG(component_pool, "Invalid component type!");
         return *pool_get_data<T>(&component_pool->data_pool, entity);
     }
-
+    
+    bool          entity_enabled(EntityID entity);
+    bool          entity_global_enabled(EntityID entity);
+    void          entity_set_enabled(EntityID entity, bool enabled = true);
     const String& entity_get_name(EntityID entity);
     void          entity_set_name(EntityID entity, const String& name);
     UUID          entity_get_uuid(EntityID entity);
@@ -274,6 +279,6 @@ namespace nit
 
     EntityID entity_create_from_preset(const String& name);
 
-    void   entity_serialize(EntityID entity, YAML::Emitter& emitter);
+    void     entity_serialize(EntityID entity, YAML::Emitter& emitter);
     EntityID entity_deserialize(const YAML::Node& node, EntityID parent = NULL_ENTITY);
 }

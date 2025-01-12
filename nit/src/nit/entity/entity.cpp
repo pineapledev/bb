@@ -250,7 +250,64 @@ namespace nit
         }
         return group_signature;
     }
-    
+
+    bool entity_enabled(EntityID entity)
+    {
+        NIT_CHECK_ENTITY_REGISTRY_CREATED
+        EntityData* data = pool_get_data<EntityData>(&entity_registry->entities, entity);
+        return data->enabled;
+    }
+
+    bool entity_global_enabled(EntityID entity)
+    {
+        NIT_CHECK_ENTITY_REGISTRY_CREATED
+        EntityData* data = pool_get_data<EntityData>(&entity_registry->entities, entity);
+        return data->global_enabled;
+    }
+
+    static void compute_enabled_iterative(EntityID entity)
+    {
+        Stack<EntityID> stack;
+        stack.push(entity);
+        
+        while (!stack.empty())
+        {
+            EntityID current = stack.top();
+            stack.pop();
+
+            EntityData* data = pool_get_data<EntityData>(&entity_registry->entities, current);
+
+            EntityID parent = data->parent;
+            
+            bool parent_enabled = entity_valid(parent) ? entity_global_enabled(parent) : true;
+
+            bool new_global_enabled = data->enabled && parent_enabled;
+            
+            if (data->global_enabled != new_global_enabled)
+            {
+                data->global_enabled = new_global_enabled;
+
+                for (EntityID child : data->children)
+                {
+                    stack.push(child);
+                }
+            }
+        }
+    }
+
+    void entity_set_enabled(EntityID entity, bool enabled)
+    {
+        EntityData* data = pool_get_data<EntityData>(&entity_registry->entities, entity);
+        
+        if (data->enabled == enabled)
+        {
+            return;
+        }
+        
+        data->enabled = enabled;
+        compute_enabled_iterative(entity);
+    }
+
     const String& entity_get_name(EntityID entity)
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
@@ -282,6 +339,7 @@ namespace nit
             return;
         }
         data->children.push_back(child);
+        compute_enabled_iterative(child);
     }
 
     void entity_get_children(EntityID entity, Array<EntityID>& children)
@@ -299,8 +357,8 @@ namespace nit
         {
             entity_remove_child(data->parent, entity);
         }
-        entity_add_child(parent, entity);
         data->parent = parent;
+        entity_add_child(parent, entity);
     }
 
     EntityID entity_get_parent(EntityID entity)
@@ -319,6 +377,7 @@ namespace nit
         {
             data->children.erase(it);
         }
+        compute_enabled_iterative(child);
     }
 
     EntityArray entity_get_alive_entities()
@@ -363,8 +422,9 @@ namespace nit
     {
         emitter << YAML::Key << "Entity" << YAML::Value << YAML::BeginMap;
 
-        emitter << YAML::Key << "Name" << YAML::Value << entity_get_name(entity);
-        emitter << YAML::Key << "UUID" << YAML::Value << (u64) entity_get_uuid(entity);
+        emitter << YAML::Key << "Enabled" << YAML::Value << entity_enabled(entity);
+        emitter << YAML::Key << "Name"    << YAML::Value << entity_get_name(entity);
+        emitter << YAML::Key << "UUID"    << YAML::Value << (u64) entity_get_uuid(entity);
         
         for (u8 i = 0; i < entity_registry->next_component_type_index - 1; ++i)
         {
@@ -424,6 +484,11 @@ namespace nit
         {
             data->uuid = { node["UUID"].as<u64>() };
         }
+        
+        if (node["Enabled"])
+        {
+            data->enabled = node["Enabled"].as<bool>();
+        }
 
         data->parent = parent;
 
@@ -437,7 +502,7 @@ namespace nit
             const YAML::Node& component_node = entity_node_child.second;
             String type_name = entity_node_child.first.as<String>();
             
-            if (type_name == "Name" || type_name == "UUID")
+            if (type_name == "Name" || type_name == "UUID" || type_name == "Enabled")
             {
                 continue;
             }

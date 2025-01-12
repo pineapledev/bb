@@ -7,6 +7,7 @@ AssetInfo:
 Scene:
   Entities:
     Entity:
+      Enabled: true
       Name: Entity 1
       UUID: 10294327202972041984
       Transform:
@@ -20,6 +21,7 @@ Scene:
         far_clip: 1000
         size: 9.19999981
     Entity:
+      Enabled: true
       Name: Entity 2
       UUID: 9417607216195915237
       Transform:
@@ -48,6 +50,7 @@ Scene:
         center: [0, 0]
         physic_material: [test ph material, PhysicMaterial, 17295311971134077511]
     Entity:
+      Enabled: true
       Name: Entity 3
       UUID: 15947148584510532775
       Transform:
@@ -71,6 +74,7 @@ Scene:
         center: [0, 0]
         physic_material: [test ph material, PhysicMaterial, 17295311971134077511]
     Entity:
+      Enabled: true
       Name: Entity 7
       UUID: 4656731474698907055
       Transform:
@@ -90,6 +94,7 @@ Scene:
         draw_layer: 0
       Children:
         Entity:
+          Enabled: true
           Name: Entity 6
           UUID: 1006179946922367591
           Transform:
@@ -108,6 +113,7 @@ Scene:
             keep_aspect: true
             draw_layer: 0
         Entity:
+          Enabled: true
           Name: Entity 5
           UUID: 14444287044799409921
           Transform:
@@ -123,6 +129,7 @@ Scene:
             size: 1
           Children:
             Entity:
+              Enabled: true
               Name: Entity 4
               UUID: 13802930722523881118
               Transform:
@@ -136,6 +143,7 @@ Scene:
                 end: [1, 1]
                 thickness: 0.0500000007
     Entity:
+      Enabled: true
       Name: Entity 7 (clone)
       UUID: 2274769023169322268
       Transform:
@@ -155,6 +163,7 @@ Scene:
         draw_layer: 0
       Children:
         Entity:
+          Enabled: true
           Name: Entity 6
           UUID: 3087825785419620970
           Transform:
@@ -173,6 +182,7 @@ Scene:
             keep_aspect: true
             draw_layer: 0
         Entity:
+          Enabled: false
           Name: Entity 5
           UUID: 15756250672871856216
           Transform:
@@ -188,6 +198,7 @@ Scene:
             size: 1
           Children:
             Entity:
+              Enabled: true
               Name: Entity 4
               UUID: 6151313414813720658
               Transform:

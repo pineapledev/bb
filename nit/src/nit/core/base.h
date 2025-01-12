@@ -21,6 +21,7 @@
 
 //#TODO_asuarez build a real log system
 #include <cstdio>
+#include <stack>
 #define NIT_PRINT(...) \
 printf(__VA_ARGS__)
 
@@ -122,6 +123,9 @@ namespace nit
     template<typename T>
     using Queue = std::queue<T>;
 
+    template<typename T>
+    using Stack = std::stack<T>;
+    
     template<typename T>
     using Set = std::set<T>;
     

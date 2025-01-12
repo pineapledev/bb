@@ -184,7 +184,21 @@ namespace nit
             flags |= ImGuiTreeNodeFlags_Leaf;
         }
 
-        if (ImGui::TreeNodeEx(name.c_str(), flags))
+        bool enabled = entity_global_enabled(entity);
+        
+        if (!enabled)
+        {
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f));
+        }
+
+        bool opened = ImGui::TreeNodeEx(name.c_str(), flags);
+
+        if (!enabled)
+        {
+            ImGui::PopStyleColor();
+        }
+
+        if (opened)
         {
             if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
             {
@@ -192,13 +206,13 @@ namespace nit
                 ImGui::Text("Drag Entity %d", entity);
                 ImGui::EndDragDropSource();
             }
-            
+
             if (ImGui::BeginDragDropTarget())
             {
                 if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITY_DRAG"))
                 {
                     EntityID* draggedEntity = (EntityID*)payload->Data;
-                    
+
                     if (*draggedEntity != entity)
                     {
                         entity_set_parent(*draggedEntity, entity);
@@ -206,7 +220,7 @@ namespace nit
                 }
                 ImGui::EndDragDropTarget();
             }
-            
+
             if (ImGui::BeginPopupContextItem())
             {
                 if (ImGui::MenuItem("Destroy Entity"))
@@ -248,7 +262,7 @@ namespace nit
                     camera_transform.position = pos;
                 }
             }
-            
+
             for (EntityID child : children)
             {
                 draw_hierarchy(child, scene, num_of_entities);
@@ -740,8 +754,16 @@ namespace nit
                     entity_set_name(selected_entity, name);
                 }
 
+                bool enabled = entity_enabled(selected_entity);
+                
+                if (editor_draw_bool("Enabled", enabled))
+                {
+                    entity_set_enabled(selected_entity, enabled);
+                }
+                
                 editor_draw_text("UUID", "%llu", (u64) entity_get_uuid(selected_entity));
                 editor_draw_text("Entity ID", "%u", selected_entity);
+
                 ImGui::Separator();
                 ImGui::Spacing();
                 
