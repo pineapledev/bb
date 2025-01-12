@@ -47,6 +47,7 @@ namespace nit
         bool m_IsKeyPressed = false;
         InputType m_InputType = InputType::Digital;
         TriggerType m_TriggerType = TriggerType::Pressed;
+        u32 input_modifiers[NIT_MAX_INPUT_MODIFIER_TYPES + 1] = { 0 };
         InputActionSignature signature;
         u32 id = -1;
     };

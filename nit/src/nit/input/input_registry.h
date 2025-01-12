@@ -134,7 +134,7 @@ namespace nit
         delegate_bind(input_modifier_pool.fn_is_in_input_action, fn_is_in_input_action);
         delegate_bind(input_modifier_pool.fn_get_from_input_action, fn_get_from_input_action);
 
-        pool_load<T>(&input_modifier_pool.data_pool, input_registry->max_input_actions, false);
+        pool_load<T>(&input_modifier_pool.data_pool, input_registry->max_input_actions);
 
         ++input_registry->next_input_modifier_type_index;
     }
@@ -162,16 +162,18 @@ namespace nit
     T* add_input_modifier(InputAction* input_action, const T& data, bool invoke_add_event)
     {
         NIT_CHECK_MSG(input_action, "Invalid input action!");
-        NIT_CHECK_MSG(input_action->signature.size() <= NIT_MAX_INPUT_MODIFIER_TYPES + 1,
-            "Input Modifiers per Input Action out of range!");
         InputModifierPool* input_modifier_pool = input_find_modifier_pool<T>();
         NIT_CHECK_MSG(input_modifier_pool, "Invalid input modifier type!");
-        T* element = pool_insert_data_with_id(&input_modifier_pool->data_pool, input_action->id, data);
 
-        InputModifierInfo& input_modifier_info = input_modifier_pool->modifier_info[input_action->id];
+        u32 modifier_id;
+        T* element = pool_insert_data(&input_modifier_pool->data_pool, modifier_id, data);
+
+        input_action->input_modifiers[input_modifier_pool->type_index] = modifier_id;
+        input_action->signature.set(input_modifier_type_index<T>(), true);
+
+        InputModifierInfo& input_modifier_info = input_modifier_pool->modifier_info[modifier_id];
         input_modifier_info.action_key = input_action->m_Key;
 
-        input_action->signature.set(input_modifier_type_index<T>(), true);
         InputModifierAddedArgs args;
         args.input_action = input_action;
         args.type = input_modifier_pool->data_pool.type;
@@ -195,7 +197,9 @@ namespace nit
         args.type = input_modifier_pool->data_pool.type;
         event_broadcast<const InputModifierRemovedArgs&>(input_registry_get_instance()->input_modifier_removed_event, args);
 
-        pool_delete_data(&input_modifier_pool->data_pool, input_action->id);
+        u32 modifier_id = input_action->input_modifiers[input_modifier_pool->type_index];
+        pool_delete_data(&input_modifier_pool->data_pool, modifier_id);
+        input_action->input_modifiers[input_modifier_pool->type_index] = 0;
         input_action->signature.set(input_modifier_type_index<T>(), false);
     }
 
@@ -205,7 +209,8 @@ namespace nit
         NIT_CHECK_MSG(input_action, "Invalid input action!");
         InputModifierPool* input_modifier_pool = input_find_modifier_pool<T>();
         NIT_CHECK_MSG(input_modifier_pool, "Invalid input modifier type!");
-        return pool_get_data<T>(&input_modifier_pool->data_pool, input_action->id);
+        u32 modifier_id = input_action->input_modifiers[input_modifier_pool->type_index];
+        return pool_get_data<T>(&input_modifier_pool->data_pool, modifier_id);
     }
 
     template <typename T>

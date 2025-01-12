@@ -134,7 +134,8 @@ namespace nit
 
                 if (modifier_pool->data_pool.type->fn_invoke_draw_editor)
                 {
-                    void* data = pool_get_raw_data(&modifier_pool->data_pool, input_action->id);
+                    u32 modifier_id = input_action->input_modifiers[modifier_pool->type_index];
+                    void* data = pool_get_raw_data(&modifier_pool->data_pool, modifier_id);
                     NIT_CHECK(data);
                     type_draw_editor(modifier_type, data);
                 }
