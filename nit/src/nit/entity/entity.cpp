@@ -26,7 +26,7 @@ namespace nit
     ComponentPool* entity_find_component_pool(const Type* type)
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
-        for (u32 i = 0; i < entity_registry->next_component_type_index; ++i)
+        for (u32 i = 0; i < entity_registry->next_component_type_index - 1; ++i)
         {
             ComponentPool& component_pool = entity_registry->component_pool[i];
             if (component_pool.data_pool.type == type)
@@ -126,7 +126,7 @@ namespace nit
     void entity_registry_finish()
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
-        for (u32 i = 0; i < entity_registry->next_component_type_index; ++i)
+        for (u32 i = 0; i < entity_registry->next_component_type_index - 1; ++i)
         {
             ComponentPool& data = entity_registry->component_pool[i];
             pool_free(&data.data_pool);
@@ -152,7 +152,7 @@ namespace nit
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         NIT_CHECK_MSG(entity_valid(entity), "Entity is not valid!");
 
-        for (u32 i = 0; i < entity_registry->next_component_type_index; ++i)
+        for (u32 i = 0; i < entity_registry->next_component_type_index - 1; ++i)
         {
             ComponentPool& component_pool = entity_registry->component_pool[i];
 
@@ -164,7 +164,7 @@ namespace nit
             event_broadcast<const ComponentRemovedArgs&>(entity_registry->component_removed_event, {entity, component_pool.data_pool.type});
         }
         
-        for (u32 i = 0; i < entity_registry->next_component_type_index; ++i)
+        for (u32 i = 0; i < entity_registry->next_component_type_index - 1; ++i)
         {
             ComponentPool& component_pool = entity_registry->component_pool[i];
 
