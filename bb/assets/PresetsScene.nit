@@ -7,10 +7,8 @@ AssetInfo:
 Scene:
   Entities:
     Entity:
-      Name:
-        data: BulletPreset
-      UUID:
-        data: 14570836660667367363
+      Name: BulletPreset
+      UUID: 14570836660667367363
       Transform:
         position: [-3.7252903e-09, 1, 0]
         rotation: [0, 0, 0]
@@ -42,10 +40,8 @@ Scene:
       Bullet:
         {}
     Entity:
-      Name:
-        data: HittablePreset
-      UUID:
-        data: 6974000574263080879
+      Name: HittablePreset
+      UUID: 6974000574263080879
       Transform:
         position: [0.0158021152, 2.02931023, 2.00006104]
         rotation: [0, 0, 0]

@@ -7,8 +7,7 @@ AssetInfo:
 Scene:
   Entities:
     Entity:
-      Name:
-        data: Camera
+      Name: Camera
       Transform:
         position: [0, 0, 2.95000005]
         rotation: [0, 0, 0]
@@ -21,8 +20,7 @@ Scene:
         far_clip: 1000
         size: 9.19999981
     Entity:
-      Name:
-        data: Player
+      Name: Player
       Transform:
         position: [0, 0, 0]
         rotation: [0, 0, 0]
