@@ -577,19 +577,19 @@ namespace nit
         {
             InputModifierPool& input_modifier_data = input_registry->input_modifier_pool[i];
             if(input_modifier_data.type_index == 0) continue;
-            for (u32 j = 0; j < input_modifier_data.data_pool.sparse_set.count; ++j)
-            {
-                GamepadKeys action_key = input_modifier_data.modifier_info[j].action_key;
-                void* data = pool_get_raw_data(&input_modifier_data.data_pool, j);
-
-                if (!input_action_context_map.contains(action_key)) continue;
-
-                InputActionContext context = input_action_context_map[action_key];
-
-                input_modifier_data.fn_invoke_modify(data, context.inputValue, context.inputType);
-
-                input_action_context_map[action_key] = context;
-            }
+            // for (u32 j = 0; j < input_modifier_data.data_pool.sparse_set.count; ++j)
+            // {
+            //     GamepadKeys action_key = input_modifier_data.modifier_info[j].action_key;
+            //     void* data = pool_get_raw_data(&input_modifier_data.data_pool, j);
+            //
+            //     if (!input_action_context_map.contains(action_key)) continue;
+            //
+            //     InputActionContext context = input_action_context_map[action_key];
+            //
+            //     input_modifier_data.fn_invoke_modify(data, context.inputValue, context.inputType);
+            //
+            //     input_action_context_map[action_key] = context;
+            // }
         }
 
         // -------------------------

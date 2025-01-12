@@ -169,6 +169,95 @@ namespace nit
         };
     }
 
+    void draw_hierarchy(EntityID entity, Scene* scene, u32& num_of_entities)
+    {
+        EntityID selected_entity = editor->selected_entity;
+        String name = entity_get_name(entity);
+        
+        ImGuiTreeNodeFlags flags = entity_valid(entity) && selected_entity == entity ? ImGuiTreeNodeFlags_Selected: 0;
+        Array<EntityID> children;
+        
+        entity_get_children(entity, children);
+        
+        if (children.empty())
+        {
+            flags |= ImGuiTreeNodeFlags_Leaf;
+        }
+
+        if (ImGui::TreeNodeEx(name.c_str(), flags))
+        {
+            if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+            {
+                ImGui::SetDragDropPayload("ENTITY_DRAG", &entity, sizeof(EntityID));
+                ImGui::Text("Drag Entity %d", entity);
+                ImGui::EndDragDropSource();
+            }
+            
+            if (ImGui::BeginDragDropTarget())
+            {
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITY_DRAG"))
+                {
+                    EntityID* draggedEntity = (EntityID*)payload->Data;
+                    
+                    if (*draggedEntity != entity)
+                    {
+                        entity_set_parent(*draggedEntity, entity);
+                    }
+                }
+                ImGui::EndDragDropTarget();
+            }
+            
+            if (ImGui::BeginPopupContextItem())
+            {
+                if (ImGui::MenuItem("Destroy Entity"))
+                {
+                    editor->selection = Editor::Selection::None;
+                    editor->selected_entity = U32_MAX;
+
+                    if (entity_valid(selected_entity))
+                    {
+                        entity_destroy(selected_entity);
+                        num_of_entities--;
+                        scene->entities.erase(std::ranges::find(scene->entities, selected_entity));
+                    }
+                }
+                if (ImGui::MenuItem("Clone Entity"))
+                {
+                    selected_entity = entity_clone(selected_entity);
+                    scene->entities.push_back(selected_entity);
+                    num_of_entities++;
+                }
+                ImGui::EndPopup();
+            }
+
+            if (ImGui::IsItemClicked())
+            {
+                editor->selected_entity = entity;
+                editor->selection = Editor::Selection::Entity;
+
+                if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+                {
+                    auto& transform = entity_get<Transform>(entity);
+                    auto& camera_transform = entity_get<Transform>(editor->editor_camera_entity);
+                    auto& camera_controller = entity_get<EditorCameraController>(
+                        editor->editor_camera_entity);
+                    auto pos = Vector3{
+                        transform.position.x, transform.position.y, camera_transform.position.z
+                    };
+                    camera_controller.aux_position = pos;
+                    camera_transform.position = pos;
+                }
+            }
+            
+            for (EntityID child : children)
+            {
+                draw_hierarchy(child, scene, num_of_entities);
+            }
+            
+            ImGui::TreePop();
+        }
+    }
+    
     void editor_begin()
     {
         NIT_CHECK_EDITOR_CREATED
@@ -612,65 +701,19 @@ namespace nit
                 {
                     continue;
                 }
-                
+
                 u32 num_of_entities = (u32) scene->entities.size();
                 
                 for (u32 j = 0; j < num_of_entities; ++j)
                 {
                     EntityID entity = scene->entities[j];
-
-                    EntityID selected_entity = editor->selected_entity;
-
-                    String name = entity_get_name(entity);
                     
-                    const ImGuiTreeNodeFlags flags = ((entity_valid(entity) && selected_entity == entity) ?
-                        ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_Leaf;
-
-                    const bool is_entity_expanded = ImGui::TreeNodeEx(name.c_str(), flags);
-            
-                    if (ImGui::BeginPopupContextItem())
+                    if (entity_valid(entity_get_parent(entity)))
                     {
-                        if (ImGui::MenuItem("Destroy Entity"))
-                        {
-                            editor->selection = Editor::Selection::None;
-                            editor->selected_entity = U32_MAX;
-                            
-                            if (entity_valid(selected_entity))
-                            {
-                                entity_destroy(selected_entity);
-                                num_of_entities--;
-                                scene->entities.erase(std::ranges::find(scene->entities, selected_entity));
-                            }
-                        }
-                        if (ImGui::MenuItem("Clone Entity"))
-                        {
-                            selected_entity = entity_clone(selected_entity);
-                            scene->entities.push_back(selected_entity);
-                            num_of_entities++;
-                        }
-                        ImGui::EndPopup();
-                    }
-                    
-                    if (ImGui::IsItemClicked())
-                    {
-                        editor->selected_entity = entity;
-                        editor->selection = Editor::Selection::Entity;
-
-                        if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
-                        {
-                            auto& transform = entity_get<Transform>(entity);
-                            auto& camera_transform  = entity_get<Transform>(editor->editor_camera_entity);
-                            auto& camera_controller = entity_get<EditorCameraController>(editor->editor_camera_entity);
-                            auto pos = Vector3{ transform.position.x, transform.position.y, camera_transform.position.z };
-                            camera_controller.aux_position = pos;
-                            camera_transform.position      = pos;
-                        }
+                        continue;
                     }
 
-                    if (is_entity_expanded)
-                    {
-                        ImGui::TreePop();
-                    }
+                    draw_hierarchy(entity, scene, num_of_entities);
                 }
 
                 if (is_scene_expanded)

@@ -143,7 +143,7 @@ namespace nit
     
     void            entity_registry_init();
     void            entity_registry_finish();
-    EntityID        entity_create();
+    EntityID        entity_create(const String& name = "");
     void            entity_destroy(EntityID entity);
     bool            entity_valid(EntityID entity);
     EntitySignature entity_get_signature(EntityID entity);
@@ -219,10 +219,11 @@ namespace nit
     const String& entity_get_name(EntityID entity);
     void          entity_set_name(EntityID entity, const String& name);
     UUID          entity_get_uuid(EntityID entity);
-    void          entity_add_child(EntityID entity);
+    void          entity_add_child(EntityID entity, EntityID child);
     void          entity_get_children(EntityID entity, Array<EntityID>& children);
+    void          entity_set_parent(EntityID entity, EntityID parent);
     EntityID      entity_get_parent(EntityID entity);
-    void          entity_remove_child(EntityID entity);
+    void          entity_remove_child(EntityID entity, EntityID child);
 
     struct EntityArray { EntityData* entities = nullptr; u32 count = 0; };
     
@@ -274,5 +275,5 @@ namespace nit
     EntityID entity_create_from_preset(const String& name);
 
     void   entity_serialize(EntityID entity, YAML::Emitter& emitter);
-    EntityID entity_deserialize(const YAML::Node& node);
+    EntityID entity_deserialize(const YAML::Node& node, EntityID parent = NULL_ENTITY);
 }

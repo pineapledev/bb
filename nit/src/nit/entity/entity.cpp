@@ -43,9 +43,11 @@ namespace nit
         {
             return NULL_ENTITY;
         }
-
-        EntityID cloned_entity = entity_create();
-
+        
+        String original_name = entity_get_name(entity);
+        String name = entity_valid(entity_get_parent(entity)) ? original_name : original_name.append(" (clone)"); 
+        EntityID cloned_entity = entity_create(name);
+        
         for (u32 i = 0; i < entity_registry->next_component_type_index - 1; ++i)
         {
             ComponentPool* pool = &entity_registry->component_pool[i];
@@ -89,6 +91,14 @@ namespace nit
             args.type = pool->data_pool.type;
             event_broadcast<const ComponentAddedArgs&>(entity_registry_get_instance()->component_added_event, args);
         }
+        
+        Array<EntityID> children; entity_get_children(entity, children);
+        
+        for (EntityID child : children)
+        {
+            EntityID cloned_child = entity_clone(child, entity_get<Transform>(child).position);
+            entity_set_parent(cloned_child, cloned_entity);
+        }
 
         return cloned_entity;
     }
@@ -123,7 +133,7 @@ namespace nit
         }
     }
 
-    EntityID entity_create()
+    EntityID entity_create(const String& name)
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         NIT_CHECK_MSG(entity_registry->entity_count < entity_registry->max_entities, "Entity limit reached!");
@@ -131,7 +141,7 @@ namespace nit
         ++entity_registry->entity_count;
         EntityData* data = pool_get_data<EntityData>(&entity_registry->entities, entity);
         data->id = entity;
-        data->name = String("Entity ").append(std::to_string(entity));
+        data->name = name.empty() ? String("Entity ").append(std::to_string(entity)) : name;
         data->uuid = uuid_generate();
         data->signature.set(0, true);
         return entity;
@@ -262,16 +272,16 @@ namespace nit
         return data->uuid;
     }
 
-    void entity_add_child(EntityID entity)
+    void entity_add_child(EntityID entity, EntityID child)
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         EntityData* data = pool_get_data<EntityData>(&entity_registry->entities, entity);
-        auto it = std::ranges::find(data->children, entity);
+        auto it = std::ranges::find(data->children, child);
         if (it != data->children.end())
         {
             return;
         }
-        data->children.push_back(entity);
+        data->children.push_back(child);
     }
 
     void entity_get_children(EntityID entity, Array<EntityID>& children)
@@ -281,6 +291,18 @@ namespace nit
         children = data->children;
     }
 
+    void entity_set_parent(EntityID entity, EntityID parent)
+    {
+        NIT_CHECK_ENTITY_REGISTRY_CREATED
+        EntityData* data = pool_get_data<EntityData>(&entity_registry->entities, entity);
+        if (entity_valid(data->parent))
+        {
+            entity_remove_child(data->parent, entity);
+        }
+        entity_add_child(parent, entity);
+        data->parent = parent;
+    }
+
     EntityID entity_get_parent(EntityID entity)
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
@@ -288,11 +310,11 @@ namespace nit
         return data->parent;
     }
 
-    void entity_remove_child(EntityID entity)
+    void entity_remove_child(EntityID entity, EntityID child)
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         EntityData* data = pool_get_data<EntityData>(&entity_registry->entities, entity);
-        auto it = std::ranges::find(data->children, entity);
+        auto it = std::ranges::find(data->children, child);
         if (it != data->children.end())
         {
             data->children.erase(it);
@@ -382,7 +404,7 @@ namespace nit
         emitter << YAML::EndMap;
     }
 
-    EntityID entity_deserialize(const YAML::Node& node)
+    EntityID entity_deserialize(const YAML::Node& node, EntityID parent)
     {
         if (!node)
         {
@@ -402,6 +424,13 @@ namespace nit
         {
             data->uuid = { node["UUID"].as<u64>() };
         }
+
+        data->parent = parent;
+
+        if (entity_valid(parent))
+        {
+            entity_add_child(parent, entity);
+        }
         
         for (const auto& entity_node_child : node)
         {
@@ -417,7 +446,7 @@ namespace nit
             {
                 for (const auto& child : entity_node_child.second)
                 {
-                    entity_deserialize(child.second);
+                    entity_deserialize(child.second, entity);
                 }
                 
                 continue;

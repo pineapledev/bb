@@ -24,15 +24,30 @@ namespace nit
             return child_matrix;
         }
 
-        const Transform& parent_transform = entity_get<Transform>(parent);
-        const Vector3& parent_pos = parent_transform.position;
-        const Vector3& parent_rot = parent_transform.rotation;
-
-        Vector3 child_pos = transform.position + parent_pos;
-        child_pos = to_v3(rotate_around(to_v2(parent_pos), parent_rot.z, to_v2(child_pos)));
+        Vector3 child_pos = transform.position;
+        Vector3 child_rot = transform.rotation;
+        Vector3 child_scl = transform.scale;
         
-        Vector3 child_rot = transform.rotation + parent_rot;
-        Vector3 child_scl = multiply(transform.scale, parent_transform.scale);
+        while (entity_valid(entity_get_parent(entity_id)))
+        {
+            parent = entity_get_parent(entity_id);
+
+            if (!entity_valid(parent))
+            {
+                break;
+            }
+            
+            const Transform& parent_transform = entity_get<Transform>(parent);
+            const Vector3& parent_pos = parent_transform.position;
+            const Vector3& parent_rot = parent_transform.rotation;
+
+            child_pos = child_pos + parent_pos;
+            child_pos = to_v3(rotate_around(to_v2(parent_pos), parent_rot.z, to_v2(child_pos)));
+        
+            child_rot = child_rot + parent_rot;
+            child_scl = multiply(child_scl, parent_transform.scale);
+            entity_id = entity_get_parent(entity_id);
+        }
         
         return mat_create_transform(child_pos, child_rot, child_scl);
     }
