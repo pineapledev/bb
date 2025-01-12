@@ -260,12 +260,12 @@ namespace nit
                         vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
                     }
                     
-                    transform_vertex_positions(vertex_positions, transform_to_matrix(transform));
+                    transform_vertex_positions(vertex_positions, transform_to_matrix(transform, entity));
                 }
                 else
                 {
                     vertex_positions = DEFAULT_VERTEX_POSITIONS_2D;
-                    transform_vertex_positions(vertex_positions, transform_to_matrix(transform));
+                    transform_vertex_positions(vertex_positions, transform_to_matrix(transform, entity));
                 }
                 
                 fill_vertex_colors(vertex_colors, sprite.tint);
@@ -283,7 +283,7 @@ namespace nit
                 }
                 
                 fill_line_2d_vertex_positions(vertex_positions, line.start, line.end, line.thickness);
-                transform_vertex_positions(vertex_positions, transform_to_matrix(transform));
+                transform_vertex_positions(vertex_positions, transform_to_matrix(transform, entity));
                 fill_vertex_colors(vertex_colors, line.tint);
                 draw_line_2d(vertex_positions, vertex_colors, (i32) entity);
             }
@@ -308,7 +308,7 @@ namespace nit
                 draw_text(
                       font_data
                     , text.text
-                    , transform_to_matrix(transform)
+                    , transform_to_matrix(transform, entity)
                     , text.tint
                     , text.spacing
                     , text.size
@@ -327,7 +327,7 @@ namespace nit
                 }
                 
                 fill_circle_vertex_positions(vertex_positions, circle.radius);
-                transform_vertex_positions(vertex_positions, transform_to_matrix(transform));
+                transform_vertex_positions(vertex_positions, transform_to_matrix(transform, entity));
                 fill_vertex_colors(vertex_colors, circle.tint);
                 draw_circle(vertex_positions, vertex_colors, circle.thickness, circle.fade, (i32) entity);
             }

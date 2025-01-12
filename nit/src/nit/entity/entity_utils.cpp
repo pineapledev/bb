@@ -6,11 +6,15 @@ namespace nit
 {
     EntityID entity_find_by_name(const String& name)
     {
-        for (EntityID entity : entity_get_group<Name>().entities)
+        EntityArray entity_array = entity_get_alive_entities();
+        
+        for (u32 i = 0; i < entity_array.count; ++i)
         {
-            if (entity_get<Name>(entity).data == name)
+            auto& data = entity_array.entities[i];
+
+            if (data.name == name)
             {
-                return entity;
+                return data.id;
             }
         }
 
@@ -19,22 +23,30 @@ namespace nit
 
     void entity_find_by_name(Array<EntityID>& entities, const String& name)
     {
-        for (EntityID entity : entity_get_group<Name>().entities)
+        EntityArray entity_array = entity_get_alive_entities();
+        
+        for (u32 i = 0; i < entity_array.count; ++i)
         {
-            if (entity_get<Name>(entity).data == name)
+            auto& data = entity_array.entities[i];
+
+            if (data.name == name)
             {
-                entities.push_back(entity);
+                entities.push_back(data.id);
             }
         }
     }
 
     EntityID entity_find_by_uuid(UUID uuid)
     {
-        for (EntityID entity : entity_get_group<UUID>().entities)
+        EntityArray entity_array = entity_get_alive_entities();
+        
+        for (u32 i = 0; i < entity_array.count; ++i)
         {
-            if (entity_get<UUID>(entity) == uuid)
+            auto& data = entity_array.entities[i];
+
+            if (data.uuid == uuid)
             {
-                return entity;
+                return data.id;
             }
         }
 

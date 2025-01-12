@@ -36,11 +36,11 @@ namespace nit
 
     void register_editor()
     {
-        entity_create_preset<Name, Transform, Camera>("Camera");
-        entity_create_preset<Name, Transform, Sprite>("Sprite");
-        entity_create_preset<Name, Transform, Text>("Text");
-        entity_create_preset<Name, Transform, Circle>("Circle");
-        entity_create_preset<Name, Transform, Line2D>("Line");
+        entity_create_preset<Transform, Camera>("Camera");
+        entity_create_preset<Transform, Sprite>("Sprite");
+        entity_create_preset<Transform, Text>("Text");
+        entity_create_preset<Transform, Circle>("Circle");
+        entity_create_preset<Transform, Line2D>("Line");
 
         component_register<EditorCameraController>();
     }
@@ -581,11 +581,6 @@ namespace nit
                             if (ImGui::MenuItem(name.c_str()))
                             {
                                 EntityID entity = entity_create_from_preset(name);
-                                if (entity_has<Name>(entity))
-                                {
-                                    auto& created_entity_name = entity_get<Name>(entity);
-                                    created_entity_name.data = std::to_string(entity);
-                                }
                                 scene->entities.push_back(entity);
                             }
                         }
@@ -626,12 +621,7 @@ namespace nit
 
                     EntityID selected_entity = editor->selected_entity;
 
-                    String name = std::to_string(entity);
-
-                    if (entity_has<Name>(entity))
-                    {
-                        name = entity_get<Name>(entity).data;    
-                    }
+                    String name = entity_get_name(entity);
                     
                     const ImGuiTreeNodeFlags flags = ((entity_valid(entity) && selected_entity == entity) ?
                         ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_Leaf;
@@ -655,11 +645,6 @@ namespace nit
                         if (ImGui::MenuItem("Clone Entity"))
                         {
                             selected_entity = entity_clone(selected_entity);
-                            if (entity_has<Name>(selected_entity))
-                            {
-                                Name& cloned_name = entity_get<Name>(selected_entity);
-                                cloned_name.data = std::to_string(selected_entity);
-                            }
                             scene->entities.push_back(selected_entity);
                             num_of_entities++;
                         }

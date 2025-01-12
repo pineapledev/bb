@@ -357,58 +357,46 @@ namespace nit
         editor_end_property();
     }
 
-    bool editor_draw_uuid_combo(const char* label, EntityID& entity_id, UUID& entity_uuid)
-    {
-        EntityID& selected = entity_id;
-        EntityID prev = selected;
-        
-        entity_uuid = !entity_valid(selected) ? UUID{} : entity_has<UUID>(selected) ? entity_get<UUID>(selected) : UUID{};
-        String selected_name = !entity_valid(selected) ? "" : entity_has<Name>(selected) ? entity_get<Name>(selected).data : std::to_string(selected);
-        
-        editor_begin_property(label);
-
-        if (BeginCombo("##combo", selected_name.c_str()))
-        {
-            if (Selectable("None"))
-            {
-                selected = NULL_ENTITY;
-                entity_uuid = UUID{};
-            }
-            
-            for (EntityID entity : entity_get_group<UUID>().entities)
-            {
-                String name = entity_has<Name>(entity) ? entity_get<Name>(entity).data : std::to_string(entity);
-                const bool is_selected = selected_name == name;
-                if (Selectable(name.c_str()))
-                {
-                    selected = entity;
-                    entity_uuid = entity_get<UUID>(entity);
-                }
-                if (is_selected)
-                {
-                    SetItemDefaultFocus();
-                }
-            }
-
-            EndCombo();
-        }
-        
-        editor_end_property();
-
-        return prev != selected;
-    }
-
-    void editor_combo_filter(String& search_text)
-    {
-        static constexpr u32 MAX_CHARS = 300;
-        char text_buffer[MAX_CHARS];
-        strcpy_s(text_buffer, search_text.c_str());
-        const bool text_changed = InputText("##text", text_buffer, sizeof(text_buffer));
-        if (text_changed)
-        {
-            search_text = text_buffer;
-        }
-    }
+    // bool editor_draw_uuid_combo(const char* label, EntityID& entity_id, UUID& entity_uuid)
+    // {
+    //     EntityID& selected = entity_id;
+    //     EntityID prev = selected;
+    //     
+    //     entity_uuid = !entity_valid(selected) ? UUID{} : entity_has<UUID>(selected) ? entity_get<UUID>(selected) : UUID{};
+    //     String selected_name = !entity_valid(selected) ? "" : entity_has<Name>(selected) ? entity_get<Name>(selected).data : std::to_string(selected);
+    //     
+    //     editor_begin_property(label);
+    //
+    //     if (BeginCombo("##combo", selected_name.c_str()))
+    //     {
+    //         if (Selectable("None"))
+    //         {
+    //             selected = NULL_ENTITY;
+    //             entity_uuid = UUID{};
+    //         }
+    //         
+    //         for (EntityID entity : entity_get_group<UUID>().entities)
+    //         {
+    //             String name = entity_has<Name>(entity) ? entity_get<Name>(entity).data : std::to_string(entity);
+    //             const bool is_selected = selected_name == name;
+    //             if (Selectable(name.c_str()))
+    //             {
+    //                 selected = entity;
+    //                 entity_uuid = entity_get<UUID>(entity);
+    //             }
+    //             if (is_selected)
+    //             {
+    //                 SetItemDefaultFocus();
+    //             }
+    //         }
+    //
+    //         EndCombo();
+    //     }
+    //     
+    //     editor_end_property();
+    //
+    //     return prev != selected;
+    // }
 }
 
 #endif

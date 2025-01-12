@@ -33,8 +33,6 @@ namespace nit
     bool editor_draw_color_palette(const char* label, Vector4& color);
     bool editor_draw_asset_combo(const char* label, Type* type, AssetHandle* asset);
     void editor_draw_resource_combo(const char* label, const Array<String>& extensions, String& selected);
-    bool editor_draw_uuid_combo(const char* label, EntityID& entity_id, UUID& entity_uuid);
-    void editor_combo_filter(String& search_text);
     
     template<typename T>
     bool editor_draw_enum_combo(const char* label, T& enum_data)
@@ -44,24 +42,17 @@ namespace nit
         EnumType* type = enum_type_get<T>();
         String selected = enum_to_string<T>(enum_data);
         String prev     = selected;
-
-
+        
         editor_begin_property(label);
-
 
         if (BeginCombo("##combo", selected.c_str()))
         {
-            static String search_text;
-            editor_combo_filter(search_text);
             for (auto& [index, name] : type->index_to_name)
             {
-                if(!StringContains(name, search_text)) continue;
-
                 const bool is_selected = selected == name;
                 if (Selectable(name.c_str()))
                 {
                     selected = name;
-                    search_text = "";
                 }
                 if (is_selected)
                 {

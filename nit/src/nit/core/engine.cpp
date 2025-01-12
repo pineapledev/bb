@@ -112,8 +112,6 @@ namespace nit
         entity_registry_init();
         
         {
-            register_name_component();
-            register_uuid_component();
             register_transform_component();
             register_camera_component();
             register_text_component();
