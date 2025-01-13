@@ -3,6 +3,7 @@
 #include "input_action.h"
 #include "core/asset.h"
 #include "JoyShockLibrary.h"
+#include "glfw/glfw3.h"
 
 namespace nit
 {
@@ -15,6 +16,7 @@ namespace nit
     // INPUT 
     // ------------------------
 
+    Set<i32> player_ids;
     Map<GamepadKeys, InputContent> controller_state;
     Map<GamepadKeys, InputActionContext> input_action_context_map;
 
@@ -26,6 +28,13 @@ namespace nit
     void on_controller_vector4(InputAction* input_action, const Vector4& vector4_value);
     void on_controller_button_pressed(InputAction* input_action, bool is_repeat);
     void on_controller_button_released(InputAction* input_action, bool is_repeat);
+
+
+    // ------------------------
+    // XBOX 
+    // ------------------------
+
+    Array<GLFWDeviceInfo> glfw_devices;
 
 
     // ------------------------
@@ -80,6 +89,11 @@ namespace nit
         // create_input
         input_registry->input_modifier_pool = new InputModifierPool[NIT_MAX_INPUT_MODIFIER_TYPES];
 
+        for (i32 i = 0; i < NIT_MAX_PLAYERS; ++i)
+        {
+            player_ids.insert(i);
+        }
+
         for (u32 i = 0; i < input_registry->max_input_actions; ++i)
         {
             input_registry->available_input_actions.push(i);
@@ -103,14 +117,15 @@ namespace nit
     InputModifierPool* input_find_modifier_pool(const Type* type)
     {
         NIT_CHECK_INPUT_REGISTRY_CREATED
-            for (u32 i = 0; i < input_registry->next_input_modifier_type_index - 1; ++i)
+
+        for (u32 i = 0; i < input_registry->next_input_modifier_type_index - 1; ++i)
+        {
+            InputModifierPool& input_modifier_pool = input_registry->input_modifier_pool[i];
+            if (input_modifier_pool.data_pool.type == type)
             {
-                InputModifierPool& input_modifier_pool = input_registry->input_modifier_pool[i];
-                if (input_modifier_pool.data_pool.type == type)
-                {
-                    return &input_modifier_pool;
-                }
+                return &input_modifier_pool;
             }
+        }
         return nullptr;
     }
 
@@ -337,7 +352,9 @@ namespace nit
                     deviceInfo.deviceType = joyShockDevices[i].deviceType;
                     //OnJoyShockDeviceDisconnected().Broadcast(deviceInfo);
                     joyShockDevices.erase(joyShockDevices.begin() + i);
+                    player_ids.insert(deviceInfo.playerId);
                 }
+
                 connectedDeviceIds.erase(device_id);
             }
             ++i;
@@ -399,7 +416,9 @@ namespace nit
 
             for (i32 i = 0; i < device_ids.size(); ++i)
             {
-                RegisterInputDevice(i, device_ids[i], JslGetControllerType(device_ids[i]));
+                i32 player_id = *player_ids.begin();
+                player_ids.erase(player_id);
+                RegisterInputDevice(player_id, device_ids[i], JslGetControllerType(device_ids[i]));
                 JslSetAutomaticCalibration(device_ids[i], true);
             }
             UnorderedSet<i32> devices_to_remove;
@@ -463,7 +482,30 @@ namespace nit
 
     ListenerAction start()
     {
+        // -------------------------
+        // GLFW INPUT
+        // -------------------------
+
+        for(i32 i = 0; i < NIT_MAX_PLAYERS; ++i)
+        {
+            const char* gamepad_name = glfwGetJoystickName(i);
+            if (gamepad_name == nullptr) continue;
+
+            if (gamepad_name[0] == 'X') // jiji 😇
+            {
+                i32 player_id = *player_ids.begin();
+                player_ids.erase(player_id);
+                GLFWDeviceInfo device_info = { player_id, i };
+
+                glfw_devices.push_back(device_info);
+            }
+        }
+
+        // -------------------------
+        // JOYSHOCK INPUT
+        // -------------------------
         init_joyshock();
+
         input_registry->input_actions = asset_get_pool<InputAction>();
 
         return ListenerAction::StayListening;
@@ -472,8 +514,45 @@ namespace nit
     ListenerAction update()
     {
         // -------------------------
-        // GAMEPAD STATE
+        // KEYBOARD INPUT
         // -------------------------
+
+        // For each button check against the previous state and send the correct message if any
+        for (i32 i = 0; i < g_num_keyboard_keys; ++i)
+        {
+            bool is_key_pressed = IsKeyPressed(keyboard_key_codes[i]);
+
+            handle_button_press(is_key_pressed, keyboard_keys[i], 0);
+        }
+
+        // ------------------------
+        // GLFW INPUT
+        // ------------------------
+        
+        for(i32 i = 0; i < glfw_devices.size(); ++i)
+        {
+            i32 gamepadButtonsCount = 0;
+            i32 gamepadAxisCount = 0;
+            const u8* buttons = glfwGetJoystickButtons(glfw_devices[i].device_id, &gamepadButtonsCount);
+            const f32* axes = glfwGetJoystickAxes(glfw_devices[i].device_id, &gamepadAxisCount);
+
+            // For each button check against the previous state and send the correct message if any
+            for (i32 j = 0; j < gamepadButtonsCount; ++j)
+            {
+                handle_button_press(buttons[j] == GLFW_PRESS, glfw_button_keys[j], glfw_devices[i].player_id);
+            }
+
+            for (i32 j = 0; j < gamepadAxisCount; ++j)
+            {
+                handle_axis(axes[j], glfw_axis_keys[j], glfw_devices[i].player_id);
+            }
+        }
+
+
+        // -------------------------
+        // JOYSHOCK INPUT
+        // -------------------------
+
         for (i32 i = 0; i < joyShockDevices.size(); ++i)
         {
             handle_joyshock_controller_events(joyShockDevices[i].playerId, joyShockDevices[i].deviceId, joyShockDevices[i].deviceType, joyShockDevices[i].bIsJoyconPair, joyShockDevices[i].lastButtonData);

@@ -7,6 +7,10 @@
 #define NIT_MAX_INPUT_ACTIONS 100
 #endif
 
+#ifndef NIT_MAX_PLAYERS
+#define NIT_MAX_PLAYERS 10
+#endif
+
 namespace nit
 {
     struct AssetPool; 
@@ -236,6 +240,17 @@ namespace nit
     void SetEnabled(bool consumed);
     bool IsEnabled();
     //bool IsMouseButtonPressed(i32 button);
+
+    // ------------------------
+    // GLFW
+    // ------------------------
+
+
+    struct GLFWDeviceInfo
+    {
+        i32 player_id = -1;
+        i32 device_id = -1;
+    };
 
     // ------------------------
     // JOYSHOCK
