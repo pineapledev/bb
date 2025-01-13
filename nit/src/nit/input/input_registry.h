@@ -176,7 +176,7 @@ namespace nit
         input_action->signature.set(input_modifier_type_index<T>(), true);
 
         InputModifierInfo& input_modifier_info = input_modifier_pool->modifier_info[modifier_id];
-        input_modifier_info.action_key = input_action->m_Key;
+        input_modifier_info.action_key = input_action->key;
 
         InputModifierAddedArgs args;
         args.input_action = input_action;
@@ -234,11 +234,11 @@ namespace nit
     // INPUT
     // ------------------------
 
-    bool IsKeyPressed(u32 key);
-    void GetButtonState(GamepadKeys key, InputContent& input_content);
+    bool is_key_pressed(u32 key);
+    void get_button_state(GamepadKeys key, InputContent& input_content);
     void get_input_action_context(GamepadKeys key, InputActionContext& input_action_context);
-    void SetEnabled(bool consumed);
-    bool IsEnabled();
+    void set_input_enabled(bool consumed);
+    bool is_input_enabled();
     //bool IsMouseButtonPressed(i32 button);
 
     // ------------------------
@@ -258,118 +258,112 @@ namespace nit
 
     struct JoyShockDeviceInfo
     {
-        bool bIsJoyconPair = false;
-        i32 playerId = -1;
-        i32 deviceId = -1;
-        i32 deviceType = -1;
-        i32 deviceId2 = -1;
-        i32 deviceType2 = -1;
+        bool is_joycon_pair = false;
+        i32 player_id = -1;
+        i32 device_id = -1;
+        i32 device_type = -1;
+        i32 device_id_2 = -1;
+        i32 device_type_2 = -1;
     };
 
     struct ControllerColor
     {
-        Vector3 bodyColor = V3_ZERO;
-        Vector3 leftButtonColor = V3_ZERO;
-        Vector3 rightButtonColor = V3_ZERO;
-        Vector3 leftGripColor = V3_ZERO;
-        Vector3 rightGripColor = V3_ZERO;
+        Vector3 body_color = V3_ZERO;
+        Vector3 left_button_color = V3_ZERO;
+        Vector3 right_button_color = V3_ZERO;
+        Vector3 left_grip_color = V3_ZERO;
+        Vector3 right_grip_color = V3_ZERO;
     };
 
     struct RumbleValues
     {
-        f32 leftLarge = 0.f;
-        f32 leftSmall = 0.f;
-        f32 rightLarge = 0.f;
-        f32 rightSmall = 0.f;
+        f32 left_large = 0.f;
+        f32 left_small = 0.f;
+        f32 right_large = 0.f;
+        f32 right_small = 0.f;
 
-        inline bool operator==(const RumbleValues& _other)
+        inline bool operator==(const RumbleValues& other)
         {
-            return leftLarge == _other.leftLarge && leftSmall == _other.leftSmall &&
-                rightLarge == _other.rightLarge && rightSmall == _other.rightSmall;
+            return left_large == other.left_large && left_small == other.left_small &&
+                right_large == other.right_large && right_small == other.right_small;
         }
     };
 
     struct HDRumbleValues
     {
-        f32 lowFreq = 0.f;
-        f32 lowAmpli = 0.f;
-        f32 highFreq = 0.f;
-        f32 highAmpli = 0.f;
+        f32 low_freq = 0.f;
+        f32 low_ampli = 0.f;
+        f32 high_freq = 0.f;
+        f32 high_ampli = 0.f;
 
-        inline bool operator==(const HDRumbleValues& _other)
+        inline bool operator==(const HDRumbleValues& other)
         {
-            return lowFreq == _other.lowFreq && lowAmpli == _other.lowAmpli &&
-                highFreq == _other.highFreq && highAmpli == _other.highAmpli;
+            return low_freq == other.low_freq && low_ampli == other.low_ampli &&
+                high_freq == other.high_freq && high_ampli == other.high_ampli;
         }
     };
 
     struct JoyShockDeviceEntry
     {
-        bool bIsJoyconPair = false;
+        bool is_joycon_pair = false;
 
-        i32 playerId = -1;
+        i32 player_id = -1;
 
-        i32 deviceId = -1;
-        i32 deviceType = -1;
-        i32 lastButtonData = 0x000000;
+        i32 device_id = -1;
+        i32 device_type = -1;
+        i32 last_button_data = 0x000000;
 
-        i32 deviceId2 = -1;
-        i32 deviceType2 = -1;
-        i32 lastButtonData2 = 0x000000;
+        i32 device_id_2 = -1;
+        i32 device_type_2 = -1;
+        i32 last_button_data_2 = 0x000000;
 
-        RumbleValues lastRumbleValues;
-        HDRumbleValues lastHDRumbleValues;
-        HDRumbleValues lastHDRumbleValues2;
+        RumbleValues last_rumble_values;
+        HDRumbleValues last_HD_rumble_values;
+        HDRumbleValues last_HD_rumble_values_2;
 
-        float repeatRumbleTimer = 0.f;
-        float repeatRumbleTimer2 = 0.f;
+        float repeat_rumble_timer = 0.f;
+        float repeat_rumble_timer_2 = 0.f;
 
-        inline bool operator==(const JoyShockDeviceEntry& _other) { return deviceId == _other.deviceId; }
+        inline bool operator==(const JoyShockDeviceEntry& other) { return device_id == other.device_id; }
     };
 
-    /*
-    Array<JoyShockDeviceInfo> GetRegisteredDevices();
-    ControllerColor GetControllerColorsByControllerId(i32 _controllerId);
-    ControllerColor GetControllerColorsByDeviceId(i32 _deviceId);
-    void SetControllerLightColorByControllerId(i32 _controllerId, const Vector3& _color);
-    void SetControllerLightColorByDeviceId(i32 _deviceId, const Vector3& _color);
-    */
-    bool JoinJoyconsByDeviceId(i32 device_id, i32 device_id_2);
-    /*
-    bool JoinJoyconsByControllerId(i32 _controllerId, i32 _controllerId2);
-    */
-    bool QueryConnectedDevices();
-    /*
-    void DisconnectAllDevices();
-    void GetDeviceIdAndIndexByPlayerId(i32 _playerId, i32& deviceId_, i32& deviceId2_, i32& index_);
-    */
-    void GetPlayerIdAndIndexByDeviceId(i32 _deviceId, i32& playerId_, i32& index_);
-    bool SetPlayerIdByDeviceId(i32 device_id, i32 player_id);
-    /*
-    i32 GetNumJoyShockDevices();
-    size_t GetNumJoyShockPlayers();
-    bool SupportsRumble(i32 _controllerId);
-    void SetRumble(i32 _controllerId, const RumbleValues& _rumbleValues);
-    bool SupportsHDRumble(i32 _controllerId);
-    void EnableHDRumble(i32 _controllerId);
-    void DisableHDRumble(i32 _controllerId);
-    void SetHDRumble(i32 _controllerId, const HDRumbleValues& _rumbleValues);
-    void SetHDRumbleLR(i32 _controllerId, const HDRumbleValues& _rumbleValuesL, const HDRumbleValues& _rumbleValuesR);
+
+    ControllerColor get_controller_colors_by_player_id(i32 player_id);
+    ControllerColor get_controller_colors_by_device_id(i32 device_id);
+    void set_controller_light_color_by_player_id(i32 player_id, const Vector3& color);
+    void set_controller_light_color_by_device_id(i32 device_id, const Vector3& color);
+
+    bool join_joycons_by_device_id(i32 device_id, i32 device_id_2);
+    bool join_joycons_by_player_id(i32 player_id, i32 player_id_2);
+    bool query_connected_devices();
+    void disconnect_all_joyshock_devices();
+    void get_device_id_and_index_by_player_id(i32 player_id, i32& device_id, i32& device_id_2, i32& index);
+    void get_player_id_and_index_by_device_id(i32 device_id, i32& player_id, i32& index);
+    bool set_player_id_by_device_id(i32 device_id, i32 player_id);
+
+    i32 get_num_joyshock_devices();
+    size_t get_num_joyshock_players();
+    bool supports_rumble(i32 player_id);
+    void set_rumble(i32 player_id, const RumbleValues& rumble_values);
+    bool supports_hd_rumble(i32 player_id);
+    void enable_hd_rumble(i32 player_id);
+    void disable_hd_rumble(i32 player_id);
+    void set_hd_rumble(i32 player_id, const HDRumbleValues& rumble_values);
+    void set_hd_rumble_LR(i32 player_id, const HDRumbleValues& rumble_values_L, const HDRumbleValues& rumble_values_R);
 
     // Official effects
-    void SetDS5TriggersOff(i32 _controllerId, AffectedTriggers affectedTriggers);
-    void SetDS5TriggersFeedback(i32 _controllerId, AffectedTriggers affectedTriggers, u8 position, u8 strength);
-    void SetDS5TriggersWeapon(i32 _controllerId, AffectedTriggers affectedTriggers, u8 startPosition, u8 endPosition, u8 strength);
-    void SetDS5TriggersVibration(i32 _controllerId, AffectedTriggers affectedTriggers, u8 position, u8 amplitude, u8 frequency);
-    void SetDS5TriggersMultiPosFeedback(i32 _controllerId, AffectedTriggers affectedTriggers, const Array<u8>& strength);
-    void SetDS5TriggersSlopeFeedback(i32 _controllerId, AffectedTriggers affectedTriggers, u8 startPosition, u8 endPosition, u8 startStrength, u8 endStrength);
-    void SetDS5TriggersMultiPosVibration(i32 _controllerId, AffectedTriggers affectedTriggers, u8 frequency, const Array<u8>& amplitude);
+    void set_ds5_triggers_off(i32 player_id, AffectedTriggers affected_triggers);
+    void set_ds5_triggers_feedback(i32 player_id, AffectedTriggers affected_triggers, u8 position, u8 strength);
+    void set_ds5_triggers_weapon(i32 player_id, AffectedTriggers affected_triggers, u8 start_position, u8 end_position, u8 strength);
+    void set_ds5_triggers_vibration(i32 player_id, AffectedTriggers affected_triggers, u8 position, u8 amplitude, u8 frequency);
+    void set_ds5_triggers_multi_pos_feedback(i32 player_id, AffectedTriggers affected_triggers, const Array<u8>& strength);
+    void set_ds5_triggers_slope_feedback(i32 player_id, AffectedTriggers affected_triggers, u8 start_position, u8 end_position, u8 start_strength, u8 end_strength);
+    void set_ds5_triggers_multi_pos_vibration(i32 player_id, AffectedTriggers affected_triggers, u8 frequency, const Array<u8>& amplitude);
     // Not official effects
-    void SetDS5TriggersBow(i32 _controllerId, AffectedTriggers affectedTriggers, u8 startPosition, u8 endPosition, u8 strength, u8 snapForce);
-    void SetDS5TriggersGalloping(i32 _controllerId, AffectedTriggers affectedTriggers, u8 startPosition, u8 endPosition, u8 firstFoot, u8 secondFoot, u8 frequency);
-    void SetDS5TriggersMachine(i32 _controllerId, AffectedTriggers affectedTriggers, u8 startPosition, u8 endPosition, u8 amplitudeA, u8 amplitudeB, u8 frequency, u8 period);
+    void set_ds5_triggers_bow(i32 player_id, AffectedTriggers affected_triggers, u8 start_position, u8 end_position, u8 strength, u8 snap_force);
+    void set_ds5_triggers_galloping(i32 player_id, AffectedTriggers affected_triggers, u8 start_position, u8 end_position, u8 first_foot, u8 second_foot, u8 frequency);
+    void set_ds5_triggers_machine(i32 player_id, AffectedTriggers affected_triggers, u8 start_position, u8 end_position, u8 amplitude_A, u8 amplitude_B, u8 frequency, u8 period);
 
-    */
 
     //JoyShockDeviceConnected& OnJoyShockDeviceConnected();
     //JoyShockDeviceDisconnected& OnJoyShockDeviceDisconnected();

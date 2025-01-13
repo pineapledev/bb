@@ -11,13 +11,13 @@ namespace nit
 {
     void serialize(const InputAction* input_action, YAML::Emitter& emitter)
     {
-        emitter << YAML::Key << "key" <<                YAML::Value << enum_to_string<GamepadKeys>(input_action->m_Key);
-        emitter << YAML::Key << "paired_input_key_x" << YAML::Value << enum_to_string<GamepadKeys>(input_action->m_PairedInputKeyX);
-        emitter << YAML::Key << "paired_input_key_y" << YAML::Value << enum_to_string<GamepadKeys>(input_action->m_PairedInputKeyY);
-        emitter << YAML::Key << "paired_input_key_z" << YAML::Value << enum_to_string<GamepadKeys>(input_action->m_PairedInputKeyZ);
-        emitter << YAML::Key << "paired_input_key_w" << YAML::Value << enum_to_string<GamepadKeys>(input_action->m_PairedInputKeyW);
-        emitter << YAML::Key << "input_type" <<         YAML::Value << enum_to_string<InputType>(input_action->m_InputType);
-        emitter << YAML::Key << "trigger_type" <<       YAML::Value << enum_to_string<TriggerType>(input_action->m_TriggerType);
+        emitter << YAML::Key << "key" <<                YAML::Value << enum_to_string<GamepadKeys>(input_action->key);
+        emitter << YAML::Key << "paired_input_key_x" << YAML::Value << enum_to_string<GamepadKeys>(input_action->paired_input_key_x);
+        emitter << YAML::Key << "paired_input_key_y" << YAML::Value << enum_to_string<GamepadKeys>(input_action->paired_input_key_y);
+        emitter << YAML::Key << "paired_input_key_z" << YAML::Value << enum_to_string<GamepadKeys>(input_action->paired_input_key_z);
+        emitter << YAML::Key << "paired_input_key_w" << YAML::Value << enum_to_string<GamepadKeys>(input_action->paired_input_key_w);
+        emitter << YAML::Key << "input_type" <<         YAML::Value << enum_to_string<InputType>(input_action->input_type);
+        emitter << YAML::Key << "trigger_type" <<       YAML::Value << enum_to_string<TriggerType>(input_action->trigger_type);
 
         emitter << YAML::Key << "input_modifiers" << YAML::Value << YAML::BeginMap;
 
@@ -51,13 +51,13 @@ namespace nit
 
         input_action->id = input_registry->available_input_actions.front(); 
         input_registry->available_input_actions.pop();
-        input_action->m_Key =             enum_from_string<GamepadKeys>(node["key"].as<String>());
-        input_action->m_PairedInputKeyX = enum_from_string<GamepadKeys>(node["paired_input_key_x"].as<String>());
-        input_action->m_PairedInputKeyY = enum_from_string<GamepadKeys>(node["paired_input_key_y"].as<String>());
-        input_action->m_PairedInputKeyZ = enum_from_string<GamepadKeys>(node["paired_input_key_z"].as<String>());
-        input_action->m_PairedInputKeyW = enum_from_string<GamepadKeys>(node["paired_input_key_w"].as<String>());
-        input_action->m_InputType =       enum_from_string<InputType>(node["input_type"].as<String>());
-        input_action->m_TriggerType =     enum_from_string<TriggerType>(node["trigger_type"].as<String>());
+        input_action->key =             enum_from_string<GamepadKeys>(node["key"].as<String>());
+        input_action->paired_input_key_x = enum_from_string<GamepadKeys>(node["paired_input_key_x"].as<String>());
+        input_action->paired_input_key_y = enum_from_string<GamepadKeys>(node["paired_input_key_y"].as<String>());
+        input_action->paired_input_key_z = enum_from_string<GamepadKeys>(node["paired_input_key_z"].as<String>());
+        input_action->paired_input_key_w = enum_from_string<GamepadKeys>(node["paired_input_key_w"].as<String>());
+        input_action->input_type =       enum_from_string<InputType>(node["input_type"].as<String>());
+        input_action->trigger_type =     enum_from_string<TriggerType>(node["trigger_type"].as<String>());
 
         const YAML::Node& modifiers_node = node["input_modifiers"];
 
@@ -83,13 +83,13 @@ namespace nit
     void draw_editor(InputAction* input_action)
     {
 
-        editor_draw_enum_combo("Key", input_action->m_Key);
-        editor_draw_enum_combo("Paired Key X", input_action->m_PairedInputKeyX);
-        editor_draw_enum_combo("Paired Key Y", input_action->m_PairedInputKeyY);
-        editor_draw_enum_combo("Paired Key Z", input_action->m_PairedInputKeyZ);
-        editor_draw_enum_combo("Paired Key W", input_action->m_PairedInputKeyW);
-        editor_draw_enum_combo("Input Type", input_action->m_InputType);
-        editor_draw_enum_combo("Trigger Type", input_action->m_TriggerType);
+        editor_draw_enum_combo("Key", input_action->key);
+        editor_draw_enum_combo("Paired Key X", input_action->paired_input_key_x);
+        editor_draw_enum_combo("Paired Key Y", input_action->paired_input_key_y);
+        editor_draw_enum_combo("Paired Key Z", input_action->paired_input_key_z);
+        editor_draw_enum_combo("Paired Key W", input_action->paired_input_key_w);
+        editor_draw_enum_combo("Input Type", input_action->input_type);
+        editor_draw_enum_combo("Trigger Type", input_action->trigger_type);
 
         InputRegistry* input_registry = input_registry_get_instance();
 
@@ -178,7 +178,7 @@ namespace nit
 
     void print_key(InputAction* input_action)
     {
-        NIT_LOG_TRACE("%s", enum_to_string<GamepadKeys>(input_action->m_Key).c_str());
+        NIT_LOG_TRACE("%s", enum_to_string<GamepadKeys>(input_action->key).c_str());
     }
 
     void register_input_action_asset()
