@@ -17,7 +17,7 @@ namespace nit
     bool editor_draw_centered_button(const char* label, float alignment = 0.5f);
     void editor_draw_centered_text(const char* label, float alignment = 0.7f);
 
-    bool editor_draw_input_text(const char* label, String& text);
+    bool editor_draw_input_text(const char* label, String& text, bool no_property = false);
     bool editor_draw_input_folder(const Window* window, const char* label, String& text);
 
     auto editor_draw_text(const char* label, const char* text, ...) -> void;

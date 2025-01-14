@@ -77,9 +77,9 @@ namespace nit
         return Text(label);
     }
 
-    bool editor_draw_input_text(const char* label, String& text)
+    bool editor_draw_input_text(const char* label, String& text, bool no_property)
     {
-        editor_begin_property(label);
+        if (!no_property) editor_begin_property(label);
         static constexpr u32 MAX_CHARS = 300;
         char text_buffer[MAX_CHARS];
         strcpy_s(text_buffer, text.c_str());
@@ -88,7 +88,7 @@ namespace nit
         {
             text = text_buffer;
         }
-        editor_end_property();
+        if (!no_property) editor_end_property();
         return text_changed;
     }
 
