@@ -5,7 +5,7 @@ AssetInfo:
   id: 15213363934212792374
   version: 0
 InputAction:
-  key: GamepadButtonDpadLeft
+  key: KeyA
   paired_input_key_x: GamepadButtonNONE
   paired_input_key_y: GamepadButtonNONE
   paired_input_key_z: GamepadButtonNONE

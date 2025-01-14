@@ -3,6 +3,7 @@
 #include "health.h"
 #include "hittable.h"
 #include "player.h"
+#include "homing_missile.h"
 
 ListenerAction game_start()
 {
@@ -56,5 +57,6 @@ ListenerAction game_update()
     player_update();
     bullet_update();
     hittable_update();
+    homing_missile_update();
     return ListenerAction::StayListening;
 }

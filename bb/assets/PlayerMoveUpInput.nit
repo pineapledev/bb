@@ -2,10 +2,10 @@ AssetInfo:
   type: InputAction
   name: PlayerMoveUpInput
   path: PlayerMoveUpInput.nit
-  id: 7163204965657513989
+  id: 9774530860268011039
   version: 0
 InputAction:
-  key: GamepadButtonDpadUp
+  key: KeyW
   paired_input_key_x: GamepadButtonNONE
   paired_input_key_y: GamepadButtonNONE
   paired_input_key_z: GamepadButtonNONE

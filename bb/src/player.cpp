@@ -116,7 +116,7 @@ ListenerAction input_callback_move(const InputActionContext& context)
         return ListenerAction::StopListening;
     }
     
-    Vector2 input_value = (const Vector2&) context.inputValue;
+    Vector2 input_value = (const Vector2&) context.input_value;
 
     entity_get<Transform>(game->entity_player).position += to_v3(multiply(entity_get<Movement>(game->entity_player).speed, input_value) * delta_seconds());
     

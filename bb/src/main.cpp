@@ -5,6 +5,7 @@
 #include "hittable.h"
 #include "movement.h"
 #include "player.h"
+#include "homing_missile.h"
 
 using namespace nit;
 
@@ -26,4 +27,5 @@ void game_init()
     register_hittable_component();
     register_player_component();
     register_bullet_component();
+    register_homing_missile_component();
 }

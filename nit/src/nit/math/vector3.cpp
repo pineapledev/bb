@@ -73,7 +73,7 @@ namespace nit
         return { look_rot.x, look_rot.y, look_rot.z };
     }
 
-    f32 lenght(const Vector3& val)
+    f32 length(const Vector3& val)
     {
         return std::sqrt(val.x * val.x + val.y * val.y + val.z * val.z);
     }
