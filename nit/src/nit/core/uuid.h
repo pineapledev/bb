@@ -26,6 +26,6 @@ struct std::hash<nit::UUID>
 {
     std::size_t operator()(const nit::UUID id) const noexcept
     {
-        return hash<nit::u64>()(static_cast<nit::u64>(id));
+        return hash<u64>()(static_cast<u64>(id));
     }
 };

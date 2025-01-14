@@ -183,7 +183,7 @@ namespace nit
             asset_info.type    = type_get(asset_info_node["type"].as<String>());
             asset_info.name    = asset_info_node["name"].as<String>();
             asset_info.path    = asset_info_node["path"].as<String>();
-            asset_info.id      = { static_cast<UUID>(asset_info_node["id"].as<nit::u64>()) };
+            asset_info.id      = { static_cast<UUID>(asset_info_node["id"].as<u64>()) };
             asset_info.version = asset_info_node["version"].as<u32>();
             
             if (asset_info.version < asset_get_last_version(asset_info.type))

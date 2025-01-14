@@ -76,7 +76,7 @@ struct YAML::convert<nit::AssetHandle>
         Node node;
         node.push_back(h.name);
         node.push_back(h.type->name);
-        node.push_back((nit::u64) h.id);
+        node.push_back((u64) h.id);
         node.SetStyle(EmitterStyle::Flow);
         return node;
     }
@@ -86,9 +86,9 @@ struct YAML::convert<nit::AssetHandle>
         if (!node.IsSequence() || node.size() != 3)
             return false;
 
-        h.name    = node[0].as<nit::String>();
-        h.type    = nit::type_get(node[1].as<nit::String>());
-        h.id      = (nit::UUID) node[2].as<nit::u64>();
+        h.name    = node[0].as<String>();
+        h.type    = nit::type_get(node[1].as<String>());
+        h.id      = (nit::UUID) node[2].as<u64>();
         return true;
     }
 };
@@ -96,6 +96,6 @@ struct YAML::convert<nit::AssetHandle>
 inline YAML::Emitter& operator<<(YAML::Emitter& out, const nit::AssetHandle& h)
 {
     out << YAML::Flow;
-    out << YAML::BeginSeq << h.name << (h.type ? h.type->name : "") << (nit::u64) h.id << YAML::EndSeq;
+    out << YAML::BeginSeq << h.name << (h.type ? h.type->name : "") << (u64) h.id << YAML::EndSeq;
     return out;
 }
