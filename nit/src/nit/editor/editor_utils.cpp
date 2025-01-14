@@ -77,9 +77,9 @@ namespace nit
         return Text(label);
     }
 
-    bool editor_draw_input_text(const char* label, String& text)
+    bool editor_draw_input_text(const char* label, String& text, bool no_property)
     {
-        editor_begin_property(label);
+        if (!no_property) editor_begin_property(label);
         static constexpr u32 MAX_CHARS = 300;
         char text_buffer[MAX_CHARS];
         strcpy_s(text_buffer, text.c_str());
@@ -88,7 +88,7 @@ namespace nit
         {
             text = text_buffer;
         }
-        editor_end_property();
+        if (!no_property) editor_end_property();
         return text_changed;
     }
 
@@ -355,6 +355,18 @@ namespace nit
         }
         
         editor_end_property();
+    }
+
+    void editor_combo_filter(String& search_text)
+    {
+        static constexpr u32 MAX_CHARS = 300;
+        char text_buffer[MAX_CHARS];
+        strcpy_s(text_buffer, search_text.c_str());
+        const bool text_changed = InputText("##text", text_buffer, sizeof(text_buffer));
+        if (text_changed)
+        {
+            search_text = text_buffer;
+        }
     }
 
     // bool editor_draw_uuid_combo(const char* label, EntityID& entity_id, UUID& entity_uuid)

@@ -11,13 +11,13 @@ namespace nit
 {
     void serialize(const InputAction* input_action, YAML::Emitter& emitter)
     {
-        emitter << YAML::Key << "key" <<                YAML::Value << enum_to_string<GamepadKeys>(input_action->m_Key);
-        emitter << YAML::Key << "paired_input_key_x" << YAML::Value << enum_to_string<GamepadKeys>(input_action->m_PairedInputKeyX);
-        emitter << YAML::Key << "paired_input_key_y" << YAML::Value << enum_to_string<GamepadKeys>(input_action->m_PairedInputKeyY);
-        emitter << YAML::Key << "paired_input_key_z" << YAML::Value << enum_to_string<GamepadKeys>(input_action->m_PairedInputKeyZ);
-        emitter << YAML::Key << "paired_input_key_w" << YAML::Value << enum_to_string<GamepadKeys>(input_action->m_PairedInputKeyW);
-        emitter << YAML::Key << "input_type" <<         YAML::Value << enum_to_string<InputType>(input_action->m_InputType);
-        emitter << YAML::Key << "trigger_type" <<       YAML::Value << enum_to_string<TriggerType>(input_action->m_TriggerType);
+        emitter << YAML::Key << "key" <<                YAML::Value << enum_to_string<GamepadKeys>(input_action->key);
+        emitter << YAML::Key << "paired_input_key_x" << YAML::Value << enum_to_string<GamepadKeys>(input_action->paired_input_key_x);
+        emitter << YAML::Key << "paired_input_key_y" << YAML::Value << enum_to_string<GamepadKeys>(input_action->paired_input_key_y);
+        emitter << YAML::Key << "paired_input_key_z" << YAML::Value << enum_to_string<GamepadKeys>(input_action->paired_input_key_z);
+        emitter << YAML::Key << "paired_input_key_w" << YAML::Value << enum_to_string<GamepadKeys>(input_action->paired_input_key_w);
+        emitter << YAML::Key << "input_type" <<         YAML::Value << enum_to_string<InputType>(input_action->input_type);
+        emitter << YAML::Key << "trigger_type" <<       YAML::Value << enum_to_string<TriggerType>(input_action->trigger_type);
 
         emitter << YAML::Key << "input_modifiers" << YAML::Value << YAML::BeginMap;
 
@@ -51,13 +51,13 @@ namespace nit
 
         input_action->id = input_registry->available_input_actions.front(); 
         input_registry->available_input_actions.pop();
-        input_action->m_Key =             enum_from_string<GamepadKeys>(node["key"].as<String>());
-        input_action->m_PairedInputKeyX = enum_from_string<GamepadKeys>(node["paired_input_key_x"].as<String>());
-        input_action->m_PairedInputKeyY = enum_from_string<GamepadKeys>(node["paired_input_key_y"].as<String>());
-        input_action->m_PairedInputKeyZ = enum_from_string<GamepadKeys>(node["paired_input_key_z"].as<String>());
-        input_action->m_PairedInputKeyW = enum_from_string<GamepadKeys>(node["paired_input_key_w"].as<String>());
-        input_action->m_InputType =       enum_from_string<InputType>(node["input_type"].as<String>());
-        input_action->m_TriggerType =     enum_from_string<TriggerType>(node["trigger_type"].as<String>());
+        input_action->key =             enum_from_string<GamepadKeys>(node["key"].as<String>());
+        input_action->paired_input_key_x = enum_from_string<GamepadKeys>(node["paired_input_key_x"].as<String>());
+        input_action->paired_input_key_y = enum_from_string<GamepadKeys>(node["paired_input_key_y"].as<String>());
+        input_action->paired_input_key_z = enum_from_string<GamepadKeys>(node["paired_input_key_z"].as<String>());
+        input_action->paired_input_key_w = enum_from_string<GamepadKeys>(node["paired_input_key_w"].as<String>());
+        input_action->input_type =       enum_from_string<InputType>(node["input_type"].as<String>());
+        input_action->trigger_type =     enum_from_string<TriggerType>(node["trigger_type"].as<String>());
 
         const YAML::Node& modifiers_node = node["input_modifiers"];
 
@@ -83,13 +83,13 @@ namespace nit
     void draw_editor(InputAction* input_action)
     {
 
-        editor_draw_enum_combo("Key", input_action->m_Key);
-        editor_draw_enum_combo("Paired Key X", input_action->m_PairedInputKeyX);
-        editor_draw_enum_combo("Paired Key Y", input_action->m_PairedInputKeyY);
-        editor_draw_enum_combo("Paired Key Z", input_action->m_PairedInputKeyZ);
-        editor_draw_enum_combo("Paired Key W", input_action->m_PairedInputKeyW);
-        editor_draw_enum_combo("Input Type", input_action->m_InputType);
-        editor_draw_enum_combo("Trigger Type", input_action->m_TriggerType);
+        editor_draw_enum_combo("Key", input_action->key);
+        editor_draw_enum_combo("Paired Key X", input_action->paired_input_key_x);
+        editor_draw_enum_combo("Paired Key Y", input_action->paired_input_key_y);
+        editor_draw_enum_combo("Paired Key Z", input_action->paired_input_key_z);
+        editor_draw_enum_combo("Paired Key W", input_action->paired_input_key_w);
+        editor_draw_enum_combo("Input Type", input_action->input_type);
+        editor_draw_enum_combo("Trigger Type", input_action->trigger_type);
 
         InputRegistry* input_registry = input_registry_get_instance();
 
@@ -178,7 +178,7 @@ namespace nit
 
     void print_key(InputAction* input_action)
     {
-        NIT_LOG_TRACE("%s", enum_to_string<GamepadKeys>(input_action->m_Key).c_str());
+        NIT_LOG_TRACE("%s", enum_to_string<GamepadKeys>(input_action->key).c_str());
     }
 
     void register_input_action_asset()
@@ -274,6 +274,126 @@ namespace nit
         enum_register_value<GamepadKeys>("DualShockAxisNorth", GamepadKeys::DualShockAxisNorth);
         enum_register_value<GamepadKeys>("DualShockAxisLeftBumper", GamepadKeys::DualShockAxisLeftBumper);
         enum_register_value<GamepadKeys>("DualShockAxisRightBumper", GamepadKeys::DualShockAxisRightBumper);
+        enum_register_value<GamepadKeys>("KeySpace", GamepadKeys::KeySpace);
+        enum_register_value<GamepadKeys>("KeyApostrophe", GamepadKeys::KeyApostrophe);
+        enum_register_value<GamepadKeys>("KeyComma", GamepadKeys::KeyComma);
+        enum_register_value<GamepadKeys>("KeyMinus", GamepadKeys::KeyMinus);
+        enum_register_value<GamepadKeys>("KeyPeriod", GamepadKeys::KeyPeriod);
+        enum_register_value<GamepadKeys>("KeySlash", GamepadKeys::KeySlash);
+        enum_register_value<GamepadKeys>("Key0", GamepadKeys::Key0);
+        enum_register_value<GamepadKeys>("Key1", GamepadKeys::Key1);
+        enum_register_value<GamepadKeys>("Key2", GamepadKeys::Key2);
+        enum_register_value<GamepadKeys>("Key3", GamepadKeys::Key3);
+        enum_register_value<GamepadKeys>("Key4", GamepadKeys::Key4);
+        enum_register_value<GamepadKeys>("Key5", GamepadKeys::Key5);
+        enum_register_value<GamepadKeys>("Key6", GamepadKeys::Key6);
+        enum_register_value<GamepadKeys>("Key7", GamepadKeys::Key7);
+        enum_register_value<GamepadKeys>("Key8", GamepadKeys::Key8);
+        enum_register_value<GamepadKeys>("Key9", GamepadKeys::Key9);
+        enum_register_value<GamepadKeys>("KeySemicolon", GamepadKeys::KeySemicolon);
+        enum_register_value<GamepadKeys>("KeyEqual", GamepadKeys::KeyEqual);
+        enum_register_value<GamepadKeys>("KeyA", GamepadKeys::KeyA);
+        enum_register_value<GamepadKeys>("KeyB", GamepadKeys::KeyB);
+        enum_register_value<GamepadKeys>("KeyC", GamepadKeys::KeyC);
+        enum_register_value<GamepadKeys>("KeyD", GamepadKeys::KeyD);
+        enum_register_value<GamepadKeys>("KeyE", GamepadKeys::KeyE);
+        enum_register_value<GamepadKeys>("KeyF", GamepadKeys::KeyF);
+        enum_register_value<GamepadKeys>("KeyG", GamepadKeys::KeyG);
+        enum_register_value<GamepadKeys>("KeyH", GamepadKeys::KeyH);
+        enum_register_value<GamepadKeys>("KeyI", GamepadKeys::KeyI);
+        enum_register_value<GamepadKeys>("KeyJ", GamepadKeys::KeyJ);
+        enum_register_value<GamepadKeys>("KeyK", GamepadKeys::KeyK);
+        enum_register_value<GamepadKeys>("KeyL", GamepadKeys::KeyL);
+        enum_register_value<GamepadKeys>("KeyM", GamepadKeys::KeyM);
+        enum_register_value<GamepadKeys>("KeyN", GamepadKeys::KeyN);
+        enum_register_value<GamepadKeys>("KeyO", GamepadKeys::KeyO);
+        enum_register_value<GamepadKeys>("KeyP", GamepadKeys::KeyP);
+        enum_register_value<GamepadKeys>("KeyQ", GamepadKeys::KeyQ);
+        enum_register_value<GamepadKeys>("KeyR", GamepadKeys::KeyR);
+        enum_register_value<GamepadKeys>("KeyS", GamepadKeys::KeyS);
+        enum_register_value<GamepadKeys>("KeyT", GamepadKeys::KeyT);
+        enum_register_value<GamepadKeys>("KeyU", GamepadKeys::KeyU);
+        enum_register_value<GamepadKeys>("KeyV", GamepadKeys::KeyV);
+        enum_register_value<GamepadKeys>("KeyW", GamepadKeys::KeyW);
+        enum_register_value<GamepadKeys>("KeyX", GamepadKeys::KeyX);
+        enum_register_value<GamepadKeys>("KeyY", GamepadKeys::KeyY);
+        enum_register_value<GamepadKeys>("KeyZ", GamepadKeys::KeyZ);
+        enum_register_value<GamepadKeys>("KeyLeftBracket", GamepadKeys::KeyLeftBracket);
+        enum_register_value<GamepadKeys>("KeyBackSlash", GamepadKeys::KeyBackSlash);
+        enum_register_value<GamepadKeys>("KeyRightBracket", GamepadKeys::KeyRightBracket);
+        enum_register_value<GamepadKeys>("KeyGraveAccent", GamepadKeys::KeyGraveAccent);
+        enum_register_value<GamepadKeys>("KeyWorld1", GamepadKeys::KeyWorld1);
+        enum_register_value<GamepadKeys>("KeyWorld2", GamepadKeys::KeyWorld2);
+        enum_register_value<GamepadKeys>("KeyEscape", GamepadKeys::KeyEscape);
+        enum_register_value<GamepadKeys>("KeyEnter", GamepadKeys::KeyEnter);
+        enum_register_value<GamepadKeys>("KeyTab", GamepadKeys::KeyTab);
+        enum_register_value<GamepadKeys>("KeyBackSpace", GamepadKeys::KeyBackSpace);
+        enum_register_value<GamepadKeys>("KeyInsert", GamepadKeys::KeyInsert);
+        enum_register_value<GamepadKeys>("KeyDelete", GamepadKeys::KeyDelete);
+        enum_register_value<GamepadKeys>("KeyRight", GamepadKeys::KeyRight);
+        enum_register_value<GamepadKeys>("KeyLeft", GamepadKeys::KeyLeft);
+        enum_register_value<GamepadKeys>("KeyDown", GamepadKeys::KeyDown);
+        enum_register_value<GamepadKeys>("KeyUp", GamepadKeys::KeyUp);
+        enum_register_value<GamepadKeys>("KeyPageUp", GamepadKeys::KeyPageUp);
+        enum_register_value<GamepadKeys>("KeyPageDown", GamepadKeys::KeyPageDown);
+        enum_register_value<GamepadKeys>("KeyHome", GamepadKeys::KeyHome);
+        enum_register_value<GamepadKeys>("KeyEnd", GamepadKeys::KeyEnd);
+        enum_register_value<GamepadKeys>("KeyCapsLock", GamepadKeys::KeyCapsLock);
+        enum_register_value<GamepadKeys>("KeyScrollLock", GamepadKeys::KeyScrollLock);
+        enum_register_value<GamepadKeys>("KeyNumLock", GamepadKeys::KeyNumLock);
+        enum_register_value<GamepadKeys>("KeyPrintScreen", GamepadKeys::KeyPrintScreen);
+        enum_register_value<GamepadKeys>("KeyPause", GamepadKeys::KeyPause);
+        enum_register_value<GamepadKeys>("KeyF1", GamepadKeys::KeyF1);
+        enum_register_value<GamepadKeys>("KeyF2", GamepadKeys::KeyF2);
+        enum_register_value<GamepadKeys>("KeyF3", GamepadKeys::KeyF3);
+        enum_register_value<GamepadKeys>("KeyF4", GamepadKeys::KeyF4);
+        enum_register_value<GamepadKeys>("KeyF5", GamepadKeys::KeyF5);
+        enum_register_value<GamepadKeys>("KeyF6", GamepadKeys::KeyF6);
+        enum_register_value<GamepadKeys>("KeyF7", GamepadKeys::KeyF7);
+        enum_register_value<GamepadKeys>("KeyF8", GamepadKeys::KeyF8);
+        enum_register_value<GamepadKeys>("KeyF9", GamepadKeys::KeyF9);
+        enum_register_value<GamepadKeys>("KeyF10", GamepadKeys::KeyF10);
+        enum_register_value<GamepadKeys>("KeyF11", GamepadKeys::KeyF11);
+        enum_register_value<GamepadKeys>("KeyF12", GamepadKeys::KeyF12);
+        enum_register_value<GamepadKeys>("KeyF13", GamepadKeys::KeyF13);
+        enum_register_value<GamepadKeys>("KeyF14", GamepadKeys::KeyF14);
+        enum_register_value<GamepadKeys>("KeyF15", GamepadKeys::KeyF15);
+        enum_register_value<GamepadKeys>("KeyF16", GamepadKeys::KeyF16);
+        enum_register_value<GamepadKeys>("KeyF17", GamepadKeys::KeyF17);
+        enum_register_value<GamepadKeys>("KeyF18", GamepadKeys::KeyF18);
+        enum_register_value<GamepadKeys>("KeyF19", GamepadKeys::KeyF19);
+        enum_register_value<GamepadKeys>("KeyF20", GamepadKeys::KeyF20);
+        enum_register_value<GamepadKeys>("KeyF21", GamepadKeys::KeyF21);
+        enum_register_value<GamepadKeys>("KeyF22", GamepadKeys::KeyF22);
+        enum_register_value<GamepadKeys>("KeyF23", GamepadKeys::KeyF23);
+        enum_register_value<GamepadKeys>("KeyF24", GamepadKeys::KeyF24);
+        enum_register_value<GamepadKeys>("KeyF25", GamepadKeys::KeyF25);
+        enum_register_value<GamepadKeys>("KeyKp0", GamepadKeys::KeyKp0);
+        enum_register_value<GamepadKeys>("KeyKp1", GamepadKeys::KeyKp1);
+        enum_register_value<GamepadKeys>("KeyKp2", GamepadKeys::KeyKp2);
+        enum_register_value<GamepadKeys>("KeyKp3", GamepadKeys::KeyKp3);
+        enum_register_value<GamepadKeys>("KeyKp4", GamepadKeys::KeyKp4);
+        enum_register_value<GamepadKeys>("KeyKp5", GamepadKeys::KeyKp5);
+        enum_register_value<GamepadKeys>("KeyKp6", GamepadKeys::KeyKp6);
+        enum_register_value<GamepadKeys>("KeyKp7", GamepadKeys::KeyKp7);
+        enum_register_value<GamepadKeys>("KeyKp8", GamepadKeys::KeyKp8);
+        enum_register_value<GamepadKeys>("KeyKp9", GamepadKeys::KeyKp9);
+        enum_register_value<GamepadKeys>("KeyKpDecimal", GamepadKeys::KeyKpDecimal);
+        enum_register_value<GamepadKeys>("KeyKpDivide", GamepadKeys::KeyKpDivide);
+        enum_register_value<GamepadKeys>("KeyKpMultiply", GamepadKeys::KeyKpMultiply);
+        enum_register_value<GamepadKeys>("KeyKpSubstract", GamepadKeys::KeyKpSubstract);
+        enum_register_value<GamepadKeys>("KeyKpAdd", GamepadKeys::KeyKpAdd);
+        enum_register_value<GamepadKeys>("KeyKpEnter", GamepadKeys::KeyKpEnter);
+        enum_register_value<GamepadKeys>("KeyKpEqual", GamepadKeys::KeyKpEqual);
+        enum_register_value<GamepadKeys>("KeyLeftShift", GamepadKeys::KeyLeftShift);
+        enum_register_value<GamepadKeys>("KeyLeftControl", GamepadKeys::KeyLeftControl);
+        enum_register_value<GamepadKeys>("KeyLeftAlt", GamepadKeys::KeyLeftAlt);
+        enum_register_value<GamepadKeys>("KeyLeftSuper", GamepadKeys::KeyLeftSuper);
+        enum_register_value<GamepadKeys>("KeyRightShift", GamepadKeys::KeyRightShift);
+        enum_register_value<GamepadKeys>("KeyRightControl", GamepadKeys::KeyRightControl);
+        enum_register_value<GamepadKeys>("KeyRightAlt", GamepadKeys::KeyRightAlt);
+        enum_register_value<GamepadKeys>("KeyRightSuper", GamepadKeys::KeyRightSuper);
+        enum_register_value<GamepadKeys>("KeyMenu", GamepadKeys::KeyMenu);
 
         enum_register<InputType>();
         enum_register_value<InputType>("Digital", InputType::Digital);

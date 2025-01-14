@@ -18,6 +18,7 @@
 #include "physics/box_collider_2d.h"
 #include "physics/circle_collider.h"
 #include "physics/physic_material.h"
+#include "physics/collision_flags.h"
 #include "input/input_action.h"
 #include "physics/trigger_events.h"
 #include "render/flipbook.h"
@@ -161,6 +162,7 @@ namespace nit
             register_physic_material_asset();
             register_input_action_asset();
             register_flipbook_asset();
+            register_collision_flags_asset();
         }
 
         if (on_init)
