@@ -36,7 +36,8 @@ namespace nit
 
             emitter << YAML::Key << data_pool.type->name << YAML::Value << YAML::BeginMap;
 
-            void* raw_data = pool_get_raw_data(&data_pool, input_action->id);
+            u32 modifier_id = input_action->input_modifiers[input_modifier_pool.type_index];
+            void* raw_data = pool_get_raw_data(&data_pool, modifier_id);
             serialize(data_pool.type, raw_data, emitter);
 
             emitter << YAML::EndMap;
