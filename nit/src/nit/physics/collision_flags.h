@@ -10,6 +10,12 @@ struct CollisionFlags
     u32    count = 0;
 };
 
-u64 collision_flags_get_category_mask(CollisionFlags* flags, const String& mask_name);
+struct CollisionCategoryData
+{
+    u64 category = 0;
+    u64 mask     = 0;
+};
+
+CollisionCategoryData collision_flags_get_category_data(CollisionFlags* flags, const String& mask_name);
 
 void register_collision_flags_asset();

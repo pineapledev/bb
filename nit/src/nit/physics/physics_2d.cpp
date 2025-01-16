@@ -1,6 +1,8 @@
 #include "physics_2d.h"
 #include "box_collider_2d.h"
 #include "circle_collider.h"
+#include "collision_category.h"
+#include "collision_flags.h"
 #include "physic_material.h"
 #include "rigidbody_2d.h"
 #include "trigger_events.h"
@@ -200,7 +202,7 @@ namespace nit
         rb.handle      = from_box2d(b2CreateBody(world(), &def));
     }
 
-    static void shape_def_init(b2ShapeDef& def, AssetHandle& material_handle, bool is_sensor)
+    static void shape_def_init(EntityID entity, b2ShapeDef& def, AssetHandle& material_handle, bool is_sensor)
     {
         PhysicMaterial* physic_material;
         
@@ -220,6 +222,26 @@ namespace nit
         def.friction    = physic_material->friction;
         def.restitution = physic_material->bounciness;
         def.isSensor    = is_sensor;
+        
+        if (entity_has<CollisionCategory>(entity))
+        {
+            auto& category = entity_get<CollisionCategory>(entity);
+            if (!category.invalidated)
+            {
+                CollisionFlags* flags = asset_get_data<CollisionFlags>(category.collision_flags);
+
+                if (!category.name.empty())
+                {
+                    auto data = collision_flags_get_category_data(flags, category.name);
+                    category.category    = data.category;
+                    category.mask        = data.mask;
+                }
+                
+                category.invalidated = true;
+                def.filter.categoryBits = category.category;
+                def.filter.maskBits = category.mask;
+            }
+        }
     }
     
     static void box_collider_invalidate(EntityID entity, Rigidbody2D& rb, BoxCollider2D& collider)
@@ -240,7 +262,7 @@ namespace nit
         }
 
         b2ShapeDef def;
-        shape_def_init(def, collider.physic_material, collider.is_trigger);
+        shape_def_init(entity, def, collider.physic_material, collider.is_trigger);
         b2Polygon poly = b2MakeBox(collider.size.x / 2.f, collider.size.y / 2.f);
         b2ShapeId shape_id = b2CreatePolygonShape(body, &def, &poly);
         b2Shape_SetUserData(shape_id, &physics_2d->all_entity_ids[entity]);
@@ -265,7 +287,7 @@ namespace nit
         }
 
         b2ShapeDef def;
-        shape_def_init(def, collider.physic_material, collider.is_trigger);
+        shape_def_init(entity, def, collider.physic_material, collider.is_trigger);
         b2Circle circle {
             .center = to_box2d(collider.center),
             .radius = collider.radius
@@ -384,7 +406,7 @@ namespace nit
         //TODO: check groups before start ticking this
 
         NIT_IF_EDITOR_ENABLED(if ((editor_get_instance()->is_paused && !editor_get_instance()->next_frame) || editor_get_instance()->is_stopped) return ListenerAction::StayListening;)
-        
+
         for (EntityID entity : entity_get_group<Transform, Rigidbody2D>().entities)
         {
             if (!entity_global_enabled(entity))

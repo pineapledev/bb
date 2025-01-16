@@ -29,3 +29,6 @@
 #include "nit/physics/physic_material.h"
 #include "nit/physics/circle_collider.h"
 #include "nit/physics/trigger_events.h"
+#include "nit/physics/collision_flags.h"
+#include "nit/physics/collision_category.h"
+
