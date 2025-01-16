@@ -161,6 +161,9 @@ Scene:
         tiling_factor: [1, 1]
         keep_aspect: true
         draw_layer: 0
+      CollisionCategory:
+        collision_flags: [dsad, CollisionFlags, 9016404635126672180]
+        name: PLAYER
       Children:
         Entity:
           Enabled: true

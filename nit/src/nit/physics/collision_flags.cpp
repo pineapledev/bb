@@ -1,4 +1,6 @@
 ﻿#include "collision_flags.h"
+
+#include "physics_2d.h"
 #include "core/asset.h"
 #include "editor/editor_utils.h"
 
@@ -38,7 +40,7 @@ void serialize(const CollisionFlags* flags, YAML::Emitter& emitter)
     }
 
     emitter << YAML::EndMap;
-}
+}   
 
 void deserialize(CollisionFlags* flags, const YAML::Node& node)
 {
@@ -143,18 +145,18 @@ void draw_editor(CollisionFlags* flags)
 }
 #endif
 
-u64 collision_flags_get_category_mask(CollisionFlags* flags, const String& mask_name)
+CollisionCategoryData collision_flags_get_category_data(CollisionFlags* flags, const String& mask_name)
 {
     NIT_CHECK(flags);
     for (u32 i = 0; i < flags->count; ++i)
     {
         if (flags->names[i] == mask_name)
         {
-            return flags->masks[i];
+            return { flags->categories[i], flags->masks[i] };
         }
     }
     NIT_CHECK_MSG(false, "Collision mask not exists! :p");
-    return 0;
+    return {};
 }
 
 void register_collision_flags_asset()
@@ -162,6 +164,9 @@ void register_collision_flags_asset()
     asset_register_type<CollisionFlags>({
         .fn_serialize   = serialize,
         .fn_deserialize = deserialize,
-        NIT_IF_EDITOR_ENABLED(.fn_draw_editor = draw_editor)
+#ifdef  NIT_EDITOR_ENABLED
+        .fn_draw_editor = draw_editor,
+#endif
+        .max_elements   = 1
     });
 }

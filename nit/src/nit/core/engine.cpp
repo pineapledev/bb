@@ -23,6 +23,7 @@
 #include "physics/trigger_events.h"
 #include "render/flipbook.h"
 #include "input/input_modifiers.h"
+#include "physics/collision_category.h"
 
 #define NIT_CHECK_ENGINE_CREATED NIT_CHECK_MSG(nit::engine, "Forget to call SetAppInstance!");
 
@@ -124,6 +125,7 @@ namespace nit
             register_circle_collider_component();
             register_trigger_events_component();
             register_flipbook_animation_component();
+            register_collision_category_component();
         }
 
         input_registry_set_instance(&engine->input_registry);
