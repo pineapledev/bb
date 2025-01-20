@@ -99,6 +99,9 @@ Scene:
         radius: 0.150000006
         center: [0, 0]
         physic_material: ["", "", 0]
+      CollisionCategory:
+        collision_flags: [GameCollisionFlags, CollisionFlags, 12590185099395023690]
+        name: ENEMY
       Health:
         max: 100
         current: 100

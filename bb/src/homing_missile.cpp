@@ -25,6 +25,11 @@ void deserialize(HomingMissile* homing_missile, const YAML::Node& node)
 #ifdef NIT_EDITOR_ENABLED
 void draw_editor(HomingMissile* homing_missile)
 {
+    if (editor_draw_centered_button("Logic Reset"))
+    {
+        *homing_missile = {};
+    }
+    
     editor_draw_text("Enabled", "%s", homing_missile->enabled ? "True" : "False");
     editor_draw_text("Attacking", "%s", homing_missile->attacking ? "True" : "False");
     editor_draw_text("Attack Direction", "x: %f y: %f, z: %f", homing_missile->attack_dir.x, homing_missile->attack_dir.y, homing_missile->attack_dir.z);
@@ -77,10 +82,20 @@ void homing_missile_update()
         {
             homing_missile.attacking = true;
         }
+        
         // Approach ship
         if(!homing_missile.attacking)
         {
-            transform.position += dir * homing_missile.approach_speed * delta_seconds();
+            f32 delta_speed = homing_missile.approach_speed * delta_seconds();
+
+            if (delta_speed >= distance)
+            {
+                transform.position = player_transform.position;
+            }
+            else
+            {
+                transform.position += dir * delta_speed;
+            }
         }
         else
         {
