@@ -280,7 +280,7 @@ namespace nit
     {
         NIT_CHECK_ENTITY_REGISTRY_CREATED
         EntityData* data = pool_get_data<EntityData>(&entity_registry->entities, entity);
-        return data->global_enabled;
+        return data->global_enabled && data->enabled;
     }
 
     static void compute_enabled_iterative(EntityID entity)
