@@ -56,6 +56,11 @@ void homing_missile_update()
 {
     for (EntityID entity : entity_get_group<HOMING_MISSILE_GROUP_SIGNATURE>().entities)
     {
+        if (!entity_global_enabled(entity))
+        {
+            continue;
+        }
+        
         auto& homing_missile = entity_get<HomingMissile>(entity);
 
         if (!homing_missile.enabled)

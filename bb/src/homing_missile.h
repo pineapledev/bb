@@ -1,7 +1,6 @@
 ﻿#pragma once
 
-
-#define HOMING_MISSILE_GROUP_SIGNATURE Transform, Sprite, HomingMissile, Rigidbody2D, CircleCollider, Hittable, Health
+#define HOMING_MISSILE_GROUP_SIGNATURE Transform, Circle, HomingMissile, Rigidbody2D, CircleCollider, Hittable, Health
 #define ENTITY_NAME_HOMING_MISSILE_PRESET "HomingMissilePreset"
 
 struct HomingMissile
